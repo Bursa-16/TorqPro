@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "dataset": "Sürtünme Veritabanı",
+    "status": "draft",
+    "production_use": false,
+    "note": "ISO 16047 test raporu olmadan değerler tahmini kabul edilir."
+  },
+  "records": [
+    {
+      "coating": "Generic zinc plated",
+      "lubrication": "unknown",
+      "counterface": "steel",
+      "mu_thread_min": 0.1,
+      "mu_thread_nom": 0.12,
+      "mu_thread_max": 0.14,
+      "mu_bearing_min": 0.1,
+      "mu_bearing_nom": 0.12,
+      "mu_bearing_max": 0.14,
+      "test_standard": null,
+      "test_report_id": null,
+      "confidence": 1,
+      "review_status": "draft"
+    }
+  ]
+}

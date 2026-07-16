@@ -1,0 +1,10 @@
+TORQPRO_19 — RELEASE PAKETİ VE İZLENEBİLİRLİK RAPORU
+=====================================================
+Tamamlananlar:
+- Proje bazlı release paketi
+- Proje özeti ve release kararı
+- Hesap, revizyon, veri sürümü ve onay matrisi
+- JSON/CSV dışa aktarma
+- Yazdırılabilir müşteri raporu
+- Release paketi veritabanı kaydı
+- Traceability API

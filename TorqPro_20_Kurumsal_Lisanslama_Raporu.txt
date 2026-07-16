@@ -1,0 +1,11 @@
+TORQPRO_20 — KURUMSAL DAĞITIM VE LİSANSLAMA RAPORU
+===================================================
+Tamamlananlar:
+- Kurum ayarları
+- Rapor başlığı ve alt bilgi markalama
+- Lisans aktivasyon kodu
+- Trial / Professional / Enterprise paketleri
+- Lisans bitiş tarihi
+- Kullanıcı ve proje limitleri
+- Lisanslı modül listesi
+- Kullanım özeti

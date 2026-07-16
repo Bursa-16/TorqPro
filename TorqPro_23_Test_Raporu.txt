@@ -1,0 +1,4 @@
+TORQPRO_23 TEST RAPORU
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Cloud deployment test syntax: PASSED

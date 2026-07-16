@@ -1,0 +1,150 @@
+{
+  "generated_at": "2026-07-16T00:00:00Z",
+  "documents": [
+    {
+      "path": ".github/copilot-instructions.md",
+      "size": 380,
+      "sha256": "1f9ad73b5572d54e34c1d14d7d9d188b1827fb31aa8835d56017d97d2270ae60"
+    },
+    {
+      "path": "CLAUDE.md",
+      "size": 413,
+      "sha256": "4f1a175c38473cd22ab9ab589bf142584af44161e594b8fb3e191202137a1529"
+    },
+    {
+      "path": "README.md",
+      "size": 731,
+      "sha256": "b68b5d9234329940608f061ecefda68efb22427de2b69a92ae74e9e5b7e36f8e"
+    },
+    {
+      "path": "docs/00_PROJECT_VISION.md",
+      "size": 10100,
+      "sha256": "cace5149611fccfa6a7273b643755872f17ed4eba22fe38cbdbb03d415144daf"
+    },
+    {
+      "path": "docs/01_DOMAIN_MODEL.md",
+      "size": 7545,
+      "sha256": "75143fcf424ba9bcff7c5fad5dfca7ed834a1821a83f50c611bf222cfd914e07"
+    },
+    {
+      "path": "docs/02_SYSTEM_ARCHITECTURE.md",
+      "size": 5569,
+      "sha256": "66237ef28fd1e788441a63c3dd7c425fa938887b09f07ff93725d9c974102c7f"
+    },
+    {
+      "path": "docs/03_ENGINEERING_WORKFLOW.md",
+      "size": 4513,
+      "sha256": "68544b656062a7cc051f0d1fccc304ad7db362fca09f6949f0e7ab463bec034c"
+    },
+    {
+      "path": "docs/04_UI_SCREEN_TREE.md",
+      "size": 3874,
+      "sha256": "0ac24ced42354eb57c888dc99fab5f4668ad01cacda94b4e0424c4dd8701c3d7"
+    },
+    {
+      "path": "docs/05_ENGINEERING_FORMULA_SPECIFICATION.md",
+      "size": 8418,
+      "sha256": "59b46654e2827da5dd3f6514ac09d98ad07f6baa88d7479f499077bf0a01a4c1"
+    },
+    {
+      "path": "docs/06_DATABASE_SPECIFICATION.md",
+      "size": 4688,
+      "sha256": "e9965dcf6051f8ccd025837467dc38acf20e48dc96ca8d3e6d636c50eaca8cef"
+    },
+    {
+      "path": "docs/07_API_SPECIFICATION.md",
+      "size": 4516,
+      "sha256": "bdf61db92419390f0630cd256a8f2ab9de7268c9f369e0256dfeb0a834e0794b"
+    },
+    {
+      "path": "docs/08_RULE_ENGINE.md",
+      "size": 2566,
+      "sha256": "832146320fd506ee8fcde56a407e9d5731cf6a4357f39cdc7c0a2493e7527970"
+    },
+    {
+      "path": "docs/09_LIBRARY_SPECIFICATION.md",
+      "size": 2868,
+      "sha256": "42ffc5f08a6508e3a14d6037343cc9fca02a010de770731a283d5a98a9f19e42"
+    },
+    {
+      "path": "docs/10_AI_ENGINE.md",
+      "size": 2060,
+      "sha256": "21c7d08da62bf9beb8ba431427095f29a5f6425612c00beee54ca5578179c546"
+    },
+    {
+      "path": "docs/11_PRODUCT_BACKLOG.md",
+      "size": 3701,
+      "sha256": "91f1a8374a0e57cd13909233e8f3fbde857354932bf8391d693c5efebe78f036"
+    },
+    {
+      "path": "docs/12_CLAUDE_CONTEXT.md",
+      "size": 3215,
+      "sha256": "bdecb5826ebf2c92b2845d749380ee5482a7f64f36947a9344aa7198e3cdd42b"
+    },
+    {
+      "path": "docs/13_DEVELOPER_GUIDE.md",
+      "size": 2058,
+      "sha256": "4cee8260d50929747f798e27ce3c8bda03f22622fb59fca9eb6cd828bdb390d7"
+    },
+    {
+      "path": "docs/14_TESTING_STRATEGY.md",
+      "size": 2622,
+      "sha256": "a000747069c3129036997490c24af330c7d8b85d59838c9e15ac36d9161d7ed3"
+    },
+    {
+      "path": "docs/15_DEPLOYMENT.md",
+      "size": 2206,
+      "sha256": "6d3e89c8dd5c085c6162ddf1cd1158bcd3e7f9c2404899708d927e9f134f17e9"
+    },
+    {
+      "path": "docs/CHANGELOG.md",
+      "size": 895,
+      "sha256": "a741165dde95e4b28dbe38a5d2321fe8878e1bce84d154dd83777383aeb061d8"
+    },
+    {
+      "path": "docs/README.md",
+      "size": 3570,
+      "sha256": "7de32daf3a44ea444a239731f8cec4ecb225eddf6ba1226d7dcc7467614c4f48"
+    },
+    {
+      "path": "docs/adr/ADR-0001-modular-monolith.md",
+      "size": 382,
+      "sha256": "baa364a7cb5e890a741e4add75b57d34c79ff6b934b38049c2e9abc6af2d2269"
+    },
+    {
+      "path": "docs/adr/ADR-0002-deterministic-engine.md",
+      "size": 341,
+      "sha256": "7579523dbc5edd75b2084a82ebea88a56f3dec4754e53f938af53ee94d0654d6"
+    },
+    {
+      "path": "docs/adr/ADR-0003-joint-revision-root.md",
+      "size": 312,
+      "sha256": "4c1858939fa9d6f8d5dbb0c5b6c7389c710d96b7c6e92850a3ce8a4e2f15e4e3"
+    },
+    {
+      "path": "docs/adr/ADR-0004-reference-data-governance.md",
+      "size": 304,
+      "sha256": "873ed1c8dbd5a606418446a2f9b9ff6eca74e33616b8370d2dfe75108bff0e3c"
+    },
+    {
+      "path": "docs/adr/ADR-0005-quick-detailed-modes.md",
+      "size": 337,
+      "sha256": "57b9ff0cf13ca0780db820fc5e37f6df7a7993907ddbfed5aff2ae9993af3164"
+    },
+    {
+      "path": "docs/adr/ADR-0006-sqlite-postgresql.md",
+      "size": 307,
+      "sha256": "ada8aa5418a85e03bc3f0181cafc6e8ae78dd4dd623daeb9c455d19b12547bdb"
+    },
+    {
+      "path": "docs/adr/ADR-0007-standards-copyright.md",
+      "size": 301,
+      "sha256": "c1c20e6d3ce2136ca929a41264cb2c061ab528633e19de0355d4d6c34d7a0c71"
+    },
+    {
+      "path": "docs/adr/ADR-0008-immutable-calculations.md",
+      "size": 313,
+      "sha256": "224695f493976a0861159ff172814564310d0a86de182b8dc9dd17b0dd84d905"
+    }
+  ]
+}

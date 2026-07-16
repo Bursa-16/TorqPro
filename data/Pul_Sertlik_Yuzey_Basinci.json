@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "dataset": "Pul Sertlik ve Yüzey Basıncı",
+    "status": "schema_ready_data_incomplete",
+    "production_use": false
+  },
+  "fields": [
+    "standard",
+    "thread_code",
+    "inside_diameter_mm",
+    "outside_diameter_mm",
+    "thickness_mm",
+    "hardness_min_hv",
+    "hardness_max_hv",
+    "recommended_max_bolt_class",
+    "bearing_pressure_limit_mpa",
+    "source_id",
+    "confidence",
+    "review_status"
+  ],
+  "records": []
+}

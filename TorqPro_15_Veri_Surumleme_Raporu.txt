@@ -1,0 +1,8 @@
+TORQPRO_15 — VERİ AKTİVASYONU VE SÜRÜMLEME
+- Onaylı paketten otomatik sürüm oluşturma
+- Tek aktif sürüm
+- Geri alma
+- Hesap veri izi
+- Etki analizi
+- Aktif veri imzası
+- Üretim hazırlığı kararı

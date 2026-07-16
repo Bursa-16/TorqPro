@@ -1,0 +1,6 @@
+TORQPRO_24 — KURULUM SİHİRBAZI RAPORU
+- İlk yayın sihirbazı
+- Sunucu/domain/HTTPS profili
+- DNS çözümleme servisi
+- Beklenen IP kontrolü
+- Yayına hazır / eksik kararı

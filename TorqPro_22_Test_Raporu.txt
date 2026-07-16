@@ -1,0 +1,4 @@
+TORQPRO_22 TEST RAPORU
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Mobile/PWA test syntax: PASSED

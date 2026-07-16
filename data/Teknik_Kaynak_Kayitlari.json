@@ -1,0 +1,16 @@
+{
+  "metadata": {
+    "dataset": "Teknik Kaynak Kayıtları",
+    "status": "active"
+  },
+  "records": [
+    {
+      "source_id": "SRC-OEM-EXAMPLE-001",
+      "title": "Örnek OEM Genel Tork ve Yük Öngörüsü",
+      "source_type": "internal_reference",
+      "status": "active",
+      "confidence": 2,
+      "notes": "Kullanıcı arayüzünde genel OEM örneği olarak gösterilir."
+    }
+  ]
+}

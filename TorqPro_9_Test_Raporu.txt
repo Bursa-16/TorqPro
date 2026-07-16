@@ -1,0 +1,8 @@
+TORQPRO_9 TEST RAPORU
+Frontend JavaScript: PASSED
+Backend Python syntax: PASSED
+- Açık JavaScript şifresi kaldırıldı.
+- FastAPI kullanıcı girişi eklendi.
+- PBKDF2-SHA256 parola hashleme eklendi.
+- SQLite kullanıcı ve hesap arşivi eklendi.
+- Kullanıcı bazlı kayıt, arama, silme, CSV ve JSON dışa aktarım eklendi.

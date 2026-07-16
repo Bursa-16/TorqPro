@@ -1,0 +1,7 @@
+TORQPRO_13 — TEKNİK DOĞRULAMA RAPORU
+- ISO 898-2 proof-load veri şeması eklendi.
+- Civata-somun uyumluluk ön kontrolü eklendi.
+- Pul ve sürtünme veri şemaları eklendi.
+- Teknik Doğrulama Paneli eklendi.
+- Üretim kullanılabilirliği kararı eklendi.
+- Doğrulanmamış tablo değerleri bilinçli olarak doldurulmadı.

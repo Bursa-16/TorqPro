@@ -1,0 +1,4 @@
+TORQPRO_19 TEST RAPORU
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Release package test syntax: PASSED

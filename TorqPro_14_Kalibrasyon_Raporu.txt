@@ -1,0 +1,17 @@
+TORQPRO_14 — VERİ YÜKLEME VE KALİBRASYON RAPORU
+=================================================
+Tamamlananlar:
+- JSON ve CSV veri yükleme API'si
+- Veri paketi içerik hash kontrolü
+- Veri paketi sürüm ve kaynak metadatası
+- Taslak / incelemede / onaylı / reddedildi iş akışı
+- Güven 4 altındaki paketler için onay engeli
+- Kalibrasyon senaryosu kaydı
+- Program ve referans değer karşılaştırması
+- Hata yüzdesi ve tolerans kararı
+- Kalibrasyon özet API'si
+- Yönetici veri yükleme ekranı
+- Kalibrasyon ekranı
+
+Bilinçli sınır:
+Doğrulanmış ISO 898-2, ISO 16047 ve pul standart verileri bu pakette yer almamaktadır.

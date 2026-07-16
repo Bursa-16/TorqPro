@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "dataset": "ISO 898-2 Somun Proof-Load",
+    "status": "schema_ready_data_incomplete",
+    "production_use": false,
+    "reason": "Doğrulanmış birincil standart tablosu henüz yüklenmedi."
+  },
+  "fields": [
+    "standard",
+    "edition",
+    "thread_code",
+    "pitch_mm",
+    "nut_property_class",
+    "proof_stress_mpa",
+    "stress_area_mm2",
+    "proof_load_n",
+    "source_id",
+    "source_page",
+    "confidence",
+    "review_status"
+  ],
+  "records": []
+}

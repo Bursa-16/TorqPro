@@ -1,0 +1,10 @@
+TORQPRO_17 — KALİTE KAPISI VE SÜRÜM ONAY RAPORU
+================================================
+Tamamlananlar:
+- Veri seti bazlı kalite şemaları
+- Zorunlu alan ve veri tipi kontrolü
+- Paket kalite kapısı ekranı
+- Altın referans senaryoları
+- Referans hata yüzdesi ve tolerans kararı
+- Sürüm onay sertifikası
+- Aktif veri + kalite kapısı + altın test birleşik kararı

@@ -1,0 +1,12 @@
+TORQPRO_16 — DİNAMİK STANDART VERİSİ ENTEGRASYON RAPORU
+========================================================
+Tamamlananlar:
+- Aktif paket içeriğini çözen /api/data/engine-library servisi
+- JSON/CSV aktif paket ayrıştırma
+- Proof-load değerini hesap motoruna aktarma
+- Sürtünme min/nom/max değerlerini hesap motoruna aktarma
+- Pul yüzey basıncı limitini hesap motoruna aktarma
+- Civata-somun sınıf uyumluluğunu hesap motoruna aktarma
+- Eşleşmeyen kayıtlarda güvenli fallback
+- Hesap sonucunda kullanılan canlı veri kaynaklarını gösterme
+- Veri sürümü imzasını kayıt source_mode alanına ekleme

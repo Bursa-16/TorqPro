@@ -1,0 +1,4 @@
+TORQPRO_24 TEST RAPORU
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Go-live wizard test syntax: PASSED

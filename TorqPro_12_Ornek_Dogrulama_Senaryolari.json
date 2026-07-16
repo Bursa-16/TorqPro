@@ -1,0 +1,37 @@
+[
+  {
+    "thread": "M6",
+    "preload_n": 9648,
+    "t_min_nm": 9.4,
+    "t_nom_nm": 10.9,
+    "t_max_nm": 12.5
+  },
+  {
+    "thread": "M8",
+    "preload_n": 17568,
+    "t_min_nm": 22.3,
+    "t_nom_nm": 26.0,
+    "t_max_nm": 29.8
+  },
+  {
+    "thread": "M10",
+    "preload_n": 39150,
+    "t_min_nm": 59.3,
+    "t_nom_nm": 69.3,
+    "t_max_nm": 79.3
+  },
+  {
+    "thread": "M12",
+    "preload_n": 56902,
+    "t_min_nm": 103.1,
+    "t_nom_nm": 120.6,
+    "t_max_nm": 138.1
+  },
+  {
+    "thread": "M16",
+    "preload_n": 105975,
+    "t_min_nm": 251.5,
+    "t_nom_nm": 295.1,
+    "t_max_nm": 338.8
+  }
+]

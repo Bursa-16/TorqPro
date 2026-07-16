@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "dataset": "Civata-Somun Sınıf Uyumluluğu",
+    "status": "engineering_rule_set",
+    "production_use": false,
+    "note": "Proof-load tablosuyla doğrulanmadan yalnız ön kontroldür."
+  },
+  "rules": [
+    {
+      "bolt_class": "4.6",
+      "minimum_nut_class": "4",
+      "confidence": 2
+    },
+    {
+      "bolt_class": "5.8",
+      "minimum_nut_class": "5",
+      "confidence": 2
+    },
+    {
+      "bolt_class": "8.8",
+      "minimum_nut_class": "8",
+      "confidence": 2
+    },
+    {
+      "bolt_class": "10.9",
+      "minimum_nut_class": "10",
+      "confidence": 2
+    },
+    {
+      "bolt_class": "12.9",
+      "minimum_nut_class": "12",
+      "confidence": 2
+    }
+  ]
+}

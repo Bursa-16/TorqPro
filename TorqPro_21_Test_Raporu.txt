@@ -1,0 +1,4 @@
+TORQPRO_21 TEST RAPORU
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Deployment/migration test syntax: PASSED

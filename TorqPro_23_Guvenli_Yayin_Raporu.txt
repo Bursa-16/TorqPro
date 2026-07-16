@@ -1,0 +1,12 @@
+TORQPRO_23 — GÜVENLİ İNTERNET YAYINI RAPORU
+============================================
+Tamamlananlar:
+- Docker uygulama imajı
+- Docker Compose
+- Nginx reverse proxy
+- HTTPS yönlendirme şablonu
+- Kalıcı veri volume'u
+- .env yapılandırması
+- Liveness ve readiness servisleri
+- Cloud readiness ekranı
+- Mobil/PWA üzerinden HTTPS erişim hazırlığı

@@ -1,0 +1,5 @@
+TORQPRO_14 TEST RAPORU
+=======================
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Upload/Calibration test syntax: PASSED

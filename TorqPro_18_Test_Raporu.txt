@@ -1,0 +1,4 @@
+TORQPRO_18 TEST RAPORU
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Eklenenler: Projeler, hesap revizyonları, inceleme kuyruğu, onay/ret, öz-onay engeli, kilitli snapshot.

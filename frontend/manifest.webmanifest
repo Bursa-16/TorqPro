@@ -1,0 +1,10 @@
+{
+  "name": "TorqPro",
+  "short_name": "TorqPro",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "description": "Bağlantı elemanları tork ve mühendislik doğrulama platformu",
+  "icons": []
+}

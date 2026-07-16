@@ -1,0 +1,11 @@
+TORQPRO_22 — MOBİL UYUM VE PWA RAPORU
+=====================================
+Tamamlananlar:
+- Mobil responsive tasarım
+- Mobil menü
+- PWA manifest
+- Service worker ve çevrimdışı kabuk
+- Ana ekrana kurulum desteği
+- Yerel IP ve mobil URL üretimi
+- Ağ bağlantı kontrolleri
+- Sunucuyu 0.0.0.0 üzerinden başlatma

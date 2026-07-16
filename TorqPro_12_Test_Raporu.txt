@@ -1,0 +1,21 @@
+TORQPRO_12 TEST RAPORU
+=======================
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Engineering test syntax: PASSED
+
+Eklenenler:
+- Min / nominal / max sürtünme
+- Min / nominal / max tork
+- Nominal torkta ön yük saçılımı
+- Somun proof-load kontrolü
+- İç ve dış diş sıyırma emniyeti
+- Yüzey basıncı ve emniyet katsayısı
+- Birleşik mühendislik kararı
+- /api/engineering/check endpoint
+- M6, M8, M10, M12, M16 örnek doğrulama senaryoları
+
+Sınırlar:
+- Tam VDI 2230 değildir.
+- ISO 898-2 proof-load verisi henüz kullanıcı girdisidir.
+- Diş sıyırma hesabı ön değerlendirme seviyesindedir.

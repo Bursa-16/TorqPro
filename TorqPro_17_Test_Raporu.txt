@@ -1,0 +1,5 @@
+TORQPRO_17 TEST RAPORU
+=======================
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Quality gate test syntax: PASSED

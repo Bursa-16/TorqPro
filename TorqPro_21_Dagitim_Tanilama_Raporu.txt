@@ -1,0 +1,12 @@
+TORQPRO_21 — DAĞITIM VE TANILAMA RAPORU
+=========================================
+Tamamlananlar:
+- Kurulum profili
+- Ortam ve ağ ayarları
+- Yedekleme/güncelleme kanalı
+- Tam sistem dışa aktarma
+- Checksum doğrulamalı içe aktarma kontrolü
+- Taşıma geçmişi
+- Sistem tanılama
+- SQLite bütünlük kontrolü
+- Destek tanılama paketi

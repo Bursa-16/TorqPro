@@ -1,0 +1,16 @@
+TORQPRO_10 TEST RAPORU
+=======================
+Frontend JavaScript: PASSED
+Backend Python syntax: PASSED
+
+Eklenenler:
+- Admin / Engineer / Viewer rol sistemi
+- Yönetici paneli
+- Yeni kullanıcı oluşturma
+- Kullanıcı aktif/pasif yönetimi
+- Kullanıcı rolü değiştirme
+- Yönetici tarafından şifre sıfırlama
+- Kullanıcının kendi şifresini değiştirmesi
+- Denetim/audit kayıtları
+- SQLite veritabanı yedeği
+- Viewer için yazma/silme engeli

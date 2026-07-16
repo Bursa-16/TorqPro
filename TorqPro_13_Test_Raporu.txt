@@ -1,0 +1,4 @@
+TORQPRO_13 TEST RAPORU
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Validation test syntax: PASSED

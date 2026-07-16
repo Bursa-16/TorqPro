@@ -1,0 +1,4 @@
+TORQPRO_20 TEST RAPORU
+Frontend JavaScript: PASSED
+Backend Python: PASSED
+Enterprise/license test syntax: PASSED
