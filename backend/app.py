@@ -11,6 +11,15 @@ from fastapi.staticfiles import StaticFiles
 import jwt
 from pydantic import BaseModel, Field
 
+# Engineering Core: deterministic calculation layer (Phase 1 refactor).
+# Dual import path: repo root (backend.engineering_core) or backend/ on sys.path (CI import check).
+try:
+    from backend.engineering_core.joint import evaluate_joint
+    from backend.engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed
+except ImportError:  # pragma: no cover - direct import with backend/ on sys.path
+    from engineering_core.joint import evaluate_joint
+    from engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed
+
 BASE=Path(__file__).resolve().parent.parent
 APP_VERSION="4.4"
 DB=Path(os.getenv("TORQPRO_DB_PATH") or (BASE/"torqpro.db")); FRONT=BASE/"frontend"; SECRET_FILE=BASE/".torqpro_secret"
@@ -393,26 +402,8 @@ class EngineeringCheck(BaseModel):
 
 @app.post("/api/engineering/check")
 def engineering_check(x: EngineeringCheck, u=Depends(user)):
-    import math
-    d=x.diameter_mm; p=x.pitch_mm
-    d2=d-0.6495*p; d3=d-1.2269*p
-    F=x.rp02_mpa*x.stress_area_mm2*x.target_yield_ratio
-    def torque(mt,mb):
-        helix=math.atan(p/(math.pi*d2))
-        rho=math.atan(mt/math.cos(math.pi/6))
-        return F*((d2/2)*math.tan(helix+rho)+mb*(x.effective_bearing_diameter_mm/2))/1000
-    tau_i=.58*x.internal_rm_mpa; tau_b=.58*x.bolt_rm_mpa
-    cap_i=tau_i*(math.pi*d2*x.engagement_mm*.5)
-    cap_b=tau_b*(math.pi*d3*x.engagement_mm*.5)
-    return {
-        "preload_n":F,
-        "torque_min_nm":torque(x.mu_thread_min,x.mu_bearing_min),
-        "torque_nom_nm":torque(x.mu_thread_nom,x.mu_bearing_nom),
-        "torque_max_nm":torque(x.mu_thread_max,x.mu_bearing_max),
-        "nut_proof_util_pct":F/(x.nut_proof_mpa*x.stress_area_mm2)*100,
-        "internal_thread_sf":cap_i/F,
-        "external_thread_sf":cap_b/F
-    }
+    # Orchestration only: input validated by Pydantic, calculation in engineering_core.
+    return evaluate_joint(**x.model_dump())
 
 
 DATA_DIR=BASE/"data"
@@ -534,8 +525,8 @@ def data_package_summary(u=Depends(admin)):
 @app.post("/api/calibration/cases")
 def create_calibration_case(x:CalibrationCaseIn,u=Depends(user)):
     if x.reference_value==0:raise HTTPException(400,"Referans sıfır olamaz")
-    err=abs(x.program_value-x.reference_value)/abs(x.reference_value)*100
-    passed=1 if err<=x.tolerance_pct else 0
+    err=deviation_pct(x.program_value,x.reference_value)
+    passed=tolerance_passed(err,x.tolerance_pct)
     with conn() as c:
         c.execute("""INSERT INTO calibration_cases(thread,program_value,reference_value,tolerance_pct,error_pct,passed,source_id,note,created_by,created_at)
                      VALUES(?,?,?,?,?,?,?,?,?,?)""",
@@ -656,41 +647,7 @@ def engine_library(u=Depends(user)):
     }
 
 
-QUALITY_SCHEMAS={
-  "proof_load":{
-    "required_any":[["thread_code","thread","size"],["nut_property_class","nut_class","property_class"],["proof_stress_mpa","proof_load_n"]],
-    "numeric":["proof_stress_mpa","proof_load_n","stress_area_mm2"]
-  },
-  "friction":{
-    "required_any":[["coating","coating_system","surface"],["mu_thread_nom","mu_thread"],["mu_bearing_nom","mu_bearing"]],
-    "numeric":["mu_thread_min","mu_thread_nom","mu_thread_max","mu_thread","mu_bearing_min","mu_bearing_nom","mu_bearing_max","mu_bearing"]
-  },
-  "washer":{
-    "required_any":[["thread_code","thread","size"],["bearing_pressure_limit_mpa","allowable_bearing_pressure_mpa"]],
-    "numeric":["inside_diameter_mm","outside_diameter_mm","thickness_mm","bearing_pressure_limit_mpa","allowable_bearing_pressure_mpa"]
-  },
-  "compatibility":{
-    "required_any":[["bolt_class","bolt_property_class"],["minimum_nut_class","required_nut_class"]],
-    "numeric":[]
-  }
-}
-
-def validate_package_records(dataset,records):
-    schema=QUALITY_SCHEMAS.get(dataset)
-    if not schema:return False,["Tanımsız veri seti"]
-    errors=[]
-    if not records:errors.append("Kayıt bulunamadı")
-    for i,row in enumerate(records,1):
-        if not isinstance(row,dict):
-            errors.append(f"Satır {i}: nesne değil");continue
-        for group in schema["required_any"]:
-            if not any(row.get(k) not in (None,"") for k in group):
-                errors.append(f"Satır {i}: zorunlu alan grubu eksik ({'/'.join(group)})")
-        for key in schema["numeric"]:
-            if key in row and row[key] not in (None,""):
-                try:float(str(row[key]).replace(",","."))
-                except Exception:errors.append(f"Satır {i}: {key} sayısal değil")
-    return len(errors)==0,errors[:100]
+# QUALITY_SCHEMAS ve validate_package_records artık engineering_core.validation içinde (Faz 1 taşıma).
 
 @app.get("/api/admin/quality-gate")
 def quality_gate(u=Depends(admin)):
@@ -716,8 +673,8 @@ class GoldenCaseIn(BaseModel):
 @app.post("/api/admin/golden-cases")
 def create_golden_case(x:GoldenCaseIn,u=Depends(admin)):
     if x.reference_torque_nm==0:raise HTTPException(400,"Referans tork sıfır olamaz")
-    err=abs(x.program_torque_nm-x.reference_torque_nm)/abs(x.reference_torque_nm)*100
-    passed=1 if err<=x.tolerance_pct else 0
+    err=deviation_pct(x.program_torque_nm,x.reference_torque_nm)
+    passed=tolerance_passed(err,x.tolerance_pct)
     with conn() as c:
         c.execute("INSERT INTO golden_cases(name,thread,property_class,reference_torque_nm,program_torque_nm,tolerance_pct,error_pct,passed,created_by,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)",
                   (x.name,x.thread,x.property_class,x.reference_torque_nm,x.program_torque_nm,x.tolerance_pct,err,passed,u["id"],now_iso()))
