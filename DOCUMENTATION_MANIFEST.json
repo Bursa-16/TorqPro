@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-16T00:00:00Z",
+  "generated_at": "2026-07-17T00:00:00Z",
   "documents": [
     {
       "path": ".github/copilot-instructions.md",
@@ -13,8 +13,8 @@
     },
     {
       "path": "README.md",
-      "size": 731,
-      "sha256": "b68b5d9234329940608f061ecefda68efb22427de2b69a92ae74e9e5b7e36f8e"
+      "size": 1403,
+      "sha256": "ab470a881c5c3e9578933e0d752cccec3f605c972d61ba403cfb6c4285e20b62"
     },
     {
       "path": "docs/00_PROJECT_VISION.md",

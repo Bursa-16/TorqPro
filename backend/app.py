@@ -1,6 +1,6 @@
 
 from __future__ import annotations
-import csv, json, hashlib, hmac, io, logging, os, secrets, sqlite3, tempfile, time, uuid
+import csv, json, hashlib, hmac, io, logging, os, platform, secrets, socket, sqlite3, tempfile, time, uuid
 from collections import defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -8,17 +8,23 @@ from typing import Optional
 from fastapi import FastAPI, Depends, HTTPException, Header, Request
 from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from jose import JWTError, jwt
+import jwt
 from pydantic import BaseModel, Field
 
 BASE=Path(__file__).resolve().parent.parent
-DB=BASE/"torqpro.db"; FRONT=BASE/"frontend"; SECRET_FILE=BASE/".torqpro_secret"
+APP_VERSION="4.4"
+DB=Path(os.getenv("TORQPRO_DB_PATH") or (BASE/"torqpro.db")); FRONT=BASE/"frontend"; SECRET_FILE=BASE/".torqpro_secret"
 ALGORITHM="HS256"; ACCESS_TOKEN_MINUTES=480; SCHEMA_VERSION=3
 LOGIN_ATTEMPTS=defaultdict(deque)
 logging.basicConfig(level=logging.INFO,format="%(asctime)s | %(levelname)s | %(message)s",
  handlers=[logging.FileHandler(BASE/"torqpro.log",encoding="utf-8"),logging.StreamHandler()])
 log=logging.getLogger("torqpro")
-app=FastAPI(title="TorqPro API",version="4.4")
+from contextlib import asynccontextmanager
+@asynccontextmanager
+async def lifespan(_app):
+    migrate();log.info("TorqPro API started")
+    yield
+app=FastAPI(title="TorqPro API",version=APP_VERSION,lifespan=lifespan)
 
 def utcnow(): return datetime.now(timezone.utc)
 def now_iso(): return utcnow().isoformat()
@@ -212,8 +218,6 @@ def migrate():
             c.execute("INSERT INTO golive_profile(id,https_status,dns_planned,docker_ready,health_ready,updated_at) VALUES(1,'planned',0,1,0,?)",(now_iso(),))
 
         c.commit()
-@app.on_event("startup")
-def startup():migrate();log.info("TorqPro API started")
 
 @app.middleware("http")
 async def mw(request:Request,call_next):
@@ -244,7 +248,7 @@ def token(r):
 def user(authorization:str=Header(default="")):
     if not authorization.startswith("Bearer "):raise HTTPException(401,"Oturum gerekli")
     try:p=jwt.decode(authorization[7:],SECRET_KEY,algorithms=[ALGORITHM]);uid=int(p["sub"])
-    except (JWTError,KeyError,ValueError):raise HTTPException(401,"Geçersiz veya süresi dolmuş oturum")
+    except (jwt.PyJWTError,KeyError,ValueError):raise HTTPException(401,"Geçersiz veya süresi dolmuş oturum")
     with conn() as c:r=c.execute("SELECT id,username,display_name,is_active,role FROM users WHERE id=?",(uid,)).fetchone()
     if not r or not r["is_active"]:raise HTTPException(401,"Kullanıcı aktif değil")
     return dict(r)
@@ -263,7 +267,7 @@ def health():
         with conn() as c:c.execute("SELECT 1").fetchone()
         ok=True
     except Exception:ok=False
-    return {"status":"ok" if ok else "degraded","version":"4.4","database_ok":ok,"server_time":now_iso()}
+    return {"status":"ok" if ok else "degraded","version":APP_VERSION,"database_ok":ok,"server_time":now_iso()}
 
 @app.post("/api/login")
 def login(x:Login,request:Request):
@@ -361,7 +365,7 @@ def system(u=Depends(admin)):
     with conn() as c:
         tu=c.execute("SELECT COUNT(*) c FROM users").fetchone()["c"];auu=c.execute("SELECT COUNT(*) c FROM users WHERE is_active=1").fetchone()["c"]
         cc=c.execute("SELECT COUNT(*) c FROM calculations").fetchone()["c"];acn=c.execute("SELECT COUNT(*) c FROM audit_log").fetchone()["c"];sv=c.execute("SELECT version FROM schema_info WHERE id=1").fetchone()["version"]
-    return {"status":"ok","version":"4.4","database_ok":True,"database_size_kb":round(DB.stat().st_size/1024,1) if DB.exists() else 0,"total_users":tu,"active_users":auu,"calculation_count":cc,"audit_count":acn,"schema_version":sv,"server_time":now_iso()}
+    return {"status":"ok","version":APP_VERSION,"database_ok":True,"database_size_kb":round(DB.stat().st_size/1024,1) if DB.exists() else 0,"total_users":tu,"active_users":auu,"calculation_count":cc,"audit_count":acn,"schema_version":sv,"server_time":now_iso()}
 @app.get("/api/admin/backup")
 def backup(u=Depends(admin)):
     fd,path=tempfile.mkstemp(suffix=".db");os.close(fd)
@@ -431,7 +435,7 @@ def validation_summary(u=Depends(user)):
     p=load_data("ISO_898_2_Somun_Proof_Load.json");f=load_data("Surtunme_Veritabani.json")
     pc=len(p.get("records",[]));vf=[r for r in f.get("records",[]) if r.get("confidence",0)>=4 and r.get("test_report_id")]
     ready=pc>0 and len(vf)>0
-    return {"version":"4.4","proof_load_records":pc,"verified_friction_records":len(vf),"production_ready":ready,"decision":"production_ready" if ready else "engineering_precheck_only"}
+    return {"version":APP_VERSION,"proof_load_records":pc,"verified_friction_records":len(vf),"production_ready":ready,"decision":"production_ready" if ready else "engineering_precheck_only"}
 
 @app.post("/api/validation/compatibility")
 def validation_compatibility(bolt_class:str,nut_class:str,u=Depends(user)):
@@ -586,7 +590,7 @@ def active_data(u=Depends(user)):
     with conn() as c:r=c.execute("SELECT v.*,p.filename,p.source_title,p.source_page FROM data_versions v JOIN data_packages p ON p.id=v.package_id WHERE v.is_active=1").fetchall()
     ds={x["dataset"]:dict(x) for x in r};required={"proof_load","friction","washer","compatibility"}
     sig="|".join(k+":"+ds[k]["version_no"] for k in sorted(ds)) if ds else None
-    return {"version":"4.4","datasets":ds,"production_ready":required.issubset(set(ds)),"version_signature":sig}
+    return {"version":APP_VERSION,"datasets":ds,"production_ready":required.issubset(set(ds)),"version_signature":sig}
 
 @app.get("/api/admin/data-versions/impact")
 def version_impact(dataset:str,limit:int=100,u=Depends(admin)):
@@ -769,6 +773,7 @@ class ReviewIn(BaseModel):
 
 @app.post("/api/projects")
 def create_project(x:ProjectIn,u=Depends(user)):
+    if u["role"]=="viewer":raise HTTPException(403,"Viewer rolü proje oluşturamaz")
     with conn() as c:
         c.execute("INSERT INTO projects(name,customer,product,project_code,status,created_by,created_at) VALUES(?,?,?,?,'open',?,?)",(x.name,x.customer,x.product,x.project_code,u["id"],now_iso()));c.commit()
         r=c.execute("SELECT * FROM projects WHERE id=last_insert_rowid()").fetchone()
@@ -822,8 +827,13 @@ def approve_revision(rid:int,x:ReviewIn,u=Depends(user)):
 
 @app.post("/api/revisions/{rid}/reject")
 def reject_revision(rid:int,x:ReviewIn,u=Depends(user)):
+    if u["role"] not in ("admin","engineer"):raise HTTPException(403,"Yetki gerekli")
     with conn() as c:
+        r=c.execute("SELECT * FROM calculation_revisions WHERE id=?",(rid,)).fetchone()
+        if not r:raise HTTPException(404,"Revizyon bulunamadı")
+        if r["created_by"]==u["id"]:raise HTTPException(400,"Kendi revizyonunuzu reddedemezsiniz")
         c.execute("UPDATE calculation_revisions SET status='rejected',reviewed_by=?,reviewed_at=?,review_note=? WHERE id=?",(u["id"],now_iso(),x.note,rid));c.commit()
+    audit(u["id"],"revision_reject",str(rid))
     return {"ok":True}
 
 @app.get("/api/projects/{project_id}/traceability")
@@ -1013,7 +1023,7 @@ def update_deployment_profile(x:DeploymentProfileIn,u=Depends(admin)):
     audit(u["id"],"deployment_profile_update",x.environment);return {"ok":True}
 
 def build_system_export():
-    payload={"format":"torqpro-system-export","schema_version":SCHEMA_VERSION,"app_version":"4.1","created_at":now_iso(),"tables":{}}
+    payload={"format":"torqpro-system-export","schema_version":SCHEMA_VERSION,"app_version":APP_VERSION,"created_at":now_iso(),"tables":{}}
     total=0
     with conn() as c:
         for table in EXPORT_TABLES:
@@ -1066,7 +1076,7 @@ def migration_history(u=Depends(admin)):
 def diagnostics(u=Depends(admin)):
     checks=[]
     def add(name,value,ok,detail=""):checks.append({"name":name,"value":value,"ok":bool(ok),"detail":detail})
-    add("Uygulama sürümü","4.1",True)
+    add("Uygulama sürümü",APP_VERSION,True)
     add("Python sürümü",platform.python_version(),True)
     add("İşletim sistemi",platform.platform(),True)
     add("Veritabanı dosyası",str(DB),DB.exists())
@@ -1139,7 +1149,7 @@ def runtime_status():
     lic=current_license()
     readiness=db_ok and bool(os.environ.get("TORQPRO_SECRET_KEY"))
     return {
-      "app":"TorqPro","version":"4.4","liveness":True,"readiness":readiness,
+      "app":"TorqPro","version":APP_VERSION,"liveness":True,"readiness":readiness,
       "database":"OK" if db_ok else "ERROR",
       "license":"ACTIVE" if lic.get("active") else "INACTIVE",
       "active_datasets":active_count
