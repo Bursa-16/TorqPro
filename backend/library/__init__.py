@@ -1,15 +1,21 @@
-"""TorqPro Engineering Library (Phase 1.3 infrastructure).
+"""TorqPro Engineering Library (Phase 1.3 + Phase 1.4 infrastructure).
 
 Independent professional engineering data layer, separate from the
-calculation engine. This phase only introduces the registry and
-per-domain metadata shells:
+calculation engine.
+
+Phase 1.3 introduced the registry and per-domain metadata shells.
+Phase 1.4 adds the data layer around them -- lazy loading, source
+provenance, a migration engine and validation/search -- without
+changing any existing behaviour:
 
 - No engineering formulas were moved or changed
   (``backend.engineering_core`` is untouched).
 - No standards metadata was moved or changed
   (``backend.standards`` is untouched).
-- No records were migrated from the existing JSON reference files
-  under ``data/``; those files remain the current source of truth.
+- No records are migrated automatically from the existing JSON
+  reference files under ``data/``; those files remain the current
+  source of truth and are never modified. Loading/migrating a
+  library's records is only possible via an explicit call.
 - No API or frontend behaviour changed.
 
 Modules:
@@ -24,6 +30,14 @@ Modules:
 - lubrication_library:     lubricant specs and friction conditions (shell)
 - strength_class_library:  bolt/nut property class reference (shell)
 - compatibility:           bolt/nut/washer compatibility rule set (shell)
+- loader:                  lazy, cached JSON source reader
+- source_manager:          source/version/SHA-256/revision/load-time tracking
+- migration:               JSON -> registry migration engine (infrastructure)
+- validator:               duplicate/missing-field/unit/thread/material/
+                           compatibility record validation
+- search:                  category/keyword/standard search
+- facade:                  LibraryRegistry combining register/get/list/
+                           search/validate/load/reload/statistics
 """
 
 from __future__ import annotations
@@ -48,6 +62,31 @@ from . import (
     thread_library,
     washer_library,
 )
+from . import loader, migration, source_manager, validator
+
+# Imported via the dotted submodule path (not ``from . import search``):
+# the package already re-exports a function named ``search`` (the
+# Phase 1.3 keyword search above), so ``from . import search`` would
+# just resolve to that existing attribute instead of loading this
+# module. The category/keyword/standard search lives at
+# ``search_advanced`` / ``search_by_category`` / etc. below instead of
+# under the name ``search`` to avoid any ambiguity for callers.
+from .search import (
+    CATEGORY_LIBRARY_MAP,
+    search_by_category,
+    search_by_keyword,
+    search_by_standard,
+)
+from .search import search as search_advanced
+from .facade import LibraryRegistry, library_registry
+
+# Loading the ``search`` submodule just above causes Python to
+# automatically rebind the ``backend.library.search`` package
+# attribute to that submodule, as a side effect of importing it for
+# the first time. Re-bind the Phase 1.3 keyword-search FUNCTION as the
+# package-level ``search`` name so existing callers of
+# ``backend.library.search(...)`` keep working unchanged.
+from .registry import search  # noqa: F811  (intentional re-bind, see above)
 
 __all__ = [
     "LibraryMetadata",
@@ -66,4 +105,15 @@ __all__ = [
     "lubrication_library",
     "strength_class_library",
     "compatibility",
+    "loader",
+    "source_manager",
+    "migration",
+    "validator",
+    "search_advanced",
+    "search_by_category",
+    "search_by_keyword",
+    "search_by_standard",
+    "CATEGORY_LIBRARY_MAP",
+    "LibraryRegistry",
+    "library_registry",
 ]

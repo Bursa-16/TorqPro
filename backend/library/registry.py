@@ -11,7 +11,7 @@ Independent from ``backend.engineering_core`` and ``backend.standards``.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Dict, List, Optional, Tuple
 
 
@@ -98,6 +98,17 @@ class BaseLibrary:
                 f"Expected a 'records' list in {self._source_path}"
             )
         return records
+
+    def replace_records(self, records: List[Dict[str, Any]]) -> None:
+        """Replace this library's in-memory records and keep
+        ``metadata.record_count`` in sync.
+
+        Phase 1.4 infrastructure hook for the migration engine. Not
+        called anywhere during package import; a library only gains
+        records when something explicitly calls this method.
+        """
+        self._records = list(records)
+        self.metadata = replace(self.metadata, record_count=len(self._records))
 
 
 def load_json_source(path: str) -> Dict[str, Any]:
