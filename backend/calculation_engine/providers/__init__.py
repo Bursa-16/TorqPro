@@ -1,8 +1,9 @@
 """TorqPro Calculation Engine - concrete provider implementations.
 
-Empty by design in this prerequisite layer. See
-``backend.calculation_engine.providers.vdi2230_provider`` (added in
-a separate, subsequent commit) for the first concrete provider.
+Faz 2.3: ``VDI2230Provider`` is the first concrete provider, wiring
+``backend.vdi2230_core`` (Phase 2.2) into the
+``backend.calculation_engine`` contract layer (prerequisite,
+established in the immediately preceding commit).
 
 No FIAT or ISO calculation provider is implemented or registered
 here -- see the package-level docstring in
@@ -11,4 +12,6 @@ here -- see the package-level docstring in
 
 from __future__ import annotations
 
-__all__: list = []
+from .vdi2230_provider import PROVIDER_VERSION, VDI2230Provider
+
+__all__ = ["VDI2230Provider", "PROVIDER_VERSION"]

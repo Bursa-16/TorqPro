@@ -45,10 +45,15 @@ def test_package_exports_expected_public_api():
     assert set(calculation_engine.__all__) == expected
 
 
-def test_providers_subpackage_is_empty_by_design():
+def test_providers_subpackage_exports_only_vdi2230provider():
+    # Updated for Faz 2.3 (VDI2230Provider wiring): the providers
+    # subpackage was empty in the prerequisite commit; it now
+    # exports exactly the one concrete provider added by that
+    # commit. No FIAT/ISO calculation provider exists (tech debt,
+    # see backend/calculation_engine/__init__.py docstring).
     from backend.calculation_engine import providers
 
-    assert providers.__all__ == []
+    assert providers.__all__ == ["VDI2230Provider", "PROVIDER_VERSION"]
 
 
 def test_calculation_request_defaults():
