@@ -8,14 +8,16 @@ existing code), classification and validation status -- the same
 fields used by ``backend.calculation_engine.formula_registry`` in
 Phase 2.1.
 
-All seven entries are ``PROVISIONAL``: none of them has completed the
-independent hand-calculation, golden-case and reviewer sign-off
-process required by
-``docs/05_ENGINEERING_FORMULA_SPECIFICATION.md`` §20. ``Phi`` and
-``F_S`` are the "mandatory corrected model" per §3 (i.e. the
-architecturally required, non-negotiable formulas), but that mandate
-is a project rule, not a completed governance sign-off, so their
-status stays PROVISIONAL like the rest until that process runs.
+Five of the seven entries are ``PROVISIONAL``: they have not completed
+the independent hand-calculation, golden-case and reviewer sign-off
+process required by ``docs/05_ENGINEERING_FORMULA_SPECIFICATION.md``
+§20. ``Phi`` and ``F_S`` are the exception: they are the "mandatory
+corrected model" per §3 -- stated there without a PROVISIONAL caveat,
+called a non-negotiable project rule in
+``docs/12_CLAUDE_CONTEXT.md``, and fully covered by reference-value
+and regression tests (including a regression test proving the
+superseded ``F_M - Phi*F_A`` expression is rejected). Per Engineering
+Review, they are classified ``APPROVED``.
 """
 
 from __future__ import annotations
@@ -27,6 +29,7 @@ from .exceptions import MissingFormulaError
 from .formula_ids import FormulaId
 
 PROVISIONAL = "PROVISIONAL"
+APPROVED = "APPROVED"
 
 
 @dataclass(frozen=True)
@@ -101,7 +104,7 @@ _CATALOG: Dict[FormulaId, FormulaTrace] = {
             "(mandatory corrected model)"
         ),
         classification="MANDATORY_CORRECTED_MODEL",
-        validation_status=PROVISIONAL,
+        validation_status=APPROVED,
     ),
     FormulaId.VDI2230_FS: FormulaTrace(
         formula_id=FormulaId.VDI2230_FS,
@@ -112,7 +115,7 @@ _CATALOG: Dict[FormulaId, FormulaTrace] = {
             "(mandatory corrected model)"
         ),
         classification="MANDATORY_CORRECTED_MODEL",
-        validation_status=PROVISIONAL,
+        validation_status=APPROVED,
     ),
     FormulaId.VDI2230_RESULT: FormulaTrace(
         formula_id=FormulaId.VDI2230_RESULT,
@@ -150,4 +153,4 @@ def all_traces() -> Dict[FormulaId, FormulaTrace]:
     return dict(_CATALOG)
 
 
-__all__ = ["FormulaTrace", "get_trace", "all_traces", "PROVISIONAL"]
+__all__ = ["FormulaTrace", "get_trace", "all_traces", "PROVISIONAL", "APPROVED"]

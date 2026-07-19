@@ -130,6 +130,14 @@ def test_formula_id_is_a_string_enum():
 # ---------------------------------------------------------------------------
 
 
+#: Per Engineering Review, Phi and F_S are the "mandatory corrected
+#: model" (docs/05 §3, stated without a PROVISIONAL caveat) and are
+#: fully covered by reference-value and regression tests -- classified
+#: APPROVED. Every other formula in this phase is a quick/architecture
+#: model pending full docs/05 §20 sign-off and stays PROVISIONAL.
+_APPROVED_FORMULA_IDS = {FormulaId.VDI2230_PHI, FormulaId.VDI2230_FS}
+
+
 def test_every_formula_id_has_a_complete_trace():
     traces = all_traces()
     assert set(traces.keys()) == set(FormulaId)
@@ -140,7 +148,20 @@ def test_every_formula_id_has_a_complete_trace():
         assert trace.unit is not None  # may be "" for dimensionless
         assert trace.source
         assert trace.classification
-        assert trace.validation_status == "PROVISIONAL"
+        expected_status = (
+            "APPROVED" if formula_id in _APPROVED_FORMULA_IDS else "PROVISIONAL"
+        )
+        assert trace.validation_status == expected_status
+
+
+def test_phi_and_fs_are_approved():
+    assert get_trace(FormulaId.VDI2230_PHI).validation_status == "APPROVED"
+    assert get_trace(FormulaId.VDI2230_FS).validation_status == "APPROVED"
+
+
+def test_other_formulas_remain_provisional():
+    for formula_id in set(FormulaId) - _APPROVED_FORMULA_IDS:
+        assert get_trace(formula_id).validation_status == "PROVISIONAL"
 
 
 def test_get_trace_returns_matching_entry():
