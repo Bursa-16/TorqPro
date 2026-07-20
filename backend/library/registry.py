@@ -6,17 +6,27 @@ coatings, lubrication, strength classes, compatibility rules).
 
 No engineering formulas, no calculation logic, no API coupling.
 Independent from ``backend.engineering_core`` and ``backend.standards``.
+
+Faz 2.4.0: ``LibraryMetadata`` migrated from a frozen ``dataclass`` to
+a frozen Pydantic model (Option C: in-place migration, unchanged
+field names/defaults/``key`` property, unchanged construction
+signature -- every existing ``LibraryMetadata(...)`` call site in the
+nine domain shells and in tests keeps working unmodified). Immutable
+"copy with change" now uses ``model_copy(update=...)`` in place of
+``dataclasses.replace`` (see ``BaseLibrary.replace_records`` below).
 """
 
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field, replace
 from typing import Any, Dict, List, Optional, Tuple
 
+from pydantic import BaseModel, ConfigDict, Field
 
-@dataclass(frozen=True)
-class LibraryMetadata:
+from . import models as models_module
+
+
+class LibraryMetadata(BaseModel):
     """Immutable metadata descriptor for an engineering library.
 
     Attributes:
@@ -31,6 +41,8 @@ class LibraryMetadata:
         supported_units: Unit systems the library data supports.
     """
 
+    model_config = ConfigDict(frozen=True)
+
     name: str
     version: str = ""
     organization: str = ""
@@ -39,7 +51,7 @@ class LibraryMetadata:
     status: str = "draft"
     record_count: int = 0
     last_revision: str = ""
-    supported_units: Tuple[str, ...] = field(default_factory=tuple)
+    supported_units: Tuple[str, ...] = Field(default_factory=tuple)
 
     @property
     def key(self) -> str:
@@ -108,7 +120,28 @@ class BaseLibrary:
         records when something explicitly calls this method.
         """
         self._records = list(records)
-        self.metadata = replace(self.metadata, record_count=len(self._records))
+        self.metadata = self.metadata.model_copy(
+            update={"record_count": len(self._records)}
+        )
+
+    def typed_records(self) -> List["models_module.LibraryRecordBase"]:
+        """Validate and parse this library's current in-memory raw
+        records against its Faz 2.4.0 typed schema (see
+        ``backend.library.models``).
+
+        Raises ``pydantic.ValidationError`` on the first invalid
+        record. Does not mutate ``self._records`` -- the typed
+        instances are a validated view, not a replacement for the raw
+        dict storage.
+        """
+        return models_module.parse_typed_records(self.metadata.key, self._records)
+
+    def find_schema_violations(self) -> List[str]:
+        """Validate this library's current in-memory raw records
+        against its typed schema and return violation messages
+        instead of raising. Empty list means every record is
+        schema-valid."""
+        return models_module.find_schema_violations(self.metadata.key, self._records)
 
 
 def load_json_source(path: str) -> Dict[str, Any]:
