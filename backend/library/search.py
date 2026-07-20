@@ -25,6 +25,7 @@ CATEGORY_LIBRARY_MAP: Dict[str, str] = {
     "strength class": "strength class library",
     "lubrication": "lubrication library",
     "compatibility": "compatibility library",
+    "oem": "oem library",
 }
 
 
