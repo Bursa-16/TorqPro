@@ -186,6 +186,18 @@ def validate_all_population_sources() -> Dict[str, List[str]]:
     return {key: validate_population_source(key) for key in POPULATION_SOURCES}
 
 
+def validate_thread_library_records() -> List[str]:
+    """Run the Faz 2.4.1A thread-specific checks
+    (``validator.validate_thread_library``) over the live thread
+    library data file. Kept separate from
+    ``validate_all_population_sources`` above -- that function's
+    Faz 2.4.1 semantics (duplicate-id + typed-schema only) are
+    unchanged; this is an additional, thread-only entry point."""
+    records = load_population_records("thread library")
+    report = validator_module.validate_thread_library(records)
+    return [issue.message for issue in report.issues]
+
+
 def find_invalid_status_values() -> List[str]:
     """Flag any record (across all domains, including the OEM
     catalog) whose ``validation_status``/``approval_status`` is
@@ -563,6 +575,7 @@ __all__ = [
     "find_thread",
     "count_iso_metric_thread_records",
     "count_non_iso_metric_thread_records",
+    "validate_thread_library_records",
     "find_bolt",
     "find_nut",
     "find_material",
