@@ -24,7 +24,7 @@ from __future__ import annotations
 from enum import IntEnum
 from typing import Any, Dict, List, Sequence, Tuple, Type
 
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 
 class ConfidenceLevel(IntEnum):
@@ -59,6 +59,17 @@ class LibraryRecordBase(BaseModel):
     source_standard: str = ""
     confidence: ConfidenceLevel = ConfidenceLevel.G4
     notes: str = ""
+
+    # Faz 2.4.1: engineering-database provenance fields. All optional
+    # with safe defaults so every existing record/test from Faz 2.4.0
+    # and earlier (which never set these) keeps validating unchanged.
+    revision: str = ""
+    source: str = ""
+    version: str = ""
+    validation_status: str = "provisional"
+    approval_status: str = "pending"
+    checksum: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class BoltRecord(LibraryRecordBase):

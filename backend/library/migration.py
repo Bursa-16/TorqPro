@@ -14,7 +14,7 @@ to ``MigrationEngine.apply``.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, cast
 
 from . import loader as loader_module
 from .registry import BaseLibrary
@@ -108,9 +108,14 @@ class MigrationEngine:
             )
         records = self._loader.load(library)
         library.replace_records(records)
+        # mypy: library.source_path is Optional[str], but the
+        # active_plan.source_path is None check above already
+        # guarantees it is set here (plan()/apply() only reach this
+        # point when a source is attached) -- cast is a type-only
+        # hint and has no effect on runtime behaviour.
         self._source_manager.track(
             library_key=library.metadata.key,
-            source=library.source_path,
+            source=cast(str, library.source_path),
             version=library.metadata.version,
             revision=library.metadata.last_revision,
         )
