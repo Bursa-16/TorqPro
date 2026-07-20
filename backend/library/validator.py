@@ -286,3 +286,23 @@ def validate_library(library: BaseLibrary, id_field: str = "id") -> ValidationRe
         is_compatibility=hints.get("is_compatibility", False),
         subject=library.metadata.name,
     )
+
+
+def validate_schema(library: BaseLibrary) -> ValidationReport:
+    """Validate a library's current in-memory records against its
+    Faz 2.4.0 typed schema (see ``backend.library.models``).
+
+    Distinct from ``validate_library`` above: that function runs the
+    Phase 1.4 structural/data-quality checks (duplicates, missing
+    fields, unit mismatches, ...) over raw dicts; this one runs
+    Pydantic schema validation over the same raw dicts and reports
+    any violation as a ``ValidationIssue`` with code
+    ``"schema_violation"``. Neither replaces the other -- both are
+    opt-in and read-only.
+    """
+    messages = library.find_schema_violations()
+    issues = [
+        ValidationIssue(code="schema_violation", message=message)
+        for message in messages
+    ]
+    return ValidationReport(subject=library.metadata.name, issues=issues)

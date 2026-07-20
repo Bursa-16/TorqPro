@@ -30,6 +30,9 @@ Modules:
 - lubrication_library:     lubricant specs and friction conditions (shell)
 - strength_class_library:  bolt/nut property class reference (shell)
 - compatibility:           bolt/nut/washer compatibility rule set (shell)
+- oem_library:              adapter-only reference into backend.standards
+                            for OEM norms (Faz 2.4.0; carries no data
+                            of its own)
 - loader:                  lazy, cached JSON source reader
 - source_manager:          source/version/SHA-256/revision/load-time tracking
 - migration:               JSON -> registry migration engine (infrastructure)
@@ -58,6 +61,7 @@ from . import (
     lubrication_library,
     material_library,
     nut_library,
+    oem_library,
     strength_class_library,
     thread_library,
     washer_library,
@@ -105,6 +109,7 @@ __all__ = [
     "lubrication_library",
     "strength_class_library",
     "compatibility",
+    "oem_library",
     "loader",
     "source_manager",
     "migration",

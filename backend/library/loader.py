@@ -18,6 +18,7 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, List, Optional
 
+from . import models as models_module
 from .registry import BaseLibrary
 
 # Different existing JSON files store their payload under different
@@ -115,3 +116,25 @@ def reload(library: BaseLibrary) -> List[Dict[str, Any]]:
     """Force-reload ``library``'s source records (shortcut for
     ``default_loader.reload``)."""
     return default_loader.reload(library)
+
+
+def load_typed(
+    library: BaseLibrary, using: Optional["LibraryLoader"] = None
+) -> List["models_module.LibraryRecordBase"]:
+    """Lazily load ``library``'s source records and validate/parse
+    them against its Faz 2.4.0 typed schema (see
+    ``backend.library.models``).
+
+    ``using`` selects the :class:`LibraryLoader` instance (defaults to
+    ``default_loader``, same lazy-cache-per-key semantics as
+    ``load``/``reload`` above -- pass a dedicated instance for cache
+    isolation, exactly as existing callers already do for ``load``).
+
+    Raises ``pydantic.ValidationError`` on the first record that does
+    not satisfy the schema, and ``ValueError`` if no JSON source is
+    attached (same as ``load``). Not called anywhere automatically --
+    an explicit, opt-in read, like ``load`` itself.
+    """
+    active_loader = using or default_loader
+    raw_records = active_loader.load(library)
+    return models_module.parse_typed_records(library.metadata.key, raw_records)
