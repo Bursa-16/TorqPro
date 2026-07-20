@@ -27,7 +27,17 @@
       "pitch_diameter_mm": 0.8376,
       "minor_diameter_mm": 0.7294,
       "stress_area_mm2": 0.46,
-      "checksum": "2fd126389bbdb985ce6c559dae086e2d154517d8c7f33b41c88cdd56bea0cf53"
+      "checksum": "26608894a3559ecabd981a052860d9543e1f6c3b4106512276575c9ca2e46b30",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 1,
+      "minor_diameter_internal_mm": 0.7294,
+      "minor_diameter_external_mm": 0.6933
     },
     {
       "id": "THR-M1.2-COARSE",
@@ -49,7 +59,17 @@
       "pitch_diameter_mm": 1.0376,
       "minor_diameter_mm": 0.9294,
       "stress_area_mm2": 0.732,
-      "checksum": "dee45219c1f66769eb7200088bbee09ddda6820f68a9fd9242d637b11d9802e3"
+      "checksum": "de018a424356a4dd2255469b00ab6a115abb11d926f0958884dc4b57cddf7f94",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 1.2,
+      "minor_diameter_internal_mm": 0.9294,
+      "minor_diameter_external_mm": 0.8933
     },
     {
       "id": "THR-M1.4-COARSE",
@@ -71,7 +91,17 @@
       "pitch_diameter_mm": 1.2051,
       "minor_diameter_mm": 1.0753,
       "stress_area_mm2": 0.983,
-      "checksum": "2dca0e609f73e432988a553b72a598fab12a276e1465c16cb5ec5762b310df73"
+      "checksum": "27465ebf6f64adc81454b5e0b051c7a00891d6b6b94c7986130f66f3b1947b39",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 1.4,
+      "minor_diameter_internal_mm": 1.0753,
+      "minor_diameter_external_mm": 1.0319
     },
     {
       "id": "THR-M1.6-COARSE",
@@ -93,7 +123,17 @@
       "pitch_diameter_mm": 1.3727,
       "minor_diameter_mm": 1.2211,
       "stress_area_mm2": 1.27,
-      "checksum": "f1e94ebfc66ebbdfd16650cdd3685e812abc75c06f967fe14e61b3ca765cb4c9"
+      "checksum": "ebc489b06802022d91822c97663df96f3d13cb6cfb5f7ebe6585661ac6eacad3",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 1.6,
+      "minor_diameter_internal_mm": 1.2211,
+      "minor_diameter_external_mm": 1.1706
     },
     {
       "id": "THR-M1.8-COARSE",
@@ -115,7 +155,17 @@
       "pitch_diameter_mm": 1.5727,
       "minor_diameter_mm": 1.4211,
       "stress_area_mm2": 1.701,
-      "checksum": "bf9245ee63e732567ddb14921779eb7af98c9a16db12873966508dd88fbbc9db"
+      "checksum": "de2447ddd2bbd60fddccea111daa87d8a13296e188df0fd6ca6a336a43a8c970",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 1.8,
+      "minor_diameter_internal_mm": 1.4211,
+      "minor_diameter_external_mm": 1.3706
     },
     {
       "id": "THR-M2-COARSE",
@@ -137,7 +187,17 @@
       "pitch_diameter_mm": 1.7402,
       "minor_diameter_mm": 1.567,
       "stress_area_mm2": 2.073,
-      "checksum": "b55cee0065290bfc420a651e5d00476610ea75779491093a9269943de9314dfa"
+      "checksum": "5a02dcdf8caf97aea766aed0ecd03a378090ee077017de705a08bbb8c973e031",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 2,
+      "minor_diameter_internal_mm": 1.567,
+      "minor_diameter_external_mm": 1.5093
     },
     {
       "id": "THR-M2.5-COARSE",
@@ -159,7 +219,17 @@
       "pitch_diameter_mm": 2.2077,
       "minor_diameter_mm": 2.0129,
       "stress_area_mm2": 3.391,
-      "checksum": "60ebd7d98f4b8038729f030d742a51a28bbcbc5191d8f757349c0f62d26b1572"
+      "checksum": "8d4d204f1c80205568cb81922929415c9fca789ffa5046cdb971771da894c457",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 2.5,
+      "minor_diameter_internal_mm": 2.0129,
+      "minor_diameter_external_mm": 1.9479
     },
     {
       "id": "THR-M3-COARSE",
@@ -181,7 +251,17 @@
       "pitch_diameter_mm": 2.6753,
       "minor_diameter_mm": 2.4588,
       "stress_area_mm2": 5.031,
-      "checksum": "7efc2207867e5bebccaf5dd6eb6cdbfaef8cfa4344805831c2fede360fd6ab75"
+      "checksum": "1bebac459def2751277b523ea3d336512444ee2f8035aee49709162d459b519a",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 3,
+      "minor_diameter_internal_mm": 2.4588,
+      "minor_diameter_external_mm": 2.3866
     },
     {
       "id": "THR-M3x0.45-FINE",
@@ -203,7 +283,17 @@
       "pitch_diameter_mm": 2.7077,
       "minor_diameter_mm": 2.5129,
       "stress_area_mm2": 5.219,
-      "checksum": "bc0198f5559523de4f9a97a995e6f6882d1c942461cca2958f22906b17ef96ec"
+      "checksum": "4e30c814881b5f1a892914f679d75e1303b1b419fbcf8eafb94d85d595f46fba",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 3,
+      "minor_diameter_internal_mm": 2.5129,
+      "minor_diameter_external_mm": 2.4479
     },
     {
       "id": "THR-M3.5-COARSE",
@@ -225,7 +315,17 @@
       "pitch_diameter_mm": 3.1103,
       "minor_diameter_mm": 2.8505,
       "stress_area_mm2": 6.775,
-      "checksum": "2a59916f263dd6b42a5332052da963874f7cc38e471c61403fa0010c3d792557"
+      "checksum": "dfbf75dc0a4ec5b94d43072b0c74847618a11e43faf9e9860b4f0fcb80186f37",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 3.5,
+      "minor_diameter_internal_mm": 2.8505,
+      "minor_diameter_external_mm": 2.7639
     },
     {
       "id": "THR-M3.5x0.5-FINE",
@@ -247,7 +347,17 @@
       "pitch_diameter_mm": 3.1753,
       "minor_diameter_mm": 2.9588,
       "stress_area_mm2": 7.215,
-      "checksum": "e6553540be9e82e020145832b80b6be6161dcf480022a50364ecbfff62306731"
+      "checksum": "4dfbda61dfc3f50c9b098e1e3baaa8336804546c9195a1f405dcdb58081aedda",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 3.5,
+      "minor_diameter_internal_mm": 2.9588,
+      "minor_diameter_external_mm": 2.8866
     },
     {
       "id": "THR-M4-COARSE",
@@ -269,7 +379,17 @@
       "pitch_diameter_mm": 3.5454,
       "minor_diameter_mm": 3.2423,
       "stress_area_mm2": 8.779,
-      "checksum": "1654b0e2194fb26d5d4412a2ec961e4e9bc60b300ca73c7144f233c3f6cdc498"
+      "checksum": "4d962dcf0b1d2d16e7b2e4e07a92a25308a916c8d33fbe8c7498ae4f3c932b63",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 4,
+      "minor_diameter_internal_mm": 3.2423,
+      "minor_diameter_external_mm": 3.1412
     },
     {
       "id": "THR-M4x0.6-FINE",
@@ -291,7 +411,17 @@
       "pitch_diameter_mm": 3.6103,
       "minor_diameter_mm": 3.3505,
       "stress_area_mm2": 9.278,
-      "checksum": "4bdd733aa2e104463983ebba784c26ce5bfc900414f84fb2b43902f597dbad22"
+      "checksum": "40593810c063b373f98c0c1143e5aa197c620d0d9abfeb65544d7123c3e9dd68",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 4,
+      "minor_diameter_internal_mm": 3.3505,
+      "minor_diameter_external_mm": 3.2639
     },
     {
       "id": "THR-M5-COARSE",
@@ -313,7 +443,17 @@
       "pitch_diameter_mm": 4.4804,
       "minor_diameter_mm": 4.134,
       "stress_area_mm2": 14.183,
-      "checksum": "76953808260e6fca2dd32e3c00589d2b26cac44a35977139f44b1a797b2d0cf7"
+      "checksum": "e8c760029a1d7114ff25dc34ac629b5edbe4807cd9d970a5bd0f966652a96563",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 5,
+      "minor_diameter_internal_mm": 4.134,
+      "minor_diameter_external_mm": 4.0185
     },
     {
       "id": "THR-M5x0.75-FINE",
@@ -335,7 +475,17 @@
       "pitch_diameter_mm": 4.5129,
       "minor_diameter_mm": 4.1881,
       "stress_area_mm2": 14.497,
-      "checksum": "22027661bd10c6cf3287e327ea234861b09338eec1d068d582731fac76551ba5"
+      "checksum": "763d9d37fc67a839de597311dcb2ade8db823289541ed1e33daa751ac550175b",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 5,
+      "minor_diameter_internal_mm": 4.1881,
+      "minor_diameter_external_mm": 4.0798
     },
     {
       "id": "THR-M6-COARSE",
@@ -357,7 +507,17 @@
       "pitch_diameter_mm": 5.3505,
       "minor_diameter_mm": 4.9175,
       "stress_area_mm2": 20.123,
-      "checksum": "c27b8abe48bb724a71583d20228ac48028e9b6b200114eb9a97b2d9cd198a81b"
+      "checksum": "019dd9c0a1323c626251f6bd53f26c02a33c7abc3bedf8b823a16ec03eeb931c",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 6,
+      "minor_diameter_internal_mm": 4.9175,
+      "minor_diameter_external_mm": 4.7731
     },
     {
       "id": "THR-M6x0.8-FINE",
@@ -379,7 +539,17 @@
       "pitch_diameter_mm": 5.4804,
       "minor_diameter_mm": 5.134,
       "stress_area_mm2": 21.643,
-      "checksum": "e2829cb211be9036e4589217626043b7c556332fc31dd2fc9fd29f601548ad1b"
+      "checksum": "b91f7afae94c426ab4e5671fe92c397b7593cfb414bace79b1091d224c0197f9",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 6,
+      "minor_diameter_internal_mm": 5.134,
+      "minor_diameter_external_mm": 5.0185
     },
     {
       "id": "THR-M7-COARSE",
@@ -401,7 +571,17 @@
       "pitch_diameter_mm": 6.3505,
       "minor_diameter_mm": 5.9175,
       "stress_area_mm2": 28.86,
-      "checksum": "128a288ae1bb431ca2dc97a8c8229b2250c3db7139506985cf4ccf1b639949dd"
+      "checksum": "9aea964ad7c16802a0387167dd54d06c7b593f616b77bbd129d3557436e6c91c",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 7,
+      "minor_diameter_internal_mm": 5.9175,
+      "minor_diameter_external_mm": 5.7731
     },
     {
       "id": "THR-M7x0.8-FINE",
@@ -423,7 +603,17 @@
       "pitch_diameter_mm": 6.4804,
       "minor_diameter_mm": 6.134,
       "stress_area_mm2": 30.674,
-      "checksum": "115abbc12d7f9460def20b810833335739d4106e6c29c2385c51cca45f3d3cf2"
+      "checksum": "9a843d1cd9cf4bd9e6448d009778b48aeea71500c0c922d3c27534cc6a6dcaee",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 7,
+      "minor_diameter_internal_mm": 6.134,
+      "minor_diameter_external_mm": 6.0185
     },
     {
       "id": "THR-M8-COARSE",
@@ -445,7 +635,17 @@
       "pitch_diameter_mm": 7.1881,
       "minor_diameter_mm": 6.6469,
       "stress_area_mm2": 36.609,
-      "checksum": "991e8cedb2039233777b59dec518de8f4d9fe99f703ae5e753ceaf188d04b09d"
+      "checksum": "713634a0874b1e56a840670f7cf9a312e46e0f4747a4db66a688096a24f369f5",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 8,
+      "minor_diameter_internal_mm": 6.6469,
+      "minor_diameter_external_mm": 6.4664
     },
     {
       "id": "THR-M8x1-FINE",
@@ -467,7 +667,17 @@
       "pitch_diameter_mm": 7.3505,
       "minor_diameter_mm": 6.9175,
       "stress_area_mm2": 39.167,
-      "checksum": "1ff7b27a0eb3780c02096f20df11038b17b06c152bada3f81a3189e29b6ead2e"
+      "checksum": "3360d36681d59deccc39a83f6ca05c6514bb95f417733442b1924a43fc2fe83f",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 8,
+      "minor_diameter_internal_mm": 6.9175,
+      "minor_diameter_external_mm": 6.7731
     },
     {
       "id": "THR-M8x0.8-XFINE",
@@ -489,7 +699,17 @@
       "pitch_diameter_mm": 7.4804,
       "minor_diameter_mm": 7.134,
       "stress_area_mm2": 41.276,
-      "checksum": "7f6308f643f0b0b5029e00d13a11c412d7b8e1ce297cdc5bb069237e2157de9a"
+      "checksum": "94dfc1d56c679e4b1587df0d9a140408667d5ae8ddec103a0db82cc7fba4fbab",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 8,
+      "minor_diameter_internal_mm": 7.134,
+      "minor_diameter_external_mm": 7.0185
     },
     {
       "id": "THR-M10-COARSE",
@@ -511,7 +731,17 @@
       "pitch_diameter_mm": 9.0258,
       "minor_diameter_mm": 8.3763,
       "stress_area_mm2": 57.99,
-      "checksum": "6c3ec88e5cddfa328f92a57029012b8616fdcd561aa256c29252cb2b4f2e889e"
+      "checksum": "8bafd6f8eea09a500e5effe6508037746b686c6044010b326c4c0acdad39f5d2",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 10,
+      "minor_diameter_internal_mm": 8.3763,
+      "minor_diameter_external_mm": 8.1597
     },
     {
       "id": "THR-M10x1.25-FINE",
@@ -533,7 +763,17 @@
       "pitch_diameter_mm": 9.1881,
       "minor_diameter_mm": 8.6469,
       "stress_area_mm2": 61.199,
-      "checksum": "c9eee9b2079a347e68264b9432fe285749a51c8fa9fd4e102faa60fbc10e05db"
+      "checksum": "47a946fddde3414594da9e802c51969bfb45b1c432e8d1418b2be0e9b1b75f6d",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 10,
+      "minor_diameter_internal_mm": 8.6469,
+      "minor_diameter_external_mm": 8.4664
     },
     {
       "id": "THR-M10x1-XFINE",
@@ -555,7 +795,17 @@
       "pitch_diameter_mm": 9.3505,
       "minor_diameter_mm": 8.9175,
       "stress_area_mm2": 64.494,
-      "checksum": "f6cf08718168eabbc55e3ccb238413e89c883ec45cda9d7aa6ac2539c0cfc912"
+      "checksum": "de4c2ffa5261fd844e648c482e93de4ac3996a3ee3b670d7fa64ae2005a55d79",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 10,
+      "minor_diameter_internal_mm": 8.9175,
+      "minor_diameter_external_mm": 8.7731
     },
     {
       "id": "THR-M12-COARSE",
@@ -577,7 +827,17 @@
       "pitch_diameter_mm": 10.8634,
       "minor_diameter_mm": 10.1056,
       "stress_area_mm2": 84.267,
-      "checksum": "baf7becfb7caa7af7822266aef73c20688f79a391ef2aa780d86f7bd874fc6f9"
+      "checksum": "6818bae56b3bc17f6579593b2b8efe38f33fc75a806ead402684bdffd88a6c4d",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 12,
+      "minor_diameter_internal_mm": 10.1056,
+      "minor_diameter_external_mm": 9.853
     },
     {
       "id": "THR-M12x1.5-FINE",
@@ -599,7 +859,17 @@
       "pitch_diameter_mm": 11.0258,
       "minor_diameter_mm": 10.3763,
       "stress_area_mm2": 88.126,
-      "checksum": "23b07c31b9ce66a1c20bf16b89d9f91e69579d8a0e45e50f62e4bfcd83828562"
+      "checksum": "8ffd81baa1c78978623c107d5d3f49caa43b11c3c99b9baecf54ad7fb8e802d2",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 12,
+      "minor_diameter_internal_mm": 10.3763,
+      "minor_diameter_external_mm": 10.1597
     },
     {
       "id": "THR-M12x1.25-XFINE",
@@ -621,7 +891,17 @@
       "pitch_diameter_mm": 11.1881,
       "minor_diameter_mm": 10.6469,
       "stress_area_mm2": 92.072,
-      "checksum": "712d3d2d15a35140833e26ea3c6927e1564cd4a48bf293f579fd67beed8435c9"
+      "checksum": "55a3c0e5c9a643d027a39dd3f8ab873740a706ecd4a508f3f9ebda25ba91cd68",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 12,
+      "minor_diameter_internal_mm": 10.6469,
+      "minor_diameter_external_mm": 10.4664
     },
     {
       "id": "THR-M14-COARSE",
@@ -643,7 +923,17 @@
       "pitch_diameter_mm": 12.701,
       "minor_diameter_mm": 11.835,
       "stress_area_mm2": 115.439,
-      "checksum": "1a64d8193b0242ab8fd2e0911ff954bbf0aa3d175fd2498f0df3a1c7496a48ae"
+      "checksum": "dfd8da0c4e0a498bb735c432f1d49a5fd9905859cb49a05b6c403171aa13384d",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 14,
+      "minor_diameter_internal_mm": 11.835,
+      "minor_diameter_external_mm": 11.5463
     },
     {
       "id": "THR-M14x1.75-FINE",
@@ -665,7 +955,17 @@
       "pitch_diameter_mm": 12.8634,
       "minor_diameter_mm": 12.1056,
       "stress_area_mm2": 119.949,
-      "checksum": "9ed2e0141847fb884beb04cd5395fb40b464a58ba5bc073ec0acb36ea762c220"
+      "checksum": "a30df91cfae641c7ebfba91c2310ca6a1caf0fb00e61b765d74b23f6c2224256",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 14,
+      "minor_diameter_internal_mm": 12.1056,
+      "minor_diameter_external_mm": 11.853
     },
     {
       "id": "THR-M14x1.5-XFINE",
@@ -687,7 +987,17 @@
       "pitch_diameter_mm": 13.0258,
       "minor_diameter_mm": 12.3763,
       "stress_area_mm2": 124.546,
-      "checksum": "3acfce63155670d4b84e1da33ad3d8fd5a09b5064ec40c97f2739e2656397803"
+      "checksum": "eb5fd830814eb6d7b6e514ae8e1c6c62fe44cddd957d864871c3ee03df7ba1bd",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 14,
+      "minor_diameter_internal_mm": 12.3763,
+      "minor_diameter_external_mm": 12.1597
     },
     {
       "id": "THR-M16-COARSE",
@@ -709,7 +1019,17 @@
       "pitch_diameter_mm": 14.701,
       "minor_diameter_mm": 13.835,
       "stress_area_mm2": 156.669,
-      "checksum": "83d99a7e478b79f5b77d60da26845b681754ac347b66a8ef19b26aa3f97a5e05"
+      "checksum": "00286c5953d0ee4f810ad01a90635d7c9ce26d50674ac34a43bebd9e6b0bd7ee",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 16,
+      "minor_diameter_internal_mm": 13.835,
+      "minor_diameter_external_mm": 13.5463
     },
     {
       "id": "THR-M16x1.75-FINE",
@@ -731,7 +1051,17 @@
       "pitch_diameter_mm": 14.8634,
       "minor_diameter_mm": 14.1056,
       "stress_area_mm2": 161.915,
-      "checksum": "513d43bee601f6e3562f5f4f215eae4a89de22c4ffb76ee70dad1826443d756c"
+      "checksum": "61f2f1e9f1b444490128ea2d57b9181f86a7728c277a564da64c3ce9c884072e",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 16,
+      "minor_diameter_internal_mm": 14.1056,
+      "minor_diameter_external_mm": 13.853
     },
     {
       "id": "THR-M16x1.5-XFINE",
@@ -753,7 +1083,17 @@
       "pitch_diameter_mm": 15.0258,
       "minor_diameter_mm": 14.3763,
       "stress_area_mm2": 167.248,
-      "checksum": "5813da3facb5228eb562188e63597fdba48ae856c88e6c9438fd41d3b1657a7d"
+      "checksum": "2c0131a21ad81c9670c08aaaaac1664129a90a234689260d04846499f54d7347",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 16,
+      "minor_diameter_internal_mm": 14.3763,
+      "minor_diameter_external_mm": 14.1597
     },
     {
       "id": "THR-M18-COARSE",
@@ -775,7 +1115,17 @@
       "pitch_diameter_mm": 16.3762,
       "minor_diameter_mm": 15.2937,
       "stress_area_mm2": 192.473,
-      "checksum": "460cc8837b43856094dd75542ab5f324e7fa4fa4e9e0f12bfc896b34953e7a62"
+      "checksum": "829768143971c730ed002731eb206d18c95222a2d164e4c230d68a6a3ce777e6",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 18,
+      "minor_diameter_internal_mm": 15.2937,
+      "minor_diameter_external_mm": 14.9328
     },
     {
       "id": "THR-M18x2-FINE",
@@ -797,7 +1147,17 @@
       "pitch_diameter_mm": 16.701,
       "minor_diameter_mm": 15.835,
       "stress_area_mm2": 204.181,
-      "checksum": "625b2b95f51cf2ad6e0e83e249dc3f43608861b657e7def12436f8fc95ed9dfb"
+      "checksum": "309a774ecac2913c26b81cd2ae223f58dc777f8e01d5acd6da60d4a7cd91ed17",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 18,
+      "minor_diameter_internal_mm": 15.835,
+      "minor_diameter_external_mm": 15.5463
     },
     {
       "id": "THR-M18x1.75-XFINE",
@@ -819,7 +1179,17 @@
       "pitch_diameter_mm": 16.8634,
       "minor_diameter_mm": 16.1056,
       "stress_area_mm2": 210.164,
-      "checksum": "b530d62b536eedf6fa2d34660646fca5dad1259ae18614a7aafb2f92f2ea9a7e"
+      "checksum": "6a79072579e0e8da3adf8ce6ed7f10198f2a26cc71fc0a8256ac27f4771d7feb",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 18,
+      "minor_diameter_internal_mm": 16.1056,
+      "minor_diameter_external_mm": 15.853
     },
     {
       "id": "THR-M20-COARSE",
@@ -841,7 +1211,17 @@
       "pitch_diameter_mm": 18.3762,
       "minor_diameter_mm": 17.2937,
       "stress_area_mm2": 244.795,
-      "checksum": "46fd5139565387a95a159072542a13de6e4e9a466f336d006ee47065089eadec"
+      "checksum": "3468d3c38df60c35322a08a7ba034ed639a708034592ace446f744541934cffc",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 20,
+      "minor_diameter_internal_mm": 17.2937,
+      "minor_diameter_external_mm": 16.9328
     },
     {
       "id": "THR-M20x2-FINE",
@@ -863,7 +1243,17 @@
       "pitch_diameter_mm": 18.701,
       "minor_diameter_mm": 17.835,
       "stress_area_mm2": 257.976,
-      "checksum": "6d2c9e18d7a61c38c27dd3b710d90e750274ce92103749dd1f898a3a4bd78cfb"
+      "checksum": "b0f895d60b16ecef11329e7a9e83d5dfa6156ff4e36e05bac10a3639001c6ce0",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 20,
+      "minor_diameter_internal_mm": 17.835,
+      "minor_diameter_external_mm": 17.5463
     },
     {
       "id": "THR-M20x1.75-XFINE",
@@ -885,7 +1275,17 @@
       "pitch_diameter_mm": 18.8634,
       "minor_diameter_mm": 18.1056,
       "stress_area_mm2": 264.697,
-      "checksum": "7d4b3ef61858959a45d2ade1cc5f7cd6dfac2b2b0698b608b2462f67929b5b5b"
+      "checksum": "6265207decdc1856e0e9c14396769b4a6fa9e365e58dae7a60b2a6b6130d5020",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 20,
+      "minor_diameter_internal_mm": 18.1056,
+      "minor_diameter_external_mm": 17.853
     },
     {
       "id": "THR-M22-COARSE",
@@ -907,7 +1307,17 @@
       "pitch_diameter_mm": 20.3762,
       "minor_diameter_mm": 19.2937,
       "stress_area_mm2": 303.4,
-      "checksum": "a435b28b9f733120f44ba021688f2df7e3c11da8fa90acbf6e9421ea9511b122"
+      "checksum": "bc26eb3c0cd70927c3c65cac0818dc2b0e120a23f43a278649422b6c1e26b557",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 22,
+      "minor_diameter_internal_mm": 19.2937,
+      "minor_diameter_external_mm": 18.9328
     },
     {
       "id": "THR-M22x2-FINE",
@@ -929,7 +1339,17 @@
       "pitch_diameter_mm": 20.701,
       "minor_diameter_mm": 19.835,
       "stress_area_mm2": 318.055,
-      "checksum": "285022666d4080d92259d63e6f2af478993e72846b2fffe4ffa4c93b76db67cf"
+      "checksum": "3753f55044c02107e819be99e04d3f0760237b344b2da6bfda5802589c44f120",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 22,
+      "minor_diameter_internal_mm": 19.835,
+      "minor_diameter_external_mm": 19.5463
     },
     {
       "id": "THR-M22x1.75-XFINE",
@@ -951,7 +1371,17 @@
       "pitch_diameter_mm": 20.8634,
       "minor_diameter_mm": 20.1056,
       "stress_area_mm2": 325.512,
-      "checksum": "dbe383face4523a49b0a0756230dfedbcb14f4635a4d98325ebd614e7f913312"
+      "checksum": "c20e2335468583ec101ae20d730c24b30915988584765b778a173346449148e7",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 22,
+      "minor_diameter_internal_mm": 20.1056,
+      "minor_diameter_external_mm": 19.853
     },
     {
       "id": "THR-M24-COARSE",
@@ -973,7 +1403,17 @@
       "pitch_diameter_mm": 22.0515,
       "minor_diameter_mm": 20.7525,
       "stress_area_mm2": 352.504,
-      "checksum": "a5f95173364e5e7df003b31ef79b7b474bb8aa2380d2084ce3a5a0d50137592f"
+      "checksum": "0ba91cef3e1bcdf5fcdf823e484159065e332c725256036aa65da14b1f9f91fb",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 24,
+      "minor_diameter_internal_mm": 20.7525,
+      "minor_diameter_external_mm": 20.3194
     },
     {
       "id": "THR-M24x2.5-FINE",
@@ -995,7 +1435,17 @@
       "pitch_diameter_mm": 22.3762,
       "minor_diameter_mm": 21.2937,
       "stress_area_mm2": 368.288,
-      "checksum": "cc18fa7c3a7daddb2ba7d805b16fb0d2417a015fad12a652ab7bd80b5c3086a6"
+      "checksum": "03fb4716831d98da3b0e13d8f788735f912cab25f17978fe50274b501c09d434",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 24,
+      "minor_diameter_internal_mm": 21.2937,
+      "minor_diameter_external_mm": 20.9328
     },
     {
       "id": "THR-M24x2-XFINE",
@@ -1017,7 +1467,17 @@
       "pitch_diameter_mm": 22.701,
       "minor_diameter_mm": 21.835,
       "stress_area_mm2": 384.417,
-      "checksum": "30d20f6c971c3281a034f7f85641ca2d4c06808cdef6fb77f3a86fde08001d99"
+      "checksum": "82a392fbfb20bf01224e42e8fce688033979be87700d2cf34cbdd9fdbfd9dd41",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 24,
+      "minor_diameter_internal_mm": 21.835,
+      "minor_diameter_external_mm": 21.5463
     },
     {
       "id": "THR-M27-COARSE",
@@ -1039,7 +1499,17 @@
       "pitch_diameter_mm": 25.0515,
       "minor_diameter_mm": 23.7525,
       "stress_area_mm2": 459.407,
-      "checksum": "127cca8c1865553105e2e5d92e4c5d0d43d04c8b882f5c36a1da51ef4b37f386"
+      "checksum": "d6b31a1399df9b3f4a2892a54c990ef941d713c396816b9eb0bbd60e4b1f64ac",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 27,
+      "minor_diameter_internal_mm": 23.7525,
+      "minor_diameter_external_mm": 23.3194
     },
     {
       "id": "THR-M27x2.5-FINE",
@@ -1061,7 +1531,17 @@
       "pitch_diameter_mm": 25.3762,
       "minor_diameter_mm": 24.2937,
       "stress_area_mm2": 477.401,
-      "checksum": "b66cc8701dd101a621894a0685c56afbd1966c13204b6772e2be7a8d79f8ae4a"
+      "checksum": "c82d8a94be9ce1b67e81dbb346d93cc702e1f279fab9cf51a00327d012a81ba8",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 27,
+      "minor_diameter_internal_mm": 24.2937,
+      "minor_diameter_external_mm": 23.9328
     },
     {
       "id": "THR-M27x2-XFINE",
@@ -1083,7 +1563,17 @@
       "pitch_diameter_mm": 25.701,
       "minor_diameter_mm": 24.835,
       "stress_area_mm2": 495.741,
-      "checksum": "ba6807637a7caef247fd9b7e940c28ebc8c13d06c8e73f94951d992b2cba683f"
+      "checksum": "b8b09f679577f6cf3bef688ad4046b1bde74c66b60762e78f72e4217a055322f",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 27,
+      "minor_diameter_internal_mm": 24.835,
+      "minor_diameter_external_mm": 24.5463
     },
     {
       "id": "THR-M30-COARSE",
@@ -1105,7 +1595,17 @@
       "pitch_diameter_mm": 27.7267,
       "minor_diameter_mm": 26.2112,
       "stress_area_mm2": 560.588,
-      "checksum": "1ad4c5ff03d0c02e8c46d619bc3b228404415e37171ecb32e8f9b2dd4dc2e198"
+      "checksum": "1e199b789bccf633aa7d5dad07a05b5fdd390a78cc96f2d616f4a0151e264a6e",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 30,
+      "minor_diameter_internal_mm": 26.2112,
+      "minor_diameter_external_mm": 25.706
     },
     {
       "id": "THR-M30x3-FINE",
@@ -1127,7 +1627,17 @@
       "pitch_diameter_mm": 28.0515,
       "minor_diameter_mm": 26.7525,
       "stress_area_mm2": 580.447,
-      "checksum": "4ef7a528ce93dc281252b56a31f7278a17c2ad0fb366c523041f0d5e19ae58b8"
+      "checksum": "6d11d5cce9d2f64abbf194d61f41d3ee11fde58a504839d048fc7b75d3fb09ba",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 30,
+      "minor_diameter_internal_mm": 26.7525,
+      "minor_diameter_external_mm": 26.3194
     },
     {
       "id": "THR-M30x2.5-XFINE",
@@ -1149,7 +1659,17 @@
       "pitch_diameter_mm": 28.3762,
       "minor_diameter_mm": 27.2937,
       "stress_area_mm2": 600.651,
-      "checksum": "2372f9309bb9e317c64df0a9aec5ecf907852ed5a7026dffedd248a40b41cca9"
+      "checksum": "d6c06fcf8a2eb83e620226344decbdf020cd3bef2b09c3e2d84309aa44b2f9d2",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 30,
+      "minor_diameter_internal_mm": 27.2937,
+      "minor_diameter_external_mm": 26.9328
     },
     {
       "id": "THR-M33-COARSE",
@@ -1171,7 +1691,17 @@
       "pitch_diameter_mm": 30.7267,
       "minor_diameter_mm": 29.2112,
       "stress_area_mm2": 693.554,
-      "checksum": "bcecba7a46d9944e2694734ed12b01980618c06d1cc150836a1ca785c1f0c2b3"
+      "checksum": "15a37256090e06b385f55ad151e9a21012885df793a0b27fb0e731c2277c16f8",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 33,
+      "minor_diameter_internal_mm": 29.2112,
+      "minor_diameter_external_mm": 28.706
     },
     {
       "id": "THR-M33x3-FINE",
@@ -1193,7 +1723,17 @@
       "pitch_diameter_mm": 31.0515,
       "minor_diameter_mm": 29.7525,
       "stress_area_mm2": 715.624,
-      "checksum": "812469744a09095562cdcbf18bfba84a9e0f41254757fa553d237b0a9d02d504"
+      "checksum": "dfba65dbdb1f9f3984a0894ecbea952d36841e010cb748c6e91ea19d643693c8",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 33,
+      "minor_diameter_internal_mm": 29.7525,
+      "minor_diameter_external_mm": 29.3194
     },
     {
       "id": "THR-M33x2.5-XFINE",
@@ -1215,7 +1755,17 @@
       "pitch_diameter_mm": 31.3762,
       "minor_diameter_mm": 30.2937,
       "stress_area_mm2": 738.039,
-      "checksum": "d4ca5d963a99532c3cbe9a7fb039cd3c227230031bb51c7022f0e529ab1ead61"
+      "checksum": "4141249b5bc9a865ff3785c7da3742a4ec8aabbde3a7f00d8ca541a6343de5d3",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 33,
+      "minor_diameter_internal_mm": 30.2937,
+      "minor_diameter_external_mm": 29.9328
     },
     {
       "id": "THR-M36-COARSE",
@@ -1237,7 +1787,17 @@
       "pitch_diameter_mm": 33.402,
       "minor_diameter_mm": 31.67,
       "stress_area_mm2": 816.723,
-      "checksum": "4b5747c16983bffe586d1c6ba5beb9c397e535b742cc6cda0a4b1bb59d9826ce"
+      "checksum": "3d17e540cb7842ae7246c42d378ccd72a6acd047efc293b67f586278864f937d",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 36,
+      "minor_diameter_internal_mm": 31.67,
+      "minor_diameter_external_mm": 31.0925
     },
     {
       "id": "THR-M36x3.5-FINE",
@@ -1259,7 +1819,17 @@
       "pitch_diameter_mm": 33.7268,
       "minor_diameter_mm": 32.2112,
       "stress_area_mm2": 840.658,
-      "checksum": "b44c034130f83502db4f535c7152478f1202f981db4f42d6d7c6559cd21ee7a4"
+      "checksum": "a6b5dcc659e9fb23546d01a9313fbb29adb8d440533c080733567c620c9e5af7",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 36,
+      "minor_diameter_internal_mm": 32.2112,
+      "minor_diameter_external_mm": 31.706
     },
     {
       "id": "THR-M36x3-XFINE",
@@ -1281,7 +1851,17 @@
       "pitch_diameter_mm": 34.0515,
       "minor_diameter_mm": 32.7525,
       "stress_area_mm2": 864.938,
-      "checksum": "013dadcde0aa14a00faeb4045680ce56266f5a968c8459864155acae7549a666"
+      "checksum": "45e134a41955ef1c25969d33692648d239b1a2ef5fd5ae7a19ec33647d25ca45",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 36,
+      "minor_diameter_internal_mm": 32.7525,
+      "minor_diameter_external_mm": 32.3194
     },
     {
       "id": "THR-M39-COARSE",
@@ -1303,7 +1883,17 @@
       "pitch_diameter_mm": 36.402,
       "minor_diameter_mm": 34.67,
       "stress_area_mm2": 975.754,
-      "checksum": "f251fcfebfaa6366336493ae8f2bc41b554fecd0798e26a0cfabbf0bfc3a6d5c"
+      "checksum": "80716d86e11f7b322b5aaefcdfd0c01c4d8fee16826efdecb9705bf464c91e49",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 39,
+      "minor_diameter_internal_mm": 34.67,
+      "minor_diameter_external_mm": 34.0925
     },
     {
       "id": "THR-M39x3.5-FINE",
@@ -1325,7 +1915,17 @@
       "pitch_diameter_mm": 36.7268,
       "minor_diameter_mm": 35.2112,
       "stress_area_mm2": 1001.899,
-      "checksum": "d3a401ae10979bcf226f57b71f96f329b32c40570d658e99ed009c551a59dcd3"
+      "checksum": "aeb88855163c1f09e196572ce6ca549437c8bd6df1126d83c5d259b4b6697ccf",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 39,
+      "minor_diameter_internal_mm": 35.2112,
+      "minor_diameter_external_mm": 34.706
     },
     {
       "id": "THR-M39x3-XFINE",
@@ -1347,7 +1947,17 @@
       "pitch_diameter_mm": 37.0515,
       "minor_diameter_mm": 35.7525,
       "stress_area_mm2": 1028.39,
-      "checksum": "7877985cf3f4afad25401d7e2cde2ae8e170387a4a2b55efc28bc38106b42b29"
+      "checksum": "9cbf178e1886dfe982fe2ead4c66efe78eb7431b7574eb167b139506c7976118",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 39,
+      "minor_diameter_internal_mm": 35.7525,
+      "minor_diameter_external_mm": 35.3194
     },
     {
       "id": "THR-M42-COARSE",
@@ -1369,7 +1979,17 @@
       "pitch_diameter_mm": 39.0772,
       "minor_diameter_mm": 37.1287,
       "stress_area_mm2": 1120.911,
-      "checksum": "e4b165919fbd87b9ccd749fd8c4ac993c9243b87b0212f908c7babc9b885b3fd"
+      "checksum": "bd171de2d2dfc546773bbbf4ea4e52a33e82a198da2a7432958a7c6afaf471a7",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 42,
+      "minor_diameter_internal_mm": 37.1287,
+      "minor_diameter_external_mm": 36.4791
     },
     {
       "id": "THR-M42x4-FINE",
@@ -1391,7 +2011,17 @@
       "pitch_diameter_mm": 39.402,
       "minor_diameter_mm": 37.67,
       "stress_area_mm2": 1148.921,
-      "checksum": "19f3b6288feeb97d9893fdc15e4ab40aae06ba03a677b0385c0a54af0535b40e"
+      "checksum": "8d31eefe2eb9cc680f3b461c7d69a0f8a73a92cd64544be224f8fdbcde086305",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 42,
+      "minor_diameter_internal_mm": 37.67,
+      "minor_diameter_external_mm": 37.0925
     },
     {
       "id": "THR-M42x3.5-XFINE",
@@ -1413,7 +2043,17 @@
       "pitch_diameter_mm": 39.7268,
       "minor_diameter_mm": 38.2112,
       "stress_area_mm2": 1177.277,
-      "checksum": "5e00a29b0fd4d9e95c6c407e6b3ac39a7bf156120b32b6c13306f055e9d751ad"
+      "checksum": "4523c47e3439869e812d9491abe23877687374036d0ccad9de836a88fc524887",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 42,
+      "minor_diameter_internal_mm": 38.2112,
+      "minor_diameter_external_mm": 37.706
     },
     {
       "id": "THR-M45-COARSE",
@@ -1435,7 +2075,17 @@
       "pitch_diameter_mm": 42.0772,
       "minor_diameter_mm": 40.1287,
       "stress_area_mm2": 1306.005,
-      "checksum": "b5589fbf9d3d2d7be5142a71b6fa6ef9a6ccb377c411f88ebae37acceefa8f3f"
+      "checksum": "0f9b2994e01a10a7cdc33e968be88aea681c1fd4033674482436b6ef3e31c965",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 45,
+      "minor_diameter_internal_mm": 40.1287,
+      "minor_diameter_external_mm": 39.4791
     },
     {
       "id": "THR-M45x4-FINE",
@@ -1457,7 +2107,17 @@
       "pitch_diameter_mm": 42.402,
       "minor_diameter_mm": 40.67,
       "stress_area_mm2": 1336.226,
-      "checksum": "ef33ffad39707d3699eae264188d529247c680d40c7b991fc8242fd672e21a16"
+      "checksum": "db543424ff45609eb944b463e2baae2f480a5ad9065beec16e0471b3bf1f31e3",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 45,
+      "minor_diameter_internal_mm": 40.67,
+      "minor_diameter_external_mm": 40.0925
     },
     {
       "id": "THR-M45x3.5-XFINE",
@@ -1479,7 +2139,17 @@
       "pitch_diameter_mm": 42.7268,
       "minor_diameter_mm": 41.2112,
       "stress_area_mm2": 1366.792,
-      "checksum": "b0c6775a330c63c9e92dfd7b48ae0cc47fbfa330bd2bf73d7fcfd405dcab6909"
+      "checksum": "0c9ae6e8b4a290c75b0e8b1bb045d58baf67b6a6d4a98839b7ff6b6ddf67e8e7",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 45,
+      "minor_diameter_internal_mm": 41.2112,
+      "minor_diameter_external_mm": 40.706
     },
     {
       "id": "THR-M48-COARSE",
@@ -1501,7 +2171,17 @@
       "pitch_diameter_mm": 44.7525,
       "minor_diameter_mm": 42.5875,
       "stress_area_mm2": 1473.151,
-      "checksum": "acf4c2572de65f1566698228c7096f5d40bfa69c052b0c46243fdb1e2cf86458"
+      "checksum": "62d1e595980b02e85377f08e43c6a6cd8853c6d29821c212f83da52d9504134c",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 48,
+      "minor_diameter_internal_mm": 42.5875,
+      "minor_diameter_external_mm": 41.8657
     },
     {
       "id": "THR-M48x4.5-FINE",
@@ -1523,7 +2203,17 @@
       "pitch_diameter_mm": 45.0772,
       "minor_diameter_mm": 43.1287,
       "stress_area_mm2": 1505.236,
-      "checksum": "1dff785d6b1980209923d7c17db9185eeee9d66a0ab96eddfeccc6bfd63f521d"
+      "checksum": "c6226c72ab476edf71168ab4fe367931364bd2faf6fae1a157fa948a1223b821",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 48,
+      "minor_diameter_internal_mm": 43.1287,
+      "minor_diameter_external_mm": 42.4791
     },
     {
       "id": "THR-M48x4-XFINE",
@@ -1545,7 +2235,17 @@
       "pitch_diameter_mm": 45.402,
       "minor_diameter_mm": 43.67,
       "stress_area_mm2": 1537.668,
-      "checksum": "b11c0dbd88b27b20149b368aae04c959bf2ad134931ec1bc0de8dc4f3e944dc0"
+      "checksum": "041f64d82a140d97f8360429588116e5ba7d2593d086be94d4988d019938cfa0",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 48,
+      "minor_diameter_internal_mm": 43.67,
+      "minor_diameter_external_mm": 43.0925
     },
     {
       "id": "THR-M52-COARSE",
@@ -1567,7 +2267,17 @@
       "pitch_diameter_mm": 48.7525,
       "minor_diameter_mm": 46.5875,
       "stress_area_mm2": 1757.836,
-      "checksum": "73623386bfba26f79db17cd5404edb1470d62ce0374b642eb43fee4ed78022ae"
+      "checksum": "855e091a6f9605a1a0808d422bffb4e4cb63d10d1eda22cf2707b2f03ceee9ee",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 52,
+      "minor_diameter_internal_mm": 46.5875,
+      "minor_diameter_external_mm": 45.8657
     },
     {
       "id": "THR-M52x4.5-FINE",
@@ -1589,7 +2299,17 @@
       "pitch_diameter_mm": 49.0772,
       "minor_diameter_mm": 47.1287,
       "stress_area_mm2": 1792.869,
-      "checksum": "2c2d69786ff05280ac7b06dedcef5f42f15e80289626fc5c8d6a24ff3873517e"
+      "checksum": "bc43fc8056bd8eca14c64f20b84cbad7a76166092c410c6f443ca0ec5084bd77",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 52,
+      "minor_diameter_internal_mm": 47.1287,
+      "minor_diameter_external_mm": 46.4791
     },
     {
       "id": "THR-M52x4-XFINE",
@@ -1611,7 +2331,17 @@
       "pitch_diameter_mm": 49.402,
       "minor_diameter_mm": 47.67,
       "stress_area_mm2": 1828.248,
-      "checksum": "83f2eb66a519645844a4748439334932340298119b64920f4a53d3ea5d57995c"
+      "checksum": "eeee51f67baa5c079b2685c17f5ab4d8842d65ebe89e2f75eedb4b050ba56e15",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 52,
+      "minor_diameter_internal_mm": 47.67,
+      "minor_diameter_external_mm": 47.0925
     },
     {
       "id": "THR-M56-COARSE",
@@ -1633,7 +2363,17 @@
       "pitch_diameter_mm": 52.4278,
       "minor_diameter_mm": 50.0463,
       "stress_area_mm2": 2030.02,
-      "checksum": "3fb5efbed700f0a98bfe2c840fca4438ea7788ea85ce7338555a7cd95b77c57a"
+      "checksum": "25de5e5832b5786cd37e81d21433dd80d733eac6b015346569ed1c4d485f0a5a",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 56,
+      "minor_diameter_internal_mm": 50.0463,
+      "minor_diameter_external_mm": 49.2522
     },
     {
       "id": "THR-M56x5-FINE",
@@ -1655,7 +2395,17 @@
       "pitch_diameter_mm": 52.7525,
       "minor_diameter_mm": 50.5875,
       "stress_area_mm2": 2067.655,
-      "checksum": "5a457acd3b38ec9a8c3c72387a8212c15e78eea822a6efe7945e5b70357f1671"
+      "checksum": "27ff280fb349784493e11cdefe01b359acb1907c2e6c6e194420ca37986af002",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 56,
+      "minor_diameter_internal_mm": 50.5875,
+      "minor_diameter_external_mm": 49.8657
     },
     {
       "id": "THR-M56x4.5-XFINE",
@@ -1677,7 +2427,17 @@
       "pitch_diameter_mm": 53.0772,
       "minor_diameter_mm": 51.1287,
       "stress_area_mm2": 2105.635,
-      "checksum": "bab1c86128d9449c9099818e402e370375ca80807e8017601aebcdbfe24cd915"
+      "checksum": "133707faf708f7064d4926472d0f5d52d9e921a6245341b044ee5b100039f504",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 56,
+      "minor_diameter_internal_mm": 51.1287,
+      "minor_diameter_external_mm": 50.4791
     },
     {
       "id": "THR-M60-COARSE",
@@ -1699,7 +2459,17 @@
       "pitch_diameter_mm": 56.4278,
       "minor_diameter_mm": 54.0463,
       "stress_area_mm2": 2362.023,
-      "checksum": "a54510d2492e59f9daac47a9afa9a2411578d009a7f821686203b097cce2b513"
+      "checksum": "b4384f805937c82ffd59f450b8896d6d8a3a4df883fcade13a4399050d95c1b6",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 60,
+      "minor_diameter_internal_mm": 54.0463,
+      "minor_diameter_external_mm": 53.2522
     },
     {
       "id": "THR-M60x5-FINE",
@@ -1721,7 +2491,17 @@
       "pitch_diameter_mm": 56.7525,
       "minor_diameter_mm": 54.5875,
       "stress_area_mm2": 2402.606,
-      "checksum": "30cb5d6d63bc8c16d9e0cfec2154c4c852b9f90300befd3cb53a0f5062de8337"
+      "checksum": "72a3b2073cb183ad454992e1ff513840c26116637906252b6301282fd249d31f",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 60,
+      "minor_diameter_internal_mm": 54.5875,
+      "minor_diameter_external_mm": 53.8657
     },
     {
       "id": "THR-M60x4.5-XFINE",
@@ -1743,7 +2523,17 @@
       "pitch_diameter_mm": 57.0772,
       "minor_diameter_mm": 55.1287,
       "stress_area_mm2": 2443.534,
-      "checksum": "b9a5b78aaf5f46a42a4978e3cc8159830744fd2be07ba4fa1c9e26ca401a0dd8"
+      "checksum": "d1f261ef23d59435653140973a5be1a8306ddcd2909e87f8768e9b1a4dfb9dc8",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 60,
+      "minor_diameter_internal_mm": 55.1287,
+      "minor_diameter_external_mm": 54.4791
     },
     {
       "id": "THR-M64-COARSE",
@@ -1765,7 +2555,17 @@
       "pitch_diameter_mm": 60.103,
       "minor_diameter_mm": 57.505,
       "stress_area_mm2": 2675.976,
-      "checksum": "430b1705087644c86d31cadcc97d1ba26b1d9df1d219a706ccd783d3cd8e39a2"
+      "checksum": "c22aaaff4dd9d06ab4df3886b92c21263f8040239ac63b6acdc28d5d3f077fce",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 2,
+      "review_status": "validated",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 64,
+      "minor_diameter_internal_mm": 57.505,
+      "minor_diameter_external_mm": 56.6388
     },
     {
       "id": "THR-M64x5.5-FINE",
@@ -1787,7 +2587,17 @@
       "pitch_diameter_mm": 60.4278,
       "minor_diameter_mm": 58.0463,
       "stress_area_mm2": 2719.16,
-      "checksum": "87a804caa4bac10a19cc6aad391554e9d438cbca649529e58e2040c851bba6e7"
+      "checksum": "f010bfdc75502fe281c0e1c2f8f841dd37455e4efb8dd8934711b56eb11d0deb",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 64,
+      "minor_diameter_internal_mm": 58.0463,
+      "minor_diameter_external_mm": 57.2522
     },
     {
       "id": "THR-M64x5-XFINE",
@@ -1809,7 +2619,17 @@
       "pitch_diameter_mm": 60.7525,
       "minor_diameter_mm": 58.5875,
       "stress_area_mm2": 2762.69,
-      "checksum": "b7fc29a1c2b9525f32e6e5728c7f54dbfff10b91cb957bce3b5162e35cc454b2"
+      "checksum": "391c54b2ed9ff99ef8717747ac8868beeba298cab9fa84706685d50cde71e1fc",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 64,
+      "minor_diameter_internal_mm": 58.5875,
+      "minor_diameter_external_mm": 57.8657
     },
     {
       "id": "THR-M68-COARSE",
@@ -1831,7 +2651,17 @@
       "pitch_diameter_mm": 64.103,
       "minor_diameter_mm": 61.505,
       "stress_area_mm2": 3055.298,
-      "checksum": "cbe7fb1e624c0869bfab10186ddf5885f4fcba953c7b578ae0cc2b1174f9771d"
+      "checksum": "08c23fffeb2f6c99bf7c4a6530650573fa555d84bb8ae7cfda81155cb8d6deb0",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 68,
+      "minor_diameter_internal_mm": 61.505,
+      "minor_diameter_external_mm": 60.6388
     },
     {
       "id": "THR-M68x5.5-FINE",
@@ -1853,7 +2683,17 @@
       "pitch_diameter_mm": 64.4278,
       "minor_diameter_mm": 62.0463,
       "stress_area_mm2": 3101.429,
-      "checksum": "a1ac03a60686bb7e0c6406ef90c62ab796ff1a8bc7bd9bcef3ab3a31c0deb3ee"
+      "checksum": "02df5325fd0dc806f76d7cee3e36d2223bda5de189d19a36f0c30c88a66fa2ca",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 68,
+      "minor_diameter_internal_mm": 62.0463,
+      "minor_diameter_external_mm": 61.2522
     },
     {
       "id": "THR-M68x5-XFINE",
@@ -1875,7 +2715,17 @@
       "pitch_diameter_mm": 64.7525,
       "minor_diameter_mm": 62.5875,
       "stress_area_mm2": 3147.906,
-      "checksum": "98a8dcf28156e2fb5524c778ce004be2f5436e993c425cddd284535a79832b28"
+      "checksum": "43e5431787bb7def251a31ef4da37e996f6a1cc892b31a2569e61ea60e34ae0a",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 68,
+      "minor_diameter_internal_mm": 62.5875,
+      "minor_diameter_external_mm": 61.8657
     },
     {
       "id": "THR-M72-COARSE",
@@ -1897,7 +2747,17 @@
       "pitch_diameter_mm": 68.103,
       "minor_diameter_mm": 65.505,
       "stress_area_mm2": 3459.752,
-      "checksum": "72c3d36b1bfa221e4ecdd96b6dabe3ec65f91386fc67447181e16bcaf222ea72"
+      "checksum": "c625a254dd05419bbeda103238ec2d0fb6446178081b20172f0ea257d950b17d",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 72,
+      "minor_diameter_internal_mm": 65.505,
+      "minor_diameter_external_mm": 64.6388
     },
     {
       "id": "THR-M72x5.5-FINE",
@@ -1919,7 +2779,17 @@
       "pitch_diameter_mm": 68.4278,
       "minor_diameter_mm": 66.0463,
       "stress_area_mm2": 3508.831,
-      "checksum": "4bb92044797148cdec02c10f0e85a798ab4c98d538a6269367fa02ff003cb81a"
+      "checksum": "db9acbcfa9625a549f70c716e505d1ed58315d5a13e0356c2a8516f4f9153652",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 72,
+      "minor_diameter_internal_mm": 66.0463,
+      "minor_diameter_external_mm": 65.2522
     },
     {
       "id": "THR-M72x5-XFINE",
@@ -1941,7 +2811,17 @@
       "pitch_diameter_mm": 68.7525,
       "minor_diameter_mm": 66.5875,
       "stress_area_mm2": 3558.256,
-      "checksum": "5444c78021016a1a082b0462c971d089f128069887b1aa84458ff09c9080b823"
+      "checksum": "d409739baaa8e967a6c1b1dbd9c3440040b9ba3f4f3afc5209cd8070e942f48b",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 72,
+      "minor_diameter_internal_mm": 66.5875,
+      "minor_diameter_external_mm": 65.8657
     },
     {
       "id": "THR-M76-COARSE",
@@ -1963,7 +2843,17 @@
       "pitch_diameter_mm": 72.103,
       "minor_diameter_mm": 69.505,
       "stress_area_mm2": 3889.34,
-      "checksum": "c4cf8f7c0b3f39d6c94d709a80a436757eb80ebfb1dae6ab0daf7ac2f03dc5e2"
+      "checksum": "7829a84012a9111f2125bd22ba41d3144d3aef2ec92cc7429a1873fca70ab3e4",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 76,
+      "minor_diameter_internal_mm": 69.505,
+      "minor_diameter_external_mm": 68.6388
     },
     {
       "id": "THR-M76x5.5-FINE",
@@ -1985,7 +2875,17 @@
       "pitch_diameter_mm": 72.4278,
       "minor_diameter_mm": 70.0463,
       "stress_area_mm2": 3941.366,
-      "checksum": "a70907c7d01f6b93a08a7ec397e9c02b0f967434e9fe3b4a1794c4dc5da912fa"
+      "checksum": "9f7a1f963e512b59516205d668866271e91d715cbb2a1792c512536d794596bc",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 76,
+      "minor_diameter_internal_mm": 70.0463,
+      "minor_diameter_external_mm": 69.2522
     },
     {
       "id": "THR-M76x5-XFINE",
@@ -2007,7 +2907,17 @@
       "pitch_diameter_mm": 72.7525,
       "minor_diameter_mm": 70.5875,
       "stress_area_mm2": 3993.738,
-      "checksum": "6fe4f9b4fab1914000154b1d811ea1172eddfb1af08459009837423a52151801"
+      "checksum": "48e6dcf6663e2ff58236f862f94a98615a292d7c8b5b2132395926bb697b5cc3",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 76,
+      "minor_diameter_internal_mm": 70.5875,
+      "minor_diameter_external_mm": 69.8657
     },
     {
       "id": "THR-M80-COARSE",
@@ -2029,7 +2939,17 @@
       "pitch_diameter_mm": 76.103,
       "minor_diameter_mm": 73.505,
       "stress_area_mm2": 4344.06,
-      "checksum": "19eb6338d88110b09f83a981a27a105d6249191ddcba3ebaf559981ca12a9f07"
+      "checksum": "72ac706e55196a3a413a04febf3dab8bf36c780ced3b038255e3acfb0f88c504",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 80,
+      "minor_diameter_internal_mm": 73.505,
+      "minor_diameter_external_mm": 72.6388
     },
     {
       "id": "THR-M80x5.5-FINE",
@@ -2051,7 +2971,17 @@
       "pitch_diameter_mm": 76.4278,
       "minor_diameter_mm": 74.0463,
       "stress_area_mm2": 4399.034,
-      "checksum": "25844fe34f00097111a29380a276214e3175acbff5483cca7ec98e2803978f3e"
+      "checksum": "8524bc2225e8a5655ab8189b1b3b681fac4897de1274af8f4e0231e14a11f581",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 80,
+      "minor_diameter_internal_mm": 74.0463,
+      "minor_diameter_external_mm": 73.2522
     },
     {
       "id": "THR-M80x5-XFINE",
@@ -2073,7 +3003,17 @@
       "pitch_diameter_mm": 76.7525,
       "minor_diameter_mm": 74.5875,
       "stress_area_mm2": 4454.353,
-      "checksum": "0d711fd9e64954a86755373e364d62a497f37c4133e3c305602b99b51603e878"
+      "checksum": "5936200563135e3ded888c434f6b87ffcbdb4c09aa7438156f563e139aaf5dba",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 80,
+      "minor_diameter_internal_mm": 74.5875,
+      "minor_diameter_external_mm": 73.8657
     },
     {
       "id": "THR-M85-COARSE",
@@ -2095,7 +3035,17 @@
       "pitch_diameter_mm": 81.103,
       "minor_diameter_mm": 78.505,
       "stress_area_mm2": 4947.803,
-      "checksum": "6296197ea2de5d5f2282c85e822423dd9d624a5baf647f2dc0b9825d79160ad3"
+      "checksum": "973ceec5a1680e600b736674734eb55d54045d40326b7490b66d9556672f0c2b",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 85,
+      "minor_diameter_internal_mm": 78.505,
+      "minor_diameter_external_mm": 77.6388
     },
     {
       "id": "THR-M85x5.5-FINE",
@@ -2117,7 +3067,17 @@
       "pitch_diameter_mm": 81.4278,
       "minor_diameter_mm": 79.0463,
       "stress_area_mm2": 5006.461,
-      "checksum": "2bbaaa34727a9290c33a3acb15af722bb3edd2b93e23a9fba2e42e747c9748d0"
+      "checksum": "7a9c15606200467716a83a46d69e9bb2f49da96082ab19530ac53b12427ea513",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 85,
+      "minor_diameter_internal_mm": 79.0463,
+      "minor_diameter_external_mm": 78.2522
     },
     {
       "id": "THR-M85x5-XFINE",
@@ -2139,7 +3099,17 @@
       "pitch_diameter_mm": 81.7525,
       "minor_diameter_mm": 79.5875,
       "stress_area_mm2": 5065.465,
-      "checksum": "f0a3994507f107fe64b680173e137100d1feb291dca713d379ebd12422e85bfc"
+      "checksum": "b1c47db3216e7b71cb8f25f3ea9900443a120078c8ff3a26280047d3ac8a1454",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 85,
+      "minor_diameter_internal_mm": 79.5875,
+      "minor_diameter_external_mm": 78.8657
     },
     {
       "id": "THR-M90-COARSE",
@@ -2161,7 +3131,17 @@
       "pitch_diameter_mm": 86.103,
       "minor_diameter_mm": 83.505,
       "stress_area_mm2": 5590.816,
-      "checksum": "6d2cd00a4a9fc7def19d96628bf2c2bb552fc8eb6ed8fedcd8dba08f03682d4c"
+      "checksum": "85dc1f0ac2b42dc4305324ef310766d827a2640022105cbb353a628f499b04ac",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 90,
+      "minor_diameter_internal_mm": 83.505,
+      "minor_diameter_external_mm": 82.6388
     },
     {
       "id": "THR-M90x5.5-FINE",
@@ -2183,7 +3163,17 @@
       "pitch_diameter_mm": 86.4278,
       "minor_diameter_mm": 84.0463,
       "stress_area_mm2": 5653.159,
-      "checksum": "858e683c8d4463270a32e029a02065ac43d3cd9325fb1db93088ac399841da7d"
+      "checksum": "fd02a97857779609ef6c8a63ea967dec3bfd88c49e4994279b6ccdf5a9c164b0",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 90,
+      "minor_diameter_internal_mm": 84.0463,
+      "minor_diameter_external_mm": 83.2522
     },
     {
       "id": "THR-M90x5-XFINE",
@@ -2205,7 +3195,17 @@
       "pitch_diameter_mm": 86.7525,
       "minor_diameter_mm": 84.5875,
       "stress_area_mm2": 5715.847,
-      "checksum": "b4e1e1826348952e246fc2fc62423ed278deee7bc4e7f830538d2821a3ed3f80"
+      "checksum": "c1e78e78e8a88196bd283ca508abf763d93f5e3a6cfcbdab6f68d286d1487c94",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 90,
+      "minor_diameter_internal_mm": 84.5875,
+      "minor_diameter_external_mm": 83.8657
     },
     {
       "id": "THR-M95-COARSE",
@@ -2227,7 +3227,17 @@
       "pitch_diameter_mm": 91.103,
       "minor_diameter_mm": 88.505,
       "stress_area_mm2": 6273.1,
-      "checksum": "9c2bfd13666aaeaea71c14e96a0bcab9c3c05c28bb9329b48b9bcb9b9244c614"
+      "checksum": "f5e1ac59a837c463ff0b25113c727d042df8f75390da8f8b0b8a3c916aa430df",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 95,
+      "minor_diameter_internal_mm": 88.505,
+      "minor_diameter_external_mm": 87.6388
     },
     {
       "id": "THR-M95x5.5-FINE",
@@ -2249,7 +3259,17 @@
       "pitch_diameter_mm": 91.4278,
       "minor_diameter_mm": 89.0463,
       "stress_area_mm2": 6339.126,
-      "checksum": "2fb8c6479d2ea9155e3208310149b30d28a36a726423b8966410a74802caab11"
+      "checksum": "84cfabde9e351811bcea695cde294d0e23b2087e4bf1f2e314fc71efd0d6a027",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 95,
+      "minor_diameter_internal_mm": 89.0463,
+      "minor_diameter_external_mm": 88.2522
     },
     {
       "id": "THR-M95x5-XFINE",
@@ -2271,7 +3291,17 @@
       "pitch_diameter_mm": 91.7525,
       "minor_diameter_mm": 89.5875,
       "stress_area_mm2": 6405.499,
-      "checksum": "49f0fa84f724782e8cb0d84db824d2af2530b735edb9c060a11a450bde109efe"
+      "checksum": "953baf35e6c854e622a5a2f4895f1371b6a55726bdd91b9149abae73109339d8",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 95,
+      "minor_diameter_internal_mm": 89.5875,
+      "minor_diameter_external_mm": 88.8657
     },
     {
       "id": "THR-M100-COARSE",
@@ -2293,7 +3323,17 @@
       "pitch_diameter_mm": 96.103,
       "minor_diameter_mm": 93.505,
       "stress_area_mm2": 6994.653,
-      "checksum": "ad08811f18bd591c08b0b2757005f2f250f6dc5c15ee10247a689be552e33e23"
+      "checksum": "f10ae45fb08ec94816952b495dd16905737cdc3906ef3a71200dc74d9ccc5006",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "coarse",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 100,
+      "minor_diameter_internal_mm": 93.505,
+      "minor_diameter_external_mm": 92.6388
     },
     {
       "id": "THR-M100x5.5-FINE",
@@ -2315,7 +3355,17 @@
       "pitch_diameter_mm": 96.4278,
       "minor_diameter_mm": 94.0463,
       "stress_area_mm2": 7064.364,
-      "checksum": "28f9a4818b2539ec55239d4454af68d9f8905f447cc6d969bb0cd6da96935a7c"
+      "checksum": "4f7af66138ccda12c3aa89871bb1cec5a3d9d5676a6853130807e7c4363b9836",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 100,
+      "minor_diameter_internal_mm": 94.0463,
+      "minor_diameter_external_mm": 93.2522
     },
     {
       "id": "THR-M100x5-XFINE",
@@ -2337,7 +3387,17 @@
       "pitch_diameter_mm": 96.7525,
       "minor_diameter_mm": 94.5875,
       "stress_area_mm2": 7134.421,
-      "checksum": "099845fb1e6a50d00967c6944e2da2a169458d0998d394ce3154b21df8c82596"
+      "checksum": "79619a1edf07ecfd7bbb60980e6eb380ec69deb6171328aee3e58dc23721e042",
+      "schema_version": "1.0",
+      "source_reference": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_revision": "2026-07-20",
+      "confidence_level": 4,
+      "review_status": "provisional",
+      "pitch_type": "extra_fine",
+      "thread_series": "ISO_METRIC",
+      "major_diameter_mm": 100,
+      "minor_diameter_internal_mm": 94.5875,
+      "minor_diameter_external_mm": 93.8657
     },
     {
       "id": "THR-1-4-20UNC",
@@ -2358,7 +3418,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNC",
-      "checksum": "d52a5a14d9a45b14596c7fbb7635064bfdcd5669271fcf1c22f5d9998a5d079b"
+      "checksum": "2aac607194639aaf1f7f3d2e2da79a422e9f0c57ec97d204b9a38ca5e4d46432",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "coarse",
+      "thread_series": "UNC",
+      "major_diameter_mm": 6.35,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-3-8-16UNC",
@@ -2379,7 +3449,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNC",
-      "checksum": "9431948ef00d0c5495e39b17bfba9529de47e9b1c046609a48151d32f42c659d"
+      "checksum": "452d5fa713276d3d164202e76137de7011d750d80325096a362750053a128ca1",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "coarse",
+      "thread_series": "UNC",
+      "major_diameter_mm": 9.525,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-2-13UNC",
@@ -2400,7 +3480,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNC",
-      "checksum": "7ca6c545ea0085576fca81b4466d82ffb0d610a0bb4bfe2ca5e47af9e26bd8f6"
+      "checksum": "2d7e4935b91e4b462ece14a49c616b8123d10553e4e9667663c6b934ba5eb63f",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "coarse",
+      "thread_series": "UNC",
+      "major_diameter_mm": 12.7,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-5-8-11UNC",
@@ -2421,7 +3511,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNC",
-      "checksum": "c55f0b91403ccf31bc0e6a72a2ef79e3ef4c84e0f69c30e574286b11ebfc4b35"
+      "checksum": "c6433e8a2c15d2b3323fe719c733a00a21ef690d4fcd03fa9e68f48b8fa92cac",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "coarse",
+      "thread_series": "UNC",
+      "major_diameter_mm": 15.875,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-3-4-10UNC",
@@ -2442,7 +3542,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNC",
-      "checksum": "27721227c344a3ef6fef5c5b879c8e664d1220e2283374e146db6a2d2bc583ae"
+      "checksum": "5d977657b2cb4aa5636ca84358470b80374a8a567092addefc1aab08be15edde",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "coarse",
+      "thread_series": "UNC",
+      "major_diameter_mm": 19.05,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-4-28UNF",
@@ -2463,7 +3573,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNF",
-      "checksum": "cc857d24e3d9171fa540ce4155199c10b92feab9db1f95f42b5fd3c4081ef27a"
+      "checksum": "000c75eac7b3aaa5b24f7f760d49bf0c743d41425e2cb6c2d890595bb687e9fb",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "fine",
+      "thread_series": "UNF",
+      "major_diameter_mm": 6.35,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-3-8-24UNF",
@@ -2484,7 +3604,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNF",
-      "checksum": "ea73355e3ec5f114d651b24869dbbc63a26e1b4f16aadf5c738e0052a7181386"
+      "checksum": "dfe458931430ce2bba017258d7c0c4c400e4d50a09692c2af544c89be01d2fa2",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "fine",
+      "thread_series": "UNF",
+      "major_diameter_mm": 9.525,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-2-20UNF",
@@ -2505,7 +3635,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNF",
-      "checksum": "2545bdc1165207c92e348e0e6bbdd396fb8ae22473925066a8515be63519fb51"
+      "checksum": "7de6d748afe209e7a94b8c28d2cc617b85394883817e5ec24c83e90f304685cc",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "fine",
+      "thread_series": "UNF",
+      "major_diameter_mm": 12.7,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-5-8-18UNF",
@@ -2526,7 +3666,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNF",
-      "checksum": "bf3c88930fab9e871d8b034ea6e621eb5b82def2672a017c32f28fdd6b3467e5"
+      "checksum": "ea3437545944fd400e00dd553864ac4463c8cd37052079da4f0e1ff2d87a4eb8",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "fine",
+      "thread_series": "UNF",
+      "major_diameter_mm": 15.875,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-3-4-16UNF",
@@ -2547,7 +3697,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNF",
-      "checksum": "1e1d14308a294aa60472835995718a5319490b4a2a92e1a390790c7b296688f9"
+      "checksum": "e89ec621b8db7ceb9df91967327c125b197c83602c980bbe083a2c395b699e21",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "fine",
+      "thread_series": "UNF",
+      "major_diameter_mm": 19.05,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-4-32UNEF",
@@ -2568,7 +3728,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNEF",
-      "checksum": "81c6b790aecac7f8765eec10fe93962fb693449f09d16628018afb86697447b7"
+      "checksum": "f6ef7ea604d9e7ec786aa8b39337dbee10ec6d80980277c5e82b56598f3d252d",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "extra_fine",
+      "thread_series": "UNEF",
+      "major_diameter_mm": 6.35,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-3-8-32UNEF",
@@ -2589,7 +3759,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNEF",
-      "checksum": "a5b3b891c732692df25a16c297cf33e995107c362edec274ca9d1a15dde2c013"
+      "checksum": "9f9510ab1390cfd76bd571186425a4d44af4d92319e31110d0c42ea7098ba9ca",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "extra_fine",
+      "thread_series": "UNEF",
+      "major_diameter_mm": 9.525,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-2-28UNEF",
@@ -2610,7 +3790,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.1",
       "series": "UNEF",
-      "checksum": "3a9b7841efcdb35f28bed12f96a50d55f635e2a5e248555437148ae7ec1dc33a"
+      "checksum": "a63447b87d484adf6c2bd7230a031f0278fb3dbf222cbab6d2d07b3fc58b0a87",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": "extra_fine",
+      "thread_series": "UNEF",
+      "major_diameter_mm": 12.7,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-8BSP",
@@ -2631,7 +3821,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 228-1",
       "series": "BSP",
-      "checksum": "ed16422e5160449c9ea0c9f0bf232fa96594bace90665a5735027931f52ab53f"
+      "checksum": "3be4dd3ed5310f16acf361b1b6da0c55b9ece3dae4e55ecb8b5193af763eac33",
+      "schema_version": "1.0",
+      "source_reference": "ISO 228-1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "BSP",
+      "major_diameter_mm": 9.728,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-4BSP",
@@ -2652,7 +3852,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 228-1",
       "series": "BSP",
-      "checksum": "245d9b4323060f4e36b604a8f9f2a5cc22702a3bcde25c50515c298de39b9eb5"
+      "checksum": "0fbf31f68d881517241e27d8898aa517b124d788b6e4474933be74ad3711418d",
+      "schema_version": "1.0",
+      "source_reference": "ISO 228-1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "BSP",
+      "major_diameter_mm": 13.157,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-3-8BSP",
@@ -2673,7 +3883,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 228-1",
       "series": "BSP",
-      "checksum": "cb2ca0624df6a82f4a386420b75fa3b800c88801e6346fab45188dc8b266138f"
+      "checksum": "6df96fc133f5e85b0aadb5183512bd2a850991da1a0c65d0ac92e914c6c81c79",
+      "schema_version": "1.0",
+      "source_reference": "ISO 228-1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "BSP",
+      "major_diameter_mm": 16.662,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-2BSP",
@@ -2694,7 +3914,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 228-1",
       "series": "BSP",
-      "checksum": "3bfc162d7c173ab9521d2cd83bc63e822a09d4c30e35283d2279e1b0ed942376"
+      "checksum": "16be21644c68818d9961549af521b6d218f84c8467038e122f0d8b13938f3fc4",
+      "schema_version": "1.0",
+      "source_reference": "ISO 228-1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "BSP",
+      "major_diameter_mm": 20.955,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-3-4BSP",
@@ -2715,7 +3945,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 228-1",
       "series": "BSP",
-      "checksum": "f63df57ccf1ed8152226d57fe3c1b93209849c40cda6a13feed4b6475c76fc34"
+      "checksum": "f3d7d6038b51bb3bd38c6b89dcb41f527c28642c5d363f6b2eb026c41509066a",
+      "schema_version": "1.0",
+      "source_reference": "ISO 228-1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "BSP",
+      "major_diameter_mm": 26.441,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-8NPT",
@@ -2736,7 +3976,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.20.1",
       "series": "NPT",
-      "checksum": "1c35b1c49e62b8827740ed62979754308b44bd618ad8fe47c852c97acd725d94"
+      "checksum": "a368b8d503ba25fdc44bed9594ef57791ee95bb0e7fdc5dffefd0702c49e0c09",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.20.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "NPT",
+      "major_diameter_mm": 10.287,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-4NPT",
@@ -2757,7 +4007,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.20.1",
       "series": "NPT",
-      "checksum": "57dd4374437dc6a99344ae3619ae2a9d339b72331de55b4a30bda3a842b12219"
+      "checksum": "941b6eb7049371215041515dbdbdc61f24c884da7b82e20da5c5577dec8ffdb0",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.20.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "NPT",
+      "major_diameter_mm": 13.716,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-3-8NPT",
@@ -2778,7 +4038,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.20.1",
       "series": "NPT",
-      "checksum": "a0801e2f61177486f41d10f1ac5df3a48e0e8903e9b39c5f6ee25703e303d3a1"
+      "checksum": "9495f95b17242c4df7e8dd9f42aeeee40473a24ae33ab1335881dd6f16bc5985",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.20.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "NPT",
+      "major_diameter_mm": 17.145,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-1-2NPT",
@@ -2799,7 +4069,17 @@
       "tolerance_class": "",
       "stress_area_source": "ASME B1.20.1",
       "series": "NPT",
-      "checksum": "6e3d9853c4b1cf787e4b4aadb1010a81f71d5d8863633678cd47b9709439039e"
+      "checksum": "e4b16fcc6844e3b58c73b33f221c59a78036d03e97f89e37df025073279a55d5",
+      "schema_version": "1.0",
+      "source_reference": "ASME B1.20.1",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "NPT",
+      "major_diameter_mm": 21.336,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-Tr8x1.5",
@@ -2820,7 +4100,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 2904",
       "series": "Trapezoidal",
-      "checksum": "dd7f7bd383ba087d60bb4a7f4e9ef7ead8089c80b62fb8d6e220e91b8d52516c"
+      "checksum": "834d4110c25ff8f554848cbb4940aea633a252ffe5a2106508940058560487ba",
+      "schema_version": "1.0",
+      "source_reference": "ISO 2904",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "TRAPEZOIDAL",
+      "major_diameter_mm": 8.0,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-Tr10x2",
@@ -2841,7 +4131,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 2904",
       "series": "Trapezoidal",
-      "checksum": "b63a91825c97092c1bb1162296fdce8fdd5f97a01319069833a6db1d7d45a95f"
+      "checksum": "2671c16217b8b5159e92a5f59ef18f93660d2d23e625db980c2c488df7385414",
+      "schema_version": "1.0",
+      "source_reference": "ISO 2904",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "TRAPEZOIDAL",
+      "major_diameter_mm": 10.0,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-Tr12x3",
@@ -2862,7 +4162,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 2904",
       "series": "Trapezoidal",
-      "checksum": "6c18c9dc1e2b0daf583e8c1ccd2cf8f91c57602d218157f965ee4413a7982d46"
+      "checksum": "847f674d38fe073abb5c551c00eb843c36fbd311157288710e393f8f5557a924",
+      "schema_version": "1.0",
+      "source_reference": "ISO 2904",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "TRAPEZOIDAL",
+      "major_diameter_mm": 12.0,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-Tr16x4",
@@ -2883,7 +4193,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 2904",
       "series": "Trapezoidal",
-      "checksum": "fb37728211c366fb072fe09c84011057f754b3cd82a94dc1a43903d6b9cd58f7"
+      "checksum": "53f50f0f5b68183c6e35239e6910de14318ead3551a8192b9aa87927e35e7621",
+      "schema_version": "1.0",
+      "source_reference": "ISO 2904",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "TRAPEZOIDAL",
+      "major_diameter_mm": 16.0,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-Tr20x4",
@@ -2904,7 +4224,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 2904",
       "series": "Trapezoidal",
-      "checksum": "95e5b8b3caf8c00c189afe67dd646a11c5994ab888a4ae01a8d6989e03c3e192"
+      "checksum": "2d6c8d864e3b9e86ec90f05680b47a519f7c550779ce442c1df89cce7cddcec9",
+      "schema_version": "1.0",
+      "source_reference": "ISO 2904",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "TRAPEZOIDAL",
+      "major_diameter_mm": 20.0,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     },
     {
       "id": "THR-Tr24x5",
@@ -2925,7 +4255,17 @@
       "tolerance_class": "",
       "stress_area_source": "ISO 2904",
       "series": "Trapezoidal",
-      "checksum": "0741a77c193308da27fbfeebb19f8173f149de0fba3bafdff9c64baa7300c894"
+      "checksum": "a8390025575ef96cf04eaedfbec54f727cc288930ae2cf1ab5b0c6589d70ff46",
+      "schema_version": "1.0",
+      "source_reference": "ISO 2904",
+      "source_revision": "2026-07-20",
+      "confidence_level": 3,
+      "review_status": "reference_only",
+      "pitch_type": null,
+      "thread_series": "TRAPEZOIDAL",
+      "major_diameter_mm": 24.0,
+      "minor_diameter_external_mm": null,
+      "minor_diameter_internal_mm": null
     }
   ]
 }
