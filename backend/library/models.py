@@ -72,8 +72,38 @@ class LibraryRecordBase(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+#: Recognised bolt/nut family vocabulary (Faz 2.4.1B, section 2/3 of
+#: the phase brief). Advisory only -- not enforced at the Pydantic
+#: layer (``bolt_family``/``nut_family`` stay free-text ``str`` so
+#: pre-Faz-2.4.1B records with an empty family keep validating
+#: unchanged); see ``validator.find_unknown_bolt_family`` /
+#: ``find_unknown_nut_family`` for the opt-in data-quality check.
+KNOWN_BOLT_FAMILIES = (
+    "Hexagon head bolt", "Hexagon head screw", "Socket head cap screw",
+    "Flange bolt", "Reduced shank bolt", "Structural bolt", "Stud bolt",
+    "Set screw", "Shoulder bolt",
+)
+KNOWN_NUT_FAMILIES = (
+    "Hexagon nut", "High nut", "Thin nut", "Flange nut",
+    "Prevailing torque nut", "All-metal lock nut", "Nylon insert lock nut",
+    "Structural nut", "Weld nut", "Square nut", "Cap nut",
+)
+
+
 class BoltRecord(LibraryRecordBase):
-    """Bolt / screw / stud master record (see ``bolt_library.py``)."""
+    """Bolt / screw / stud master record (see ``bolt_library.py``).
+
+    Faz 2.4.1B additions (all optional, additive -- every Faz 2.4.0/
+    2.4.1/2.4.1A bolt record that predates these fields keeps
+    validating unchanged, since ``BoltRecord`` keeps
+    ``LibraryRecordBase``'s ``extra="allow"``): structured
+    counterparts of family/standard/thread/geometry/strength/
+    provenance data requested by the Faz 2.4.1B brief. Pre-existing
+    free-text fields (``designation``, ``thread``, ``property_class``,
+    ``material``, ``head_type``) and the Faz 2.4.1 population fields
+    (``diameter_mm``, ``head_across_flats_mm``, ...) are kept as-is,
+    unrenamed -- these are new, separate fields, not replacements.
+    """
 
     designation: str = ""
     thread: str = ""
@@ -82,14 +112,70 @@ class BoltRecord(LibraryRecordBase):
     length_mm: float | None = None
     head_type: str = ""
 
+    # -- Faz 2.4.1B additions ---------------------------------------
+    bolt_family: str = ""
+    standard_organization: str = ""
+    nominal_diameter_mm: float | None = None
+    pitch_mm: float | None = None
+    coarse_or_fine: str = ""
+    thread_tolerance_class: str = ""
+    nominal_length_mm: float | None = None
+    threaded_length_mm: float | None = None
+    drive_type: str = ""
+    wrench_size_mm: float | None = None
+    under_head_bearing_diameter_mm: float | None = None
+    reduced_shank_diameter_mm: float | None = None
+    heat_treatment: str = ""
+    coating_compatibility: List[str] = Field(default_factory=list)
+    lubrication_state: str = ""
+    minimum_tensile_strength_mpa: float | None = None
+    proof_strength_mpa: float | None = None
+    yield_strength_mpa: float | None = None
+    elongation_percent: float | None = None
+    hardness_range: str = ""
+    operating_temperature_min_c: float | None = None
+    operating_temperature_max_c: float | None = None
+    dimensional_tolerance_reference: str = ""
+    verification_status: str = "unverified"
+    record_status: str = "draft"
+
 
 class NutRecord(LibraryRecordBase):
-    """Nut master record (see ``nut_library.py``)."""
+    """Nut master record (see ``nut_library.py``).
+
+    Faz 2.4.1B additions (all optional, additive -- see ``BoltRecord``
+    docstring above for the same additive convention applied here).
+    """
 
     designation: str = ""
     thread: str = ""
     property_class: str = ""
     height_mm: float | None = None
+
+    # -- Faz 2.4.1B additions ---------------------------------------
+    nut_family: str = ""
+    standard_organization: str = ""
+    nominal_diameter_mm: float | None = None
+    pitch_mm: float | None = None
+    coarse_or_fine: str = ""
+    thread_tolerance_class: str = ""
+    width_across_corners_mm: float | None = None
+    flange_diameter_mm: float | None = None
+    bearing_surface_diameter_mm: float | None = None
+    proof_load_n: float | None = None
+    hardness_range: str = ""
+    heat_treatment: str = ""
+    coating_compatibility: List[str] = Field(default_factory=list)
+    lubrication_state: str = ""
+    prevailing_torque_category: str = ""
+    locking_principle: str = ""
+    reusable: Optional[bool] = None
+    operating_temperature_min_c: float | None = None
+    operating_temperature_max_c: float | None = None
+    mating_bolt_requirements: str = ""
+    dimensional_tolerance_reference: str = ""
+    verification_status: str = "unverified"
+    record_status: str = "draft"
 
 
 class WasherRecord(LibraryRecordBase):

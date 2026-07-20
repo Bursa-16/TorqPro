@@ -112,6 +112,23 @@ class LibraryRegistry:
             return stats[libraries[0].metadata.name]
         return stats
 
+    # -- Faz 2.4.1B additions -----------------------------------------
+    def search_bolts(self, **filters: Any) -> List[Dict[str, Any]]:
+        """Faz 2.4.1B extended bolt search (see
+        ``population.search_bolts`` for the full filter list, e.g.
+        ``library_registry.search_bolts(nominal_diameter=10,
+        strength_class="10.9", standard="ISO 4017")``)."""
+        from . import population as population_module
+
+        return population_module.search_bolts(**filters)
+
+    def search_nuts(self, **filters: Any) -> List[Dict[str, Any]]:
+        """Faz 2.4.1B extended nut search (see
+        ``population.search_nuts`` for the full filter list)."""
+        from . import population as population_module
+
+        return population_module.search_nuts(**filters)
+
 
 # Shared default facade instance for the package. Named distinctly
 # (not ``registry``) so it never shadows the ``backend.library.registry``

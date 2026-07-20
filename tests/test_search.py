@@ -27,10 +27,20 @@ def test_find_thread_by_series():
 
 
 def test_find_bolt_filters_by_diameter_and_head_type():
+    # Faz 2.4.1B adds ISO 4014 / DIN 931 / DIN 933 / EN 14399-3 Hex
+    # M10 records alongside the original Faz 2.4.1 ISO 4017 one, so
+    # this no longer asserts a total count -- instead it pins down
+    # the specific, still-present ISO 4017 record deterministically.
     results = population.find_bolt(diameter_mm=10, head_type="Hex")
-    assert len(results) == 1
-    assert results[0]["diameter_mm"] == 10
-    assert results[0]["head_type"] == "Hex"
+    assert len(results) >= 1
+    assert all(r["diameter_mm"] == 10 for r in results)
+    assert all(r["head_type"] == "Hex" for r in results)
+    iso4017 = [
+        r for r in results
+        if r["source_standard"] == "ISO 4017" and r["designation"] == "M10"
+    ]
+    assert len(iso4017) == 1
+    assert iso4017[0]["id"] == "BOLT-M10-HEX"
 
 
 def test_find_bolt_no_filters_returns_everything():

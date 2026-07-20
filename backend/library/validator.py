@@ -632,3 +632,537 @@ def validate_thread_library(
     issues.extend(find_thread_minor_diameter_tolerance_violations(records))
     issues.extend(find_thread_stress_area_tolerance_violations(records))
     return ValidationReport(subject="Thread Library (Faz 2.4.1A)", issues=issues)
+
+
+# ---------------------------------------------------------------------
+# Faz 2.4.1B: bolt/nut engineering-database validation.
+#
+# Scoped to ``bolt library`` / ``nut library`` records and opt-in (not
+# wired into ``validate_library`` / ``validate_records`` above, which
+# stay Faz-1.4-generic and unchanged). Mirrors the Faz 2.4.1A
+# thread-validation pattern: one ``find_*`` function per check, each
+# returning a list of ``ValidationIssue``, plus a
+# ``validate_bolt_library`` / ``validate_nut_library`` /
+# ``validate_bolt_nut_compatibility_rules`` aggregator that runs every
+# check in one pass.
+# ---------------------------------------------------------------------
+
+#: Recognised bolt property-class format, e.g. "8.8", "10.9", "12.9".
+_BOLT_STRENGTH_CLASS_RE = re.compile(r"^\d{1,2}\.\d$")
+
+#: Metric designation with an optional explicit fine-pitch suffix,
+#: e.g. "M10" (implicit coarse) or "M10x1.25" (explicit pitch).
+_BOLT_NUT_DESIGNATION_RE = re.compile(r"^M(\d+(?:\.\d+)?)(?:[xX](\d+(?:\.\d+)?))?$")
+
+#: Coarse-pitch table (ISO 724), used to check an implicit-pitch
+#: designation ("M10", no explicit "xP" suffix) against the pitch the
+#: record actually declares. Independent from -- but numerically
+#: identical to -- the live Thread Library data; kept as a local
+#: constant so this check has no import-order dependency on
+#: ``population.py`` (which itself imports ``validator`` -- see
+#: ``population.validate_thread_library_records``).
+_ISO_724_COARSE_PITCH_MM = {
+    3: 0.5, 3.5: 0.6, 4: 0.7, 5: 0.8, 6: 1.0, 7: 1.0, 8: 1.25, 10: 1.5,
+    12: 1.75, 14: 2.0, 16: 2.0, 18: 2.5, 20: 2.5, 22: 2.5, 24: 3.0,
+    27: 3.0, 30: 3.5, 33: 3.5, 36: 4.0,
+}
+
+_HARDNESS_RANGE_RE = re.compile(r"^(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)")
+
+
+def find_duplicate_designation_standard_dimension(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag records that reuse the same (``designation``,
+    ``source_standard``, ``nominal_diameter_mm`` or ``diameter_mm``)
+    combination seen earlier -- the same physical part should not be
+    entered twice under different ids."""
+    seen: Dict[Any, int] = {}
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        dimension = record.get("nominal_diameter_mm", record.get("diameter_mm"))
+        key = (record.get("designation"), record.get("source_standard"), dimension)
+        if key in seen:
+            issues.append(
+                ValidationIssue(
+                    code="duplicate_designation_standard_dimension",
+                    message=(
+                        f"Duplicate designation+standard+dimension {key!r} "
+                        f"(first seen at index {seen[key]})"
+                    ),
+                    record_index=index,
+                    field="designation",
+                )
+            )
+        else:
+            seen[key] = index
+    return issues
+
+
+def find_non_positive_nominal_diameter(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag records whose ``nominal_diameter_mm`` (falling back to the
+    pre-existing ``diameter_mm``) is present but zero or negative.
+    Records carrying neither field are skipped -- this checks the
+    *value* of a declared diameter, not whether one was declared."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        if "nominal_diameter_mm" not in record and "diameter_mm" not in record:
+            continue
+        value = record.get("nominal_diameter_mm", record.get("diameter_mm"))
+        if not isinstance(value, (int, float)) or value <= 0:
+            issues.append(
+                ValidationIssue(
+                    code="non_positive_nominal_diameter",
+                    message=f"nominal diameter must be > 0, got {value!r}",
+                    record_index=index,
+                    field="nominal_diameter_mm",
+                )
+            )
+    return issues
+
+
+def find_non_positive_pitch(records: Sequence[Dict[str, Any]]) -> List[ValidationIssue]:
+    """Flag records whose ``pitch_mm`` (falling back to
+    ``pitch_coarse_mm`` for bolt records that predate the structured
+    field) is present but zero or negative. Records carrying neither
+    field are skipped."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        if "pitch_mm" not in record and "pitch_coarse_mm" not in record:
+            continue
+        value = record.get("pitch_mm", record.get("pitch_coarse_mm"))
+        if not isinstance(value, (int, float)) or value <= 0:
+            issues.append(
+                ValidationIssue(
+                    code="non_positive_pitch",
+                    message=f"pitch_mm must be > 0, got {value!r}",
+                    record_index=index,
+                    field="pitch_mm",
+                )
+            )
+    return issues
+
+
+def find_pitch_designation_mismatches(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag a record whose ``designation`` doesn't parse as a metric
+    thread designation, or whose declared ``pitch_mm`` disagrees with
+    the pitch implied by the designation: an explicit "MxxPyy" suffix
+    must match ``pitch_mm`` exactly; a bare "Mxx" (implicit coarse)
+    must match the ISO 724 coarse-pitch table for that diameter (only
+    checked for diameters in that table -- see
+    ``_ISO_724_COARSE_PITCH_MM``)."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        # Nut records prefix `designation` with the standard name
+        # (e.g. "ISO 4032 M3"); `thread` is always the bare metric
+        # designation ("M3") on both bolt and nut records -- prefer
+        # it, falling back to `designation` for records without a
+        # `thread` field.
+        designation = record.get("thread") or record.get("designation", "")
+        pitch = record.get("pitch_mm")
+        if not isinstance(pitch, (int, float)):
+            continue
+        match = _BOLT_NUT_DESIGNATION_RE.match(designation.strip())
+        if not match:
+            issues.append(
+                ValidationIssue(
+                    code="unparseable_designation",
+                    message=f"Not a parseable metric designation: {designation!r}",
+                    record_index=index,
+                    field="designation",
+                )
+            )
+            continue
+        diameter = float(match.group(1))
+        explicit_pitch = match.group(2)
+        if explicit_pitch is not None:
+            expected = float(explicit_pitch)
+            if abs(pitch - expected) > 1e-6:
+                issues.append(
+                    ValidationIssue(
+                        code="pitch_designation_mismatch",
+                        message=(
+                            f"designation {designation!r} implies pitch_mm="
+                            f"{expected}, but record has {pitch!r}"
+                        ),
+                        record_index=index,
+                        field="pitch_mm",
+                    )
+                )
+        else:
+            expected = _ISO_724_COARSE_PITCH_MM.get(diameter)
+            if expected is not None and abs(pitch - expected) > 1e-6:
+                issues.append(
+                    ValidationIssue(
+                        code="pitch_designation_mismatch",
+                        message=(
+                            f"designation {designation!r} implies coarse "
+                            f"pitch_mm={expected}, but record has {pitch!r}"
+                        ),
+                        record_index=index,
+                        field="pitch_mm",
+                    )
+                )
+    return issues
+
+
+def find_invalid_bolt_strength_class_format(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag bolt records whose ``property_class`` doesn't match the
+    ISO 898-1 "x.y" format (e.g. "8.8", "10.9")."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        value = record.get("property_class", "")
+        if not isinstance(value, str) or not _BOLT_STRENGTH_CLASS_RE.match(value):
+            issues.append(
+                ValidationIssue(
+                    code="invalid_bolt_strength_class_format",
+                    message=f"Not a valid ISO 898-1 bolt strength class: {value!r}",
+                    record_index=index,
+                    field="property_class",
+                )
+            )
+    return issues
+
+
+def find_invalid_nut_strength_class_format(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag nut records whose ``property_class`` is not one of the
+    recognised ISO 898-2 class numbers (see ``KNOWN_NUT_CLASSES``)."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        value = record.get("property_class", "")
+        if value not in KNOWN_NUT_CLASSES:
+            issues.append(
+                ValidationIssue(
+                    code="invalid_nut_strength_class_format",
+                    message=f"Not a recognised ISO 898-2 nut class: {value!r}",
+                    record_index=index,
+                    field="property_class",
+                )
+            )
+    return issues
+
+
+def find_non_positive_stress_area(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag records whose ``stress_area_mm2`` is present but not
+    strictly positive."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        if "stress_area_mm2" not in record:
+            continue
+        value = record["stress_area_mm2"]
+        if not isinstance(value, (int, float)) or value <= 0:
+            issues.append(
+                ValidationIssue(
+                    code="non_positive_stress_area",
+                    message=f"stress_area_mm2 must be > 0, got {value!r}",
+                    record_index=index,
+                    field="stress_area_mm2",
+                )
+            )
+    return issues
+
+
+def find_bolt_head_geometry_inconsistencies(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag hex-headed bolt records where the head-across-corners
+    dimension is not strictly greater than the head-across-flats
+    dimension (a hex head's corner-to-corner span is always larger
+    than its flat-to-flat span -- a physical consistency check, not a
+    standard-table lookup). Scoped to ``head_type in {"Hex",
+    "Flange"}`` -- socket-head and headless records reuse the same
+    field names for a different geometric concept (the round head's
+    own diameter, not a hex span) and are not comparable this way."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        if record.get("head_type") not in ("Hex", "Flange"):
+            continue
+        flats = record.get("head_across_flats_mm")
+        corners = record.get("head_across_corners_mm")
+        if not isinstance(flats, (int, float)) or not isinstance(corners, (int, float)):
+            continue
+        if corners <= flats:
+            issues.append(
+                ValidationIssue(
+                    code="head_geometry_inconsistent",
+                    message=(
+                        f"head_across_corners_mm={corners} must be > "
+                        f"head_across_flats_mm={flats}"
+                    ),
+                    record_index=index,
+                    field="head_across_corners_mm",
+                )
+            )
+    return issues
+
+
+def find_nut_width_geometry_inconsistencies(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Nut counterpart of ``find_bolt_head_geometry_inconsistencies``:
+    ``width_across_corners_mm`` must be strictly greater than
+    ``width_across_flats_mm`` when both are present."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        flats = record.get("width_across_flats_mm")
+        corners = record.get("width_across_corners_mm")
+        if not isinstance(flats, (int, float)) or not isinstance(corners, (int, float)):
+            continue
+        if corners <= flats:
+            issues.append(
+                ValidationIssue(
+                    code="nut_width_geometry_inconsistent",
+                    message=(
+                        f"width_across_corners_mm={corners} must be > "
+                        f"width_across_flats_mm={flats}"
+                    ),
+                    record_index=index,
+                    field="width_across_corners_mm",
+                )
+            )
+    return issues
+
+
+def find_strength_ordering_violations(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag bolt records where the ISO 898-1 strength ordering
+    ``proof_strength_mpa <= yield_strength_mpa <=
+    minimum_tensile_strength_mpa`` is violated. Fields absent (older
+    or non-bolt records) are skipped, not flagged."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        proof = record.get("proof_strength_mpa")
+        yield_ = record.get("yield_strength_mpa")
+        tensile = record.get("minimum_tensile_strength_mpa")
+        values = [v for v in (proof, yield_, tensile) if v is not None]
+        if len(values) < 2:
+            continue
+        if proof is not None and yield_ is not None and proof > yield_:
+            issues.append(
+                ValidationIssue(
+                    code="strength_ordering_violation",
+                    message=f"proof_strength_mpa={proof} > yield_strength_mpa={yield_}",
+                    record_index=index,
+                    field="proof_strength_mpa",
+                )
+            )
+        if yield_ is not None and tensile is not None and yield_ > tensile:
+            issues.append(
+                ValidationIssue(
+                    code="strength_ordering_violation",
+                    message=(
+                        f"yield_strength_mpa={yield_} > "
+                        f"minimum_tensile_strength_mpa={tensile}"
+                    ),
+                    record_index=index,
+                    field="yield_strength_mpa",
+                )
+            )
+    return issues
+
+
+def find_hardness_range_violations(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag records whose ``hardness_range`` string (e.g. "255-335
+    HV") has a minimum greater than its maximum, or doesn't parse at
+    all when non-empty."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        value = record.get("hardness_range", "")
+        if not value:
+            continue
+        match = _HARDNESS_RANGE_RE.match(value.strip())
+        if not match:
+            issues.append(
+                ValidationIssue(
+                    code="unparseable_hardness_range",
+                    message=f"Not a parseable hardness range: {value!r}",
+                    record_index=index,
+                    field="hardness_range",
+                )
+            )
+            continue
+        low, high = float(match.group(1)), float(match.group(2))
+        if low > high:
+            issues.append(
+                ValidationIssue(
+                    code="hardness_range_violation",
+                    message=f"hardness_range min {low} > max {high}",
+                    record_index=index,
+                    field="hardness_range",
+                )
+            )
+    return issues
+
+
+def find_temperature_range_violations(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag records whose ``operating_temperature_min_c`` exceeds
+    ``operating_temperature_max_c`` (both must be present)."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        low = record.get("operating_temperature_min_c")
+        high = record.get("operating_temperature_max_c")
+        if not isinstance(low, (int, float)) or not isinstance(high, (int, float)):
+            continue
+        if low > high:
+            issues.append(
+                ValidationIssue(
+                    code="temperature_range_violation",
+                    message=(
+                        f"operating_temperature_min_c={low} > "
+                        f"operating_temperature_max_c={high}"
+                    ),
+                    record_index=index,
+                    field="operating_temperature_min_c",
+                )
+            )
+    return issues
+
+
+def find_missing_source(records: Sequence[Dict[str, Any]]) -> List[ValidationIssue]:
+    """Flag records where neither ``source`` nor ``source_standard``
+    is populated -- every record must be traceable to a source."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        if not record.get("source") and not record.get("source_standard"):
+            issues.append(
+                ValidationIssue(
+                    code="missing_source",
+                    message="Neither source nor source_standard is populated",
+                    record_index=index,
+                    field="source",
+                )
+            )
+    return issues
+
+
+def find_verified_missing_revision(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag records marked ``validation_status == "validated"`` or
+    ``verification_status == "verified"`` that have no ``revision``
+    (year/date) recorded."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        is_verified = (
+            record.get("validation_status") == "validated"
+            or record.get("verification_status") == "verified"
+        )
+        if is_verified and not record.get("revision"):
+            issues.append(
+                ValidationIssue(
+                    code="verified_missing_revision",
+                    message="Verified record has no revision/year recorded",
+                    record_index=index,
+                    field="revision",
+                )
+            )
+    return issues
+
+
+#: Nut families/locking types that are lock nuts by design -- these
+#: must declare a non-empty ``locking_principle``.
+_LOCK_NUT_LOCKING_TYPES = frozenset({
+    "Nylon insert", "All-metal (deformed thread)",
+})
+
+
+def find_lock_nut_missing_locking_principle(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag lock-nut records (identified by ``nut_family`` containing
+    "lock nut" or a recognised locking ``locking_type``) that have no
+    ``locking_principle`` populated."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        family = record.get("nut_family", "")
+        locking_type = record.get("locking_type", "None")
+        is_lock_nut = "lock nut" in family.lower() or locking_type in _LOCK_NUT_LOCKING_TYPES
+        if is_lock_nut and not record.get("locking_principle"):
+            issues.append(
+                ValidationIssue(
+                    code="lock_nut_missing_locking_principle",
+                    message="Lock nut record has no locking_principle populated",
+                    record_index=index,
+                    field="locking_principle",
+                )
+            )
+    return issues
+
+
+def find_prevailing_torque_nut_missing_reuse_info(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag prevailing-torque nut records (identified by a non-empty
+    ``prevailing_torque_category`` or a ``nut_family`` of "Prevailing
+    torque nut") that have no ``reusable`` (True/False) declared."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        is_prevailing_torque = (
+            bool(record.get("prevailing_torque_category"))
+            or record.get("nut_family") == "Prevailing torque nut"
+        )
+        if is_prevailing_torque and record.get("reusable") is None:
+            issues.append(
+                ValidationIssue(
+                    code="prevailing_torque_nut_missing_reuse_info",
+                    message="Prevailing torque nut record has no reusable flag declared",
+                    record_index=index,
+                    field="reusable",
+                )
+            )
+    return issues
+
+
+def validate_bolt_library(records: Sequence[Dict[str, Any]]) -> ValidationReport:
+    """Run every Faz 2.4.1B bolt-specific check over ``records`` in
+    one pass."""
+    issues: List[ValidationIssue] = []
+    issues.extend(find_duplicate_ids(records))
+    issues.extend(find_duplicate_designation_standard_dimension(records))
+    issues.extend(find_non_positive_nominal_diameter(records))
+    issues.extend(find_non_positive_pitch(records))
+    issues.extend(find_pitch_designation_mismatches(records))
+    issues.extend(find_invalid_bolt_strength_class_format(records))
+    issues.extend(find_non_positive_stress_area(records))
+    issues.extend(find_bolt_head_geometry_inconsistencies(records))
+    issues.extend(find_strength_ordering_violations(records))
+    issues.extend(find_hardness_range_violations(records))
+    issues.extend(find_temperature_range_violations(records))
+    issues.extend(find_missing_source(records))
+    issues.extend(find_verified_missing_revision(records))
+    return ValidationReport(subject="Bolt Library (Faz 2.4.1B)", issues=issues)
+
+
+def validate_nut_library(records: Sequence[Dict[str, Any]]) -> ValidationReport:
+    """Run every Faz 2.4.1B nut-specific check over ``records`` in one
+    pass."""
+    issues: List[ValidationIssue] = []
+    issues.extend(find_duplicate_ids(records))
+    issues.extend(find_duplicate_designation_standard_dimension(records))
+    issues.extend(find_non_positive_nominal_diameter(records))
+    issues.extend(find_non_positive_pitch(records))
+    issues.extend(find_pitch_designation_mismatches(records))
+    issues.extend(find_invalid_nut_strength_class_format(records))
+    issues.extend(find_nut_width_geometry_inconsistencies(records))
+    issues.extend(find_hardness_range_violations(records))
+    issues.extend(find_temperature_range_violations(records))
+    issues.extend(find_missing_source(records))
+    issues.extend(find_verified_missing_revision(records))
+    issues.extend(find_lock_nut_missing_locking_principle(records))
+    issues.extend(find_prevailing_torque_nut_missing_reuse_info(records))
+    return ValidationReport(subject="Nut Library (Faz 2.4.1B)", issues=issues)

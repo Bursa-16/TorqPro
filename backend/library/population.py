@@ -198,6 +198,26 @@ def validate_thread_library_records() -> List[str]:
     return [issue.message for issue in report.issues]
 
 
+def validate_bolt_library_records() -> List[str]:
+    """Run the Faz 2.4.1B bolt-specific checks
+    (``validator.validate_bolt_library``) over the live bolt library
+    data file. Additional, bolt-only entry point -- does not replace
+    ``validate_all_population_sources``."""
+    records = load_population_records("bolt library")
+    report = validator_module.validate_bolt_library(records)
+    return [issue.message for issue in report.issues]
+
+
+def validate_nut_library_records() -> List[str]:
+    """Run the Faz 2.4.1B nut-specific checks
+    (``validator.validate_nut_library``) over the live nut library
+    data file. Additional, nut-only entry point -- does not replace
+    ``validate_all_population_sources``."""
+    records = load_population_records("nut library")
+    report = validator_module.validate_nut_library(records)
+    return [issue.message for issue in report.issues]
+
+
 def find_invalid_status_values() -> List[str]:
     """Flag any record (across all domains, including the OEM
     catalog) whose ``validation_status``/``approval_status`` is
@@ -266,6 +286,11 @@ _GEOMETRIC_FIELDS = (
     "clearance_hole_medium_mm", "tap_drill_mm", "thread_engagement_mm",
     "weight_kg_per_100", "height_mm", "width_across_flats_mm",
     "inner_diameter_mm", "outer_diameter_mm", "thickness_mm",
+    # -- Faz 2.4.1B additions --
+    "nominal_length_mm", "threaded_length_mm", "wrench_size_mm",
+    "under_head_bearing_diameter_mm", "reduced_shank_diameter_mm",
+    "width_across_corners_mm", "flange_diameter_mm",
+    "bearing_surface_diameter_mm", "proof_load_n",
 )
 
 
@@ -391,6 +416,8 @@ def run_all_integrity_checks() -> Dict[str, List[str]]:
         "broken_compatibility_references": find_broken_compatibility_references(),
         "invalid_status_values": find_invalid_status_values(),
         "checksum_mismatches": find_checksum_mismatches(),
+        "bolt_library_faz2_4_1b": validate_bolt_library_records(),
+        "nut_library_faz2_4_1b": validate_nut_library_records(),
     }
 
 
@@ -471,7 +498,8 @@ def find_bolt(
 ) -> List[Dict[str, Any]]:
     """Look up bolt master records, optionally filtered by nominal
     ``diameter_mm``, ``property_class`` and/or ``head_type`` (e.g.
-    "Hex", "Socket")."""
+    "Hex", "Socket"). Pre-existing Faz 2.4.1 API -- unchanged; see
+    :func:`search_bolts` for the Faz 2.4.1B extended filter set."""
     records = load_population_records("bolt library")
     if diameter_mm is not None:
         records = [r for r in records if r.get("diameter_mm") == diameter_mm]
@@ -490,7 +518,9 @@ def find_nut(
 ) -> List[Dict[str, Any]]:
     """Look up nut master records, optionally filtered by thread
     diameter (parsed from ``designation``/``thread``) and/or
-    ``standard`` (e.g. "ISO 4032")."""
+    ``standard`` (e.g. "ISO 4032"). Pre-existing Faz 2.4.1 API --
+    unchanged; see :func:`search_nuts` for the Faz 2.4.1B extended
+    filter set."""
     records = load_population_records("nut library")
     if standard is not None:
         records = [r for r in records if r.get("source_standard") == standard]
@@ -499,6 +529,144 @@ def find_nut(
         records = [
             r for r in records if r.get("thread", "").split("x")[0] == needle
         ]
+    return records
+
+
+def search_bolts(
+    *,
+    standard: Optional[str] = None,
+    family: Optional[str] = None,
+    nominal_diameter: Optional[float] = None,
+    pitch: Optional[float] = None,
+    strength_class: Optional[str] = None,
+    coating: Optional[str] = None,
+    material_family: Optional[str] = None,
+    coarse_or_fine: Optional[str] = None,
+    verified_only: bool = False,
+    designation: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Faz 2.4.1B extended bolt search: every filter given is
+    intersected (AND, not OR); omitted filters are not applied.
+
+    - ``standard``: exact match on ``source_standard`` (e.g. "ISO 4017").
+    - ``family``: case-insensitive exact match on ``bolt_family``
+      (e.g. "Hexagon head bolt").
+    - ``nominal_diameter`` / ``pitch``: exact match on
+      ``nominal_diameter_mm`` / ``pitch_mm``.
+    - ``strength_class``: exact match on ``property_class`` (e.g. "10.9").
+    - ``coating``: case-insensitive substring match against any entry
+      in ``coating_compatibility``.
+    - ``material_family``: case-insensitive substring match on ``material``.
+    - ``coarse_or_fine``: case-insensitive exact match on ``coarse_or_fine``.
+    - ``verified_only``: when True, keep only
+      ``verification_status == "verified"`` records.
+    - ``designation``: case-insensitive substring match on ``designation``.
+    """
+    records = load_population_records("bolt library")
+    if standard is not None:
+        records = [r for r in records if r.get("source_standard") == standard]
+    if family is not None:
+        records = [
+            r for r in records if r.get("bolt_family", "").lower() == family.lower()
+        ]
+    if nominal_diameter is not None:
+        records = [
+            r for r in records
+            if r.get("nominal_diameter_mm", r.get("diameter_mm")) == nominal_diameter
+        ]
+    if pitch is not None:
+        records = [
+            r for r in records if r.get("pitch_mm", r.get("pitch_coarse_mm")) == pitch
+        ]
+    if strength_class is not None:
+        records = [r for r in records if r.get("property_class") == strength_class]
+    if coating is not None:
+        needle = coating.strip().lower()
+        records = [
+            r for r in records
+            if any(needle in c.lower() for c in r.get("coating_compatibility", []))
+        ]
+    if material_family is not None:
+        needle = material_family.strip().lower()
+        records = [r for r in records if needle in r.get("material", "").lower()]
+    if coarse_or_fine is not None:
+        records = [
+            r for r in records
+            if r.get("coarse_or_fine", "").lower() == coarse_or_fine.lower()
+        ]
+    if verified_only:
+        records = [r for r in records if r.get("verification_status") == "verified"]
+    if designation is not None:
+        needle = designation.strip().lower()
+        records = [r for r in records if needle in r.get("designation", "").lower()]
+    return records
+
+
+def search_nuts(
+    *,
+    standard: Optional[str] = None,
+    family: Optional[str] = None,
+    nominal_diameter: Optional[float] = None,
+    pitch: Optional[float] = None,
+    strength_class: Optional[str] = None,
+    coating: Optional[str] = None,
+    locking_principle: Optional[str] = None,
+    coarse_or_fine: Optional[str] = None,
+    verified_only: bool = False,
+    designation: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Faz 2.4.1B extended nut search -- same filter-intersection
+    convention as :func:`search_bolts`.
+
+    - ``standard``: exact match on ``source_standard`` (e.g. "ISO 4032").
+    - ``family``: case-insensitive exact match on ``nut_family``
+      (e.g. "Nylon insert lock nut").
+    - ``nominal_diameter`` / ``pitch``: exact match on
+      ``nominal_diameter_mm`` / ``pitch_mm``.
+    - ``strength_class``: exact match on ``property_class`` (e.g. "10").
+    - ``coating``: case-insensitive substring match against any entry
+      in ``coating_compatibility``.
+    - ``locking_principle``: case-insensitive substring match on
+      ``locking_principle``.
+    - ``coarse_or_fine``: case-insensitive exact match on ``coarse_or_fine``.
+    - ``verified_only``: when True, keep only
+      ``verification_status == "verified"`` records.
+    - ``designation``: case-insensitive substring match on ``designation``.
+    """
+    records = load_population_records("nut library")
+    if standard is not None:
+        records = [r for r in records if r.get("source_standard") == standard]
+    if family is not None:
+        records = [
+            r for r in records if r.get("nut_family", "").lower() == family.lower()
+        ]
+    if nominal_diameter is not None:
+        records = [
+            r for r in records if r.get("nominal_diameter_mm") == nominal_diameter
+        ]
+    if pitch is not None:
+        records = [r for r in records if r.get("pitch_mm") == pitch]
+    if strength_class is not None:
+        records = [r for r in records if r.get("property_class") == strength_class]
+    if coating is not None:
+        needle = coating.strip().lower()
+        records = [
+            r for r in records
+            if any(needle in c.lower() for c in r.get("coating_compatibility", []))
+        ]
+    if locking_principle is not None:
+        needle = locking_principle.strip().lower()
+        records = [r for r in records if needle in r.get("locking_principle", "").lower()]
+    if coarse_or_fine is not None:
+        records = [
+            r for r in records
+            if r.get("coarse_or_fine", "").lower() == coarse_or_fine.lower()
+        ]
+    if verified_only:
+        records = [r for r in records if r.get("verification_status") == "verified"]
+    if designation is not None:
+        needle = designation.strip().lower()
+        records = [r for r in records if needle in r.get("designation", "").lower()]
     return records
 
 
@@ -576,8 +744,12 @@ __all__ = [
     "count_iso_metric_thread_records",
     "count_non_iso_metric_thread_records",
     "validate_thread_library_records",
+    "validate_bolt_library_records",
+    "validate_nut_library_records",
     "find_bolt",
     "find_nut",
+    "search_bolts",
+    "search_nuts",
     "find_material",
     "find_coating",
     "find_lubrication",

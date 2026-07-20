@@ -5,6 +5,12 @@ Metadata-only definition for the bolt/nut/washer compatibility rule
 set (e.g. minimum nut class per bolt class). This is an engineering
 rule-set library, not a calculation module: no compatibility logic is
 implemented here. No records are migrated in this phase.
+
+Faz 2.4.1B note: the structured bolt<->nut compatibility *service*
+requested by that phase (``CompatibilityResult`` with
+warnings/errors/engineering_notes, not a bare boolean) lives in
+``backend.library.compatibility_engine`` rather than here, to keep
+this module's Phase 1.3 "metadata-only" design unchanged.
 """
 
 from __future__ import annotations

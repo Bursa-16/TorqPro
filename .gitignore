@@ -6,3 +6,4 @@ torqpro.db
 torqpro.log
 .torqpro_secret
 runtime/
+.coverage
