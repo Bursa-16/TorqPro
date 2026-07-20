@@ -186,6 +186,18 @@ def validate_all_population_sources() -> Dict[str, List[str]]:
     return {key: validate_population_source(key) for key in POPULATION_SOURCES}
 
 
+def validate_thread_library_records() -> List[str]:
+    """Run the Faz 2.4.1A thread-specific checks
+    (``validator.validate_thread_library``) over the live thread
+    library data file. Kept separate from
+    ``validate_all_population_sources`` above -- that function's
+    Faz 2.4.1 semantics (duplicate-id + typed-schema only) are
+    unchanged; this is an additional, thread-only entry point."""
+    records = load_population_records("thread library")
+    report = validator_module.validate_thread_library(records)
+    return [issue.message for issue in report.issues]
+
+
 def find_invalid_status_values() -> List[str]:
     """Flag any record (across all domains, including the OEM
     catalog) whose ``validation_status``/``approval_status`` is
@@ -392,16 +404,64 @@ def run_all_integrity_checks() -> Dict[str, List[str]]:
 def find_thread(
     designation: Optional[str] = None,
     series: Optional[str] = None,
+    nominal_diameter_mm: Optional[float] = None,
+    pitch_mm: Optional[float] = None,
+    pitch_type: Optional[str] = None,
+    thread_series: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
-    """Look up thread geometry records, optionally filtered by exact
-    ``designation`` (e.g. "M8") and/or ``series`` (e.g. "Coarse",
-    "Fine", "Extra Fine", "UNC", ...)."""
+    """Look up thread geometry records, optionally filtered by any
+    combination of the arguments below (all filters given are
+    intersected -- AND, not OR):
+
+    - ``designation``: exact match (e.g. "M8").
+    - ``series``: pre-existing free-text field (e.g. "Coarse",
+      "Fine", "Extra Fine", "UNC", ...), case-insensitive. Kept for
+      backward compatibility -- not deprecated.
+    - ``nominal_diameter_mm`` / ``pitch_mm``: exact match (Faz
+      2.4.1A).
+    - ``pitch_type``: Faz 2.4.1A structured field ("coarse", "fine",
+      "extra_fine"), case-insensitive. Acts as an alias of ``series``
+      for the records that have a coarse/fine analogue -- either can
+      be used, and combining both further narrows the result.
+    - ``thread_series``: Faz 2.4.1A structured field ("ISO_METRIC",
+      "UNC", "UNF", "UNEF", "BSP", "NPT", "TRAPEZOIDAL"),
+      case-insensitive.
+    """
     records = load_population_records("thread library")
     if designation is not None:
         records = [r for r in records if r.get("designation") == designation]
     if series is not None:
         records = [r for r in records if r.get("series", "").lower() == series.lower()]
+    if nominal_diameter_mm is not None:
+        records = [
+            r for r in records if r.get("nominal_diameter_mm") == nominal_diameter_mm
+        ]
+    if pitch_mm is not None:
+        records = [r for r in records if r.get("pitch_mm") == pitch_mm]
+    if pitch_type is not None:
+        records = [
+            r for r in records
+            if (r.get("pitch_type") or "").lower() == pitch_type.lower()
+        ]
+    if thread_series is not None:
+        records = [
+            r for r in records
+            if r.get("thread_series", "").lower() == thread_series.lower()
+        ]
     return records
+
+
+def count_iso_metric_thread_records() -> int:
+    """Number of thread records in Faz 2.4.1A's own scope
+    (``thread_series == "ISO_METRIC"``)."""
+    return len(find_thread(thread_series="ISO_METRIC"))
+
+
+def count_non_iso_metric_thread_records() -> int:
+    """Number of pre-existing thread records outside Faz 2.4.1A's
+    scope (UNC/UNF/UNEF/BSP/NPT/Trapezoidal)."""
+    records = load_population_records("thread library")
+    return len([r for r in records if r.get("thread_series") != "ISO_METRIC"])
 
 
 def find_bolt(
@@ -513,6 +573,9 @@ __all__ = [
     "find_broken_compatibility_references",
     "run_all_integrity_checks",
     "find_thread",
+    "count_iso_metric_thread_records",
+    "count_non_iso_metric_thread_records",
+    "validate_thread_library_records",
     "find_bolt",
     "find_nut",
     "find_material",

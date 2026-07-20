@@ -22,7 +22,7 @@ adapter-only OEM shell (see ``backend/library/oem_library.py``).
 from __future__ import annotations
 
 from enum import IntEnum
-from typing import Any, Dict, List, Sequence, Tuple, Type
+from typing import Any, Dict, List, Literal, Optional, Sequence, Tuple, Type
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
@@ -102,6 +102,29 @@ class WasherRecord(LibraryRecordBase):
     hardness: str = ""
 
 
+#: Faz 2.4.1A thread-record schema version. Deliberately distinct
+#: from ``LibraryRecordBase.version`` / ``LibraryMetadata.version``,
+#: which track the *dataset* release (e.g. "2.4.1"). This constant
+#: tracks the *shape* of ``ThreadRecord`` itself and only changes when
+#: the thread schema changes, independent of how many times the
+#: dataset content is re-released under the same shape.
+THREAD_SCHEMA_VERSION = "1.0"
+
+#: Recognised ``pitch_type`` values (coarse/fine/extra-fine only).
+#: Records with no coarse/fine analogue (e.g. BSP, NPT, Trapezoidal)
+#: leave ``pitch_type`` unset (``None``) rather than guessing.
+ThreadPitchType = Literal["coarse", "fine", "extra_fine"]
+
+#: Recognised ``thread_series`` values. ``ISO_METRIC`` is the only
+#: series in Faz 2.4.1A's own validation/search scope; the others
+#: label the pre-existing non-metric reference records so they can be
+#: unambiguously excluded from that scope (see ``validator.py``
+#: ``is_iso_metric_thread_record`` / ``find_non_iso_metric_series``).
+KNOWN_THREAD_SERIES = (
+    "ISO_METRIC", "UNC", "UNF", "UNEF", "BSP", "NPT", "TRAPEZOIDAL",
+)
+
+
 class ThreadRecord(LibraryRecordBase):
     """Thread geometry record (see ``thread_library.py``).
 
@@ -109,13 +132,71 @@ class ThreadRecord(LibraryRecordBase):
     metric thread pattern by
     ``backend.library.validator.is_valid_thread_designation`` --
     unchanged by this schema, which only checks presence/type here.
+
+    Faz 2.4.1A additions (all optional, additive -- every Faz 2.4.0/
+    2.4.1 record that predates these fields keeps validating
+    unchanged):
+
+    - ``pitch_type`` / ``thread_series``: structured counterparts of
+      the pre-existing free-text ``series`` field (kept as-is for
+      backward compatibility; not renamed or removed).
+    - ``major_diameter_mm``: the ISO 724 *basic* (theoretical, no
+      tolerance) major diameter. For the basic profile this equals
+      ``nominal_diameter_mm`` for both external and internal threads
+      -- it is carried as its own field for API/schema completeness,
+      not because its value differs from ``nominal_diameter_mm``.
+    - ``minor_diameter_external_mm`` / ``minor_diameter_internal_mm``:
+      split out of the pre-existing single ``minor_diameter_mm``
+      field (also kept as-is), which historically held only the
+      internal (nut, sharp-root, D1) value. See
+      ``backend.library.thread_geometry`` for the ISO 724 formulas.
+    - ``source_reference`` / ``source_revision``: structured
+      counterparts of the pre-existing free-text ``source`` /
+      ``revision`` fields (kept as-is).
+    - ``confidence_level``: structured counterpart of the pre-existing
+      ``confidence`` field (kept as-is).
+    - ``review_status``: Faz 2.4.1A review-workflow status, distinct
+      from the pre-existing ``validation_status`` / ``approval_status``
+      pair (kept as-is).
+    - ``schema_version``: see ``THREAD_SCHEMA_VERSION`` above.
+
+    ``model_config`` overrides ``LibraryRecordBase`` to
+    ``extra="forbid"`` for this record type only (Pydantic v2 resolves
+    ``model_config`` per-subclass, so the other nine domain records
+    keep ``extra="allow"`` unchanged). This is a Faz 2.4.1A-scoped
+    decision: unknown fields on a thread record must be rejected
+    explicitly rather than silently accepted.
     """
+
+    model_config = ConfigDict(extra="forbid")
 
     designation: str
     nominal_diameter_mm: float | None = None
     pitch_mm: float | None = None
     tolerance_class: str = ""
     stress_area_source: str = ""
+
+    # -- Pre-existing (Faz 2.4.1) fields, made explicit for the
+    # extra="forbid" override above. LibraryRecordBase's extra="allow"
+    # let these pass through untyped before; forbidding extras on
+    # ThreadRecord means every field the data actually carries must
+    # now be declared here. Values, names and semantics unchanged.
+    series: str = ""
+    pitch_diameter_mm: float | None = None
+    minor_diameter_mm: float | None = None
+    stress_area_mm2: float | None = None
+
+    # -- Faz 2.4.1A additions --------------------------------------
+    pitch_type: Optional[ThreadPitchType] = None
+    thread_series: str = ""
+    major_diameter_mm: float | None = None
+    minor_diameter_external_mm: float | None = None
+    minor_diameter_internal_mm: float | None = None
+    source_reference: str = ""
+    source_revision: str = ""
+    confidence_level: Optional[ConfidenceLevel] = None
+    review_status: str = ""
+    schema_version: str = ""
 
 
 class MaterialRecord(LibraryRecordBase):
