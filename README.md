@@ -2,7 +2,13 @@
 
 Cıvatalı bağlantı mühendisliği ve sıkma güvencesi platformu (FastAPI + SQLite + tek sayfa PWA).
 Mevcut hesap kabiliyeti bir **mühendislik ön değerlendirmesidir**; onaylı VDI 2230 çözücüsü değildir.
+****
+## Current Development Status
 
+- ✅ Phase 2.4.1A — Thread Engineering Database
+- ✅ Phase 2.4.1B — Bolt & Nut Engineering Database
+- ⏳ Phase 2.4.1C — Washer & Joint Hardware Engineering Database
+  
 ## Kurulum ve çalıştırma
 
 ```bash
