@@ -1,0 +1,4861 @@
+{
+  "metadata": {
+    "name": "Nut Library",
+    "version": "2.4.1",
+    "description": "ISO 4032/4033/8673/7040/10511 hex nut master geometry across ISO metric M3-M64.",
+    "generated": "2026-07-20",
+    "primary_source": "ISO 4032/4033/8673/7040/10511 product-dimension standards. height_mm is a verified standard-table value only for the sizes listed in VERIFIED_ISO4032_HEIGHT; all other height_mm values are ratio-estimated (reference_only)."
+  },
+  "records": [
+    {
+      "id": "NUT-ISO4032-M3",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M3. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M3",
+      "thread": "M3",
+      "property_class": "8",
+      "height_mm": 2.4,
+      "width_across_flats_mm": 5.5,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "3ad52d3214c563926128e70971d7e40905737d0c5ccaf085ab435b0a1c16ad6b"
+    },
+    {
+      "id": "NUT-ISO4032-M3.5",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M3.5",
+      "thread": "M3.5",
+      "property_class": "8",
+      "height_mm": 2.8,
+      "width_across_flats_mm": 6,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "b5ef7185794637c136418f508be59771cfed67ca1a2ae1a811a9334a892fd133"
+    },
+    {
+      "id": "NUT-ISO4032-M4",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M4. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M4",
+      "thread": "M4",
+      "property_class": "8",
+      "height_mm": 3.2,
+      "width_across_flats_mm": 7,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "a06ab37dc2e5609ad208566dd27d943e150441b27c2ce27cead4618bd45f5152"
+    },
+    {
+      "id": "NUT-ISO4032-M5",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M5. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M5",
+      "thread": "M5",
+      "property_class": "8",
+      "height_mm": 4.7,
+      "width_across_flats_mm": 8,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "dd787c12007cae5f8fab8be60942dcebb50ca613d1c163dc198c3d22e841b39e"
+    },
+    {
+      "id": "NUT-ISO4032-M6",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M6. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M6",
+      "thread": "M6",
+      "property_class": "8",
+      "height_mm": 5.2,
+      "width_across_flats_mm": 10,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "11f42e182ea5cc61d88fb06b156d31c5fceaf8517df4689e7f1769e437dcb2f3"
+    },
+    {
+      "id": "NUT-ISO4032-M7",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M7",
+      "thread": "M7",
+      "property_class": "8",
+      "height_mm": 5.6,
+      "width_across_flats_mm": 11,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "fd03deb70e586dab4d7fca3398f5e8e55fc3aa338554008b5f9d6d425f1a9cd9"
+    },
+    {
+      "id": "NUT-ISO4032-M8",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M8. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M8",
+      "thread": "M8",
+      "property_class": "8",
+      "height_mm": 6.8,
+      "width_across_flats_mm": 13,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "ef4cb3bad6fdab9535a6fd5c42b72c978a066ff89b463b1bed842a6fda417eba"
+    },
+    {
+      "id": "NUT-ISO4032-M10",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M10. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M10",
+      "thread": "M10",
+      "property_class": "8",
+      "height_mm": 8.4,
+      "width_across_flats_mm": 16,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "ea96fa95d216220cd110f865213ee23d7ac3eec3f95e10960fbf680cb1dd64c2"
+    },
+    {
+      "id": "NUT-ISO4032-M12",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M12. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M12",
+      "thread": "M12",
+      "property_class": "8",
+      "height_mm": 10.8,
+      "width_across_flats_mm": 18,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "91ecf077497c9c3cdce300291e1cfcbf98413e79638135e9d8cc7051d02981fd"
+    },
+    {
+      "id": "NUT-ISO4032-M14",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M14",
+      "thread": "M14",
+      "property_class": "8",
+      "height_mm": 11.2,
+      "width_across_flats_mm": 21,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "05c85a893ba7a9ba7c1db0a41b9f3a6942ce3803c973213bed62661734661bd2"
+    },
+    {
+      "id": "NUT-ISO4032-M16",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M16. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M16",
+      "thread": "M16",
+      "property_class": "8",
+      "height_mm": 14.8,
+      "width_across_flats_mm": 24,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "4e9f70bc6246ee3c41bca42a3fee7ada55c2b190f65f32580fc031426e18df0a"
+    },
+    {
+      "id": "NUT-ISO4032-M18",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M18",
+      "thread": "M18",
+      "property_class": "8",
+      "height_mm": 14.4,
+      "width_across_flats_mm": 27,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "f8d73d0c9e28487589bda5c9732e53211ddc97cc187158f4f390ab0d3cc08b35"
+    },
+    {
+      "id": "NUT-ISO4032-M20",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M20. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M20",
+      "thread": "M20",
+      "property_class": "8",
+      "height_mm": 18.0,
+      "width_across_flats_mm": 30,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "ea4497fbae123e2f38510c4add593370577600d25badff6f5b3f731c693def74"
+    },
+    {
+      "id": "NUT-ISO4032-M22",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M22",
+      "thread": "M22",
+      "property_class": "8",
+      "height_mm": 17.6,
+      "width_across_flats_mm": 34,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "555576f6dfee59430389423a17c7eb74f0cb3238a3f14a39a741fdc73a47fe7e"
+    },
+    {
+      "id": "NUT-ISO4032-M24",
+      "source_standard": "ISO 4032",
+      "confidence": 2,
+      "notes": "Standard hex nut, style 1. height_mm is the verified ISO 4032 standard table value for M24. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm",
+          "height_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 4032 M24",
+      "thread": "M24",
+      "property_class": "8",
+      "height_mm": 21.5,
+      "width_across_flats_mm": 36,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "21d48d45a2271431e5915288a19ec40212a081cfb33fd88406a49ff346031c5a"
+    },
+    {
+      "id": "NUT-ISO4032-M27",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M27",
+      "thread": "M27",
+      "property_class": "8",
+      "height_mm": 21.6,
+      "width_across_flats_mm": 41,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "4f3e9b4d83571d7db6937b3531d1932089c91aa89b8b39725cf995c48a9f0d07"
+    },
+    {
+      "id": "NUT-ISO4032-M30",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M30",
+      "thread": "M30",
+      "property_class": "8",
+      "height_mm": 24.0,
+      "width_across_flats_mm": 46,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "684e85434282d50998d0c2b9335f30e67d727c1b3858955df3fa5fd70e68c9e1"
+    },
+    {
+      "id": "NUT-ISO4032-M33",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M33",
+      "thread": "M33",
+      "property_class": "8",
+      "height_mm": 26.4,
+      "width_across_flats_mm": 50,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "9625046d1186587628b762bcc560a0c746e49f1316abad6773cd0b522dd704fb"
+    },
+    {
+      "id": "NUT-ISO4032-M36",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M36",
+      "thread": "M36",
+      "property_class": "8",
+      "height_mm": 28.8,
+      "width_across_flats_mm": 55,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "71758255eab6691f006f29d727ac1393297578684f11319239958a73fe2651d7"
+    },
+    {
+      "id": "NUT-ISO4032-M39",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M39",
+      "thread": "M39",
+      "property_class": "8",
+      "height_mm": 31.2,
+      "width_across_flats_mm": 60,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "a10c45150422c0092196bfe6634e16782b70e6b503d8f2fc8f2d8bfe6509f068"
+    },
+    {
+      "id": "NUT-ISO4032-M42",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M42",
+      "thread": "M42",
+      "property_class": "8",
+      "height_mm": 33.6,
+      "width_across_flats_mm": 65,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "9ed425f0c79a1be3f04285cee51fcee22ec60b7c1b868d0902befb4a900b106b"
+    },
+    {
+      "id": "NUT-ISO4032-M45",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M45",
+      "thread": "M45",
+      "property_class": "8",
+      "height_mm": 36.0,
+      "width_across_flats_mm": 70,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "8fed42ee062bbb5b99254e36bc1340bd94bf8a9fbe4e7d7c492ced3c6167d3fe"
+    },
+    {
+      "id": "NUT-ISO4032-M48",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M48",
+      "thread": "M48",
+      "property_class": "8",
+      "height_mm": 38.4,
+      "width_across_flats_mm": 75,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "41a2ca971ccb874c668dde660784efea07a5aec7c77b2f4f9cdee2c4543c5937"
+    },
+    {
+      "id": "NUT-ISO4032-M52",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M52",
+      "thread": "M52",
+      "property_class": "8",
+      "height_mm": 41.6,
+      "width_across_flats_mm": 80,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "fa6fc2ab550162f19ce37525beae25c9f3b62fc342b3a59ad6eef8272be06ac7"
+    },
+    {
+      "id": "NUT-ISO4032-M56",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M56",
+      "thread": "M56",
+      "property_class": "8",
+      "height_mm": 44.8,
+      "width_across_flats_mm": 85,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "59b9714f838b89b85e84c25d6a343e161dbb2596feb24128f40fe386c5dbfd1f"
+    },
+    {
+      "id": "NUT-ISO4032-M60",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M60",
+      "thread": "M60",
+      "property_class": "8",
+      "height_mm": 48.0,
+      "width_across_flats_mm": 90,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "5db93857d61eada7d48bcdab914380ee30cc4c66e90564d1f5586aa616381a2b"
+    },
+    {
+      "id": "NUT-ISO4032-M64",
+      "source_standard": "ISO 4032",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 4032 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4032",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4032 M64",
+      "thread": "M64",
+      "property_class": "8",
+      "height_mm": 51.2,
+      "width_across_flats_mm": 95,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "a5055f1f77818bddc0f7f2010d66cefbf2895c0e4e434f8b04495e0fca4f437b"
+    },
+    {
+      "id": "NUT-ISO4033-M3",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M3",
+      "thread": "M3",
+      "property_class": "8",
+      "height_mm": 2.7,
+      "width_across_flats_mm": 5.5,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "2b3bf33ab435223a9de549b65c5e91a30ae42be51cae37896a51d73fe37fb2c3"
+    },
+    {
+      "id": "NUT-ISO4033-M3.5",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M3.5",
+      "thread": "M3.5",
+      "property_class": "8",
+      "height_mm": 3.15,
+      "width_across_flats_mm": 6,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "4c00a665a814e0473772121eb6bd241429e33e10c555cb2f63352e93e2bb07f3"
+    },
+    {
+      "id": "NUT-ISO4033-M4",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M4",
+      "thread": "M4",
+      "property_class": "8",
+      "height_mm": 3.6,
+      "width_across_flats_mm": 7,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "dfa77c03696c97f6c4d7cb3f94d45fbbb811746635ee1528d2bd99b9558dfd79"
+    },
+    {
+      "id": "NUT-ISO4033-M5",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M5",
+      "thread": "M5",
+      "property_class": "8",
+      "height_mm": 4.5,
+      "width_across_flats_mm": 8,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "ab0d9be59ca174e0d45f847488c5870498febb54bc093e97c347d961ec33d4e5"
+    },
+    {
+      "id": "NUT-ISO4033-M6",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M6",
+      "thread": "M6",
+      "property_class": "8",
+      "height_mm": 5.4,
+      "width_across_flats_mm": 10,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "e02e3746ba9c1022a3b29c30c44fbb9e40103b00739335faee03313b24afd2a7"
+    },
+    {
+      "id": "NUT-ISO4033-M7",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M7",
+      "thread": "M7",
+      "property_class": "8",
+      "height_mm": 6.3,
+      "width_across_flats_mm": 11,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "5bcc60d1438b85c0341428d469c3d1d880e0603ece10e18e87ae99b413686f4b"
+    },
+    {
+      "id": "NUT-ISO4033-M8",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M8",
+      "thread": "M8",
+      "property_class": "8",
+      "height_mm": 7.2,
+      "width_across_flats_mm": 13,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "5cd045b73e9ea6fd9a57fcbacefba46b3537bd6f317f843ee346403a0d7c63ff"
+    },
+    {
+      "id": "NUT-ISO4033-M10",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M10",
+      "thread": "M10",
+      "property_class": "8",
+      "height_mm": 9.0,
+      "width_across_flats_mm": 16,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "763b0d4bd72426e95d49366e4253244fd235ae375d366e3384f29707a5050ed2"
+    },
+    {
+      "id": "NUT-ISO4033-M12",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M12",
+      "thread": "M12",
+      "property_class": "8",
+      "height_mm": 10.8,
+      "width_across_flats_mm": 18,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "d060ae44fff26ae2ee6626d498fc8e7db87257de8673525625499f11638220bd"
+    },
+    {
+      "id": "NUT-ISO4033-M14",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M14",
+      "thread": "M14",
+      "property_class": "8",
+      "height_mm": 12.6,
+      "width_across_flats_mm": 21,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "965f5cc2a42149e1ddd734fb86e96def6bdd2d46b67546bb570dc9a580175cea"
+    },
+    {
+      "id": "NUT-ISO4033-M16",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M16",
+      "thread": "M16",
+      "property_class": "8",
+      "height_mm": 14.4,
+      "width_across_flats_mm": 24,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "42588e6a4ee25516b131f75d14dce9df6bf5bcd426f274bdb51c8b0885d4133f"
+    },
+    {
+      "id": "NUT-ISO4033-M18",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M18",
+      "thread": "M18",
+      "property_class": "8",
+      "height_mm": 16.2,
+      "width_across_flats_mm": 27,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "3acceac68f674d25a8ddd0843a4c661d6f62bf3590ddee621278728e787e27c2"
+    },
+    {
+      "id": "NUT-ISO4033-M20",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M20",
+      "thread": "M20",
+      "property_class": "8",
+      "height_mm": 18.0,
+      "width_across_flats_mm": 30,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "0cfd5521052a5e46ef7d2b636d699a0b9773be75a38b1ddb2ce5623b67721211"
+    },
+    {
+      "id": "NUT-ISO4033-M22",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M22",
+      "thread": "M22",
+      "property_class": "8",
+      "height_mm": 19.8,
+      "width_across_flats_mm": 34,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "08e7d87d13ad21d4a20d69ca75e909f4fbd3852f45a8a810a3d55503825ce939"
+    },
+    {
+      "id": "NUT-ISO4033-M24",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M24",
+      "thread": "M24",
+      "property_class": "8",
+      "height_mm": 21.6,
+      "width_across_flats_mm": 36,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "512708d50772c268342b12ec5f2f8cf95c1e9c04af6471c4351fef8fcdda9baf"
+    },
+    {
+      "id": "NUT-ISO4033-M27",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M27",
+      "thread": "M27",
+      "property_class": "8",
+      "height_mm": 24.3,
+      "width_across_flats_mm": 41,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "dcbd1c7726f872f81a0cef0d8bef312c2a34c338a1fe5b5ff4a6dd9f8879dfc0"
+    },
+    {
+      "id": "NUT-ISO4033-M30",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M30",
+      "thread": "M30",
+      "property_class": "8",
+      "height_mm": 27.0,
+      "width_across_flats_mm": 46,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "73d0f21306679b67a595d2b396b0092c11c786c8bf2bd84a969b5c3a5ad83c6f"
+    },
+    {
+      "id": "NUT-ISO4033-M33",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M33",
+      "thread": "M33",
+      "property_class": "8",
+      "height_mm": 29.7,
+      "width_across_flats_mm": 50,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "6cff9ebdd84e3f9c5251cd83834ccab6f09b200f2cc73b0573e7b5bd3383884d"
+    },
+    {
+      "id": "NUT-ISO4033-M36",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M36",
+      "thread": "M36",
+      "property_class": "8",
+      "height_mm": 32.4,
+      "width_across_flats_mm": 55,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "8b948cd4ccfb5e0fc26d149afd5aefe33ddefee429cdc52fed80b00069c6bc1c"
+    },
+    {
+      "id": "NUT-ISO4033-M39",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M39",
+      "thread": "M39",
+      "property_class": "8",
+      "height_mm": 35.1,
+      "width_across_flats_mm": 60,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "b0782a004d74a52f691d09abbe34f4efcd8d9f25b92f59ba5896eab7f0a85d6f"
+    },
+    {
+      "id": "NUT-ISO4033-M42",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M42",
+      "thread": "M42",
+      "property_class": "8",
+      "height_mm": 37.8,
+      "width_across_flats_mm": 65,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "e2a24b096d99a669bb8f2141056dbf598ad1fe9c4d2318400dd35c75cafbb18e"
+    },
+    {
+      "id": "NUT-ISO4033-M45",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M45",
+      "thread": "M45",
+      "property_class": "8",
+      "height_mm": 40.5,
+      "width_across_flats_mm": 70,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "0ba894bd195a8a8cee69f9ccb69664c5bcb2d3af34991e832fd1f00419ca558d"
+    },
+    {
+      "id": "NUT-ISO4033-M48",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M48",
+      "thread": "M48",
+      "property_class": "8",
+      "height_mm": 43.2,
+      "width_across_flats_mm": 75,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "bc6d514393ac4a1e1146a46461fa10784be2cf47befdf145cd205e8459a07921"
+    },
+    {
+      "id": "NUT-ISO4033-M52",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M52",
+      "thread": "M52",
+      "property_class": "8",
+      "height_mm": 46.8,
+      "width_across_flats_mm": 80,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "7e538b3ba2756c4cf99106385fedb066e970982172ff08b45adc9ed54cde31ad"
+    },
+    {
+      "id": "NUT-ISO4033-M56",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M56",
+      "thread": "M56",
+      "property_class": "8",
+      "height_mm": 50.4,
+      "width_across_flats_mm": 85,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "88ad708b9fe09d54adb29f3594e779d82f412d22fdd775e509ce99241f070b45"
+    },
+    {
+      "id": "NUT-ISO4033-M60",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M60",
+      "thread": "M60",
+      "property_class": "8",
+      "height_mm": 54.0,
+      "width_across_flats_mm": 90,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "47f94cfd0e01ae780e3da2900fe7afb527344dd831888efc04c3037bec4c85a3"
+    },
+    {
+      "id": "NUT-ISO4033-M64",
+      "source_standard": "ISO 4033",
+      "confidence": 3,
+      "notes": "Standard hex nut, style 2. height_mm is ratio-estimated (~0.9xdiameter), NOT read from the ISO 4033 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 4033",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 4033 M64",
+      "thread": "M64",
+      "property_class": "8",
+      "height_mm": 57.6,
+      "width_across_flats_mm": 95,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "d81ed8b08976afe9d66711ecd7ed95190ba8be093c07463f0b61b9c7c5a57226"
+    },
+    {
+      "id": "NUT-ISO8673-M3",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M3",
+      "thread": "M3x0.45",
+      "property_class": "8",
+      "height_mm": 2.4,
+      "width_across_flats_mm": 5.5,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "44b469d4a83a8a14a63437e7e38c37ae55fce7f682be339a240915f14afa439e"
+    },
+    {
+      "id": "NUT-ISO8673-M3.5",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M3.5",
+      "thread": "M3.5x0.5",
+      "property_class": "8",
+      "height_mm": 2.8,
+      "width_across_flats_mm": 6,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "1c8abed49a4bac9d890b15b5cbf0a9b4ff759e97a4adbeefc8d23a525be28f45"
+    },
+    {
+      "id": "NUT-ISO8673-M4",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M4",
+      "thread": "M4x0.6",
+      "property_class": "8",
+      "height_mm": 3.2,
+      "width_across_flats_mm": 7,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "0aa06d16c3ad2fe15855968c9ef02e5b7161be21313463c972940d276f000da4"
+    },
+    {
+      "id": "NUT-ISO8673-M5",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M5",
+      "thread": "M5x0.75",
+      "property_class": "8",
+      "height_mm": 4.0,
+      "width_across_flats_mm": 8,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "d961f2184cd432e53f1eeac9a51a4239b9ea7fa6f69904050099337fcd38ec4d"
+    },
+    {
+      "id": "NUT-ISO8673-M6",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M6",
+      "thread": "M6x0.8",
+      "property_class": "8",
+      "height_mm": 4.8,
+      "width_across_flats_mm": 10,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "2a4162104c98f3334c16ab3591023cae4aaf297abe914c5a08b00ca7162fe7ec"
+    },
+    {
+      "id": "NUT-ISO8673-M7",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M7",
+      "thread": "M7x0.8",
+      "property_class": "8",
+      "height_mm": 5.6,
+      "width_across_flats_mm": 11,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "9598cda6068100755a05a460f4e3fcd74c4f1fa7178b9f3067ae33e1e1080983"
+    },
+    {
+      "id": "NUT-ISO8673-M8",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M8",
+      "thread": "M8x1.0",
+      "property_class": "8",
+      "height_mm": 6.4,
+      "width_across_flats_mm": 13,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "1798fd59988e95cab8c74ebc7ffa9c1a301cda42cd7701e806560d85ba813b0c"
+    },
+    {
+      "id": "NUT-ISO8673-M10",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M10",
+      "thread": "M10x1.25",
+      "property_class": "8",
+      "height_mm": 8.0,
+      "width_across_flats_mm": 16,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "67ce1055bf9eb5ca377df3464969acb19e6dafe150e66ed295cddde1e70b2582"
+    },
+    {
+      "id": "NUT-ISO8673-M12",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M12",
+      "thread": "M12x1.5",
+      "property_class": "8",
+      "height_mm": 9.6,
+      "width_across_flats_mm": 18,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "423d22c74b25f2896625b925a7b8a8a09e1da2a0afda70f32bba010dd17765b1"
+    },
+    {
+      "id": "NUT-ISO8673-M14",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M14",
+      "thread": "M14x1.75",
+      "property_class": "8",
+      "height_mm": 11.2,
+      "width_across_flats_mm": 21,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "73c22b760582eac10f880872044f47b89a8d39dc2aad52ed81e6f0a0ec8973bf"
+    },
+    {
+      "id": "NUT-ISO8673-M16",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M16",
+      "thread": "M16x1.75",
+      "property_class": "8",
+      "height_mm": 12.8,
+      "width_across_flats_mm": 24,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "9ff3c33f8d52a41f1c710144857c18a5cc5b0ba1d7ce6eb779ef17276d83d7ea"
+    },
+    {
+      "id": "NUT-ISO8673-M18",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M18",
+      "thread": "M18x2.0",
+      "property_class": "8",
+      "height_mm": 14.4,
+      "width_across_flats_mm": 27,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "e93cdfb6ad80f2b8e81742daf470d8444fc82df3cd696e4e5f5af98fbed34124"
+    },
+    {
+      "id": "NUT-ISO8673-M20",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M20",
+      "thread": "M20x2.0",
+      "property_class": "8",
+      "height_mm": 16.0,
+      "width_across_flats_mm": 30,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "b12f79976bbaa9b7f9fd89189648e3dc40fc186aaca37331a2e8a6ddc9a83b13"
+    },
+    {
+      "id": "NUT-ISO8673-M22",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M22",
+      "thread": "M22x2.0",
+      "property_class": "8",
+      "height_mm": 17.6,
+      "width_across_flats_mm": 34,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "a4cc6ea5d5f038f88fb78f4bdc621fc240ede8dd00ccfc391b8e26fa66e69645"
+    },
+    {
+      "id": "NUT-ISO8673-M24",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M24",
+      "thread": "M24x2.5",
+      "property_class": "8",
+      "height_mm": 19.2,
+      "width_across_flats_mm": 36,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "6e8c95ef4158a0651df8717fea117a0d52742da836fc1c460bb1c8826a97c6d3"
+    },
+    {
+      "id": "NUT-ISO8673-M27",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M27",
+      "thread": "M27x2.5",
+      "property_class": "8",
+      "height_mm": 21.6,
+      "width_across_flats_mm": 41,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "fd10968418b5962b3f29ab6b01f2a85330b088e6020a959187383c51356efb3b"
+    },
+    {
+      "id": "NUT-ISO8673-M30",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M30",
+      "thread": "M30x3.0",
+      "property_class": "8",
+      "height_mm": 24.0,
+      "width_across_flats_mm": 46,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "772d662cbff9a58b1a9c32dba498bd88313bf061591e17ad0c68ee9df20db624"
+    },
+    {
+      "id": "NUT-ISO8673-M33",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M33",
+      "thread": "M33x3.0",
+      "property_class": "8",
+      "height_mm": 26.4,
+      "width_across_flats_mm": 50,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "f00e2ec9d80a66b82826452f4ca57d899ff71d4e2fe15f2a79da097a97a9c68b"
+    },
+    {
+      "id": "NUT-ISO8673-M36",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M36",
+      "thread": "M36x3.5",
+      "property_class": "8",
+      "height_mm": 28.8,
+      "width_across_flats_mm": 55,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "4c47fbb2e13f56aab5055e1f73fb5a63f08b641b007de4695a6e77efdf7cc50a"
+    },
+    {
+      "id": "NUT-ISO8673-M39",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M39",
+      "thread": "M39x3.5",
+      "property_class": "8",
+      "height_mm": 31.2,
+      "width_across_flats_mm": 60,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "d240cc57940705a57ca43ef207981ff8290f8a8da56bc568c7b46afefb85ff3a"
+    },
+    {
+      "id": "NUT-ISO8673-M42",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M42",
+      "thread": "M42x4.0",
+      "property_class": "8",
+      "height_mm": 33.6,
+      "width_across_flats_mm": 65,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "c6ac312496772176d28bb41ddfd40e65d496b5e69fadfc028cf8134f25cacd8a"
+    },
+    {
+      "id": "NUT-ISO8673-M45",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M45",
+      "thread": "M45x4.0",
+      "property_class": "8",
+      "height_mm": 36.0,
+      "width_across_flats_mm": 70,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "61c0dd6dd60561586722107b5e2fdf7726b6667edc0e9ffefb5f1d972837af76"
+    },
+    {
+      "id": "NUT-ISO8673-M48",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M48",
+      "thread": "M48x4.5",
+      "property_class": "8",
+      "height_mm": 38.4,
+      "width_across_flats_mm": 75,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "cebdc8322fda0049cb1bed7a5539ce03ef667694d8228cd06a5fb5725c810f34"
+    },
+    {
+      "id": "NUT-ISO8673-M52",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M52",
+      "thread": "M52x4.5",
+      "property_class": "8",
+      "height_mm": 41.6,
+      "width_across_flats_mm": 80,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "22478b35a5798bf8faa075dedbca5bb95b56a84d7649f3322ffcb1001735c48c"
+    },
+    {
+      "id": "NUT-ISO8673-M56",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M56",
+      "thread": "M56x5.0",
+      "property_class": "8",
+      "height_mm": 44.8,
+      "width_across_flats_mm": 85,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "3051746c406842aca87c0f79a503813b4bc070edc0606b4c8a40119686a04402"
+    },
+    {
+      "id": "NUT-ISO8673-M60",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M60",
+      "thread": "M60x5.0",
+      "property_class": "8",
+      "height_mm": 48.0,
+      "width_across_flats_mm": 90,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "309b42011f209b83db99200bc558f38a4e6b08a224c67169204eca704fd88457"
+    },
+    {
+      "id": "NUT-ISO8673-M64",
+      "source_standard": "ISO 8673",
+      "confidence": 3,
+      "notes": "Fine-pitch hex nut, style 1. height_mm is ratio-estimated (~0.8xdiameter), NOT read from the ISO 8673 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 8673",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 8673 M64",
+      "thread": "M64x5.5",
+      "property_class": "8",
+      "height_mm": 51.2,
+      "width_across_flats_mm": 95,
+      "flange": false,
+      "locking_type": "None",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "8386d2bf2f1550a857e6cbdf3394bcfa478e52588600d0f2d2e17c070c1ab61b"
+    },
+    {
+      "id": "NUT-ISO7040-M3",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M3",
+      "thread": "M3",
+      "property_class": "8",
+      "height_mm": 3.0,
+      "width_across_flats_mm": 5.5,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "7cf5f562d8b52c19ad273a9a61ef860572457532b03dd960cb50ecdc1d782814"
+    },
+    {
+      "id": "NUT-ISO7040-M3.5",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M3.5",
+      "thread": "M3.5",
+      "property_class": "8",
+      "height_mm": 3.5,
+      "width_across_flats_mm": 6,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "1794194e6af58c37ea0f925d1756e95ab23b13347ee9899d06ed1ceeaa178fa0"
+    },
+    {
+      "id": "NUT-ISO7040-M4",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M4",
+      "thread": "M4",
+      "property_class": "8",
+      "height_mm": 4.0,
+      "width_across_flats_mm": 7,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "7c99589d5666f8169bfe5811ae9eaf3e02820d234489985b8f890a55af25bb50"
+    },
+    {
+      "id": "NUT-ISO7040-M5",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M5",
+      "thread": "M5",
+      "property_class": "8",
+      "height_mm": 5.0,
+      "width_across_flats_mm": 8,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "8285b89871fcc120dd01d47e4d5746c9fae3cc781e8a393f5b3aef8883666049"
+    },
+    {
+      "id": "NUT-ISO7040-M6",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M6",
+      "thread": "M6",
+      "property_class": "8",
+      "height_mm": 6.0,
+      "width_across_flats_mm": 10,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "9d5452b960e658bfefa518f7a0c818eff072e73093b17eff5cb0afcd11dba7ed"
+    },
+    {
+      "id": "NUT-ISO7040-M7",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M7",
+      "thread": "M7",
+      "property_class": "8",
+      "height_mm": 7.0,
+      "width_across_flats_mm": 11,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "d46d81f59cbe70064fa10c635e444099ccf7eee5d62ae977a262fc005ab375c7"
+    },
+    {
+      "id": "NUT-ISO7040-M8",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M8",
+      "thread": "M8",
+      "property_class": "8",
+      "height_mm": 8.0,
+      "width_across_flats_mm": 13,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "29136c2dffe48edf06ef1a4d5efd535814e1888be4953b8cb0738012d1121cdf"
+    },
+    {
+      "id": "NUT-ISO7040-M10",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M10",
+      "thread": "M10",
+      "property_class": "8",
+      "height_mm": 10.0,
+      "width_across_flats_mm": 16,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "f2f88b5a5a5fcfd8e15bc317044c2de47ea523eaec2b98397c3dc084625a89df"
+    },
+    {
+      "id": "NUT-ISO7040-M12",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M12",
+      "thread": "M12",
+      "property_class": "8",
+      "height_mm": 12.0,
+      "width_across_flats_mm": 18,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "ec21d2bad987d61da317d01f049b61d4f59961b751ae89c39b9370ee61dea53c"
+    },
+    {
+      "id": "NUT-ISO7040-M14",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M14",
+      "thread": "M14",
+      "property_class": "8",
+      "height_mm": 14.0,
+      "width_across_flats_mm": 21,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "3196a2c8be140528c614510832a95a568255e3d5413f8614530451421705a4cc"
+    },
+    {
+      "id": "NUT-ISO7040-M16",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M16",
+      "thread": "M16",
+      "property_class": "8",
+      "height_mm": 16.0,
+      "width_across_flats_mm": 24,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "40088eee528209b296a13d0640d2d499f985acd36f3aead92bb1c9df1ad3ffe9"
+    },
+    {
+      "id": "NUT-ISO7040-M18",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M18",
+      "thread": "M18",
+      "property_class": "8",
+      "height_mm": 18.0,
+      "width_across_flats_mm": 27,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "63f5dd1918c66687df791db786ef1f483de6707de1797b1e945b750ce9277076"
+    },
+    {
+      "id": "NUT-ISO7040-M20",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M20",
+      "thread": "M20",
+      "property_class": "8",
+      "height_mm": 20.0,
+      "width_across_flats_mm": 30,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "43bbcc9810cae58dc7e3520749acbb8ac34c9dbe6c7a00af0c20727a007d8e29"
+    },
+    {
+      "id": "NUT-ISO7040-M22",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M22",
+      "thread": "M22",
+      "property_class": "8",
+      "height_mm": 22.0,
+      "width_across_flats_mm": 34,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "9ea1caca16d546940a23392001efb73e23e4cd891ddc516fafa3ed4c73e60887"
+    },
+    {
+      "id": "NUT-ISO7040-M24",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M24",
+      "thread": "M24",
+      "property_class": "8",
+      "height_mm": 24.0,
+      "width_across_flats_mm": 36,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "f31f172d27d524bbe1420095bd223a48c90fb8805926b0cc3906bd04053bddbc"
+    },
+    {
+      "id": "NUT-ISO7040-M27",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M27",
+      "thread": "M27",
+      "property_class": "8",
+      "height_mm": 27.0,
+      "width_across_flats_mm": 41,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "09f5dc37d2bc5c4651547f855ec86fa8c6c5d1463b3d822fba2e47961b70ec6f"
+    },
+    {
+      "id": "NUT-ISO7040-M30",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M30",
+      "thread": "M30",
+      "property_class": "8",
+      "height_mm": 30.0,
+      "width_across_flats_mm": 46,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "793335852571542250f9795cb738f2cbecb6d52414337fe76b3d7f8c9b3c851d"
+    },
+    {
+      "id": "NUT-ISO7040-M33",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M33",
+      "thread": "M33",
+      "property_class": "8",
+      "height_mm": 33.0,
+      "width_across_flats_mm": 50,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "d3b42a73410526c8fae2b23cfb2300ab6c78cb049d794722b25e177ff7ab1860"
+    },
+    {
+      "id": "NUT-ISO7040-M36",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M36",
+      "thread": "M36",
+      "property_class": "8",
+      "height_mm": 36.0,
+      "width_across_flats_mm": 55,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "9f53756257b74a0b797270c70e9a1eea9a7967391717f3eb859cd0aa77184162"
+    },
+    {
+      "id": "NUT-ISO7040-M39",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M39",
+      "thread": "M39",
+      "property_class": "8",
+      "height_mm": 39.0,
+      "width_across_flats_mm": 60,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "423b9ace5630efb97ef3b4bdce3b62147ab84db1b98cfddf86b2c6ed65048632"
+    },
+    {
+      "id": "NUT-ISO7040-M42",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M42",
+      "thread": "M42",
+      "property_class": "8",
+      "height_mm": 42.0,
+      "width_across_flats_mm": 65,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "6ea8389ad05f18cad3fa8dc58fe589172f216c5a59fa5b898c3ad1b0d48c29a9"
+    },
+    {
+      "id": "NUT-ISO7040-M45",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M45",
+      "thread": "M45",
+      "property_class": "8",
+      "height_mm": 45.0,
+      "width_across_flats_mm": 70,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "3e32fed589cf013b683f35ea5907d84b015cee7214cd4fcbcc236a8e53eefed6"
+    },
+    {
+      "id": "NUT-ISO7040-M48",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M48",
+      "thread": "M48",
+      "property_class": "8",
+      "height_mm": 48.0,
+      "width_across_flats_mm": 75,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "421b924d213cb9c92fe77c0578998ca81eab044f4e4e5f92c261f7fab4e2888f"
+    },
+    {
+      "id": "NUT-ISO7040-M52",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M52",
+      "thread": "M52",
+      "property_class": "8",
+      "height_mm": 52.0,
+      "width_across_flats_mm": 80,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "84aa5892503f5fa21ef9f22eedbe08b6bfb1180b06861b1b8ee672444dc56f2b"
+    },
+    {
+      "id": "NUT-ISO7040-M56",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M56",
+      "thread": "M56",
+      "property_class": "8",
+      "height_mm": 56.0,
+      "width_across_flats_mm": 85,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "deb8be2f5b64bb87dbccabad17f0a7b67b424d072115928e27b20d51a6d9a986"
+    },
+    {
+      "id": "NUT-ISO7040-M60",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M60",
+      "thread": "M60",
+      "property_class": "8",
+      "height_mm": 60.0,
+      "width_across_flats_mm": 90,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "1952d65a3b9984aed3056abe7d2f66c395f03a45e6c061dce6568659220d9478"
+    },
+    {
+      "id": "NUT-ISO7040-M64",
+      "source_standard": "ISO 7040",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut (nylon insert). height_mm is ratio-estimated (~1.0xdiameter), NOT read from the ISO 7040 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 7040",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 7040 M64",
+      "thread": "M64",
+      "property_class": "8",
+      "height_mm": 64.0,
+      "width_across_flats_mm": 95,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "ad6d674736f6aec3b36eb9f12866cad697e18fa71cbc54809017877f396fdd7a"
+    },
+    {
+      "id": "NUT-ISO10511-M3",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M3",
+      "thread": "M3",
+      "property_class": "8",
+      "height_mm": 1.8,
+      "width_across_flats_mm": 5.5,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "5b9c0f3a93df6faeb4d4c6916f5c18042d49dd0a8d01e99ad4dec2ed195156aa"
+    },
+    {
+      "id": "NUT-ISO10511-M3.5",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M3.5",
+      "thread": "M3.5",
+      "property_class": "8",
+      "height_mm": 2.1,
+      "width_across_flats_mm": 6,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "43d0de3c4ca3997d35f9f00749177cf89e9e60d1b0db3c4242f5bd81ed7535ba"
+    },
+    {
+      "id": "NUT-ISO10511-M4",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M4",
+      "thread": "M4",
+      "property_class": "8",
+      "height_mm": 2.4,
+      "width_across_flats_mm": 7,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "fa5f8149ac28486cc06512c32b37520543f73b5f81e673c43eae23f4daba4748"
+    },
+    {
+      "id": "NUT-ISO10511-M5",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M5",
+      "thread": "M5",
+      "property_class": "8",
+      "height_mm": 3.0,
+      "width_across_flats_mm": 8,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "6572dd56cfd72407b3539462c7a84603e97e0d7b2b434832a73c5c448c4757e0"
+    },
+    {
+      "id": "NUT-ISO10511-M6",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M6",
+      "thread": "M6",
+      "property_class": "8",
+      "height_mm": 3.6,
+      "width_across_flats_mm": 10,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "e2dfb2fab5a61eefc6b134d40ad1383904321f2fddcdc5d8c115de2869c1d385"
+    },
+    {
+      "id": "NUT-ISO10511-M7",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M7",
+      "thread": "M7",
+      "property_class": "8",
+      "height_mm": 4.2,
+      "width_across_flats_mm": 11,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "73eb820b1717381611e134e469fd9855f56ba249b98765b5fc3a36b57afd90a6"
+    },
+    {
+      "id": "NUT-ISO10511-M8",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M8",
+      "thread": "M8",
+      "property_class": "8",
+      "height_mm": 4.8,
+      "width_across_flats_mm": 13,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "3826fa6f639f45efb90befd1b9b57ddcc87759a654b8a40fe5733ae4774deb32"
+    },
+    {
+      "id": "NUT-ISO10511-M10",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M10",
+      "thread": "M10",
+      "property_class": "8",
+      "height_mm": 6.0,
+      "width_across_flats_mm": 16,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "2a6f0492779d31f5ee768ec7e3ac82b9d4a79d5db588df6d3b4273840567e770"
+    },
+    {
+      "id": "NUT-ISO10511-M12",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M12",
+      "thread": "M12",
+      "property_class": "8",
+      "height_mm": 7.2,
+      "width_across_flats_mm": 18,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "b2281f9f83fb10672fc1d1326dfd284071229ed306a1762cecd7a52f6a596da5"
+    },
+    {
+      "id": "NUT-ISO10511-M14",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M14",
+      "thread": "M14",
+      "property_class": "8",
+      "height_mm": 8.4,
+      "width_across_flats_mm": 21,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "d196e695d9b79deef0c5b0f32856f592b082f2c5eb34c3f9aae6e41eef0983d1"
+    },
+    {
+      "id": "NUT-ISO10511-M16",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M16",
+      "thread": "M16",
+      "property_class": "8",
+      "height_mm": 9.6,
+      "width_across_flats_mm": 24,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "a89c65e6dbd2b77f8e09a223db56151925c5f486ccda003fe51f644d6e71351c"
+    },
+    {
+      "id": "NUT-ISO10511-M18",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M18",
+      "thread": "M18",
+      "property_class": "8",
+      "height_mm": 10.8,
+      "width_across_flats_mm": 27,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "8f2789cf259b44443b21b547deb7515b7be368dd6c8072553358817aa3e43034"
+    },
+    {
+      "id": "NUT-ISO10511-M20",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M20",
+      "thread": "M20",
+      "property_class": "8",
+      "height_mm": 12.0,
+      "width_across_flats_mm": 30,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "64f6b3f512df735aff18b76d09ba3f4e44814878a38ac5ec0e1ec04c4bd2b161"
+    },
+    {
+      "id": "NUT-ISO10511-M22",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M22",
+      "thread": "M22",
+      "property_class": "8",
+      "height_mm": 13.2,
+      "width_across_flats_mm": 34,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "89c1ff731338eac92c99b1436aa66fd4ef74354165326f137e93d92c6bec28c7"
+    },
+    {
+      "id": "NUT-ISO10511-M24",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M24",
+      "thread": "M24",
+      "property_class": "8",
+      "height_mm": 14.4,
+      "width_across_flats_mm": 36,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "791bbd172ab775b5284363e20e2b70408de8fb00d25ed41880c5198deeb76843"
+    },
+    {
+      "id": "NUT-ISO10511-M27",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M27",
+      "thread": "M27",
+      "property_class": "8",
+      "height_mm": 16.2,
+      "width_across_flats_mm": 41,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "4e897eb22dd5d600e057fbf633cd4127175cab37dc9b3fce3a8afc8ee2b2ae91"
+    },
+    {
+      "id": "NUT-ISO10511-M30",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M30",
+      "thread": "M30",
+      "property_class": "8",
+      "height_mm": 18.0,
+      "width_across_flats_mm": 46,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "5392d9dd8b9aa74a1a2f308548b7a563412e1f669dc5b5e91dcba7792ab4307f"
+    },
+    {
+      "id": "NUT-ISO10511-M33",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M33",
+      "thread": "M33",
+      "property_class": "8",
+      "height_mm": 19.8,
+      "width_across_flats_mm": 50,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "9703615a3bc9a2609e64a62b0dc7345bfba6c4d1a44bc379b22ca1f21ed523bc"
+    },
+    {
+      "id": "NUT-ISO10511-M36",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M36",
+      "thread": "M36",
+      "property_class": "8",
+      "height_mm": 21.6,
+      "width_across_flats_mm": 55,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "8c6e24935a75f9b98a5f0bdac0fd2febfcf29be371e4b44468bb50bd16756c52"
+    },
+    {
+      "id": "NUT-ISO10511-M39",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M39",
+      "thread": "M39",
+      "property_class": "8",
+      "height_mm": 23.4,
+      "width_across_flats_mm": 60,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "aa92b63388bc7d652c4f31aefec4d3090ba561b441789a403e1831be842e5f54"
+    },
+    {
+      "id": "NUT-ISO10511-M42",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M42",
+      "thread": "M42",
+      "property_class": "8",
+      "height_mm": 25.2,
+      "width_across_flats_mm": 65,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "37d7c56a48e7264920d360b6cdcadf7792bc79d026ce1b5ae685daeceaa4b509"
+    },
+    {
+      "id": "NUT-ISO10511-M45",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M45",
+      "thread": "M45",
+      "property_class": "8",
+      "height_mm": 27.0,
+      "width_across_flats_mm": 70,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "9d39354cbb7dd26f25ae45a19e0eeda2d91610b3a30d5d600add6c023556cadc"
+    },
+    {
+      "id": "NUT-ISO10511-M48",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M48",
+      "thread": "M48",
+      "property_class": "8",
+      "height_mm": 28.8,
+      "width_across_flats_mm": 75,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "e82dc8aa9c0119badbe5e24f22fc4a08fd8465b1d19f17931f1dc32b82cf9bca"
+    },
+    {
+      "id": "NUT-ISO10511-M52",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M52",
+      "thread": "M52",
+      "property_class": "8",
+      "height_mm": 31.2,
+      "width_across_flats_mm": 80,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "02884f3da82182ad76c00eae2238392bdf7db80824740ad2311b91ab1eafddc0"
+    },
+    {
+      "id": "NUT-ISO10511-M56",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M56",
+      "thread": "M56",
+      "property_class": "8",
+      "height_mm": 33.6,
+      "width_across_flats_mm": 85,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "c63ca0163c83fa8387d1e45163d12a74441a00c25c98cfd5820d636110cf9b7e"
+    },
+    {
+      "id": "NUT-ISO10511-M60",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M60",
+      "thread": "M60",
+      "property_class": "8",
+      "height_mm": 36.0,
+      "width_across_flats_mm": 90,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "179a3ec43b01f948c4a00f987772000f8399627fa34440a77ddabb67d77f70a7"
+    },
+    {
+      "id": "NUT-ISO10511-M64",
+      "source_standard": "ISO 10511",
+      "confidence": 4,
+      "notes": "Prevailing torque hex nut, low type (nylon insert). height_mm is ratio-estimated (~0.6xdiameter), NOT read from the ISO 10511 dimensional table -- verify before production use. width_across_flats_mm is the standard ISO 4017-family table value.",
+      "revision": "2026-07-20",
+      "source": "ISO 10511",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [
+          "width_across_flats_mm"
+        ],
+        "estimated_fields": [
+          "height_mm"
+        ]
+      },
+      "designation": "ISO 10511 M64",
+      "thread": "M64",
+      "property_class": "8",
+      "height_mm": 38.4,
+      "width_across_flats_mm": 95,
+      "flange": false,
+      "locking_type": "Nylon insert",
+      "bearing_face": "Flat, chamfered",
+      "strength_compatibility": [
+        "4.6",
+        "4.8",
+        "5.6",
+        "5.8",
+        "6.8",
+        "8.8"
+      ],
+      "checksum": "0a8a2b2827c71cba2967cfc790d77fd4b3b531d144cbc84c36b74bd9d0cb0f2b"
+    }
+  ]
+}

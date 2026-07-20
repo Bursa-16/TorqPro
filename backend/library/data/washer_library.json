@@ -1,0 +1,4736 @@
+{
+  "metadata": {
+    "name": "Washer Library",
+    "version": "2.4.1",
+    "description": "ISO 7089/7090/7091/7093/8738 and DIN 125/9021 plain washer master geometry.",
+    "generated": "2026-07-20",
+    "primary_source": "ISO 7089/7090/7091/7093/8738 and DIN 125/9021 product-dimension standards. Verified only for the sizes listed in VERIFIED_ISO7089 (ISO 7089 only); all other records are ratio-estimated (reference_only)."
+  },
+  "records": [
+    {
+      "id": "WASH-ISO7089-M3",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M3.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M3",
+      "inner_diameter_mm": 3.2,
+      "outer_diameter_mm": 7.0,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "6fdcf85d75a29b77951a37c6699aaa13eebc5ad440eaf5fd14a5f4a245f66905"
+    },
+    {
+      "id": "WASH-ISO7089-M3.5",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M3.5",
+      "inner_diameter_mm": 3.98,
+      "outer_diameter_mm": 8.7,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "714dcd575e32d0ee650a11be0d30500f351f8369eb30e3c7b54779f0ec83cba6"
+    },
+    {
+      "id": "WASH-ISO7089-M4",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M4.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M4",
+      "inner_diameter_mm": 4.3,
+      "outer_diameter_mm": 9.0,
+      "thickness_mm": 0.8,
+      "hardness": "200 HV min",
+      "checksum": "754dde274169481750be9f1bb2084b646a515cacd7b58c5e8f691b8e0ef0e52d"
+    },
+    {
+      "id": "WASH-ISO7089-M5",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M5.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M5",
+      "inner_diameter_mm": 5.3,
+      "outer_diameter_mm": 10.0,
+      "thickness_mm": 1.0,
+      "hardness": "200 HV min",
+      "checksum": "88ade74333ea7c09f6fdede93e572aa33fc592b6b45049150e2976a6b260b057"
+    },
+    {
+      "id": "WASH-ISO7089-M6",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M6.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M6",
+      "inner_diameter_mm": 6.4,
+      "outer_diameter_mm": 12.0,
+      "thickness_mm": 1.6,
+      "hardness": "200 HV min",
+      "checksum": "0848d922cac95ae9e4c4ead7f91c0763e4b702b817afe3f88971bbfc06f408f4"
+    },
+    {
+      "id": "WASH-ISO7089-M7",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M7",
+      "inner_diameter_mm": 7.76,
+      "outer_diameter_mm": 16.4,
+      "thickness_mm": 0.7,
+      "hardness": "200 HV min",
+      "checksum": "84937e54f9cd946e65d452c7405fa035fdf731348aa54b72a71301e3dabf1e6f"
+    },
+    {
+      "id": "WASH-ISO7089-M8",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M8.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M8",
+      "inner_diameter_mm": 8.4,
+      "outer_diameter_mm": 16.0,
+      "thickness_mm": 1.6,
+      "hardness": "200 HV min",
+      "checksum": "b959be310066131e1fe953c58db678b012a9696a756b40dfb265adb2d5b205bc"
+    },
+    {
+      "id": "WASH-ISO7089-M10",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M10.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M10",
+      "inner_diameter_mm": 10.5,
+      "outer_diameter_mm": 20.0,
+      "thickness_mm": 2.0,
+      "hardness": "200 HV min",
+      "checksum": "2bef7fea9cb0335531adccbaeb868dfd72843fa4cacf9ccf9c7d54758c00a0ed"
+    },
+    {
+      "id": "WASH-ISO7089-M12",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M12.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M12",
+      "inner_diameter_mm": 13.0,
+      "outer_diameter_mm": 24.0,
+      "thickness_mm": 2.5,
+      "hardness": "200 HV min",
+      "checksum": "28f8ce7418f220ee96480a8abd8ebf5f6826a26e288067ef41f98fe07d20c62c"
+    },
+    {
+      "id": "WASH-ISO7089-M14",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M14",
+      "inner_diameter_mm": 15.32,
+      "outer_diameter_mm": 31.8,
+      "thickness_mm": 1.4,
+      "hardness": "200 HV min",
+      "checksum": "cf059b0ce502686a197461279ef11018f347d0bd451f78ae617cf1c515dc52e6"
+    },
+    {
+      "id": "WASH-ISO7089-M16",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M16.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M16",
+      "inner_diameter_mm": 17.0,
+      "outer_diameter_mm": 30.0,
+      "thickness_mm": 3.0,
+      "hardness": "200 HV min",
+      "checksum": "774b4f110b396589fb1fe4c72c3b8c6537c30c8f203ab59acccb895b0e23be69"
+    },
+    {
+      "id": "WASH-ISO7089-M18",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M18",
+      "inner_diameter_mm": 19.64,
+      "outer_diameter_mm": 40.6,
+      "thickness_mm": 1.8,
+      "hardness": "200 HV min",
+      "checksum": "3e21673f3be4a123634f6b977e8ec540824edb80831c852f013d75a1f43e6882"
+    },
+    {
+      "id": "WASH-ISO7089-M20",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M20.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M20",
+      "inner_diameter_mm": 21.0,
+      "outer_diameter_mm": 37.0,
+      "thickness_mm": 3.0,
+      "hardness": "200 HV min",
+      "checksum": "a88b8cbefb13708a41634241a75371dce2e1017c21d1973dc3139f8a60647c9c"
+    },
+    {
+      "id": "WASH-ISO7089-M22",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M22",
+      "inner_diameter_mm": 23.96,
+      "outer_diameter_mm": 49.4,
+      "thickness_mm": 2.2,
+      "hardness": "200 HV min",
+      "checksum": "57ed371b0060d5337fc50eb1af7c99e834fce1e49ce76c5adf0449b883ec90ce"
+    },
+    {
+      "id": "WASH-ISO7089-M24",
+      "source_standard": "ISO 7089",
+      "confidence": 2,
+      "notes": "Plain washer, normal series, product grade A. All dimensions are the verified ISO 7089 standard table values for M24.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "validated",
+      "approval_status": "approved",
+      "metadata": {
+        "verified_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ],
+        "estimated_fields": []
+      },
+      "designation": "ISO 7089 M24",
+      "inner_diameter_mm": 25.0,
+      "outer_diameter_mm": 44.0,
+      "thickness_mm": 4.0,
+      "hardness": "200 HV min",
+      "checksum": "17fc9e85e0dca078721038593ffc2627c2aded5a83fe13259a5bffdffba93672"
+    },
+    {
+      "id": "WASH-ISO7089-M27",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M27",
+      "inner_diameter_mm": 29.36,
+      "outer_diameter_mm": 60.4,
+      "thickness_mm": 2.7,
+      "hardness": "200 HV min",
+      "checksum": "13fef03f933e8fc6564888ff7e55cb9fd3ad09182341cf6273762ffcb2e5e380"
+    },
+    {
+      "id": "WASH-ISO7089-M30",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M30",
+      "inner_diameter_mm": 32.6,
+      "outer_diameter_mm": 67.0,
+      "thickness_mm": 3.0,
+      "hardness": "200 HV min",
+      "checksum": "87038e08315de4e800367bd4ebe28398243577bfa25923b204e2052617ce03af"
+    },
+    {
+      "id": "WASH-ISO7089-M33",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M33",
+      "inner_diameter_mm": 35.84,
+      "outer_diameter_mm": 73.6,
+      "thickness_mm": 3.3,
+      "hardness": "200 HV min",
+      "checksum": "17eb414a16d268329de18376fd071358c29177d9d413259f0c0774628d19ea69"
+    },
+    {
+      "id": "WASH-ISO7089-M36",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M36",
+      "inner_diameter_mm": 39.08,
+      "outer_diameter_mm": 80.2,
+      "thickness_mm": 3.6,
+      "hardness": "200 HV min",
+      "checksum": "57a64da8fdd1c911ff357b0d01acf7c2787600b1ab760c860cd1e3c62294558b"
+    },
+    {
+      "id": "WASH-ISO7089-M39",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M39",
+      "inner_diameter_mm": 42.32,
+      "outer_diameter_mm": 86.8,
+      "thickness_mm": 3.9,
+      "hardness": "200 HV min",
+      "checksum": "1fb64537a54311f7d9a37216e86dc732742f76584699aa45f76a3fca74c7474e"
+    },
+    {
+      "id": "WASH-ISO7089-M42",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M42",
+      "inner_diameter_mm": 45.56,
+      "outer_diameter_mm": 93.4,
+      "thickness_mm": 4.2,
+      "hardness": "200 HV min",
+      "checksum": "83e1424fecbd8a38016d0fc1a85539c1ac13d9ead416f30de3c9d0e0fe827620"
+    },
+    {
+      "id": "WASH-ISO7089-M45",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M45",
+      "inner_diameter_mm": 48.8,
+      "outer_diameter_mm": 100.0,
+      "thickness_mm": 4.5,
+      "hardness": "200 HV min",
+      "checksum": "b82c7a351e83d56237c50b350a0b0efe2f977a05cd11058679a11d128100f966"
+    },
+    {
+      "id": "WASH-ISO7089-M48",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M48",
+      "inner_diameter_mm": 52.04,
+      "outer_diameter_mm": 106.6,
+      "thickness_mm": 4.8,
+      "hardness": "200 HV min",
+      "checksum": "f378f5b6f677af2884d00bafcf78d692ba5e026f3270975f5c0b24d7b368b48c"
+    },
+    {
+      "id": "WASH-ISO7089-M52",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M52",
+      "inner_diameter_mm": 56.36,
+      "outer_diameter_mm": 115.4,
+      "thickness_mm": 5.2,
+      "hardness": "200 HV min",
+      "checksum": "ef63ed34a44424792e564c401403ff8399824fefd8e09eb7f9bcb9fcc55f61c3"
+    },
+    {
+      "id": "WASH-ISO7089-M56",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M56",
+      "inner_diameter_mm": 60.68,
+      "outer_diameter_mm": 124.2,
+      "thickness_mm": 5.6,
+      "hardness": "200 HV min",
+      "checksum": "046fc79435fa8e4f0c81bb4771e899d6fe70bc9c187a3afc6319e657cfbbc7b5"
+    },
+    {
+      "id": "WASH-ISO7089-M60",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M60",
+      "inner_diameter_mm": 65.0,
+      "outer_diameter_mm": 133.0,
+      "thickness_mm": 6.0,
+      "hardness": "200 HV min",
+      "checksum": "834dcbb55a7099653eab3d908ea036179602719b07e5db44789d0652aee9f00e"
+    },
+    {
+      "id": "WASH-ISO7089-M64",
+      "source_standard": "ISO 7089",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7089 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7089",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7089 M64",
+      "inner_diameter_mm": 69.32,
+      "outer_diameter_mm": 141.8,
+      "thickness_mm": 6.4,
+      "hardness": "200 HV min",
+      "checksum": "c0dd9b6d1c461ba4b5411320eff4585be598889eac8032b6c9348be071846b1c"
+    },
+    {
+      "id": "WASH-ISO7090-M3",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M3",
+      "inner_diameter_mm": 3.44,
+      "outer_diameter_mm": 7.6,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "c8e648cd1cb3363ebf708398d5a8de2445ca0c521b23a7c41826c428499600d8"
+    },
+    {
+      "id": "WASH-ISO7090-M3.5",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M3.5",
+      "inner_diameter_mm": 3.98,
+      "outer_diameter_mm": 8.7,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "6bbb43fdf9ccc3fbc6dd29ba9deacecad0edab820c4cc7567429e16608137997"
+    },
+    {
+      "id": "WASH-ISO7090-M4",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M4",
+      "inner_diameter_mm": 4.52,
+      "outer_diameter_mm": 9.8,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "4e3fdf637275a124ed97f99186689f9a10154ec928453632b51b2fd33f20c6ab"
+    },
+    {
+      "id": "WASH-ISO7090-M5",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M5",
+      "inner_diameter_mm": 5.6,
+      "outer_diameter_mm": 12.0,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "dd1d47d8344de78b5f12494b8849dc35dec483e15df5978fe1e49a42e30d87c3"
+    },
+    {
+      "id": "WASH-ISO7090-M6",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M6",
+      "inner_diameter_mm": 6.68,
+      "outer_diameter_mm": 14.2,
+      "thickness_mm": 0.6,
+      "hardness": "200 HV min",
+      "checksum": "0fee97082315c0a412e64975588c043bb45093f4fd83ebfd7c05e456bfeac049"
+    },
+    {
+      "id": "WASH-ISO7090-M7",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M7",
+      "inner_diameter_mm": 7.76,
+      "outer_diameter_mm": 16.4,
+      "thickness_mm": 0.7,
+      "hardness": "200 HV min",
+      "checksum": "43e5420d55af4dc82d91c786f86305072650e9e2de73f026fcd70c7e8424d714"
+    },
+    {
+      "id": "WASH-ISO7090-M8",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M8",
+      "inner_diameter_mm": 8.84,
+      "outer_diameter_mm": 18.6,
+      "thickness_mm": 0.8,
+      "hardness": "200 HV min",
+      "checksum": "580955eeb8e7fbf01cec21484527827575d81863ad559d71409a388da955d079"
+    },
+    {
+      "id": "WASH-ISO7090-M10",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M10",
+      "inner_diameter_mm": 11.0,
+      "outer_diameter_mm": 23.0,
+      "thickness_mm": 1.0,
+      "hardness": "200 HV min",
+      "checksum": "8507a68f59cd72d9614857b529a051a4207ea6cca8a5247c07cee740ee82a7e5"
+    },
+    {
+      "id": "WASH-ISO7090-M12",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M12",
+      "inner_diameter_mm": 13.16,
+      "outer_diameter_mm": 27.4,
+      "thickness_mm": 1.2,
+      "hardness": "200 HV min",
+      "checksum": "460cb614a557d3e1db4d02221dcc55439ae4a67ff10c0ce6b249d99ef91d9b16"
+    },
+    {
+      "id": "WASH-ISO7090-M14",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M14",
+      "inner_diameter_mm": 15.32,
+      "outer_diameter_mm": 31.8,
+      "thickness_mm": 1.4,
+      "hardness": "200 HV min",
+      "checksum": "2e29bbb891d2add2edb8de6563aa73a01f6de34dbe97544656538638bd784cbf"
+    },
+    {
+      "id": "WASH-ISO7090-M16",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M16",
+      "inner_diameter_mm": 17.48,
+      "outer_diameter_mm": 36.2,
+      "thickness_mm": 1.6,
+      "hardness": "200 HV min",
+      "checksum": "aabeea90fe59e9712da6832d61474d08ec306e43d38ecb888336fdcdea7550b4"
+    },
+    {
+      "id": "WASH-ISO7090-M18",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M18",
+      "inner_diameter_mm": 19.64,
+      "outer_diameter_mm": 40.6,
+      "thickness_mm": 1.8,
+      "hardness": "200 HV min",
+      "checksum": "e12236f09caf7c558df1331edf415da24ba7f665a6fe5358ac34785c98f7975e"
+    },
+    {
+      "id": "WASH-ISO7090-M20",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M20",
+      "inner_diameter_mm": 21.8,
+      "outer_diameter_mm": 45.0,
+      "thickness_mm": 2.0,
+      "hardness": "200 HV min",
+      "checksum": "022dafc6081b81efc7c7a0bde7706d2ad6b6acfe8e231449da0b17538aa9519f"
+    },
+    {
+      "id": "WASH-ISO7090-M22",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M22",
+      "inner_diameter_mm": 23.96,
+      "outer_diameter_mm": 49.4,
+      "thickness_mm": 2.2,
+      "hardness": "200 HV min",
+      "checksum": "61f16c52cf834b6c73323ed7a932595df7ee631a187f3bc6c22d1a32a06d13a5"
+    },
+    {
+      "id": "WASH-ISO7090-M24",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M24",
+      "inner_diameter_mm": 26.12,
+      "outer_diameter_mm": 53.8,
+      "thickness_mm": 2.4,
+      "hardness": "200 HV min",
+      "checksum": "017ede3876ea7590a8b610401fb332fbffd6d42660da5509d1b608e176f1ef84"
+    },
+    {
+      "id": "WASH-ISO7090-M27",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M27",
+      "inner_diameter_mm": 29.36,
+      "outer_diameter_mm": 60.4,
+      "thickness_mm": 2.7,
+      "hardness": "200 HV min",
+      "checksum": "5597db1293e0695e0ce63160a7aad4330345586838123aeda4d9b207f92c92b6"
+    },
+    {
+      "id": "WASH-ISO7090-M30",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M30",
+      "inner_diameter_mm": 32.6,
+      "outer_diameter_mm": 67.0,
+      "thickness_mm": 3.0,
+      "hardness": "200 HV min",
+      "checksum": "5c98f9b2819637d6466ec4d5c6d3b2b58d412b0b4f81124149917f71fe0349c0"
+    },
+    {
+      "id": "WASH-ISO7090-M33",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M33",
+      "inner_diameter_mm": 35.84,
+      "outer_diameter_mm": 73.6,
+      "thickness_mm": 3.3,
+      "hardness": "200 HV min",
+      "checksum": "70a2c0ca57131db02910811ce030909a2719107ce733ce121e72e1ae1af85962"
+    },
+    {
+      "id": "WASH-ISO7090-M36",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M36",
+      "inner_diameter_mm": 39.08,
+      "outer_diameter_mm": 80.2,
+      "thickness_mm": 3.6,
+      "hardness": "200 HV min",
+      "checksum": "b7f2051e792dff45dc376cbe8b6fbd142b8d13ae094bfa060a2511595662e9b4"
+    },
+    {
+      "id": "WASH-ISO7090-M39",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M39",
+      "inner_diameter_mm": 42.32,
+      "outer_diameter_mm": 86.8,
+      "thickness_mm": 3.9,
+      "hardness": "200 HV min",
+      "checksum": "e6db501a168832ca83d963912f20b706e4712206f8f89769a5a816e54df245ba"
+    },
+    {
+      "id": "WASH-ISO7090-M42",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M42",
+      "inner_diameter_mm": 45.56,
+      "outer_diameter_mm": 93.4,
+      "thickness_mm": 4.2,
+      "hardness": "200 HV min",
+      "checksum": "050d5d4faf83a73a2f04b94d45d7155965bf498881841410ce29ea23e9642102"
+    },
+    {
+      "id": "WASH-ISO7090-M45",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M45",
+      "inner_diameter_mm": 48.8,
+      "outer_diameter_mm": 100.0,
+      "thickness_mm": 4.5,
+      "hardness": "200 HV min",
+      "checksum": "dc1484126b209b35b245b9a8bbda0b9e18fa17c79102508a32e802d9fe8c5838"
+    },
+    {
+      "id": "WASH-ISO7090-M48",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M48",
+      "inner_diameter_mm": 52.04,
+      "outer_diameter_mm": 106.6,
+      "thickness_mm": 4.8,
+      "hardness": "200 HV min",
+      "checksum": "f3bb719a2f1a55319a79846dd8f0edcf63273273b6ff8be1c54697bdeb79364e"
+    },
+    {
+      "id": "WASH-ISO7090-M52",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M52",
+      "inner_diameter_mm": 56.36,
+      "outer_diameter_mm": 115.4,
+      "thickness_mm": 5.2,
+      "hardness": "200 HV min",
+      "checksum": "4827b1e57c86a53ef89367765b4a88cd87b258b13d4c9677826ef16e1c2a39cf"
+    },
+    {
+      "id": "WASH-ISO7090-M56",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M56",
+      "inner_diameter_mm": 60.68,
+      "outer_diameter_mm": 124.2,
+      "thickness_mm": 5.6,
+      "hardness": "200 HV min",
+      "checksum": "08ffbd359835030210d519f57904c4b9fcc8e13f476512f9aa1e8bd150454c77"
+    },
+    {
+      "id": "WASH-ISO7090-M60",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M60",
+      "inner_diameter_mm": 65.0,
+      "outer_diameter_mm": 133.0,
+      "thickness_mm": 6.0,
+      "hardness": "200 HV min",
+      "checksum": "7e474435286717a9338a9b222c41bd92a0eca2f16e3265e5761f710b0abc1278"
+    },
+    {
+      "id": "WASH-ISO7090-M64",
+      "source_standard": "ISO 7090",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, chamfered, grade A. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7090 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7090",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7090 M64",
+      "inner_diameter_mm": 69.32,
+      "outer_diameter_mm": 141.8,
+      "thickness_mm": 6.4,
+      "hardness": "200 HV min",
+      "checksum": "eccb2cad999c1675f726bdf01fe3c18fc46c22076fcdec734ee2bb25d4613291"
+    },
+    {
+      "id": "WASH-ISO7091-M3",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M3",
+      "inner_diameter_mm": 3.5,
+      "outer_diameter_mm": 7.6,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "071810f98d0227c9b3e674b80a029295f03054ac3a235dac4e029f296f03a0da"
+    },
+    {
+      "id": "WASH-ISO7091-M3.5",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M3.5",
+      "inner_diameter_mm": 4.05,
+      "outer_diameter_mm": 8.7,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "abf8e7a504e3ed4750bdf983fc706f8990eeed31b27c089de1325b95e141407a"
+    },
+    {
+      "id": "WASH-ISO7091-M4",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M4",
+      "inner_diameter_mm": 4.6,
+      "outer_diameter_mm": 9.8,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "e857dfe78c461507281f27b3182d5c8aa153851b21a10204c3dc302a01a1950e"
+    },
+    {
+      "id": "WASH-ISO7091-M5",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M5",
+      "inner_diameter_mm": 5.7,
+      "outer_diameter_mm": 12.0,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "0c7dcebf1b372455c9a007193c05ffbeafbf5c8168e82eef2bf3e097ecd33f06"
+    },
+    {
+      "id": "WASH-ISO7091-M6",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M6",
+      "inner_diameter_mm": 6.8,
+      "outer_diameter_mm": 14.2,
+      "thickness_mm": 0.6,
+      "hardness": "200 HV min",
+      "checksum": "f1e9de42ad4a63814c2108407c16eb5870c3d2c17cb418dac6e27ea492bfeae5"
+    },
+    {
+      "id": "WASH-ISO7091-M7",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M7",
+      "inner_diameter_mm": 7.9,
+      "outer_diameter_mm": 16.4,
+      "thickness_mm": 0.7,
+      "hardness": "200 HV min",
+      "checksum": "0721e80b313d291c669ef6aaf519a9e3b1dfa0a8f191cbc0f314a9f4800d19df"
+    },
+    {
+      "id": "WASH-ISO7091-M8",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M8",
+      "inner_diameter_mm": 9.0,
+      "outer_diameter_mm": 18.6,
+      "thickness_mm": 0.8,
+      "hardness": "200 HV min",
+      "checksum": "e7254a5dd499c4946bff76d86b396a831f2c66bdb30055bbe5dab6e796df4cb3"
+    },
+    {
+      "id": "WASH-ISO7091-M10",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M10",
+      "inner_diameter_mm": 11.2,
+      "outer_diameter_mm": 23.0,
+      "thickness_mm": 1.0,
+      "hardness": "200 HV min",
+      "checksum": "c2a70a32c8583e736143f82c2bd7d7e373936f6147dee706ee64ce73dd5d7416"
+    },
+    {
+      "id": "WASH-ISO7091-M12",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M12",
+      "inner_diameter_mm": 13.4,
+      "outer_diameter_mm": 27.4,
+      "thickness_mm": 1.2,
+      "hardness": "200 HV min",
+      "checksum": "e87f9dbf488a06595d8581b89199686f04417590aee32475bd9f52527c51e7e4"
+    },
+    {
+      "id": "WASH-ISO7091-M14",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M14",
+      "inner_diameter_mm": 15.6,
+      "outer_diameter_mm": 31.8,
+      "thickness_mm": 1.4,
+      "hardness": "200 HV min",
+      "checksum": "0807b2c588c46c68aa1472729b897ef1598b3eb4988e8ecc1d0bd080c5ea78c8"
+    },
+    {
+      "id": "WASH-ISO7091-M16",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M16",
+      "inner_diameter_mm": 17.8,
+      "outer_diameter_mm": 36.2,
+      "thickness_mm": 1.6,
+      "hardness": "200 HV min",
+      "checksum": "3774a1a76e1db41f09e96833fbf07ffd8adba69737573de648e4b584c4faec61"
+    },
+    {
+      "id": "WASH-ISO7091-M18",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M18",
+      "inner_diameter_mm": 20.0,
+      "outer_diameter_mm": 40.6,
+      "thickness_mm": 1.8,
+      "hardness": "200 HV min",
+      "checksum": "6ecef595789e8b8c1e8474261bf6dc11bc48debc357019f812717da27adc4f10"
+    },
+    {
+      "id": "WASH-ISO7091-M20",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M20",
+      "inner_diameter_mm": 22.2,
+      "outer_diameter_mm": 45.0,
+      "thickness_mm": 2.0,
+      "hardness": "200 HV min",
+      "checksum": "09057cfd7a7712751d1cdd3579c76b6251ff32a1b79a5ee4a437e49589ce087c"
+    },
+    {
+      "id": "WASH-ISO7091-M22",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M22",
+      "inner_diameter_mm": 24.4,
+      "outer_diameter_mm": 49.4,
+      "thickness_mm": 2.2,
+      "hardness": "200 HV min",
+      "checksum": "a34fb30a2bd1828e8ef48b065de15c379e8d17bd619da84ea675348829179a2d"
+    },
+    {
+      "id": "WASH-ISO7091-M24",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M24",
+      "inner_diameter_mm": 26.6,
+      "outer_diameter_mm": 53.8,
+      "thickness_mm": 2.4,
+      "hardness": "200 HV min",
+      "checksum": "c6e3c32912ddf2771a6b47c72d00570e50befd5fdcc5c36d27b1c93eba61a4b5"
+    },
+    {
+      "id": "WASH-ISO7091-M27",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M27",
+      "inner_diameter_mm": 29.9,
+      "outer_diameter_mm": 60.4,
+      "thickness_mm": 2.7,
+      "hardness": "200 HV min",
+      "checksum": "489dab4358c25c612fd35e87bd5daeb899a1da274f33f5aabcaf5b81ca4e03e3"
+    },
+    {
+      "id": "WASH-ISO7091-M30",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M30",
+      "inner_diameter_mm": 33.2,
+      "outer_diameter_mm": 67.0,
+      "thickness_mm": 3.0,
+      "hardness": "200 HV min",
+      "checksum": "052442cab9d65236e10db25147a4fee8135fa47a67eed86256bbbde51d3e3b5d"
+    },
+    {
+      "id": "WASH-ISO7091-M33",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M33",
+      "inner_diameter_mm": 36.5,
+      "outer_diameter_mm": 73.6,
+      "thickness_mm": 3.3,
+      "hardness": "200 HV min",
+      "checksum": "a8e72805b5acafb2bd064bb95fc51dfd173e207ed4e3f7a9cc596f420e0a0af4"
+    },
+    {
+      "id": "WASH-ISO7091-M36",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M36",
+      "inner_diameter_mm": 39.8,
+      "outer_diameter_mm": 80.2,
+      "thickness_mm": 3.6,
+      "hardness": "200 HV min",
+      "checksum": "940aba5385f2051b84aea057f355a13632cc311d39956a130d8be8895fbdd228"
+    },
+    {
+      "id": "WASH-ISO7091-M39",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M39",
+      "inner_diameter_mm": 43.1,
+      "outer_diameter_mm": 86.8,
+      "thickness_mm": 3.9,
+      "hardness": "200 HV min",
+      "checksum": "496974ceb8c14f947cb4a232837da80466295f2b5063b5baa88c25a6bc419891"
+    },
+    {
+      "id": "WASH-ISO7091-M42",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M42",
+      "inner_diameter_mm": 46.4,
+      "outer_diameter_mm": 93.4,
+      "thickness_mm": 4.2,
+      "hardness": "200 HV min",
+      "checksum": "dce4438580a68a2401d290343c688b68cd22fea2fa80c49c81b9c040a005cd0a"
+    },
+    {
+      "id": "WASH-ISO7091-M45",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M45",
+      "inner_diameter_mm": 49.7,
+      "outer_diameter_mm": 100.0,
+      "thickness_mm": 4.5,
+      "hardness": "200 HV min",
+      "checksum": "8422e0cbe79b88400829024053f62a2df4679f0f6614c256499c7b397ed03783"
+    },
+    {
+      "id": "WASH-ISO7091-M48",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M48",
+      "inner_diameter_mm": 53.0,
+      "outer_diameter_mm": 106.6,
+      "thickness_mm": 4.8,
+      "hardness": "200 HV min",
+      "checksum": "b0e3552edd04393515739a49d09dc11ba4c705c7359f53c42215215f341bf39f"
+    },
+    {
+      "id": "WASH-ISO7091-M52",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M52",
+      "inner_diameter_mm": 57.4,
+      "outer_diameter_mm": 115.4,
+      "thickness_mm": 5.2,
+      "hardness": "200 HV min",
+      "checksum": "1d9e54f9b0e83379e6a79c6e993e1a95507c3adf21a149bc990ecf3a7997f07d"
+    },
+    {
+      "id": "WASH-ISO7091-M56",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M56",
+      "inner_diameter_mm": 61.8,
+      "outer_diameter_mm": 124.2,
+      "thickness_mm": 5.6,
+      "hardness": "200 HV min",
+      "checksum": "142d1290ea33af68dbb7761246d9dda4543b18658ef410f00547971bd49de3a7"
+    },
+    {
+      "id": "WASH-ISO7091-M60",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M60",
+      "inner_diameter_mm": 66.2,
+      "outer_diameter_mm": 133.0,
+      "thickness_mm": 6.0,
+      "hardness": "200 HV min",
+      "checksum": "8f93b9fba2dd5dff6ae9c2bec68774f71d3f773e97a4861477b58a2d2b6f2737"
+    },
+    {
+      "id": "WASH-ISO7091-M64",
+      "source_standard": "ISO 7091",
+      "confidence": 3,
+      "notes": "Plain washer, normal series, product grade C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7091 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7091",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7091 M64",
+      "inner_diameter_mm": 70.6,
+      "outer_diameter_mm": 141.8,
+      "thickness_mm": 6.4,
+      "hardness": "200 HV min",
+      "checksum": "da473d8df7403afbba6cee30980b8d78c9d987a502acafde0cfaaa59030a73ee"
+    },
+    {
+      "id": "WASH-ISO7093-M3",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M3",
+      "inner_diameter_mm": 3.5,
+      "outer_diameter_mm": 9.4,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "74efc2323e27d3ecdf3938aa992a83e24b57958ebb6177fa476b56ec75c17bb3"
+    },
+    {
+      "id": "WASH-ISO7093-M3.5",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M3.5",
+      "inner_diameter_mm": 4.05,
+      "outer_diameter_mm": 10.8,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "4a55b6bcffa9f2e8cd6eb5659199effb0d412bd0da4aa71c8d103de622bec996"
+    },
+    {
+      "id": "WASH-ISO7093-M4",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M4",
+      "inner_diameter_mm": 4.6,
+      "outer_diameter_mm": 12.2,
+      "thickness_mm": 0.56,
+      "hardness": "200 HV min",
+      "checksum": "539257b54ab57ed06d058357797cc3e29c0ba6279831ba347e0b53ec010db822"
+    },
+    {
+      "id": "WASH-ISO7093-M5",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M5",
+      "inner_diameter_mm": 5.7,
+      "outer_diameter_mm": 15.0,
+      "thickness_mm": 0.7,
+      "hardness": "200 HV min",
+      "checksum": "28cc41198303a7cc3e9584eb8a423bc4cead8efd10f37ba387f960c9a752f549"
+    },
+    {
+      "id": "WASH-ISO7093-M6",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M6",
+      "inner_diameter_mm": 6.8,
+      "outer_diameter_mm": 17.8,
+      "thickness_mm": 0.84,
+      "hardness": "200 HV min",
+      "checksum": "27b748d6f160de15aac24d19628ca5a3ae9b20340a2fa00e51a0abb86fa827d2"
+    },
+    {
+      "id": "WASH-ISO7093-M7",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M7",
+      "inner_diameter_mm": 7.9,
+      "outer_diameter_mm": 20.6,
+      "thickness_mm": 0.98,
+      "hardness": "200 HV min",
+      "checksum": "cfaf597ff05b3e065f7048396b455c0ff0f69d5a95c0312b355135d7501391fd"
+    },
+    {
+      "id": "WASH-ISO7093-M8",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M8",
+      "inner_diameter_mm": 9.0,
+      "outer_diameter_mm": 23.4,
+      "thickness_mm": 1.12,
+      "hardness": "200 HV min",
+      "checksum": "7aa57381ac8c89dc35db880eb8a73313f7c5386b4e346616092e710642c7c3f7"
+    },
+    {
+      "id": "WASH-ISO7093-M10",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M10",
+      "inner_diameter_mm": 11.2,
+      "outer_diameter_mm": 29.0,
+      "thickness_mm": 1.4,
+      "hardness": "200 HV min",
+      "checksum": "96a83824a733de265a6ec50d5f69c62617657591e1c02e8648bf4c0225764d0e"
+    },
+    {
+      "id": "WASH-ISO7093-M12",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M12",
+      "inner_diameter_mm": 13.4,
+      "outer_diameter_mm": 34.6,
+      "thickness_mm": 1.68,
+      "hardness": "200 HV min",
+      "checksum": "f68270c99cb9dce7d65acfee4d3bce7eae7b33f66fc8e65e88fa28d3df4de1dc"
+    },
+    {
+      "id": "WASH-ISO7093-M14",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M14",
+      "inner_diameter_mm": 15.6,
+      "outer_diameter_mm": 40.2,
+      "thickness_mm": 1.96,
+      "hardness": "200 HV min",
+      "checksum": "d118630fae343c11f3d8428133dd227e5c60470395cd967507b23bfae792d7f7"
+    },
+    {
+      "id": "WASH-ISO7093-M16",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M16",
+      "inner_diameter_mm": 17.8,
+      "outer_diameter_mm": 45.8,
+      "thickness_mm": 2.24,
+      "hardness": "200 HV min",
+      "checksum": "517a61fc3cb3536d851079677d35b3349df2ecddbf0d4e973499db45ed6c4ca9"
+    },
+    {
+      "id": "WASH-ISO7093-M18",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M18",
+      "inner_diameter_mm": 20.0,
+      "outer_diameter_mm": 51.4,
+      "thickness_mm": 2.52,
+      "hardness": "200 HV min",
+      "checksum": "1a5b97d6ab9792a8f89e5b4b9ed9ecabe3bbaa9559c2d445b311b1866ae1857e"
+    },
+    {
+      "id": "WASH-ISO7093-M20",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M20",
+      "inner_diameter_mm": 22.2,
+      "outer_diameter_mm": 57.0,
+      "thickness_mm": 2.8,
+      "hardness": "200 HV min",
+      "checksum": "4bd1c0bf3fe4d4a55d9dea72e0baf7ee206a35b5b3b5539066d7f56b45d24768"
+    },
+    {
+      "id": "WASH-ISO7093-M22",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M22",
+      "inner_diameter_mm": 24.4,
+      "outer_diameter_mm": 62.6,
+      "thickness_mm": 3.08,
+      "hardness": "200 HV min",
+      "checksum": "c1caa9018cb80b753036c47a4034e92c5842fccc4811966708557fa9ead0a51f"
+    },
+    {
+      "id": "WASH-ISO7093-M24",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M24",
+      "inner_diameter_mm": 26.6,
+      "outer_diameter_mm": 68.2,
+      "thickness_mm": 3.36,
+      "hardness": "200 HV min",
+      "checksum": "1ef564ea1c2af1f8efd6d2cbbfa0de0efab5aa89ed844b32bdfeb8459f6a0f34"
+    },
+    {
+      "id": "WASH-ISO7093-M27",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M27",
+      "inner_diameter_mm": 29.9,
+      "outer_diameter_mm": 76.6,
+      "thickness_mm": 3.78,
+      "hardness": "200 HV min",
+      "checksum": "79204ff07e724fd6f2e8e4c5062b1f67be52e614956c6287a246e1420bf263b2"
+    },
+    {
+      "id": "WASH-ISO7093-M30",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M30",
+      "inner_diameter_mm": 33.2,
+      "outer_diameter_mm": 85.0,
+      "thickness_mm": 4.2,
+      "hardness": "200 HV min",
+      "checksum": "c33c4c549e933c7ea993e81b0f237ad5f829ff0d184ad44f684e86c2c1df22a1"
+    },
+    {
+      "id": "WASH-ISO7093-M33",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M33",
+      "inner_diameter_mm": 36.5,
+      "outer_diameter_mm": 93.4,
+      "thickness_mm": 4.62,
+      "hardness": "200 HV min",
+      "checksum": "481f414595208eb5feafe46c09ccac7c3935a8161d58fdab910473e47f9db2ea"
+    },
+    {
+      "id": "WASH-ISO7093-M36",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M36",
+      "inner_diameter_mm": 39.8,
+      "outer_diameter_mm": 101.8,
+      "thickness_mm": 5.04,
+      "hardness": "200 HV min",
+      "checksum": "ee07b1d7f0247ee000c589ea965e84b2b0495e7238044b1cd024dfe67d3ab8eb"
+    },
+    {
+      "id": "WASH-ISO7093-M39",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M39",
+      "inner_diameter_mm": 43.1,
+      "outer_diameter_mm": 110.2,
+      "thickness_mm": 5.46,
+      "hardness": "200 HV min",
+      "checksum": "e68990f3231acd81724ecec0dc6091e92ebf5e7ed93689195ff35075bf2ba46f"
+    },
+    {
+      "id": "WASH-ISO7093-M42",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M42",
+      "inner_diameter_mm": 46.4,
+      "outer_diameter_mm": 118.6,
+      "thickness_mm": 5.88,
+      "hardness": "200 HV min",
+      "checksum": "e0292739d173303528f5bb531bcdb38044179b8192f7de370d9e135035d71da8"
+    },
+    {
+      "id": "WASH-ISO7093-M45",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M45",
+      "inner_diameter_mm": 49.7,
+      "outer_diameter_mm": 127.0,
+      "thickness_mm": 6.3,
+      "hardness": "200 HV min",
+      "checksum": "ca7e7c6ea0a4cd9f0c58f954947576db2843cc79b4ecadd9159b432daaaec10a"
+    },
+    {
+      "id": "WASH-ISO7093-M48",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M48",
+      "inner_diameter_mm": 53.0,
+      "outer_diameter_mm": 135.4,
+      "thickness_mm": 6.72,
+      "hardness": "200 HV min",
+      "checksum": "41501df1b369bfb43f6ef52db1a1f329496e2cb5b65b74f559495adf5496bc88"
+    },
+    {
+      "id": "WASH-ISO7093-M52",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M52",
+      "inner_diameter_mm": 57.4,
+      "outer_diameter_mm": 146.6,
+      "thickness_mm": 7.28,
+      "hardness": "200 HV min",
+      "checksum": "11138554a1e8274787a770dd4dbe092ee6f4291c66ff94baa97c8ab5afd6d7b5"
+    },
+    {
+      "id": "WASH-ISO7093-M56",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M56",
+      "inner_diameter_mm": 61.8,
+      "outer_diameter_mm": 157.8,
+      "thickness_mm": 7.84,
+      "hardness": "200 HV min",
+      "checksum": "70d4a294fafe9bb4ac0ebe7e1a9264ffd3082288f4d99d2b8a32bf0e9b2dcd8b"
+    },
+    {
+      "id": "WASH-ISO7093-M60",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M60",
+      "inner_diameter_mm": 66.2,
+      "outer_diameter_mm": 169.0,
+      "thickness_mm": 8.4,
+      "hardness": "200 HV min",
+      "checksum": "0f7f8b6f9823fda4368622ae1d803b0108492bb4b86e38728d83f196a51dfc71"
+    },
+    {
+      "id": "WASH-ISO7093-M64",
+      "source_standard": "ISO 7093",
+      "confidence": 3,
+      "notes": "Plain washer, large series, grade A/C. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 7093 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 7093",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 7093 M64",
+      "inner_diameter_mm": 70.6,
+      "outer_diameter_mm": 180.2,
+      "thickness_mm": 8.96,
+      "hardness": "200 HV min",
+      "checksum": "02f61fc8f0a0aca094299c82527b6827cd3ca30792695f5cf0a43ad7ca44457e"
+    },
+    {
+      "id": "WASH-ISO8738-M3",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M3",
+      "inner_diameter_mm": 3.65,
+      "outer_diameter_mm": 7.0,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "5a1d8cc69719531d282689a17e0fe92b59466befbef33679205b54f464678870"
+    },
+    {
+      "id": "WASH-ISO8738-M3.5",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M3.5",
+      "inner_diameter_mm": 4.22,
+      "outer_diameter_mm": 8.0,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "ca746377e62c33f3e01420f1222ceaa347a95ddd6f89382705589717f658c742"
+    },
+    {
+      "id": "WASH-ISO8738-M4",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M4",
+      "inner_diameter_mm": 4.8,
+      "outer_diameter_mm": 9.0,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "4e9737d6221538c3945b7ff4e3619f930f53202ed98a08bc422d8e2c5903178b"
+    },
+    {
+      "id": "WASH-ISO8738-M5",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M5",
+      "inner_diameter_mm": 5.95,
+      "outer_diameter_mm": 11.0,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "bb8c7c6079a144ad0a6a6ca13c940d23ae1064d3972126ec7ff21ec361ce476e"
+    },
+    {
+      "id": "WASH-ISO8738-M6",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M6",
+      "inner_diameter_mm": 7.1,
+      "outer_diameter_mm": 13.0,
+      "thickness_mm": 0.6,
+      "hardness": "200 HV min",
+      "checksum": "6aad15fe80f958160337709d8dd7e1e75f27d1790440fd76083019b982844afc"
+    },
+    {
+      "id": "WASH-ISO8738-M7",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M7",
+      "inner_diameter_mm": 8.25,
+      "outer_diameter_mm": 15.0,
+      "thickness_mm": 0.7,
+      "hardness": "200 HV min",
+      "checksum": "5942b0b42a9246edbd0f0de5a1d8b9a3ef525c33385ef00d71b3412cbe2bd03a"
+    },
+    {
+      "id": "WASH-ISO8738-M8",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M8",
+      "inner_diameter_mm": 9.4,
+      "outer_diameter_mm": 17.0,
+      "thickness_mm": 0.8,
+      "hardness": "200 HV min",
+      "checksum": "ac6c3d1df4dd27372be3602075b595ead10a7ba44453195e3638b6ae5ec8ec6e"
+    },
+    {
+      "id": "WASH-ISO8738-M10",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M10",
+      "inner_diameter_mm": 11.7,
+      "outer_diameter_mm": 21.0,
+      "thickness_mm": 1.0,
+      "hardness": "200 HV min",
+      "checksum": "17bf5df01067d4fac169cab2b3a70fc2ac9c41744fa15bf907a65a6b16652069"
+    },
+    {
+      "id": "WASH-ISO8738-M12",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M12",
+      "inner_diameter_mm": 14.0,
+      "outer_diameter_mm": 25.0,
+      "thickness_mm": 1.2,
+      "hardness": "200 HV min",
+      "checksum": "615c1af6863348c3fec3de14e8375111a375aba9108eac571dbe7ba090396371"
+    },
+    {
+      "id": "WASH-ISO8738-M14",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M14",
+      "inner_diameter_mm": 16.3,
+      "outer_diameter_mm": 29.0,
+      "thickness_mm": 1.4,
+      "hardness": "200 HV min",
+      "checksum": "792ec26c6989f73c7bfb8cbd6e4820d4515f5c1c59b30970b7a3128c25c1a871"
+    },
+    {
+      "id": "WASH-ISO8738-M16",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M16",
+      "inner_diameter_mm": 18.6,
+      "outer_diameter_mm": 33.0,
+      "thickness_mm": 1.6,
+      "hardness": "200 HV min",
+      "checksum": "88bf33eef95e9e15eb5d4b06c58ca95c981a9d13936ccbff254da4805a4cbd7a"
+    },
+    {
+      "id": "WASH-ISO8738-M18",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M18",
+      "inner_diameter_mm": 20.9,
+      "outer_diameter_mm": 37.0,
+      "thickness_mm": 1.8,
+      "hardness": "200 HV min",
+      "checksum": "0ee6be9bcba4ed0f8da40c47a23e4f6cee38fa7103c8e78ae59634954ee3f741"
+    },
+    {
+      "id": "WASH-ISO8738-M20",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M20",
+      "inner_diameter_mm": 23.2,
+      "outer_diameter_mm": 41.0,
+      "thickness_mm": 2.0,
+      "hardness": "200 HV min",
+      "checksum": "f98b16fd1eaa4485ad5de715524abc194dc619762efb6509787a7e00f0f3cb6a"
+    },
+    {
+      "id": "WASH-ISO8738-M22",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M22",
+      "inner_diameter_mm": 25.5,
+      "outer_diameter_mm": 45.0,
+      "thickness_mm": 2.2,
+      "hardness": "200 HV min",
+      "checksum": "5a1e0a6dedcb9a280039126ec5ef0803c37c69be628fbbd44214894849bbf871"
+    },
+    {
+      "id": "WASH-ISO8738-M24",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M24",
+      "inner_diameter_mm": 27.8,
+      "outer_diameter_mm": 49.0,
+      "thickness_mm": 2.4,
+      "hardness": "200 HV min",
+      "checksum": "44da59b7e2067964ee746948f4090bf43d1fe7e380632fee1893f16590004997"
+    },
+    {
+      "id": "WASH-ISO8738-M27",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M27",
+      "inner_diameter_mm": 31.25,
+      "outer_diameter_mm": 55.0,
+      "thickness_mm": 2.7,
+      "hardness": "200 HV min",
+      "checksum": "d26e2fd290f074e9e3e5e17a00ff466666d089535c8d95fcbe8bcc2d9b1b0f70"
+    },
+    {
+      "id": "WASH-ISO8738-M30",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M30",
+      "inner_diameter_mm": 34.7,
+      "outer_diameter_mm": 61.0,
+      "thickness_mm": 3.0,
+      "hardness": "200 HV min",
+      "checksum": "50a95e417af33816c6b78c3ed0cda22b7de271e1e836a6d3d8d73f1c06a50ebf"
+    },
+    {
+      "id": "WASH-ISO8738-M33",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M33",
+      "inner_diameter_mm": 38.15,
+      "outer_diameter_mm": 67.0,
+      "thickness_mm": 3.3,
+      "hardness": "200 HV min",
+      "checksum": "de80d77f9be45114ea619668837b74b78273dc8d08ee75e0d65677afb8df639f"
+    },
+    {
+      "id": "WASH-ISO8738-M36",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M36",
+      "inner_diameter_mm": 41.6,
+      "outer_diameter_mm": 73.0,
+      "thickness_mm": 3.6,
+      "hardness": "200 HV min",
+      "checksum": "01d827653fc710c5372aaf0f834bcdf4c9f28daa536f703978b0236f7b064cc5"
+    },
+    {
+      "id": "WASH-ISO8738-M39",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M39",
+      "inner_diameter_mm": 45.05,
+      "outer_diameter_mm": 79.0,
+      "thickness_mm": 3.9,
+      "hardness": "200 HV min",
+      "checksum": "f7320ca40e876deb4829ddc748812175a769464348c519dcc33081e500a45ad6"
+    },
+    {
+      "id": "WASH-ISO8738-M42",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M42",
+      "inner_diameter_mm": 48.5,
+      "outer_diameter_mm": 85.0,
+      "thickness_mm": 4.2,
+      "hardness": "200 HV min",
+      "checksum": "26a0514d45c316f57214475f1ee38ac8223e577b8936d025a0a086f5bfd88b9c"
+    },
+    {
+      "id": "WASH-ISO8738-M45",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M45",
+      "inner_diameter_mm": 51.95,
+      "outer_diameter_mm": 91.0,
+      "thickness_mm": 4.5,
+      "hardness": "200 HV min",
+      "checksum": "db13b001edb6a0d8583267452bbf03154fe181c9abae624171c1b71ff29c8e4c"
+    },
+    {
+      "id": "WASH-ISO8738-M48",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M48",
+      "inner_diameter_mm": 55.4,
+      "outer_diameter_mm": 97.0,
+      "thickness_mm": 4.8,
+      "hardness": "200 HV min",
+      "checksum": "173f1bffa0854b3159d3fd8cc4ad8128676a1ffc80e3027bf832de02fd650e84"
+    },
+    {
+      "id": "WASH-ISO8738-M52",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M52",
+      "inner_diameter_mm": 60.0,
+      "outer_diameter_mm": 105.0,
+      "thickness_mm": 5.2,
+      "hardness": "200 HV min",
+      "checksum": "7aebf5f100239e7991ab463e3b020795e722f978c7a0c8bc86af2853e07ff21f"
+    },
+    {
+      "id": "WASH-ISO8738-M56",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M56",
+      "inner_diameter_mm": 64.6,
+      "outer_diameter_mm": 113.0,
+      "thickness_mm": 5.6,
+      "hardness": "200 HV min",
+      "checksum": "5cdc961f8db18acb6c33f7918d54caa91475e63f4c1b74f02a2a6ca827971b32"
+    },
+    {
+      "id": "WASH-ISO8738-M60",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M60",
+      "inner_diameter_mm": 69.2,
+      "outer_diameter_mm": 121.0,
+      "thickness_mm": 6.0,
+      "hardness": "200 HV min",
+      "checksum": "126e059864c75aa4b0f23b0188be4598d641d82cd5d902b92b8cae0c074c6e85"
+    },
+    {
+      "id": "WASH-ISO8738-M64",
+      "source_standard": "ISO 8738",
+      "confidence": 4,
+      "notes": "Washer for clevis pins. Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the ISO 8738 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "ISO 8738",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "ISO 8738 M64",
+      "inner_diameter_mm": 73.8,
+      "outer_diameter_mm": 129.0,
+      "thickness_mm": 6.4,
+      "hardness": "200 HV min",
+      "checksum": "4c7b1ce61e928f4ef8489ae4b1332adbc7e2df44354008bb599cba12f106af7e"
+    },
+    {
+      "id": "WASH-DIN125-M3",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M3",
+      "inner_diameter_mm": 3.44,
+      "outer_diameter_mm": 7.6,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "b83334cc55548c7f082466984e922aa90127849966bbfbd23b637eb7631b2fa3"
+    },
+    {
+      "id": "WASH-DIN125-M3.5",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M3.5",
+      "inner_diameter_mm": 3.98,
+      "outer_diameter_mm": 8.7,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "ebf08aeb090625ad1aaad5e689231282eeced4946965948c180bef379c0fadfb"
+    },
+    {
+      "id": "WASH-DIN125-M4",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M4",
+      "inner_diameter_mm": 4.52,
+      "outer_diameter_mm": 9.8,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "13a94f830b25e18f996ba355f6a5d4efa7eb4386c770f5158c023da27556bf0b"
+    },
+    {
+      "id": "WASH-DIN125-M5",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M5",
+      "inner_diameter_mm": 5.6,
+      "outer_diameter_mm": 12.0,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "521e28727b0a6c6b3c70727adb9a0d452c66ca7298903dbf9e888f864ce901ea"
+    },
+    {
+      "id": "WASH-DIN125-M6",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M6",
+      "inner_diameter_mm": 6.68,
+      "outer_diameter_mm": 14.2,
+      "thickness_mm": 0.6,
+      "hardness": "200 HV min",
+      "checksum": "aaace2e1720f181a7b764b596b283d0f0a15779087789eb275061a6c809d9906"
+    },
+    {
+      "id": "WASH-DIN125-M7",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M7",
+      "inner_diameter_mm": 7.76,
+      "outer_diameter_mm": 16.4,
+      "thickness_mm": 0.7,
+      "hardness": "200 HV min",
+      "checksum": "7e5330a44f5d0a7dabe213b4f96b8ab53154935b8b1b86c2b1aaf0b8d2cc4b4b"
+    },
+    {
+      "id": "WASH-DIN125-M8",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M8",
+      "inner_diameter_mm": 8.84,
+      "outer_diameter_mm": 18.6,
+      "thickness_mm": 0.8,
+      "hardness": "200 HV min",
+      "checksum": "8743eec39520ced5b637bfb4e6ee7e46f40dda08db11ac39f69bbaff831396c6"
+    },
+    {
+      "id": "WASH-DIN125-M10",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M10",
+      "inner_diameter_mm": 11.0,
+      "outer_diameter_mm": 23.0,
+      "thickness_mm": 1.0,
+      "hardness": "200 HV min",
+      "checksum": "b18221a368d844584bab1b1c9cbbd9b30e49556c4d1579fdfc764bfc07ba5c69"
+    },
+    {
+      "id": "WASH-DIN125-M12",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M12",
+      "inner_diameter_mm": 13.16,
+      "outer_diameter_mm": 27.4,
+      "thickness_mm": 1.2,
+      "hardness": "200 HV min",
+      "checksum": "69db0e11288f9b7ca709dbc850cf88bbb7b5c7f5e0753917cb49e8a3e579705e"
+    },
+    {
+      "id": "WASH-DIN125-M14",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M14",
+      "inner_diameter_mm": 15.32,
+      "outer_diameter_mm": 31.8,
+      "thickness_mm": 1.4,
+      "hardness": "200 HV min",
+      "checksum": "36f1a66853661310fc126b971d03bfab3d5aa90671ffa9a068e899314fdf61bd"
+    },
+    {
+      "id": "WASH-DIN125-M16",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M16",
+      "inner_diameter_mm": 17.48,
+      "outer_diameter_mm": 36.2,
+      "thickness_mm": 1.6,
+      "hardness": "200 HV min",
+      "checksum": "cf8f476e32d8888a405a45527111ee1025eaaf56650335ff118acb0dc8e9522e"
+    },
+    {
+      "id": "WASH-DIN125-M18",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M18",
+      "inner_diameter_mm": 19.64,
+      "outer_diameter_mm": 40.6,
+      "thickness_mm": 1.8,
+      "hardness": "200 HV min",
+      "checksum": "5f1d0defa7dc3fc76f0dd3e5e461c226f8455b0bb78c94cfd89e19ef50806b64"
+    },
+    {
+      "id": "WASH-DIN125-M20",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M20",
+      "inner_diameter_mm": 21.8,
+      "outer_diameter_mm": 45.0,
+      "thickness_mm": 2.0,
+      "hardness": "200 HV min",
+      "checksum": "c4fb9da2d6c60b9c0963ddcc8eb39186540823258d7640ff1b29ca731256bf04"
+    },
+    {
+      "id": "WASH-DIN125-M22",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M22",
+      "inner_diameter_mm": 23.96,
+      "outer_diameter_mm": 49.4,
+      "thickness_mm": 2.2,
+      "hardness": "200 HV min",
+      "checksum": "d13693f448176db42dd4db5e25a5c52c8ed7917fbf4141df372067f46dda4a50"
+    },
+    {
+      "id": "WASH-DIN125-M24",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M24",
+      "inner_diameter_mm": 26.12,
+      "outer_diameter_mm": 53.8,
+      "thickness_mm": 2.4,
+      "hardness": "200 HV min",
+      "checksum": "360ef6bf1d972fd3e5eb7760aa7fc7375e5754876d0aa441422f1fd952150b5e"
+    },
+    {
+      "id": "WASH-DIN125-M27",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M27",
+      "inner_diameter_mm": 29.36,
+      "outer_diameter_mm": 60.4,
+      "thickness_mm": 2.7,
+      "hardness": "200 HV min",
+      "checksum": "acd0b68acc6d57e6ef6d57a2cd4dc1dd36b104c18fe0494803bb27fc157a4336"
+    },
+    {
+      "id": "WASH-DIN125-M30",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M30",
+      "inner_diameter_mm": 32.6,
+      "outer_diameter_mm": 67.0,
+      "thickness_mm": 3.0,
+      "hardness": "200 HV min",
+      "checksum": "208014d3ad03d2569f23285ac345d79f2a0efb3eb8223390e0721a167ccbc65c"
+    },
+    {
+      "id": "WASH-DIN125-M33",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M33",
+      "inner_diameter_mm": 35.84,
+      "outer_diameter_mm": 73.6,
+      "thickness_mm": 3.3,
+      "hardness": "200 HV min",
+      "checksum": "7284dfd914ed90653454d4e0a94d8c41c582a1153e871a5856c79ab42f3c8efc"
+    },
+    {
+      "id": "WASH-DIN125-M36",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M36",
+      "inner_diameter_mm": 39.08,
+      "outer_diameter_mm": 80.2,
+      "thickness_mm": 3.6,
+      "hardness": "200 HV min",
+      "checksum": "7e6f9664ee7e64d27a02a10c778be8b814ff96c7bcf9fb6443771622cf22a7f6"
+    },
+    {
+      "id": "WASH-DIN125-M39",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M39",
+      "inner_diameter_mm": 42.32,
+      "outer_diameter_mm": 86.8,
+      "thickness_mm": 3.9,
+      "hardness": "200 HV min",
+      "checksum": "48d9f257cd9546ee0eca831e1014b226f7f96a4c9b553096b50bfc310ba257ce"
+    },
+    {
+      "id": "WASH-DIN125-M42",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M42",
+      "inner_diameter_mm": 45.56,
+      "outer_diameter_mm": 93.4,
+      "thickness_mm": 4.2,
+      "hardness": "200 HV min",
+      "checksum": "d34d05e23f7695192dd9de953c22207ff358faadfe5c2583719de434e9ce1e17"
+    },
+    {
+      "id": "WASH-DIN125-M45",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M45",
+      "inner_diameter_mm": 48.8,
+      "outer_diameter_mm": 100.0,
+      "thickness_mm": 4.5,
+      "hardness": "200 HV min",
+      "checksum": "3b6e6cf5335cacd3d370b43b4378f0fb91fc89b5d63740fc35f783e3d5c71791"
+    },
+    {
+      "id": "WASH-DIN125-M48",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M48",
+      "inner_diameter_mm": 52.04,
+      "outer_diameter_mm": 106.6,
+      "thickness_mm": 4.8,
+      "hardness": "200 HV min",
+      "checksum": "0e1fc16d71f86495ad337283684cc58b31d95f0982af5284b03ba75306cb25fb"
+    },
+    {
+      "id": "WASH-DIN125-M52",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M52",
+      "inner_diameter_mm": 56.36,
+      "outer_diameter_mm": 115.4,
+      "thickness_mm": 5.2,
+      "hardness": "200 HV min",
+      "checksum": "a13391e8c6fb0432fe79674eb7e589b3759d241ff87bd9a1a74f7a070794e0f3"
+    },
+    {
+      "id": "WASH-DIN125-M56",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M56",
+      "inner_diameter_mm": 60.68,
+      "outer_diameter_mm": 124.2,
+      "thickness_mm": 5.6,
+      "hardness": "200 HV min",
+      "checksum": "1f1a8f1d7f0a2d3ffa1f0364ecd48337eb4587f3342a5803c4d887cf26b3efaa"
+    },
+    {
+      "id": "WASH-DIN125-M60",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M60",
+      "inner_diameter_mm": 65.0,
+      "outer_diameter_mm": 133.0,
+      "thickness_mm": 6.0,
+      "hardness": "200 HV min",
+      "checksum": "9317adf77fbc95085c1239d0d9b2669374ad19a22cc2074f9e5b2846cfa9bd52"
+    },
+    {
+      "id": "WASH-DIN125-M64",
+      "source_standard": "DIN 125",
+      "confidence": 3,
+      "notes": "Plain washer (DIN legacy equivalent of ISO 7089). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 125 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 125",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 125 M64",
+      "inner_diameter_mm": 69.32,
+      "outer_diameter_mm": 141.8,
+      "thickness_mm": 6.4,
+      "hardness": "200 HV min",
+      "checksum": "5244be7dc58fa0d59ffb201846be84fd3bf1b08e636ed51c03afe903e38dd253"
+    },
+    {
+      "id": "WASH-DIN9021-M3",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M3",
+      "inner_diameter_mm": 3.5,
+      "outer_diameter_mm": 10.0,
+      "thickness_mm": 0.5,
+      "hardness": "200 HV min",
+      "checksum": "9de1665a3454294b7b851a6d9c8334c5dcc7f9889c5e7f3db5ae70b5aca35fc0"
+    },
+    {
+      "id": "WASH-DIN9021-M3.5",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M3.5",
+      "inner_diameter_mm": 4.05,
+      "outer_diameter_mm": 11.5,
+      "thickness_mm": 0.53,
+      "hardness": "200 HV min",
+      "checksum": "d8680eb756e49e3bd536935b427e744c2c9ce4aae7c79f925c83eb3bbefdc0a3"
+    },
+    {
+      "id": "WASH-DIN9021-M4",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M4",
+      "inner_diameter_mm": 4.6,
+      "outer_diameter_mm": 13.0,
+      "thickness_mm": 0.6,
+      "hardness": "200 HV min",
+      "checksum": "53c8304cbe1eebcd45df14fa68097fb23f370ee30026e870b78ccbdf2986fc0b"
+    },
+    {
+      "id": "WASH-DIN9021-M5",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M5",
+      "inner_diameter_mm": 5.7,
+      "outer_diameter_mm": 16.0,
+      "thickness_mm": 0.75,
+      "hardness": "200 HV min",
+      "checksum": "d29a08603a263988283bc04b8011a15ad3c2ad98bd9a743fb4cabf49114ec6d2"
+    },
+    {
+      "id": "WASH-DIN9021-M6",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M6",
+      "inner_diameter_mm": 6.8,
+      "outer_diameter_mm": 19.0,
+      "thickness_mm": 0.9,
+      "hardness": "200 HV min",
+      "checksum": "945d23c34cce0e6a827c40c762ddf61e01e2985ce1827c40d00ef912c17dff47"
+    },
+    {
+      "id": "WASH-DIN9021-M7",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M7",
+      "inner_diameter_mm": 7.9,
+      "outer_diameter_mm": 22.0,
+      "thickness_mm": 1.05,
+      "hardness": "200 HV min",
+      "checksum": "b99489b95fe5e6d1e5dda261bd7c87a0a06175c640cb83de81629a46af3d2089"
+    },
+    {
+      "id": "WASH-DIN9021-M8",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M8",
+      "inner_diameter_mm": 9.0,
+      "outer_diameter_mm": 25.0,
+      "thickness_mm": 1.2,
+      "hardness": "200 HV min",
+      "checksum": "69493e0f38f2ac779f3ad3990d4c0bf3f5ee8fa411dd71095b62d069c37fdc10"
+    },
+    {
+      "id": "WASH-DIN9021-M10",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M10",
+      "inner_diameter_mm": 11.2,
+      "outer_diameter_mm": 31.0,
+      "thickness_mm": 1.5,
+      "hardness": "200 HV min",
+      "checksum": "bfa88699339b2d3f28d2564fbc7b777232985f704f55596bc75c112ce901264e"
+    },
+    {
+      "id": "WASH-DIN9021-M12",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M12",
+      "inner_diameter_mm": 13.4,
+      "outer_diameter_mm": 37.0,
+      "thickness_mm": 1.8,
+      "hardness": "200 HV min",
+      "checksum": "e5929dc7bb7f4bb8d42a45072a504bf3fdd86c4bff333370d09051fdff0ed644"
+    },
+    {
+      "id": "WASH-DIN9021-M14",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M14",
+      "inner_diameter_mm": 15.6,
+      "outer_diameter_mm": 43.0,
+      "thickness_mm": 2.1,
+      "hardness": "200 HV min",
+      "checksum": "fa2bf17a98c4beeee2d10eecf616d4a3225d7618801712d86c94f1bc8d7480c5"
+    },
+    {
+      "id": "WASH-DIN9021-M16",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M16",
+      "inner_diameter_mm": 17.8,
+      "outer_diameter_mm": 49.0,
+      "thickness_mm": 2.4,
+      "hardness": "200 HV min",
+      "checksum": "299baf14b018f2d0fd6230b052441947a1e6d60ecb531ddca229a5cbbcdef116"
+    },
+    {
+      "id": "WASH-DIN9021-M18",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M18",
+      "inner_diameter_mm": 20.0,
+      "outer_diameter_mm": 55.0,
+      "thickness_mm": 2.7,
+      "hardness": "200 HV min",
+      "checksum": "8a7f628ba4fb59eeef44c881aa61b0ad7861c6f887e0f3d13f7ac06d0587b26a"
+    },
+    {
+      "id": "WASH-DIN9021-M20",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M20",
+      "inner_diameter_mm": 22.2,
+      "outer_diameter_mm": 61.0,
+      "thickness_mm": 3.0,
+      "hardness": "200 HV min",
+      "checksum": "a8e12d766266fa3fa6ba2c76e8b7a6bef31f6b20c36df360f3f1d17d1f6a978f"
+    },
+    {
+      "id": "WASH-DIN9021-M22",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M22",
+      "inner_diameter_mm": 24.4,
+      "outer_diameter_mm": 67.0,
+      "thickness_mm": 3.3,
+      "hardness": "200 HV min",
+      "checksum": "55aa553988c3c59c9b7a8796f7e3fa234d6618e94ef90be29c3c7ea8a1b4b8d1"
+    },
+    {
+      "id": "WASH-DIN9021-M24",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M24",
+      "inner_diameter_mm": 26.6,
+      "outer_diameter_mm": 73.0,
+      "thickness_mm": 3.6,
+      "hardness": "200 HV min",
+      "checksum": "f31e4da66cc6e4513321e7b34340bd7afdb538fd16ed26872734cb13b891ca99"
+    },
+    {
+      "id": "WASH-DIN9021-M27",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M27",
+      "inner_diameter_mm": 29.9,
+      "outer_diameter_mm": 82.0,
+      "thickness_mm": 4.05,
+      "hardness": "200 HV min",
+      "checksum": "3c701c4c46412ecb9fd0384eb5a65ab615b5dc54d7904dcb0519ae06f4867ca9"
+    },
+    {
+      "id": "WASH-DIN9021-M30",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M30",
+      "inner_diameter_mm": 33.2,
+      "outer_diameter_mm": 91.0,
+      "thickness_mm": 4.5,
+      "hardness": "200 HV min",
+      "checksum": "360a319f120f8ee5d52c285ef21df483a850135da559668b18b2ab75b9284ae0"
+    },
+    {
+      "id": "WASH-DIN9021-M33",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M33",
+      "inner_diameter_mm": 36.5,
+      "outer_diameter_mm": 100.0,
+      "thickness_mm": 4.95,
+      "hardness": "200 HV min",
+      "checksum": "08a2b777ca526e92cf996103fe843749fd99116f0cbb3749a620affa90f02dfa"
+    },
+    {
+      "id": "WASH-DIN9021-M36",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M36",
+      "inner_diameter_mm": 39.8,
+      "outer_diameter_mm": 109.0,
+      "thickness_mm": 5.4,
+      "hardness": "200 HV min",
+      "checksum": "0923fa8d68ebd987b61112f599a497c9608a99695573dc5ee929829e7dd253d3"
+    },
+    {
+      "id": "WASH-DIN9021-M39",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M39",
+      "inner_diameter_mm": 43.1,
+      "outer_diameter_mm": 118.0,
+      "thickness_mm": 5.85,
+      "hardness": "200 HV min",
+      "checksum": "d77a72795257f67c3f1c7d63cfabd27b8f419773c70961bea361bf6e47320dce"
+    },
+    {
+      "id": "WASH-DIN9021-M42",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M42",
+      "inner_diameter_mm": 46.4,
+      "outer_diameter_mm": 127.0,
+      "thickness_mm": 6.3,
+      "hardness": "200 HV min",
+      "checksum": "a36cf32b8e42850d2d70559413fb40265cfc20fce52413b95e6eefda65184f44"
+    },
+    {
+      "id": "WASH-DIN9021-M45",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M45",
+      "inner_diameter_mm": 49.7,
+      "outer_diameter_mm": 136.0,
+      "thickness_mm": 6.75,
+      "hardness": "200 HV min",
+      "checksum": "c38b13bbb3cc7a411b51e4ddb57a184be35d0573403318df17cfc0f771de0083"
+    },
+    {
+      "id": "WASH-DIN9021-M48",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M48",
+      "inner_diameter_mm": 53.0,
+      "outer_diameter_mm": 145.0,
+      "thickness_mm": 7.2,
+      "hardness": "200 HV min",
+      "checksum": "62185ba61f20a33589ddc634d3d4855924a89266fadd29d1922284e288cdc2df"
+    },
+    {
+      "id": "WASH-DIN9021-M52",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M52",
+      "inner_diameter_mm": 57.4,
+      "outer_diameter_mm": 157.0,
+      "thickness_mm": 7.8,
+      "hardness": "200 HV min",
+      "checksum": "9cc64ecee55fa57d1ed6016c00b3c8d8edbe352978c5c08aa8c19f57572d1ac9"
+    },
+    {
+      "id": "WASH-DIN9021-M56",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M56",
+      "inner_diameter_mm": 61.8,
+      "outer_diameter_mm": 169.0,
+      "thickness_mm": 8.4,
+      "hardness": "200 HV min",
+      "checksum": "cabce0c6f5ca22e78ae5a0c76dae86794ba17ba628ee6fc1ab46962e6c4ee6cc"
+    },
+    {
+      "id": "WASH-DIN9021-M60",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M60",
+      "inner_diameter_mm": 66.2,
+      "outer_diameter_mm": 181.0,
+      "thickness_mm": 9.0,
+      "hardness": "200 HV min",
+      "checksum": "efdc4939e6dfe2e237cc595f6b357ec0262abaaa6ec26fc7c1cdf39326196e23"
+    },
+    {
+      "id": "WASH-DIN9021-M64",
+      "source_standard": "DIN 9021",
+      "confidence": 3,
+      "notes": "Large-OD plain washer (DIN legacy of ISO 7093). Dimensions are ratio-estimated from typical series ID/OD/thickness proportions, NOT read from the DIN 9021 dimensional table -- verify before production use.",
+      "revision": "2026-07-20",
+      "source": "DIN 9021",
+      "version": "2.4.1",
+      "validation_status": "reference_only",
+      "approval_status": "pending",
+      "metadata": {
+        "verified_fields": [],
+        "estimated_fields": [
+          "inner_diameter_mm",
+          "outer_diameter_mm",
+          "thickness_mm"
+        ]
+      },
+      "designation": "DIN 9021 M64",
+      "inner_diameter_mm": 70.6,
+      "outer_diameter_mm": 193.0,
+      "thickness_mm": 9.6,
+      "hardness": "200 HV min",
+      "checksum": "46a586adb4f5bec41e24d38cb735e970141306fc6c89958b66209c97c9951805"
+    }
+  ]
+}

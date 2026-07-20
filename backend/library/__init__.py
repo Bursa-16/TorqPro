@@ -41,6 +41,11 @@ Modules:
 - search:                  category/keyword/standard search
 - facade:                  LibraryRegistry combining register/get/list/
                            search/validate/load/reload/statistics
+- population:              Faz 2.4.1 engineering database population
+                           (backend/library/data/*.json -> registry)
+                           plus the find_bolt/find_nut/find_material/
+                           find_thread/find_coating/find_lubrication/
+                           list_strength_classes/list_oems search API
 """
 
 from __future__ import annotations
@@ -66,7 +71,7 @@ from . import (
     thread_library,
     washer_library,
 )
-from . import loader, migration, source_manager, validator
+from . import loader, migration, population, source_manager, validator
 
 # Imported via the dotted submodule path (not ``from . import search``):
 # the package already re-exports a function named ``search`` (the
@@ -83,6 +88,18 @@ from .search import (
 )
 from .search import search as search_advanced
 from .facade import LibraryRegistry, library_registry
+from .population import (
+    find_bolt,
+    find_coating,
+    find_lubrication,
+    find_material,
+    find_nut,
+    find_thread,
+    list_oems,
+    list_strength_classes,
+    populate_all,
+    populate_library,
+)
 
 # Loading the ``search`` submodule just above causes Python to
 # automatically rebind the ``backend.library.search`` package
@@ -121,4 +138,15 @@ __all__ = [
     "CATEGORY_LIBRARY_MAP",
     "LibraryRegistry",
     "library_registry",
+    "population",
+    "populate_all",
+    "populate_library",
+    "find_bolt",
+    "find_nut",
+    "find_material",
+    "find_thread",
+    "find_coating",
+    "find_lubrication",
+    "list_strength_classes",
+    "list_oems",
 ]
