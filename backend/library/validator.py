@@ -779,6 +779,7 @@ def find_pitch_designation_mismatches(
             continue
         diameter = float(match.group(1))
         explicit_pitch = match.group(2)
+        expected: Optional[float]
         if explicit_pitch is not None:
             expected = float(explicit_pitch)
             if abs(pitch - expected) > 1e-6:
