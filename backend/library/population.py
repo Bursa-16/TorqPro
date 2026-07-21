@@ -218,6 +218,16 @@ def validate_nut_library_records() -> List[str]:
     return [issue.message for issue in report.issues]
 
 
+def validate_washer_library_records() -> List[str]:
+    """Run the Faz 2.4.1C washer-specific checks
+    (``validator.validate_washer_library``) over the live washer
+    library data file. Additional, washer-only entry point -- does
+    not replace ``validate_all_population_sources``."""
+    records = load_population_records("washer library")
+    report = validator_module.validate_washer_library(records)
+    return [issue.message for issue in report.issues]
+
+
 def find_invalid_status_values() -> List[str]:
     """Flag any record (across all domains, including the OEM
     catalog) whose ``validation_status``/``approval_status`` is
@@ -670,6 +680,94 @@ def search_nuts(
     return records
 
 
+def find_washer_by_standard(standard: str) -> List[Dict[str, Any]]:
+    """Faz 2.4.1C washer search -- exact (case-sensitive) match on
+    ``source_standard`` (e.g. "ISO 7089", "DIN 127 B")."""
+    records = load_population_records("washer library")
+    return [r for r in records if r.get("source_standard") == standard]
+
+
+def find_washer_by_size(
+    nominal_size_mm: Optional[float] = None,
+    designation: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Faz 2.4.1C washer search -- filter by nominal bolt size, via
+    ``nominal_size_mm`` (matched against the numeric part of any
+    ``compatible_bolt_sizes`` entry, e.g. 3.5 matches "M3.5") and/or a
+    case-insensitive substring match on ``designation``."""
+    records = load_population_records("washer library")
+    if nominal_size_mm is not None:
+        needle = f"M{nominal_size_mm:g}"
+        records = [
+            r for r in records
+            if needle in r.get("compatible_bolt_sizes", [])
+        ]
+    if designation is not None:
+        needle = designation.strip().lower()
+        records = [r for r in records if needle in r.get("designation", "").lower()]
+    return records
+
+
+def find_washer_by_material(material: str) -> List[Dict[str, Any]]:
+    """Faz 2.4.1C washer search -- case-insensitive substring match
+    on ``material``. Records with no ``material`` set (most
+    pre-existing flat-washer records -- see the Faz 2.4.1C generator
+    docstring) are excluded rather than matched."""
+    needle = material.strip().lower()
+    records = load_population_records("washer library")
+    return [r for r in records if needle in r.get("material", "").lower()]
+
+
+def find_washer_for_bolt(bolt_size: str) -> List[Dict[str, Any]]:
+    """Faz 2.4.1C washer search -- washers whose ``compatible_bolt_sizes``
+    contains ``bolt_size`` exactly (e.g. "M8"). Case-insensitive."""
+    needle = bolt_size.strip().upper()
+    records = load_population_records("washer library")
+    return [
+        r for r in records
+        if needle in [s.upper() for s in r.get("compatible_bolt_sizes", [])]
+    ]
+
+
+def find_washer_locking(locking: Optional[str] = None) -> List[Dict[str, Any]]:
+    """Faz 2.4.1C washer search -- washers with a non-empty
+    ``locking_principle`` (i.e. lock washers, as opposed to plain
+    flat washers), optionally filtered further by a case-insensitive
+    substring match on ``locking_principle`` itself."""
+    records = load_population_records("washer library")
+    records = [r for r in records if r.get("locking_principle")]
+    if locking is not None:
+        needle = locking.strip().lower()
+        records = [r for r in records if needle in r.get("locking_principle", "").lower()]
+    return records
+
+
+def find_washer_temperature(
+    min_c: Optional[float] = None,
+    max_c: Optional[float] = None,
+) -> List[Dict[str, Any]]:
+    """Faz 2.4.1C washer search -- washers whose declared operating
+    range covers ``[min_c, max_c]`` (either bound optional). Records
+    with no declared temperature range are excluded -- none of the
+    currently-populated washer records has a verified temperature
+    limit (see the Faz 2.4.1C generator docstring), so this currently
+    returns an empty list until such a record is added with a real
+    source."""
+    records = load_population_records("washer library")
+    result = []
+    for r in records:
+        rec_min = r.get("operating_temperature_min_c")
+        rec_max = r.get("operating_temperature_max_c")
+        if rec_min is None or rec_max is None:
+            continue
+        if min_c is not None and rec_min > min_c:
+            continue
+        if max_c is not None and rec_max < max_c:
+            continue
+        result.append(r)
+    return result
+
+
 def find_material(name: Optional[str] = None) -> List[Dict[str, Any]]:
     """Look up material property-set records, optionally filtered by
     a case-insensitive substring match on ``material``."""
@@ -746,10 +844,17 @@ __all__ = [
     "validate_thread_library_records",
     "validate_bolt_library_records",
     "validate_nut_library_records",
+    "validate_washer_library_records",
     "find_bolt",
     "find_nut",
     "search_bolts",
     "search_nuts",
+    "find_washer_by_standard",
+    "find_washer_by_size",
+    "find_washer_by_material",
+    "find_washer_for_bolt",
+    "find_washer_locking",
+    "find_washer_temperature",
     "find_material",
     "find_coating",
     "find_lubrication",

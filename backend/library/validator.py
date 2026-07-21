@@ -1166,3 +1166,102 @@ def validate_nut_library(records: Sequence[Dict[str, Any]]) -> ValidationReport:
     issues.extend(find_lock_nut_missing_locking_principle(records))
     issues.extend(find_prevailing_torque_nut_missing_reuse_info(records))
     return ValidationReport(subject="Nut Library (Faz 2.4.1B)", issues=issues)
+
+
+# ---------------------------------------------------------------------
+# Faz 2.4.1C: washer-specific checks
+# ---------------------------------------------------------------------
+
+# Metric bolt-size tokens such as "M3" or "M3.5" (no pitch suffix --
+# ``compatible_bolt_sizes`` entries identify a nominal diameter only).
+_BOLT_SIZE_PATTERN = re.compile(r"^M\d{1,3}(\.\d{1,2})?$")
+
+
+def find_non_positive_washer_dimensions(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag washer records whose ``inner_diameter_mm``,
+    ``outer_diameter_mm`` or ``thickness_mm`` is present but zero or
+    negative. A field that is simply absent/``None`` is skipped --
+    this checks the *value* of a declared dimension, not whether one
+    was declared."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        for field_name in ("inner_diameter_mm", "outer_diameter_mm", "thickness_mm"):
+            value = record.get(field_name)
+            if value is None:
+                continue
+            if not isinstance(value, (int, float)) or value <= 0:
+                issues.append(
+                    ValidationIssue(
+                        code="non_positive_washer_dimension",
+                        message=f"{field_name} must be > 0, got {value!r}",
+                        record_index=index,
+                        field=field_name,
+                    )
+                )
+    return issues
+
+
+def find_inner_diameter_not_less_than_outer(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag washer records where ``inner_diameter_mm`` is not
+    strictly less than ``outer_diameter_mm`` (both must be present
+    and numeric to be checked)."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        inner = record.get("inner_diameter_mm")
+        outer = record.get("outer_diameter_mm")
+        if not isinstance(inner, (int, float)) or not isinstance(outer, (int, float)):
+            continue
+        if inner >= outer:
+            issues.append(
+                ValidationIssue(
+                    code="inner_diameter_not_less_than_outer",
+                    message=f"inner_diameter_mm={inner} >= outer_diameter_mm={outer}",
+                    record_index=index,
+                    field="inner_diameter_mm",
+                )
+            )
+    return issues
+
+
+def find_invalid_compatible_bolt_size_format(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag washer records whose ``compatible_bolt_sizes`` entries do
+    not match the ``M<diameter>`` pattern (e.g. "M3", "M3.5"). An
+    empty/absent list is not flagged -- this checks the *format* of
+    declared entries, not whether any were declared."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        sizes = record.get("compatible_bolt_sizes") or []
+        for size in sizes:
+            if not isinstance(size, str) or not _BOLT_SIZE_PATTERN.match(size):
+                issues.append(
+                    ValidationIssue(
+                        code="invalid_compatible_bolt_size_format",
+                        message=f"Not a valid bolt-size token: {size!r}",
+                        record_index=index,
+                        field="compatible_bolt_sizes",
+                    )
+                )
+    return issues
+
+
+def validate_washer_library(records: Sequence[Dict[str, Any]]) -> ValidationReport:
+    """Run every Faz 2.4.1C washer-specific check over ``records`` in
+    one pass, reusing the pre-existing generic checks
+    (``find_duplicate_ids``, ``find_duplicate_designation_standard_dimension``,
+    ``find_temperature_range_violations``, ``find_missing_source``)
+    rather than duplicating their logic."""
+    issues: List[ValidationIssue] = []
+    issues.extend(find_duplicate_ids(records))
+    issues.extend(find_duplicate_designation_standard_dimension(records))
+    issues.extend(find_non_positive_washer_dimensions(records))
+    issues.extend(find_inner_diameter_not_less_than_outer(records))
+    issues.extend(find_invalid_compatible_bolt_size_format(records))
+    issues.extend(find_temperature_range_violations(records))
+    issues.extend(find_missing_source(records))
+    return ValidationReport(subject="Washer Library (Faz 2.4.1C)", issues=issues)

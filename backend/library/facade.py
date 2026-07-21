@@ -129,6 +129,49 @@ class LibraryRegistry:
 
         return population_module.search_nuts(**filters)
 
+    # -- Faz 2.4.1C additions -----------------------------------------
+    def find_washer_by_standard(self, standard: str) -> List[Dict[str, Any]]:
+        """Faz 2.4.1C washer search by ``source_standard`` (see
+        ``population.find_washer_by_standard``)."""
+        from . import population as population_module
+
+        return population_module.find_washer_by_standard(standard)
+
+    def find_washer_by_size(self, **filters: Any) -> List[Dict[str, Any]]:
+        """Faz 2.4.1C washer search by size (see
+        ``population.find_washer_by_size``)."""
+        from . import population as population_module
+
+        return population_module.find_washer_by_size(**filters)
+
+    def find_washer_by_material(self, material: str) -> List[Dict[str, Any]]:
+        """Faz 2.4.1C washer search by material (see
+        ``population.find_washer_by_material``)."""
+        from . import population as population_module
+
+        return population_module.find_washer_by_material(material)
+
+    def find_washer_for_bolt(self, bolt_size: str) -> List[Dict[str, Any]]:
+        """Faz 2.4.1C washer search by compatible bolt size (see
+        ``population.find_washer_for_bolt``)."""
+        from . import population as population_module
+
+        return population_module.find_washer_for_bolt(bolt_size)
+
+    def find_washer_locking(self, **filters: Any) -> List[Dict[str, Any]]:
+        """Faz 2.4.1C washer search for lock washers (see
+        ``population.find_washer_locking``)."""
+        from . import population as population_module
+
+        return population_module.find_washer_locking(**filters)
+
+    def find_washer_temperature(self, **filters: Any) -> List[Dict[str, Any]]:
+        """Faz 2.4.1C washer search by operating temperature range
+        (see ``population.find_washer_temperature``)."""
+        from . import population as population_module
+
+        return population_module.find_washer_temperature(**filters)
+
 
 # Shared default facade instance for the package. Named distinctly
 # (not ``registry``) so it never shadows the ``backend.library.registry``
