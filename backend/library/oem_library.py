@@ -23,6 +23,7 @@ from backend.standards.base_standard import BaseStandard
 from backend.standards.registry import get_standard
 from backend.standards.registry import list_standards as _list_standards
 
+from .exceptions import OEMStandardNotFoundError
 from .registry import BaseLibrary, LibraryMetadata, register
 
 OEM_LIBRARY = register(
@@ -52,10 +53,15 @@ def resolve_oem_reference(name: str) -> BaseStandard:
     registry and return that standard's own object, unchanged.
 
     Read-only: never stores, copies or caches the returned value.
-    Raises ``KeyError`` if no such standard is registered (same
-    behaviour as ``backend.standards.registry.get_standard``).
+    Raises ``OEMStandardNotFoundError`` (not the raw ``KeyError`` that
+    ``backend.standards.registry.get_standard`` raises) if no such
+    standard is registered -- callers only need to catch
+    ``backend.library`` exceptions at this package's boundary.
     """
-    return get_standard(name)
+    try:
+        return get_standard(name)
+    except KeyError as exc:
+        raise OEMStandardNotFoundError(name) from exc
 
 
 def list_oem_references() -> List[str]:
