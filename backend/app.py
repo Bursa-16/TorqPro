@@ -24,7 +24,7 @@ BASE=Path(__file__).resolve().parent.parent
 APP_VERSION="4.4"
 DB=Path(os.getenv("TORQPRO_DB_PATH") or (BASE/"torqpro.db")); FRONT=BASE/"frontend"; SECRET_FILE=BASE/".torqpro_secret"
 ALGORITHM="HS256"; ACCESS_TOKEN_MINUTES=480; SCHEMA_VERSION=3
-LOGIN_ATTEMPTS: dict = defaultdict(deque)
+LOGIN_ATTEMPTS: dict[str, deque] = defaultdict(deque)
 logging.basicConfig(level=logging.INFO,format="%(asctime)s | %(levelname)s | %(message)s",
  handlers=[logging.FileHandler(BASE/"torqpro.log",encoding="utf-8"),logging.StreamHandler()])
 log=logging.getLogger("torqpro")
@@ -350,7 +350,7 @@ def ac(x:NewUser,u=Depends(admin)):
     audit(u["id"],"user_create",x.username);return {"ok":True}
 @app.patch("/api/admin/users/{uid}")
 def uu(uid:int,x:UserPatch,u=Depends(admin)):
-    sets:list=[];vals:list=[]
+    sets:list[str]=[];vals:list[str|int]=[]
     if x.role is not None:
         if x.role not in ("admin","engineer","viewer"):raise HTTPException(400,"Geçersiz rol")
         sets.append("role=?");vals.append(x.role)
