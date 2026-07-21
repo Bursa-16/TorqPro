@@ -371,6 +371,33 @@ class OEMRecord(LibraryRecordBase):
     supported_calculations: Tuple[str, ...] = ()
 
 
+class JointHardwareRecord(LibraryRecordBase):
+    """Joint hardware master record (see ``joint_hardware_library.py``).
+
+    Faz 2.4.1C shell schema for non-washer joint hardware: spacers,
+    sleeves, bushings, dowel pins, thread inserts and retaining
+    rings. Introduced with an empty dataset -- see the Faz 2.4.1C
+    delivery report for why no record has been populated yet (no
+    verified, fully-sourced dimension table was gathered for any of
+    these families in this phase). All fields optional/additive,
+    ``extra="allow"`` inherited from ``LibraryRecordBase``.
+    """
+
+    designation: str = ""
+    hardware_type: str = ""
+    standard_organization: str = ""
+    inner_diameter_mm: float | None = None
+    outer_diameter_mm: float | None = None
+    length_mm: float | None = None
+    material: str = ""
+    surface_finish: str = ""
+    coating: str = ""
+    compatible_bolt_sizes: List[str] = Field(default_factory=list)
+    load_rating_n: float | None = None
+    operating_temperature_min_c: float | None = None
+    operating_temperature_max_c: float | None = None
+
+
 #: Canonical mapping from a registered library's ``metadata.key``
 #: (see ``backend.library.search.CATEGORY_LIBRARY_MAP`` for the
 #: parallel category-name mapping) to its typed record schema.
@@ -385,6 +412,7 @@ LIBRARY_RECORD_MODELS: Dict[str, Type[LibraryRecordBase]] = {
     "strength class library": StrengthClassRecord,
     "compatibility library": CompatibilityRecord,
     "oem library": OEMRecord,
+    "joint hardware library": JointHardwareRecord,
 }
 
 

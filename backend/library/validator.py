@@ -1265,3 +1265,86 @@ def validate_washer_library(records: Sequence[Dict[str, Any]]) -> ValidationRepo
     issues.extend(find_temperature_range_violations(records))
     issues.extend(find_missing_source(records))
     return ValidationReport(subject="Washer Library (Faz 2.4.1C)", issues=issues)
+
+
+# ---------------------------------------------------------------------
+# Faz 2.4.1C: joint hardware checks (shell -- no domain-specific
+# numeric standard rule is encoded here; see module note below)
+# ---------------------------------------------------------------------
+
+
+def find_non_positive_joint_hardware_dimensions(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag joint hardware records whose ``inner_diameter_mm``,
+    ``outer_diameter_mm`` or ``length_mm`` is present but zero or
+    negative. Generic positivity check -- reuses the same shape as
+    :func:`find_non_positive_washer_dimensions`; no hardware-type-
+    specific numeric rule (e.g. a particular dowel-pin tolerance
+    class) is encoded here, per the Faz 2.4.1C brief."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        for field_name in ("inner_diameter_mm", "outer_diameter_mm", "length_mm"):
+            value = record.get(field_name)
+            if value is None:
+                continue
+            if not isinstance(value, (int, float)) or value <= 0:
+                issues.append(
+                    ValidationIssue(
+                        code="non_positive_joint_hardware_dimension",
+                        message=f"{field_name} must be > 0, got {value!r}",
+                        record_index=index,
+                        field=field_name,
+                    )
+                )
+    return issues
+
+
+def find_missing_hardware_identity(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag joint hardware records with an empty ``designation`` or
+    an empty ``source_standard`` -- every record must declare both
+    what it is and what standard it comes from."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        if not record.get("designation"):
+            issues.append(
+                ValidationIssue(
+                    code="missing_designation",
+                    message="designation is empty",
+                    record_index=index,
+                    field="designation",
+                )
+            )
+        if not record.get("source_standard"):
+            issues.append(
+                ValidationIssue(
+                    code="missing_source_standard",
+                    message="source_standard is empty",
+                    record_index=index,
+                    field="source_standard",
+                )
+            )
+    return issues
+
+
+def validate_joint_hardware_library(
+    records: Sequence[Dict[str, Any]],
+) -> ValidationReport:
+    """Run every Faz 2.4.1C joint-hardware check over ``records`` in
+    one pass, reusing the pre-existing generic checks
+    (``find_duplicate_ids``, ``find_temperature_range_violations``,
+    ``find_missing_source``) rather than duplicating their logic.
+    Deliberately encodes no hardware-type-specific numeric standard
+    rule (e.g. dowel-pin tolerance classes) -- the data file has no
+    records yet (see ``joint_hardware_library.py``), so there is
+    nothing yet to validate such a rule against."""
+    issues: List[ValidationIssue] = []
+    issues.extend(find_duplicate_ids(records))
+    issues.extend(find_non_positive_joint_hardware_dimensions(records))
+    issues.extend(find_missing_hardware_identity(records))
+    issues.extend(find_temperature_range_violations(records))
+    issues.extend(find_missing_source(records))
+    subject = "Joint Hardware Library (Faz 2.4.1C)"
+    return ValidationReport(subject=subject, issues=issues)

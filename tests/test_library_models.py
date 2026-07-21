@@ -46,6 +46,9 @@ def test_library_record_base_allows_extra_fields():
 
 
 def test_all_nine_shells_plus_oem_are_mapped():
+    # Faz 2.4.1C adds a tenth domain (joint hardware library, shell
+    # only -- see backend/library/joint_hardware_library.py); the
+    # original nine domain shells plus OEM are unchanged.
     expected_keys = {
         "bolt library",
         "nut library",
@@ -57,6 +60,7 @@ def test_all_nine_shells_plus_oem_are_mapped():
         "strength class library",
         "compatibility library",
         "oem library",
+        "joint hardware library",
     }
     assert set(LIBRARY_RECORD_MODELS.keys()) == expected_keys
 

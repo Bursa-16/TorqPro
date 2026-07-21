@@ -63,6 +63,7 @@ from . import (
     bolt_library,
     coating_library,
     compatibility,
+    joint_hardware_library,
     lubrication_library,
     material_library,
     nut_library,
@@ -91,6 +92,8 @@ from .facade import LibraryRegistry, library_registry
 from .population import (
     find_bolt,
     find_coating,
+    find_joint_hardware_by_standard,
+    find_joint_hardware_by_type,
     find_lubrication,
     find_material,
     find_nut,
@@ -133,6 +136,7 @@ __all__ = [
     "strength_class_library",
     "compatibility",
     "oem_library",
+    "joint_hardware_library",
     "loader",
     "source_manager",
     "migration",
@@ -159,6 +163,8 @@ __all__ = [
     "find_washer_for_bolt",
     "find_washer_locking",
     "find_washer_temperature",
+    "find_joint_hardware_by_type",
+    "find_joint_hardware_by_standard",
     "list_strength_classes",
     "list_oems",
 ]

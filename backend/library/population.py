@@ -60,6 +60,7 @@ POPULATION_SOURCES: Dict[str, str] = {
     "lubrication library": "lubrication_library.json",
     "strength class library": "strength_class_library.json",
     "compatibility library": "compatibility_library.json",
+    "joint hardware library": "joint_hardware_library.json",
 }
 
 OEM_SOURCE = "oem_library.json"
@@ -225,6 +226,17 @@ def validate_washer_library_records() -> List[str]:
     not replace ``validate_all_population_sources``."""
     records = load_population_records("washer library")
     report = validator_module.validate_washer_library(records)
+    return [issue.message for issue in report.issues]
+
+
+def validate_joint_hardware_library_records() -> List[str]:
+    """Run the Faz 2.4.1C joint-hardware checks
+    (``validator.validate_joint_hardware_library``) over the live
+    joint hardware library data file. Currently always returns an
+    empty list -- the data file has no records yet (see
+    ``joint_hardware_library.py``)."""
+    records = load_population_records("joint hardware library")
+    report = validator_module.validate_joint_hardware_library(records)
     return [issue.message for issue in report.issues]
 
 
@@ -768,6 +780,25 @@ def find_washer_temperature(
     return result
 
 
+def find_joint_hardware_by_type(hardware_type: str) -> List[Dict[str, Any]]:
+    """Faz 2.4.1C joint hardware search -- case-insensitive exact
+    match on ``hardware_type`` (e.g. "Dowel pin", "Bushing"). Returns
+    an empty list against the current (unpopulated) data file --
+    that is correct, not an error; see
+    ``joint_hardware_library.py``."""
+    needle = hardware_type.strip().lower()
+    records = load_population_records("joint hardware library")
+    return [r for r in records if r.get("hardware_type", "").lower() == needle]
+
+
+def find_joint_hardware_by_standard(standard: str) -> List[Dict[str, Any]]:
+    """Faz 2.4.1C joint hardware search -- exact match on
+    ``source_standard``. Returns an empty list against the current
+    (unpopulated) data file -- that is correct, not an error."""
+    records = load_population_records("joint hardware library")
+    return [r for r in records if r.get("source_standard") == standard]
+
+
 def find_material(name: Optional[str] = None) -> List[Dict[str, Any]]:
     """Look up material property-set records, optionally filtered by
     a case-insensitive substring match on ``material``."""
@@ -845,6 +876,7 @@ __all__ = [
     "validate_bolt_library_records",
     "validate_nut_library_records",
     "validate_washer_library_records",
+    "validate_joint_hardware_library_records",
     "find_bolt",
     "find_nut",
     "search_bolts",
@@ -855,6 +887,8 @@ __all__ = [
     "find_washer_for_bolt",
     "find_washer_locking",
     "find_washer_temperature",
+    "find_joint_hardware_by_type",
+    "find_joint_hardware_by_standard",
     "find_material",
     "find_coating",
     "find_lubrication",

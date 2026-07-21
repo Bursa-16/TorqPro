@@ -172,6 +172,22 @@ class LibraryRegistry:
 
         return population_module.find_washer_temperature(**filters)
 
+    def find_joint_hardware_by_type(self, hardware_type: str) -> List[Dict[str, Any]]:
+        """Faz 2.4.1C joint hardware search by type (see
+        ``population.find_joint_hardware_by_type``). Returns an
+        empty list against the current (unpopulated) data file."""
+        from . import population as population_module
+
+        return population_module.find_joint_hardware_by_type(hardware_type)
+
+    def find_joint_hardware_by_standard(self, standard: str) -> List[Dict[str, Any]]:
+        """Faz 2.4.1C joint hardware search by standard (see
+        ``population.find_joint_hardware_by_standard``). Returns an
+        empty list against the current (unpopulated) data file."""
+        from . import population as population_module
+
+        return population_module.find_joint_hardware_by_standard(standard)
+
 
 # Shared default facade instance for the package. Named distinctly
 # (not ``registry``) so it never shadows the ``backend.library.registry``
