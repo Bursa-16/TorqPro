@@ -179,13 +179,35 @@ class NutRecord(LibraryRecordBase):
 
 
 class WasherRecord(LibraryRecordBase):
-    """Washer master record (see ``washer_library.py``)."""
+    """Washer master record (see ``washer_library.py``).
+
+    Faz 2.4.1C additions (all optional, additive -- every Faz 2.4.1
+    plain-washer record that predates these fields keeps validating
+    unchanged, since ``WasherRecord`` keeps ``LibraryRecordBase``'s
+    ``extra="allow"``): structured washer-type/standard-body/material/
+    finish/compatibility/service-limit fields requested by the
+    Faz 2.4.1C brief. Pre-existing fields (``designation``,
+    ``inner_diameter_mm``, ``outer_diameter_mm``, ``thickness_mm``,
+    ``hardness``) are kept as-is, unrenamed.
+    """
 
     designation: str = ""
     inner_diameter_mm: float | None = None
     outer_diameter_mm: float | None = None
     thickness_mm: float | None = None
     hardness: str = ""
+
+    # -- Faz 2.4.1C additions -----------------------------------------
+    washer_type: str = ""
+    standard_organization: str = ""
+    material: str = ""
+    surface_finish: str = ""
+    coating: str = ""
+    compatible_bolt_sizes: List[str] = Field(default_factory=list)
+    strength_class: str = ""
+    locking_principle: str = ""
+    operating_temperature_min_c: float | None = None
+    operating_temperature_max_c: float | None = None
 
 
 #: Faz 2.4.1A thread-record schema version. Deliberately distinct
