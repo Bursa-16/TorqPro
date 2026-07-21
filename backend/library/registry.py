@@ -75,6 +75,14 @@ class BaseLibrary:
         self.metadata = metadata
         self._records: List[Dict[str, Any]] = list(records) if records else []
         self._source_path: Optional[str] = None
+        # Faz 2.4.2A: per-instance cache of the validated typed view
+        # of ``_records`` (see ``typed_records`` below). ``None`` means
+        # "not yet computed for the current ``_records`` content" --
+        # this is never a global/class-level cache, so it cannot leak
+        # between different ``BaseLibrary`` instances.
+        self._typed_records_cache: Optional[
+            Tuple["models_module.LibraryRecordBase", ...]
+        ] = None
 
     @property
     def records(self) -> List[Dict[str, Any]]:
@@ -117,30 +125,51 @@ class BaseLibrary:
 
         Phase 1.4 infrastructure hook for the migration engine. Not
         called anywhere during package import; a library only gains
-        records when something explicitly calls this method.
+        records when something explicitly calls this method. Faz
+        2.4.2A: this is the library's single mutation entry point for
+        ``_records`` (besides ``__init__``), so this is where the
+        typed-record cache is invalidated.
         """
         self._records = list(records)
         self.metadata = self.metadata.model_copy(
             update={"record_count": len(self._records)}
         )
+        self._typed_records_cache = None
 
-    def typed_records(self) -> List["models_module.LibraryRecordBase"]:
+    def typed_records(self) -> Tuple["models_module.LibraryRecordBase", ...]:
         """Validate and parse this library's current in-memory raw
         records against its Faz 2.4.0 typed schema (see
-        ``backend.library.models``).
+        ``backend.library.models``), cached per instance (Faz 2.4.2A).
 
         Raises ``pydantic.ValidationError`` on the first invalid
         record. Does not mutate ``self._records`` -- the typed
         instances are a validated view, not a replacement for the raw
         dict storage.
+
+        The first call after construction or after ``replace_records``
+        runs full Pydantic validation and caches the result as a
+        tuple (immutable, so nothing external can corrupt the cached
+        view). Every subsequent call against the same ``_records``
+        content returns the cached tuple without re-validating.
+        Returns a tuple rather than the previous ``List[...]`` --
+        confirmed safe against every existing caller (none appends,
+        inserts or otherwise mutates the returned collection; all
+        only ``len()``/index/iterate it).
         """
-        return models_module.parse_typed_records(self.metadata.key, self._records)
+        if self._typed_records_cache is None:
+            self._typed_records_cache = tuple(
+                models_module.parse_typed_records(self.metadata.key, self._records)
+            )
+        return self._typed_records_cache
 
     def find_schema_violations(self) -> List[str]:
         """Validate this library's current in-memory raw records
         against its typed schema and return violation messages
         instead of raising. Empty list means every record is
-        schema-valid."""
+        schema-valid. Deliberately bypasses the ``typed_records``
+        cache (this is a non-raising, best-effort report -- caching a
+        raising validation call is a different contract) and imposes
+        no caching behaviour of its own."""
         return models_module.find_schema_violations(self.metadata.key, self._records)
 
 
