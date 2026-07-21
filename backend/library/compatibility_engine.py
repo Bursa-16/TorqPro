@@ -146,7 +146,12 @@ def check_bolt_nut_compatibility(
     bolt_tmax = bolt.get("operating_temperature_max_c")
     nut_tmin = nut.get("operating_temperature_min_c")
     nut_tmax = nut.get("operating_temperature_max_c")
-    if None not in (bolt_tmin, bolt_tmax, nut_tmin, nut_tmax):
+    if (
+        bolt_tmin is not None
+        and bolt_tmax is not None
+        and nut_tmin is not None
+        and nut_tmax is not None
+    ):
         overlap_low = max(bolt_tmin, nut_tmin)
         overlap_high = min(bolt_tmax, nut_tmax)
         if overlap_low > overlap_high:
