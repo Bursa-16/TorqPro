@@ -1196,4 +1196,10 @@ def dns_check(domain:str,expected_ip:str="",u=Depends(admin)):
 
 @app.get("/")
 def root():return FileResponse(FRONT/"index.html")
+
+# Faz 2.5A: production validation API module (backend/api/routes/production_validation.py).
+# Imported here (after user/conn/audit are defined) to avoid a circular import at module load.
+from backend.api.routes.production_validation import router as production_validation_router
+app.include_router(production_validation_router)
+
 app.mount("/",StaticFiles(directory=FRONT,html=True),name="frontend")
