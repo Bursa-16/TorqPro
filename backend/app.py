@@ -260,13 +260,10 @@ class ResetPassword(BaseModel):new_password:str=Field(min_length=8)
 
 def token(r):
     return jwt.encode({"sub":str(r["id"]),"name":r["display_name"],"role":r["role"],"exp":int((utcnow()+timedelta(minutes=ACCESS_TOKEN_MINUTES)).timestamp()),"jti":secrets.token_hex(16)},SECRET_KEY,algorithm=ALGORITHM)
-def user(authorization:str=Header(default="")):
-    if not authorization.startswith("Bearer "):raise HTTPException(401,"Oturum gerekli")
-    try:p=jwt.decode(authorization[7:],SECRET_KEY,algorithms=[ALGORITHM]);uid=int(p["sub"])
-    except (jwt.PyJWTError,KeyError,ValueError):raise HTTPException(401,"Geçersiz veya süresi dolmuş oturum")
-    with conn() as c:r=c.execute("SELECT id,username,display_name,is_active,role FROM users WHERE id=?",(uid,)).fetchone()
-    if not r or not r["is_active"]:raise HTTPException(401,"Kullanıcı aktif değil")
-    return dict(r)
+# `user` now lives in backend/api/dependencies.py (independent of this module) so that
+# backend/api/routes/*.py can depend on it without importing backend.app at load time,
+# which previously caused a circular import when this module included those routers.
+from backend.api.dependencies import user
 def admin(u=Depends(user)):
     if u["role"]!="admin":raise HTTPException(403,"Yönetici yetkisi gerekli")
     return u
