@@ -226,6 +226,10 @@ def migrate():
         if not c.execute("SELECT 1 FROM golive_profile WHERE id=1").fetchone():
             c.execute("INSERT INTO golive_profile(id,https_status,dns_planned,docker_ready,health_ready,updated_at) VALUES(1,'planned',0,1,0,?)",(now_iso(),))
 
+        # Faz 2.5A prerequisite: joint foundation.
+        from backend.joints.schema import migrate as migrate_joints
+        migrate_joints(c)
+
         c.commit()
 
 @app.middleware("http")
