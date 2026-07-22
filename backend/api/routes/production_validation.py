@@ -8,10 +8,16 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from backend.app import user
-from backend.production_validation import schemas as s
-from backend.production_validation import service as svc
-from backend.production_validation.exceptions import (
+router = APIRouter(tags=["production_validation"])
+
+# `router` is intentionally assigned before these imports: if backend.app ends up
+# re-entering this module while it is still mid-import (see backend/api/dependencies.py
+# docstring), the partially-initialized module already exposes a usable `router`
+# attribute, which breaks the circular-import failure instead of propagating it.
+from backend.api.dependencies import user  # noqa: E402
+from backend.production_validation import schemas as s  # noqa: E402
+from backend.production_validation import service as svc  # noqa: E402
+from backend.production_validation.exceptions import (  # noqa: E402
     ConflictError,
     CsvImportError,
     LockedError,
@@ -19,8 +25,6 @@ from backend.production_validation.exceptions import (
     StateTransitionError,
     ValidationDataError,
 )
-
-router = APIRouter(tags=["production_validation"])
 
 
 def _handle(fn, *args, **kwargs):
