@@ -129,3 +129,28 @@ Every schema change has numbered migration, forward transformation, rollback whe
 ## 11. Current-schema transition
 
 The existing SQLite tables in `backend/app.py` remain operational. New tables are introduced incrementally. Compatibility adapters map existing project/calculation records into the new domain until migration is complete. No destructive migration occurs without backup/export test.
+
+## 12. Faz 2.5A additions (2026-07-22)
+
+Two new incremental table groups were added, both via the same
+`backend/app.py::migrate()` idempotent-DDL convention described in §10-11
+(no separate migration framework was introduced):
+
+**Joint prerequisite** (`backend/joints/schema.py`) — minimal, real subset
+of the target `joints`/`joint_revisions` model in §3, added ahead of
+schedule as a dependency of production validation. See
+`docs/adr/ADR_2.5A_JOINT_AND_CALCULATION_REVISION_LINKAGE.md` for why this
+was built now instead of deferred or stubbed:
+
+- `joints(id, project_id, joint_code, name, description, status, current_revision_id, created_by, created_at, updated_at, archived_at)`
+- `joint_revisions(id, joint_id, revision_no, status, snapshot_json, change_summary, created_by, created_at, submitted_at, reviewed_by, reviewed_at, approved_at)`
+
+**Production validation** (`backend/production_validation/repository.py`):
+
+- `validation_studies` — references `projects`, `joints`, `joint_revisions`, `calculations`, `calculation_revisions`.
+- `specification_snapshots` — immutable spec/tolerance snapshot per study; `calculation_snapshot_id` references `calculation_revisions.id` directly (no separate calculation-snapshot table — the existing `calculation_revisions.snapshot_json` already serves that role).
+- `measurement_datasets`, `measurement_records` — versioned, lockable measurement storage; corrections are additive (`correction_of_id`), never overwrite.
+- `tool_references` — minimal tightening/measurement tool identity; full calibration history remains future scope.
+
+Full column list, indexes and constraints: see the `DDL` constants in the
+two files above, and `docs/phases/PHASE_2.5A_PRODUCTION_VALIDATION_FOUNDATION.md`.
