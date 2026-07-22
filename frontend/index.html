@@ -6,11 +6,17 @@
 <title>TorqPro v4.4 — Kurulum Sihirbazı ve İlk Yayın</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#111827">
+<!-- Demo/full sürüm bayrağı. Varsayılan HER ZAMAN "full" olmalı; demo paketleri
+     build/deploy sırasında content="demo" olarak ayarlanmalıdır. Bu satırı "demo" yapmak
+     tam sürümü de kısıtlar — yalnızca demo dağıtımında değiştirin.
+     TBD / doğrulanacak: gerçek lisans seviyesi backend entegrasyonu (bkz. teslim raporu). -->
+<meta name="torqpro-edition" content="full">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
-:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3350;--border2:#3d4470;--accent:#4f7ef8;--accent2:#6b9bff;--success:#22c55e;--warning:#f59e0b;--danger:#ef4444;--text:#e8eaf6;--text2:#9098b8;--text3:#5a6280;--font:'Segoe UI',system-ui,sans-serif;--radius:10px}
+:root{--bg:#0f1117;--surface:#1a1d27;--surface2:#22263a;--border:#2e3350;--border2:#3d4470;--accent:#4f7ef8;--accent2:#6b9bff;--success:#22c55e;--warning:#f59e0b;--danger:#ef4444;--neutral:#9098b8;--text:#e8eaf6;--text2:#9098b8;--text3:#5a6280;--font:'Segoe UI',system-ui,sans-serif;--radius:10px}
+/* Semantik renk kuralı: bilgi=--accent2, başarılı=--success, uyarı=--warning, hata/kritik=--danger, nötr=--neutral. Tüm ekranlarda bu eşleme kullanılmalı. */
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;min-height:100vh}
 /* LOGIN */
@@ -31,14 +37,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;gap:12px;flex-shrink:0}
 .logo{font-size:18px;font-weight:700;color:var(--accent2);letter-spacing:-.5px}
 .logo span{color:var(--text3);font-weight:400;font-size:13px;margin-left:6px}
-.topbar-nav{display:flex;gap:4px;margin-left:20px;flex-wrap:wrap}
-.nav-btn{padding:6px 13px;border-radius:6px;border:none;background:transparent;color:var(--text2);cursor:pointer;font-size:12px;transition:all .15s}
-.nav-btn.active{background:var(--accent);color:#fff}
-.nav-btn:hover:not(.active){background:var(--surface2);color:var(--text)}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0}
 .main{display:flex;flex:1;overflow:hidden}
 .sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);padding:12px;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column}
-.content{flex:1;overflow-y:auto;padding:20px}
+.content{flex:1;overflow-y:auto;padding:18px}
 .sidebar-section{margin-bottom:20px}
 .sidebar-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;padding:0 8px}
 .sidebar-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;cursor:pointer;color:var(--text2);font-size:13px;transition:all .15s;margin-bottom:2px}
@@ -47,7 +49,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .sidebar-icon{font-size:16px;width:20px;text-align:center}
 .sidebar-badge{margin-left:auto;background:var(--danger);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px}
 .sidebar-exit{margin-top:auto;padding:12px 0;border-top:1px solid var(--border)}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:14px}
 .card-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px}
 .card-sub{font-size:12px;color:var(--text3);margin-bottom:16px}
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -108,6 +110,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .alert-danger{background:rgba(239,68,68,.1);border-color:var(--danger);color:var(--danger)}
 .alert-info{background:rgba(79,126,248,.1);border-color:var(--accent);color:var(--accent2)}
 .page{display:none}.page.active{display:block}
+/* ========== ORTAK BİLEŞEN: InfoPopover / StatusHelp ========== */
+.info-icon-btn{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;border:1px solid var(--border2);background:var(--surface2);color:var(--accent2);font-size:11px;font-weight:700;cursor:pointer;line-height:1;flex-shrink:0}
+.info-icon-btn:hover,.info-icon-btn:focus-visible{background:var(--accent);color:#fff;outline:none}
+.info-icon-btn.warn{color:var(--warning);border-color:var(--warning)}
+.info-icon-btn.warn:hover,.info-icon-btn.warn:focus-visible{background:var(--warning);color:#1a1300}
+.info-popover-wrap{position:relative;display:inline-flex;align-items:center}
+.info-popover{position:absolute;z-index:500;top:24px;left:0;width:320px;max-width:min(320px,80vw);background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.5;color:var(--text2);box-shadow:0 12px 32px rgba(0,0,0,.45);display:none}
+.info-popover.open{display:block}
+.info-popover-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px}
+/* ========== ORTAK BİLEŞEN: ConfirmDialog (ConfirmExit) ========== */
+.confirm-overlay{position:fixed;inset:0;background:rgba(8,9,14,.6);z-index:99998;display:flex;align-items:center;justify-content:center}
+.confirm-box{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:22px 24px;width:340px;max-width:90vw;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.confirm-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px}
+.confirm-body{font-size:12px;color:var(--text2);margin-bottom:16px}
+.confirm-actions{display:flex;justify-content:flex-end;gap:8px}
 .section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .section-icon{font-size:20px}
 .section-title{font-size:16px;font-weight:600}
@@ -291,7 +308,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </style>
 </head>
 <body>
-<div class="mobile-topbar"><button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰ Menü</button><strong>TorqPro</strong><button class="mobile-menu-btn" onclick="showPage('mobileaccess')">📱</button></div>
+<div class="mobile-topbar"><button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰ Menü</button><strong>TorqPro</strong><button class="mobile-menu-btn" onclick="showPage('mobileaccess',this)">📱</button></div>
 
 <!-- LOGIN -->
 <div class="login-overlay" id="loginOverlay">
@@ -318,16 +335,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <div class="app" id="mainApp" style="display:none">
 <div class="topbar">
   <div class="logo">TorqPro <span>v4.4 · Go-Live Wizard</span></div>
-  <div class="topbar-nav">
-    <button class="nav-btn active" onclick="showNav('dashboard',this)">📊 Dashboard</button>
-    <button class="nav-btn" onclick="showNav('n01391',this)">⚡ OEM Tork Öngörüsü</button>
-    <button class="nav-btn" onclick="showNav('hizli',this)">🔧 Tork Hesap</button>
-    <button class="nav-btn" onclick="showNav('checklist',this)">✅ Check-List</button>
-    <button class="nav-btn" onclick="showNav('yetenek',this)">📈 Yetenek</button>
-    <button class="nav-btn" onclick="showNav('problem',this)">⚠️ Problem</button>
-    <button class="nav-btn" onclick="showNav('oem',this)">🔍 OEM Norm</button>
-    <button class="nav-btn" onclick="showNav('rapor',this)">📄 Rapor</button>
-  </div>
   <div class="topbar-right" id="topbarRight">
     <span class="pill pill-ok">● Sistem Aktif</span>
   </div>
@@ -337,88 +344,88 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <div class="sidebar">
   <div class="sidebar-section">
     <div class="sidebar-label">Hızlı Erişim</div>
-    <div class="sidebar-item active" onclick="showPage('dashboard')"><span class="sidebar-icon">📊</span> Dashboard</div>
-    <div class="sidebar-item" onclick="showPage('n01391')"><span class="sidebar-icon">⚡</span> Örnek OEM Öngörüsü</div>
-    <div class="sidebar-item" onclick="showPage('hizli')"><span class="sidebar-icon">🔧</span> Tork Hesap</div>
-    <div class="sidebar-item" onclick="showPage('vdi')"><span class="sidebar-icon">🔬</span> Gelişmiş Analiz</div>
+    <div class="sidebar-item active" onclick="showPage('dashboard',this)"><span class="sidebar-icon">📊</span> Dashboard</div>
+    <div class="sidebar-item" onclick="showPage('n01391',this)"><span class="sidebar-icon">⚡</span> Örnek Tork Çalışması</div>
+    <div class="sidebar-item" onclick="showPage('hizli',this)"><span class="sidebar-icon">🔧</span> Tork Hesap</div>
+    <div class="sidebar-item" onclick="showPage('vdi',this)"><span class="sidebar-icon">🔬</span> Gelişmiş Analiz</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Üretim</div>
-    <div class="sidebar-item" onclick="showPage('checklist')"><span class="sidebar-icon">✅</span> Check-List</div>
-    <div class="sidebar-item" onclick="showPage('yetenek')"><span class="sidebar-icon">📈</span> Cm/Cmk Yetenek</div>
-    <div class="sidebar-item" onclick="showPage('sikici')"><span class="sidebar-icon">🔩</span> Sıkıcı Takip <span class="sidebar-badge">3</span></div>
-    <div class="sidebar-item" onclick="showPage('problem')"><span class="sidebar-icon">⚠️</span> Problem Yönetimi</div>
+    <div class="sidebar-item" onclick="showPage('checklist',this)"><span class="sidebar-icon">✅</span> Check-List</div>
+    <div class="sidebar-item" onclick="showPage('yetenek',this)"><span class="sidebar-icon">📈</span> Cm/Cmk Yetenek</div>
+    <div class="sidebar-item" onclick="showPage('sikici',this)"><span class="sidebar-icon">🔩</span> Sıkıcı Takip <span class="sidebar-badge">3</span></div>
+    <div class="sidebar-item" onclick="showPage('problem',this)"><span class="sidebar-icon">⚠️</span> Problem Yönetimi</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Referans</div>
-    <div class="sidebar-item" onclick="showPage('oem')"><span class="sidebar-icon">🔍</span> OEM Norm Sorgu</div>
-    <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> Norm Rehberi</div>
-    <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> FMEA Kataloğu</div>
+    <div class="sidebar-item" onclick="showPage('oem',this)"><span class="sidebar-icon">🔍</span> OEM Norm Sorgu</div>
+    <div class="sidebar-item" onclick="showPage('norm',this)"><span class="sidebar-icon">📋</span> Norm Rehberi</div>
+    <div class="sidebar-item" onclick="showPage('fmea',this)"><span class="sidebar-icon">🧩</span> FMEA Kataloğu</div>
   </div>
   <div class="sidebar-section" id="adminSidebar" style="display:none">
     <div class="sidebar-label">Yönetim</div>
-    <div class="sidebar-item" onclick="showPage('admin')"><span class="sidebar-icon">🛡️</span> Yönetici Paneli</div>
+    <div class="sidebar-item" onclick="showPage('admin',this)"><span class="sidebar-icon">🛡️</span> Yönetici Paneli</div>
   </div>
   <div class="sidebar-section" id="goliveSidebar" style="display:none">
     <div class="sidebar-label">İlk Yayın</div>
-    <div class="sidebar-item" onclick="showPage('golivewizard')"><span class="sidebar-icon">🧭</span> Kurulum Sihirbazı</div>
-    <div class="sidebar-item" onclick="showPage('dnscheck')"><span class="sidebar-icon">🌐</span> Domain & DNS Kontrolü</div>
+    <div class="sidebar-item" onclick="showPage('golivewizard',this)"><span class="sidebar-icon">🧭</span> Kurulum Sihirbazı</div>
+    <div class="sidebar-item" onclick="showPage('dnscheck',this)"><span class="sidebar-icon">🌐</span> Domain & DNS Kontrolü</div>
   </div>
   <div class="sidebar-section" id="cloudSidebar" style="display:none">
     <div class="sidebar-label">İnternet Yayını</div>
-    <div class="sidebar-item" onclick="showPage('clouddeploy')"><span class="sidebar-icon">☁️</span> Güvenli Yayın</div>
-    <div class="sidebar-item" onclick="showPage('runtimehealth')"><span class="sidebar-icon">❤️</span> Canlılık Durumu</div>
+    <div class="sidebar-item" onclick="showPage('clouddeploy',this)"><span class="sidebar-icon">☁️</span> Güvenli Yayın</div>
+    <div class="sidebar-item" onclick="showPage('runtimehealth',this)"><span class="sidebar-icon">❤️</span> Canlılık Durumu</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Mobil Erişim</div>
-    <div class="sidebar-item" onclick="showPage('mobileaccess')"><span class="sidebar-icon">📱</span> Mobil Erişim</div>
+    <div class="sidebar-item" onclick="showPage('mobileaccess',this)"><span class="sidebar-icon">📱</span> Mobil Erişim</div>
   </div>
   <div class="sidebar-section" id="deploymentSidebar" style="display:none">
     <div class="sidebar-label">Dağıtım ve Destek</div>
-    <div class="sidebar-item" onclick="showPage('deployment')"><span class="sidebar-icon">🚀</span> Kurulum Profili</div>
-    <div class="sidebar-item" onclick="showPage('migration')"><span class="sidebar-icon">🔄</span> Veri Taşıma</div>
-    <div class="sidebar-item" onclick="showPage('diagnostics')"><span class="sidebar-icon">🩺</span> Sistem Tanılama</div>
+    <div class="sidebar-item" onclick="showPage('deployment',this)"><span class="sidebar-icon">🚀</span> Kurulum Profili</div>
+    <div class="sidebar-item" onclick="showPage('migration',this)"><span class="sidebar-icon">🔄</span> Veri Taşıma</div>
+    <div class="sidebar-item" onclick="showPage('diagnostics',this)"><span class="sidebar-icon">🩺</span> Sistem Tanılama</div>
   </div>
   <div class="sidebar-section" id="enterpriseSidebar" style="display:none">
     <div class="sidebar-label">Kurumsal</div>
-    <div class="sidebar-item" onclick="showPage('organization')"><span class="sidebar-icon">🏢</span> Kurum Ayarları</div>
-    <div class="sidebar-item" onclick="showPage('license')"><span class="sidebar-icon">🔐</span> Lisans Yönetimi</div>
-    <div class="sidebar-item" onclick="showPage('usage')"><span class="sidebar-icon">📊</span> Kullanım Özeti</div>
+    <div class="sidebar-item" onclick="showPage('organization',this)"><span class="sidebar-icon">🏢</span> Kurum Ayarları</div>
+    <div class="sidebar-item" onclick="showPage('license',this)"><span class="sidebar-icon">🔐</span> Lisans Yönetimi</div>
+    <div class="sidebar-item" onclick="showPage('usage',this)"><span class="sidebar-icon">📊</span> Kullanım Özeti</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Release ve Rapor</div>
-    <div class="sidebar-item" onclick="showPage('releasepackage')"><span class="sidebar-icon">📦</span> Proje Release Paketi</div>
-    <div class="sidebar-item" onclick="showPage('traceability')"><span class="sidebar-icon">🧾</span> İzlenebilirlik Matrisi</div>
+    <div class="sidebar-item" onclick="showPage('releasepackage',this)"><span class="sidebar-icon">📦</span> Proje Release Paketi</div>
+    <div class="sidebar-item" onclick="showPage('traceability',this)"><span class="sidebar-icon">🧾</span> İzlenebilirlik Matrisi</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Proje ve Onay</div>
-    <div class="sidebar-item" onclick="showPage('projects')"><span class="sidebar-icon">📁</span> Projeler</div>
-    <div class="sidebar-item" onclick="showPage('revisions')"><span class="sidebar-icon">🔁</span> Hesap Revizyonları</div>
-    <div class="sidebar-item" onclick="showPage('approvals')"><span class="sidebar-icon">✍️</span> Onay Bekleyenler</div>
+    <div class="sidebar-item" onclick="showPage('projects',this)"><span class="sidebar-icon">📁</span> Projeler</div>
+    <div class="sidebar-item" onclick="showPage('revisions',this)"><span class="sidebar-icon">🔁</span> Hesap Revizyonları</div>
+    <div class="sidebar-item" onclick="showPage('approvals',this)"><span class="sidebar-icon">✍️</span> Onay Bekleyenler</div>
   </div>
   <div class="sidebar-section" id="qualitySidebar" style="display:none">
     <div class="sidebar-label">Kalite Kapısı</div>
-    <div class="sidebar-item" onclick="showPage('qualitygate')"><span class="sidebar-icon">✅</span> Veri Kalite Kapısı</div>
-    <div class="sidebar-item" onclick="showPage('goldencases')"><span class="sidebar-icon">🏆</span> Altın Senaryolar</div>
-    <div class="sidebar-item" onclick="showPage('releasecert')"><span class="sidebar-icon">📜</span> Sürüm Sertifikası</div>
+    <div class="sidebar-item" onclick="showPage('qualitygate',this)"><span class="sidebar-icon">✅</span> Veri Kalite Kapısı</div>
+    <div class="sidebar-item" onclick="showPage('goldencases',this)"><span class="sidebar-icon">🏆</span> Altın Senaryolar</div>
+    <div class="sidebar-item" onclick="showPage('releasecert',this)"><span class="sidebar-icon">📜</span> Sürüm Sertifikası</div>
   </div>
   <div class="sidebar-section" id="versionSidebar" style="display:none">
     <div class="sidebar-label">Veri Sürümleri</div>
-    <div class="sidebar-item" onclick="showPage('versions')"><span class="sidebar-icon">🧬</span> Aktif Veri Sürümleri</div>
+    <div class="sidebar-item" onclick="showPage('versions',this)"><span class="sidebar-icon">🧬</span> Aktif Veri Sürümleri</div>
   </div>
   <div class="sidebar-section" id="dataAdminSidebar" style="display:none">
     <div class="sidebar-label">Standart Verisi</div>
-    <div class="sidebar-item" onclick="showPage('dataadmin')"><span class="sidebar-icon">📥</span> Veri Yükleme & Onay</div>
-    <div class="sidebar-item" onclick="showPage('calibration')"><span class="sidebar-icon">📐</span> Kalibrasyon</div>
+    <div class="sidebar-item" onclick="showPage('dataadmin',this)"><span class="sidebar-icon">📥</span> Veri Yükleme & Onay</div>
+    <div class="sidebar-item" onclick="showPage('calibration',this)"><span class="sidebar-icon">📐</span> Kalibrasyon</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Doğrulama</div>
-    <div class="sidebar-item" onclick="showPage('validation')"><span class="sidebar-icon">🔎</span> Teknik Doğrulama</div>
+    <div class="sidebar-item" onclick="showPage('validation',this)"><span class="sidebar-icon">🔎</span> Teknik Doğrulama</div>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-label">Çıktılar</div>
-    <div class="sidebar-item" onclick="showPage('rapor')"><span class="sidebar-icon">📄</span> Rapor Üret</div>
-    <div class="sidebar-item" onclick="showPage('arsiv')"><span class="sidebar-icon">🗂️</span> Arşiv</div>
+    <div class="sidebar-item" onclick="showPage('rapor',this)"><span class="sidebar-icon">📄</span> Rapor Üret</div>
+    <div class="sidebar-item" onclick="showPage('arsiv',this)"><span class="sidebar-icon">🗂️</span> Arşiv</div>
   </div>
   <div class="sidebar-exit">
     <div class="sidebar-item" style="color:var(--danger)" onclick="guvenliCikis()">
@@ -465,17 +472,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- 01391 HIZLI ÖNGÖRÜ -->
 <div id="page-n01391" class="page">
   <div class="section-header"><span class="section-icon">⚡</span><div>
-    <div class="section-title">Örnek OEM Genel Tork ve Yük Öngörüsü</div>
-    <div class="section-sub">Örnek OEM referans tablosu · Yalnız tanımlı ölçü ve sınıf kombinasyonları</div>
+    <div class="section-title">Örnek Tork Çalışması <span style="font-size:11px;color:var(--text3);font-weight:400">(Sample Torque Study)</span></div>
+    <div class="section-sub">Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları</div>
   </div></div>
-  <div class="alert alert-warn">
-    <strong>⚠️ Kapsam ve Öncelik:</strong> Bu değerler ek yağlayıcı uygulanmamış, üretimden çıktığı durumdaki bağlantı elemanları için geçerli örnek OEM genel öngörüsüdür.
-    Teknik resim, proje şartnamesi veya araç/model bazlı özel OEM normu varsa o değer önceliklidir. Bu ekran örnek referans amaçlıdır; seri üretim değeri bağlantı testi, sürtünme doğrulaması ve ürün doğrulaması ile kesinleştirilmelidir.
+  <div class="alert alert-warn" style="display:flex;align-items:center;gap:8px">
+    <span><strong>⚠️ Kapsam ve Öncelik:</strong> Teknik resim veya proje şartnamesi varsa o değer önceliklidir; bu ekran örnek referans amaçlıdır.</span>
+    <span id="n01391-scope-info"></span>
+  </div>
+  <div class="alert alert-info" style="font-size:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+    <span><strong>Referans Kaynak:</strong> TorqPro Demo Engineering Dataset v1.0 — gerçek bir OEM standardı değildir.</span>
   </div>
   <div class="grid2">
     <div class="card">
       <div class="card-title">Parametre Seçimi</div>
-      <div class="card-sub">Yalnızca normda tanımlı kombinasyonlar listelenmiştir</div>
+      <div class="card-sub">Seçili veri setinde tanımlı ölçüler listelenmiştir</div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Diş Ölçüsü</label>
@@ -533,7 +543,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="section-title">Teorik Tork Hesaplama</div>
     <div class="section-sub">ISO 16047 prensipli bileşen tork hesabı · yüzey basıncı · diş kavrama</div>
   </div></div>
-  <div class="alert alert-info">Bu mod diş ve yatak sürtünmesini ayrı hesaplayan mühendislik ön değerlendirmesidir. OEM seri üretim değeri için "OEM Norm Sorgu" veya "Örnek OEM Öngörüsü" modülünü kullanın.</div>
+  <div class="alert alert-info">Bu mod diş ve yatak sürtünmesini ayrı hesaplayan mühendislik ön değerlendirmesidir. OEM seri üretim değeri için "OEM Norm Sorgu" veya "Örnek Tork Çalışması" modülünü kullanın.</div>
   <div class="grid2">
     <div class="card">
       <div class="card-title">Bağlantı Parametreleri</div>
@@ -563,7 +573,18 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
         <div class="form-group"><label class="form-label">Kalite Sınıfı</label><select class="form-select" id="kalite" onchange="hesapla()"><option>4.6</option><option>5.6</option><option>6.8</option><option>8.8</option><option selected>10.9</option><option>12.9</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Sürtünme Katsayısı (μ)</label><select class="form-select" id="surtunme" onchange="hesapla()"><option value="0.08">0.08 — MoS₂ yağlı</option><option value="0.10">0.10 — Fosfat+yağ</option><option value="0.12" selected>0.12 — Çinko kaplama</option><option value="0.14">0.14 — Standart</option><option value="0.16">0.16 — Kuru</option><option value="0.20">0.20 — Paslanmaz</option></select></div>
+        <div class="form-group">
+          <label class="form-label" style="display:flex;align-items:center;gap:6px">Bağlantı Elemanı Sürtünme / Yüzey Durumu (μ) <span id="surtunme-uyari-info"></span></label>
+          <select class="form-select" id="surtunme" onchange="hesapla()">
+            <option value="0.08">0.08 — Önceden uygulanmış kontrollü yağlayıcı (MoS₂)</option>
+            <option value="0.10">0.10 — Üretici kontrollü kaplama (Fosfat + kontrollü yağlayıcı)</option>
+            <option value="0.12" selected>0.12 — Üretici kontrollü kaplama (Çinko kaplama)</option>
+            <option value="0.14">0.14 — Sürtünme sınıfı doğrulanmamış (genel varsayım)</option>
+            <option value="0.16">0.16 — Kuru / ilave yağlayıcı uygulanmamış</option>
+            <option value="0.20">0.20 — Kuru / ilave yağlayıcı uygulanmamış (paslanmaz)</option>
+          </select>
+          <div class="form-hint">Değer, bağlantı elemanının üretici tanımlı yüzey/kaplama durumuna göre seçilmelidir — bkz. uyarı ikonu.</div>
+        </div>
         <div class="form-group"><label class="form-label">Ön Yük Oranı</label><select class="form-select" id="onYuk" onchange="hesapla()"><option value="70">%70 — Genel</option><option value="75" selected>%75 — Standart</option><option value="80">%80 — Kritik</option><option value="90">%90 — Yüksek</option></select></div>
       </div>
       <div class="form-row">
@@ -759,7 +780,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="card"><div class="card-title">Tork Kontrol Yöntemleri</div><div class="result-box"><div class="result-row"><span class="result-key">Dinamik Tork (Sistem A)</span><span class="result-val">Sıkma anında ölçüm</span></div><div class="result-row"><span class="result-key">Statik Tork (C Metodu)</span><span class="result-val">İlk harekete geçme torku</span></div><div class="result-row"><span class="result-key">Tork + Açı</span><span class="result-val">Başlangıç torku + açı</span></div><div class="result-row"><span class="result-key">Ultrasonik</span><span class="result-val">Cıvata uzaması ile ölçüm</span></div></div></div>
     <div class="card"><div class="card-title">Yetenek Hedef Değerleri <span class="norm-badge">Örnek norma göre</span></div><div class="result-box"><div class="result-row"><span class="result-key">Kritik (Report)</span><span class="result-val ok">Cm/Cmk ≥ 2.00</span></div><div class="result-row"><span class="result-key">Standart</span><span class="result-val ok">Cm/Cmk ≥ 1.67</span></div><div class="result-row"><span class="result-key">Ön sıkma</span><span class="result-val warn">Cm/Cmk ≥ 1.33</span></div><div class="result-row"><span class="result-key">Yetersiz</span><span class="result-val nok">Cm/Cmk &lt; 1.33</span></div></div></div>
     <div class="card"><div class="card-title">Standart Oturma Referans Aralığı <span class="norm-badge">Örnek norma göre</span></div><div class="card-sub">Sıkma sınıfına göre beklenen oturma kayıpları — kontrol limiti değil, referans bilgisidir</div><div class="result-box"><div class="result-row"><span class="result-key">Sınıf A</span><span class="result-val">−%8 / +%5</span></div><div class="result-row"><span class="result-key">Sınıf B</span><span class="result-val">−%15 / +%10</span></div><div class="result-row"><span class="result-key">Sınıf C</span><span class="result-val">−%35 / +%16</span></div><div class="result-row"><span class="result-key">Sınıf D</span><span class="result-val">−%50 / +%20</span></div></div></div>
-    <div class="card"><div class="card-title">Örnek OEM Öngörüsü <span class="norm-badge">Edition 10</span></div><div class="card-sub">Teknik resim veya özel norm değeri yoksa kullanılan örnek OEM referans tablosudur. Yağlayıcısız, üretimden çıktığı haliyle geçerlidir.</div><div class="result-box"><div class="result-row"><span class="result-key">M10×1.25 Flanşlı 10.9</span><span class="result-val">65 Nm / 34.700 N</span></div><div class="result-row"><span class="result-key">M12×1.25 Flanşlı 10.9</span><span class="result-val">120 Nm / 53.700 N</span></div><div class="result-row"><span class="result-key">M14×1.5 Flanşlı 10.9</span><span class="result-val">180 Nm / 69.100 N</span></div></div></div>
+    <div class="card"><div class="card-title">Örnek Tork Çalışması <span class="norm-badge">Demo veri seti</span></div><div class="card-sub">Teknik resim veya özel norm değeri yoksa kullanılabilecek örnek referans tablosudur (Tofaş/FIAT/Stellantis veya başka bir OEM'e ait değildir). Ek yağlayıcı uygulanmamış, üretimden çıktığı haliyle geçerlidir.</div><div class="result-box"><div class="result-row"><span class="result-key">M10×1.25 Flanşlı 10.9</span><span class="result-val">65 Nm / 34.700 N</span></div><div class="result-row"><span class="result-key">M12×1.25 Flanşlı 10.9</span><span class="result-val">120 Nm / 53.700 N</span></div><div class="result-row"><span class="result-key">M14×1.5 Flanşlı 10.9</span><span class="result-val">180 Nm / 69.100 N</span></div></div></div>
   </div>
 </div>
 
@@ -1199,34 +1220,125 @@ async function doLogin() {
     document.getElementById('mainApp').style.display='flex';
     if(!document.getElementById('topbar-user-info')){
       document.getElementById('topbarRight').insertAdjacentHTML('beforeend',
-        '<span id="topbar-user-info" style="font-size:12px;color:var(--text3)">👤 '+CURRENT_USER+'</span>'+
-        '<button id="topbar-logout-btn" onclick="guvenliCikis()" style="background:transparent;border:1px solid var(--border);color:var(--text3);border-radius:6px;padding:3px 10px;cursor:pointer;font-size:12px">Çıkış</button>');
+        '<span id="topbar-user-info" style="font-size:12px;color:var(--text3)">👤 '+CURRENT_USER+'</span>');
     }
     document.getElementById('adminSidebar').style.display=CURRENT_ROLE==='admin'?'':'none';document.getElementById('dataAdminSidebar').style.display=CURRENT_ROLE==='admin'?'':'none';document.getElementById('versionSidebar').style.display=CURRENT_ROLE==='admin'?'':'none';document.getElementById('qualitySidebar').style.display=CURRENT_ROLE==='admin'?'':'none';document.getElementById('enterpriseSidebar').style.display=CURRENT_ROLE==='admin'?'':'none';document.getElementById('deploymentSidebar').style.display=CURRENT_ROLE==='admin'?'':'none';document.getElementById('cloudSidebar').style.display=CURRENT_ROLE==='admin'?'':'none';document.getElementById('goliveSidebar').style.display=CURRENT_ROLE==='admin'?'':'none';err.textContent=''; await renderArchive();
   } catch(e) { err.textContent='❌ '+e.message; }
 }
-function guvenliCikis(){if(confirm('Oturumu kapatmak istediğinizden emin misiniz?'))doLogout();}
+function guvenliCikis(){
+  confirmDialog({
+    title: 'Çıkış yapmak istediğinizden emin misiniz?',
+    confirmText: 'Çıkış Yap',
+    cancelText: 'İptal',
+    danger: true
+  }).then(ok => { if (ok) doLogout(); });
+}
 function doLogout(){
   AUTH_TOKEN='';CURRENT_USER='';
   sessionStorage.removeItem('torqpro_token');sessionStorage.removeItem('torqpro_user');sessionStorage.removeItem('torqpro_role');
   document.getElementById('mainApp').style.display='none';
   document.getElementById('loginOverlay').style.display='flex';
   document.getElementById('topbar-user-info')?.remove();
-  document.getElementById('topbar-logout-btn')?.remove();
+}
+
+// ========== ORTAK BİLEŞEN: InfoPopover / StatusHelp ==========
+// Uzun açıklama metinlerini ekrandan kaldırıp bilgi/uyarı ikonuna taşımak için kullanılır.
+// Kullanım: infoIconHtml({title:'...', body:'...', warn:true/false})
+let INFO_ICON_SEQ = 0;
+function infoIconHtml(opts){
+  const o = Object.assign({title:'', body:'', warn:false, label:'Ayrıntılı bilgi'}, opts||{});
+  const id = 'info-pop-' + (++INFO_ICON_SEQ);
+  const safeBody = o.body || '';
+  const iconCls = o.warn ? 'info-icon-btn warn' : 'info-icon-btn';
+  const iconChar = o.warn ? '!' : 'i';
+  return `<span class="info-popover-wrap">
+    <button type="button" class="${iconCls}" data-info-target="${id}" aria-haspopup="dialog" aria-expanded="false" aria-label="${o.label}" title="${o.label}">${iconChar}</button>
+    <span class="info-popover" id="${id}" role="dialog">${o.title ? `<div class="info-popover-title">${o.title}</div>` : ''}<div>${safeBody}</div></span>
+  </span>`;
+}
+function initInfoIcons(){
+  const scopeInfo = document.getElementById('n01391-scope-info');
+  if (scopeInfo) {
+    scopeInfo.innerHTML = infoIconHtml({
+      title: 'Kapsam ve Öncelik',
+      warn: true,
+      body: 'Bu değerler ek yağlayıcı uygulanmamış, üretimden çıktığı durumdaki bağlantı elemanları için geçerli örnek genel öngörüdür. Teknik resim, proje şartnamesi veya araç/model bazlı özel OEM normu varsa o değer önceliklidir. Seri üretim değeri bağlantı testi, sürtünme doğrulaması ve ürün doğrulaması ile kesinleştirilmelidir.'
+    });
+  }
+  const lubeInfo = document.getElementById('surtunme-uyari-info');
+  if (lubeInfo) {
+    lubeInfo.innerHTML = infoIconHtml({
+      title: 'Bağlantı Elemanı Sürtünme / Yüzey Durumu',
+      warn: true,
+      body: 'Montaj hattında bağlantı elemanına sonradan yağlayıcı uygulanması varsayılan bir işlem değildir. Tork hesabında bağlantı elemanının üretici tarafından tanımlanmış yüzey, kaplama ve sürtünme durumu esas alınmalıdır. İlave yağlayıcı kullanımı ancak teknik resim, üretici şartnamesi veya onaylı proses dokümanında açıkça tanımlanmışsa seçilmelidir.'
+    });
+  }
+}
+function closeAllInfoPopovers(except){
+  document.querySelectorAll('.info-popover.open').forEach(p => {
+    if (p === except) return;
+    p.classList.remove('open');
+    const btn = document.querySelector(`[data-info-target="${p.id}"]`);
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  });
+}
+document.addEventListener('click', (e) => {
+  const trigger = e.target.closest('[data-info-target]');
+  if (trigger) {
+    const pop = document.getElementById(trigger.getAttribute('data-info-target'));
+    const willOpen = pop && !pop.classList.contains('open');
+    closeAllInfoPopovers();
+    if (willOpen) { pop.classList.add('open'); trigger.setAttribute('aria-expanded', 'true'); }
+    e.stopPropagation();
+    return;
+  }
+  if (!e.target.closest('.info-popover')) closeAllInfoPopovers();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeAllInfoPopovers();
+});
+
+// ========== ORTAK BİLEŞEN: ConfirmExit / Genel Onay Penceresi ==========
+// Yalnızca bu ekranda değil, onay gerektiren tüm işlemler için tekrar kullanılabilir.
+function confirmDialog(opts){
+  const o = Object.assign({title:'Emin misiniz?', body:'', confirmText:'Onayla', cancelText:'İptal', danger:false}, opts||{});
+  return new Promise(resolve => {
+    document.getElementById('confirmDialogOverlay')?.remove();
+    const overlay = document.createElement('div');
+    overlay.id = 'confirmDialogOverlay';
+    overlay.className = 'confirm-overlay';
+    overlay.innerHTML = `
+      <div class="confirm-box" role="alertdialog" aria-modal="true" aria-labelledby="confirmDialogTitle">
+        <div class="confirm-title" id="confirmDialogTitle">${o.title}</div>
+        ${o.body ? `<div class="confirm-body">${o.body}</div>` : ''}
+        <div class="confirm-actions">
+          <button type="button" class="btn btn-secondary btn-sm" data-role="cancel">${o.cancelText}</button>
+          <button type="button" class="btn ${o.danger ? 'btn-danger' : 'btn-primary'} btn-sm" data-role="confirm">${o.confirmText}</button>
+        </div>
+      </div>`;
+    document.body.appendChild(overlay);
+    const cleanup = (result) => { overlay.remove(); document.removeEventListener('keydown', onKey); resolve(result); };
+    const onKey = (e) => { if (e.key === 'Escape') cleanup(false); };
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) cleanup(false); });
+    overlay.querySelector('[data-role="cancel"]').addEventListener('click', () => cleanup(false));
+    overlay.querySelector('[data-role="confirm"]').addEventListener('click', () => cleanup(true));
+    document.addEventListener('keydown', onKey);
+    overlay.querySelector('[data-role="confirm"]').focus();
+  });
 }
 
 // ========== SAYFA YÖNETİMİ ==========
-function showPage(id) {
+function showPage(id, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  if (el && el.classList) {
+    el.classList.add('active');
+  } else {
+    document.querySelectorAll('.sidebar-item[onclick*="\'' + id + '\'"]').forEach(i => i.classList.add('active'));
+  }
   if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}
-}
-function showNav(id, btn) {
-  showPage(id);
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
 }
 
 // ========== OEM GENEL ÖNGÖRÜ VERİ TABANI ==========
@@ -1261,7 +1373,7 @@ function n01391Hesapla() {
   const uyumsuz = (civata === '10.9' && somun === '8') || (civata === '8.8' && somun === '10');
 
   document.getElementById('n01391-sonuc').innerHTML = `
-    <div class="card-title">OEM Genel Öngörü Sonucu <span class="norm-badge">Örnek OEM Referansı</span></div>
+    <div class="card-title">Örnek Tork Çalışması Sonucu <span class="norm-badge">Demo veri seti</span></div>
     <div style="font-size:11px;color:var(--text3);margin:8px 0 4px">Seçim: ${dis} · ${flans?'Flanşlı':'Flanşsız'} · Cıvata ${civata} · Somun ${somun}</div>
     ${uyumsuz ? '<div class="alert alert-warn" style="margin-bottom:8px">⚠️ Cıvata ve somun sınıfı uyumsuz — düşük sınıf değerleri kullanılmaktadır.</div>' : ''}
     <div class="n01391-result">
@@ -1283,8 +1395,8 @@ function n01391Hesapla() {
       Değerler ek yağlayıcı uygulanmamış, üretimden çıktığı durumdaki bağlantı elemanları için geçerlidir.
     </div>
     <div class="btn-group" style="margin-top:12px">
-      <button class="btn btn-secondary btn-sm" onclick="showPage('hizli')">→ Teorik Hesaba Geç</button>
-      <button class="btn btn-secondary btn-sm" onclick="showPage('oem')">→ OEM Normunda Ara</button>
+      <button class="btn btn-secondary btn-sm" onclick="showPage('hizli',this)">→ Teorik Hesaba Geç</button>
+      <button class="btn btn-secondary btn-sm" onclick="showPage('oem',this)">→ OEM Normunda Ara</button>
     </div>`;
 }
 
@@ -1316,12 +1428,28 @@ function libraryFamilyChanged(){
   libraryStandardChanged();
 }
 
+// Demo/full sürüm bayrağı: <meta name="torqpro-edition"> üzerinden okunur.
+const APP_EDITION = (document.querySelector('meta[name="torqpro-edition"]')?.content || 'full').trim().toLowerCase();
+const DEMO_THREAD_LIMIT = 4;
+function limitThreadsForEdition(orderedThreads){
+  if (APP_EDITION !== 'demo' || orderedThreads.length <= DEMO_THREAD_LIMIT) return orderedThreads;
+  // Veri setinde gerçekten desteklenen ölçüler arasından, mevcut sıralamayı koruyarak
+  // eşit aralıklı temsili bir örnek seçilir (tahmini/uydurma ölçü eklenmez).
+  const n = orderedThreads.length;
+  const idxs = new Set();
+  for (let k = 0; k < DEMO_THREAD_LIMIT; k++) {
+    idxs.add(Math.round(k * (n - 1) / (DEMO_THREAD_LIMIT - 1)));
+  }
+  return orderedThreads.filter((_, i) => idxs.has(i));
+}
 function libraryStandardChanged(){
   const standard=document.getElementById('lib_standard').value;
   const codes=[...new Set(TORQPRO_LIBRARY.bolt_geometry.filter(g=>g.standard===standard).map(g=>g.thread_code))];
-  const ordered=TORQPRO_LIBRARY.thread_series.filter(t=>codes.includes(t.thread_code));
+  const orderedFull=TORQPRO_LIBRARY.thread_series.filter(t=>codes.includes(t.thread_code));
+  const ordered=limitThreadsForEdition(orderedFull);
   const sel=document.getElementById('lib_thread');
-  sel.innerHTML=ordered.map((x,i)=>optionHtml(x.thread_code,`${x.thread_code} · p=${x.pitch_mm} mm`,i===Math.min(3,ordered.length-1))).join('');
+  sel.innerHTML=ordered.map((x,i)=>optionHtml(x.thread_code,`${x.thread_code} · p=${x.pitch_mm} mm`,i===Math.min(3,ordered.length-1))).join('')
+    + (APP_EDITION==='demo' && orderedFull.length>ordered.length ? `<option value="" disabled>— Tam sürümde ${orderedFull.length} ölçü —</option>` : '');
   libraryThreadChanged();
 }
 
@@ -1834,15 +1962,66 @@ async function downloadBackup(){
 }
 
 
+// Sistem Sağlığı maddeleri: her kontrol için Neden / Sarı / Kırmızı / Ne yapmalıyım.
+// Not: backend/app.py::system() yalnızca ok/not-ok (status, database_ok) döner; ara (sarı)
+// eşik değeri backend'de tanımlı DEĞİLDİR. Bu nedenle "sarı" durumlar için gerçek bir eşik
+// uydurulmadı; aşağıdaki metin bunu açıkça belirtir (TBD).
+const THRESHOLD_TBD = 'Eşik değeri mevcut sistem yapılandırmasında açıkça tanımlanmamıştır.';
+const SYSTEM_HEALTH_HELP = {
+  api: {
+    title: 'API',
+    reason: 'Sunucu erişilebilir değilse hiçbir hesaplama veya kayıt işlemi çalışmaz.',
+    yellow: THRESHOLD_TBD,
+    green: 'API isteklere normal yanıt veriyor (status=ok).',
+    red: 'API yanıt vermiyor veya status≠ok. Hesaplama yapmayın; sistem yöneticisiyle iletişime geçin.'
+  },
+  db: {
+    title: 'Veritabanı',
+    reason: 'Veritabanı bozuksa kayıtlar kaybolabilir veya hesap sonuçları yanlış görüntülenebilir.',
+    yellow: THRESHOLD_TBD,
+    green: 'Veritabanı bağlantısı ve boyutu normal (database_ok=true).',
+    red: 'Veritabanı hatalı (database_ok=false). Hesaplama yapılmamalı; yönetici veri kaynağını yeniden yüklemeli.'
+  },
+  users: {
+    title: 'Aktif Kullanıcı',
+    reason: 'Beklenmeyen kullanıcı sayısı yetkisiz erişim veya oturum sorununa işaret edebilir.',
+    yellow: THRESHOLD_TBD,
+    green: null,
+    red: null
+  },
+  records: {
+    title: 'Hesap Kaydı',
+    reason: 'Hesap ve denetim kayıt sayıları veri bütünlüğünün temel göstergesidir.',
+    yellow: THRESHOLD_TBD,
+    green: null,
+    red: null
+  }
+};
+function shInfo(key, state){
+  // state: 'green' | 'red' | 'unmonitored' (backend'de kırmızı/yeşil ayrımı tanımlı değilse)
+  const d = SYSTEM_HEALTH_HELP[key];
+  const actionText = state === 'green' ? d.green
+    : state === 'red' ? d.red
+    : 'Bu madde için backend\'de yeşil/kırmızı eşik ayrımı tanımlanmamıştır; değer yalnızca bilgi amaçlıdır. ' + THRESHOLD_TBD;
+  return infoIconHtml({
+    title: d.title,
+    warn: state === 'red',
+    body: `<strong>Neden kontrol ediliyor?</strong> ${d.reason}<br><br>`
+        + `<strong>Sarı durumda ne anlama gelir?</strong> ${d.yellow}<br><br>`
+        + `<strong>Kırmızı durumda ne anlama gelir?</strong> ${d.red || THRESHOLD_TBD}<br><br>`
+        + `<strong>Ne yapmalıyım?</strong> ${actionText}`
+  });
+}
 async function loadSystemHealth(){
   if(CURRENT_ROLE!=='admin')return;
   try{
     const h=await apiRequest('/api/admin/system');
+    const apiOk = h.status==='ok', dbOk = !!h.database_ok;
     document.getElementById('systemHealthCards').innerHTML=`
-      <div class="stat"><div class="stat-label">API</div><div class="stat-val green">${h.status==='ok'?'OK':'NOK'}</div><div class="stat-sub">v${h.version}</div></div>
-      <div class="stat"><div class="stat-label">Veritabanı</div><div class="stat-val ${h.database_ok?'green':'red'}">${h.database_ok?'OK':'NOK'}</div><div class="stat-sub">${h.database_size_kb} KB</div></div>
-      <div class="stat"><div class="stat-label">Aktif Kullanıcı</div><div class="stat-val blue">${h.active_users}</div><div class="stat-sub">Toplam ${h.total_users}</div></div>
-      <div class="stat"><div class="stat-label">Hesap Kaydı</div><div class="stat-val blue">${h.calculation_count}</div><div class="stat-sub">Audit ${h.audit_count}</div></div>`;
+      <div class="stat"><div class="stat-label">API ${shInfo('api',apiOk?'green':'red')}</div><div class="stat-val green">${apiOk?'OK':'NOK'}</div><div class="stat-sub">v${h.version}</div></div>
+      <div class="stat"><div class="stat-label">Veritabanı ${shInfo('db',dbOk?'green':'red')}</div><div class="stat-val ${dbOk?'green':'red'}">${dbOk?'OK':'NOK'}</div><div class="stat-sub">${h.database_size_kb} KB</div></div>
+      <div class="stat"><div class="stat-label">Aktif Kullanıcı ${shInfo('users','unmonitored')}</div><div class="stat-val blue">${h.active_users}</div><div class="stat-sub">Toplam ${h.total_users}</div></div>
+      <div class="stat"><div class="stat-label">Hesap Kaydı ${shInfo('records','unmonitored')}</div><div class="stat-val blue">${h.calculation_count}</div><div class="stat-sub">Audit ${h.audit_count}</div></div>`;
     document.getElementById('systemHealthDetail').textContent='Sunucu zamanı: '+new Date(h.server_time).toLocaleString('tr-TR')+' · Şema: '+h.schema_version;
   }catch(e){document.getElementById('systemHealthDetail').textContent='Sistem bilgisi alınamadı: '+e.message;}
 }
@@ -2196,7 +2375,7 @@ async function runDnsCheck(){
 
 // ========== BAŞLAT ==========
 document.getElementById('tarih').textContent=new Date().toLocaleDateString('tr-TR');
-buildCL();buildISH();buildFmea();oemInit();libraryInit();hesapla();n01391Hesapla();renderValidationDatasets();loadActiveEngineData();
+buildCL();buildISH();buildFmea();oemInit();libraryInit();hesapla();n01391Hesapla();renderValidationDatasets();loadActiveEngineData();initInfoIcons();
 </script>
 </body>
 </html>
