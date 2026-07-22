@@ -40,6 +40,13 @@ Acceptance: existing tests pass; routes are thin; no engineering formula in rout
 
 Acceptance: create/open/revise/submit/approve/release workflow and traceability tests.
 
+**Partial delivery (Faz 2.5A, 2026-07-22):** minimal `joints` /
+`joint_revisions` identity-and-revision-traceability layer delivered as a
+prerequisite for the production validation domain — see
+`docs/adr/ADR_2.5A_JOINT_AND_CALCULATION_REVISION_LINKAGE.md`. Assemblies,
+components, interfaces, load cases and the full joint design workflow
+remain open for a future phase.
+
 ## 5. Epic P0-C: unit-safe engineering core
 
 - Define quantities and units.
@@ -85,6 +92,13 @@ Acceptance: dimensional tests, golden cases and no unsupported production claim.
 - Tightening stages and sequence.
 - capability/SPC import and dashboards.
 - manufacturing instructions and process release.
+
+**Partial delivery (Faz 2.5A, 2026-07-22):** production validation
+measurement data model, CSV import, minimal `tool_references` and
+audit/traceability delivered — see
+`docs/phases/PHASE_2.5A_PRODUCTION_VALIDATION_FOUNDATION.md`. Capability
+indices (Cp/Cpk/Pp/Ppk/Cmk), control limits and process release decisions
+remain open for Faz 2.5B/2.5C.
 
 ## 11. Epic P2: enterprise and intelligence
 

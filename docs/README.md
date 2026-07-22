@@ -49,6 +49,8 @@ All developers and AI coding agents must read the documents in this order before
 
 TorqPro_24 is a FastAPI + SQLite + single-page HTML/PWA application. It already includes authentication, users and roles, project/revision/approval records, calculation storage, an engineering pre-check endpoint, reference-data packages and version activation, calibration cases, quality gates, release packages, enterprise licensing, deployment diagnostics, PWA support, Docker and go-live/DNS checks.
 
+As of Faz 2.5A (2026-07-22), it also includes a minimal `backend/joints/` identity-and-revision layer (prerequisite for production validation — see `docs/adr/ADR_2.5A_JOINT_AND_CALCULATION_REVISION_LINKAGE.md`) and a `backend/production_validation/` module (`ValidationStudy`, `MeasurementDataset`, `MeasurementRecord`, `SpecificationSnapshot`, `ToolReference`) with its own thin API router at `backend/api/routes/production_validation.py`. Process capability math (Cp/Cpk/Pp/Ppk/Cmk), SPC and automated production approval are **not** implemented — see `docs/phases/PHASE_2.5A_PRODUCTION_VALIDATION_FOUNDATION.md`.
+
 The current calculation capability is an **engineering pre-evaluation**, not a certified VDI 2230 solver. Existing reports explicitly distinguish between “approved production release” and “engineering preliminary evaluation.” This honesty must be preserved.
 
 ## Repository policy

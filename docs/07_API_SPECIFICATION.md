@@ -141,3 +141,38 @@ Every calculation exposes engine version, formula pack, rule packs, active data 
 ## 10. OpenAPI and compatibility
 
 FastAPI OpenAPI is generated and checked in CI. Existing endpoints such as `/api/engineering/check`, `/api/projects`, `/api/admin/data-versions` and deployment endpoints remain documented as legacy v0 until frontend migration.
+
+## 11. Faz 2.5A — Production Validation endpoints (2026-07-22)
+
+Added under the existing legacy-v0 `/api/...` convention (not `/api/v1`,
+consistent with how `/api/projects` and `/api/revisions` are already
+implemented; no `/api/v1` namespace exists in the running code yet):
+
+```text
+POST   /api/validation-studies
+GET    /api/validation-studies
+GET    /api/validation-studies/{study_id}
+PATCH  /api/validation-studies/{study_id}
+POST   /api/validation-studies/{study_id}/datasets
+GET    /api/validation-studies/{study_id}/datasets
+GET    /api/measurement-datasets/{dataset_id}
+PATCH  /api/measurement-datasets/{dataset_id}
+POST   /api/measurement-datasets/{dataset_id}/lock
+POST   /api/measurement-datasets/{dataset_id}/records
+POST   /api/measurement-datasets/{dataset_id}/records/bulk
+GET    /api/measurement-datasets/{dataset_id}/records
+POST   /api/measurement-records/{record_id}/invalidate
+POST   /api/validation-studies/{study_id}/complete
+POST   /api/validation-studies/{study_id}/submit
+POST   /api/validation-studies/{study_id}/approve
+POST   /api/validation-studies/{study_id}/reject
+POST   /api/validation-studies/{study_id}/archive
+```
+
+Implemented in `backend/api/routes/production_validation.py` (first
+dedicated route module in the repository — thin handlers only, all logic
+in `backend/production_validation/service.py`). Error codes: 404 not
+found, 409 conflict (duplicate code / duplicate CSV import), 400 locked or
+invalid state transition, 422 data-integrity or CSV row-validation
+failure. See `docs/phases/PHASE_2.5A_PRODUCTION_VALIDATION_FOUNDATION.md`
+for the full state machine and validation rules.

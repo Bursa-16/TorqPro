@@ -7,7 +7,10 @@ Mevcut hesap kabiliyeti bir **mühendislik ön değerlendirmesidir**; onaylı VD
 
 - ✅ Phase 2.4.1A — Thread Engineering Database
 - ✅ Phase 2.4.1B — Bolt & Nut Engineering Database
-- ⏳ Phase 2.4.1C — Washer & Joint Hardware Engineering Database
+- ✅ Phase 2.4.1C — Washer & Joint Hardware Engineering Database
+- ✅ Phase 2.4.2 — Library Runtime Reliability / Schema Completion
+- ✅ Phase 2.5A — Production Validation Foundation (joint prerequisite +
+  measurement data model; process capability math not yet implemented)
   
 ## Kurulum ve çalıştırma
 
