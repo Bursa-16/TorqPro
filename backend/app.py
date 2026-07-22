@@ -229,6 +229,8 @@ def migrate():
         # Faz 2.5A prerequisite: joint foundation.
         from backend.joints.schema import migrate as migrate_joints
         migrate_joints(c)
+        from backend.production_validation.repository import migrate as migrate_production_validation
+        migrate_production_validation(c)
 
         c.commit()
 
