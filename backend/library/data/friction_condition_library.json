@@ -1,0 +1,10 @@
+{
+  "metadata": {
+    "name": "Friction Condition Library",
+    "version": "2.6.2a",
+    "description": "Combination-dependent friction data (coating + lubricant + assembly-condition pairing). Faz 2.6.2A infrastructure shell only -- no record has been populated yet. See docs/adr/ADR-0010-coating-lubrication-friction-data-ownership.md and docs/phases/PHASE_2.6.2A_COATING_FRICTION_DATA_OWNERSHIP.md for the migration plan and Faz 2.6.2B acceptance criteria that gate population.",
+    "generated": "2026-07-23",
+    "primary_source": ""
+  },
+  "records": []
+}

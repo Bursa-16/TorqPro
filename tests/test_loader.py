@@ -28,12 +28,16 @@ def test_load_population_records_unknown_key_raises_key_error():
 def test_all_nine_data_files_load_without_error():
     # Faz 2.4.1C adds "joint hardware library" as a tenth, currently
     # empty data source (shell only -- see
-    # backend/library/joint_hardware_library.py); it must still load
-    # as valid JSON returning a list, just an empty one.
+    # backend/library/joint_hardware_library.py); Faz 2.6.2A adds
+    # "friction condition library" as an eleventh, also currently
+    # empty (shell only -- see
+    # backend/library/friction_condition_library.py). Both must still
+    # load as valid JSON returning a list, just an empty one.
+    empty_by_design = {"joint hardware library", "friction condition library"}
     for key in population.POPULATION_SOURCES:
         records = population.load_population_records(key)
         assert isinstance(records, list)
-        if key == "joint hardware library":
+        if key in empty_by_design:
             assert records == []
         else:
             assert records

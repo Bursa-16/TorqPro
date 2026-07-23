@@ -804,6 +804,28 @@ class CoatingRecord(LibraryRecordBase):
     #: docstring.
     temperature_range_c: str = ""
 
+    # -- Faz 2.6.2A additions (ADR-0010: coating/lubrication/friction
+    # data ownership) ---------------------------------------------
+    # Additive, schema-only -- no value populated on any of the 10
+    # live records by this phase. See ADR-0010 for the "who owns what"
+    # decision: this record owns coating identity/substrate/corrosion/
+    # temperature/regulatory metadata; combination-dependent friction
+    # values (which vary by lubricant/assembly-condition pairing, not
+    # by coating alone) live on the new ``FrictionConditionRecord``
+    # instead, referencing this record's ``id``.
+    coating_family: str = ""
+    substrate_applicability: str = ""
+    #: Mirrors ``LubricationRecord.regulatory_warning`` /
+    #: ``Status.RESTRICTED_LEGACY`` -- same convention, same meaning
+    #: (e.g. a cadmium-adjacent or otherwise restricted coating).
+    regulatory_warning: str = ""
+    source_reference: str = ""
+    source_type: str = ""
+    source_page_or_table: str = ""
+    verification_status: str = ""
+    applicability: str = ""
+    engineering_notes: str = ""
+
 
 class LubricationRecord(LibraryRecordBase):
     """Lubricant/friction-condition record (see ``lubrication_library.py``).
@@ -980,6 +1002,87 @@ class LubricationRecord(LibraryRecordBase):
     # ADR-0009 open question #2 (concept 2, coating, above).
     surface_condition: str = ""
 
+    # -- Faz 2.6.2A addition (ADR-0010) -------------------------------
+    # Coarse product family, distinct from ``lubricant_type`` (which
+    # names a specific product/condition, e.g. "Molybdenum disulfide
+    # paste/dry-film"). Additive, schema-only -- unpopulated on all 23
+    # live records. See ADR-0010 for the ownership decision this
+    # mirrors (``CoatingRecord.coating_family`` gained the equivalent
+    # field in the same phase).
+    lubricant_family: str = ""
+
+
+class FrictionConditionRecord(LibraryRecordBase):
+    """Combination-dependent friction data (see
+    ``friction_condition_library.py``).
+
+    Faz 2.6.2A (ADR-0010, option D -- hybrid ownership): the record
+    type that owns friction values which depend on a *combination* of
+    coating + lubricant + assembly condition, rather than on either
+    alone. ``CoatingRecord`` and ``LubricationRecord`` own the
+    identity/physical-property data of a coating or lubricant product
+    respectively (unchanged, see ADR-0010 §"Decision"); this record
+    references them by id and holds the friction values that only
+    make sense for a specific pairing (the same coating can behave
+    very differently dry vs. oiled vs. with MoS2 -- see Tablo 9.4 in
+    ADR-0009/Faz 2.6.0, which is exactly this kind of data, currently
+    still stored -- unmigrated -- on ``LubricationRecord``; see
+    ADR-0010 §"Migration plan").
+
+    Schema-only in Faz 2.6.2A: this library's data file
+    (``data/friction_condition_library.json``) ships with zero
+    records. No value is populated by this phase -- see ADR-0010 and
+    ``docs/phases/PHASE_2.6.2A_COATING_FRICTION_DATA_OWNERSHIP.md``
+    §"Migration plan" for why the 15 Tablo 9.4 records are not
+    auto-migrated here, and Faz 2.6.2B for population scope.
+
+    Field groups mirror the same 8-concept map as
+    ``LubricationRecord`` (see that class's docstring) plus two new
+    reference fields:
+
+    - ``coating_id`` / ``lubricant_id``: free-text id references to
+      ``CoatingRecord.id`` / ``LubricationRecord.id``. Not a database
+      foreign key (this package has no relational-integrity layer);
+      either may be empty (e.g. a friction condition that depends only
+      on surface condition, no applied coating or lubricant product).
+    - ``surface_condition`` / ``thread_condition`` / ``bearing_condition``:
+      free text, same convention as ``LubricationRecord.surface_condition``.
+    - ``friction_model``, ``overall_friction_coefficient_min/max``,
+      ``mu_thread_min/max``, ``mu_bearing_min/max``, ``k_factor_min/max``,
+      ``scatter_percent``: identical shape and validation rules
+      (``backend.library.validator.validate_lubrication_library``'s
+      checks apply unchanged to this record type's raw dicts too,
+      since they operate generically on field names, not on a
+      specific Pydantic class).
+    - Source traceability fields: same shape as ``LubricationRecord``'s
+      Faz 2.6.0/2.6.1 additions.
+    """
+
+    coating_id: str = ""
+    lubricant_id: str = ""
+    surface_condition: str = ""
+    thread_condition: str = ""
+    bearing_condition: str = ""
+
+    friction_model: FrictionModelType = FrictionModelType.UNSPECIFIED
+    overall_friction_coefficient_min: float | None = Field(default=None, ge=0, lt=1)
+    overall_friction_coefficient_max: float | None = Field(default=None, ge=0, lt=1)
+    mu_thread_min: float | None = Field(default=None, ge=0, lt=1)
+    mu_thread_max: float | None = Field(default=None, ge=0, lt=1)
+    mu_bearing_min: float | None = Field(default=None, ge=0, lt=1)
+    mu_bearing_max: float | None = Field(default=None, ge=0, lt=1)
+    k_factor_min: float | None = Field(default=None, ge=0)
+    k_factor_max: float | None = Field(default=None, ge=0)
+    scatter_percent: float | None = Field(default=None, ge=0)
+    max_temperature_c: float | None = None
+
+    applicability: str = ""
+    source_reference: str = ""
+    source_type: str = ""
+    source_page_or_table: str = ""
+    verification_status: str = ""
+    engineering_notes: str = ""
+
 
 class StrengthClassRecord(LibraryRecordBase):
     """Bolt/nut property-class reference record
@@ -1064,6 +1167,7 @@ LIBRARY_RECORD_MODELS: Dict[str, Type[LibraryRecordBase]] = {
     "compatibility library": CompatibilityRecord,
     "oem library": OEMRecord,
     "joint hardware library": JointHardwareRecord,
+    "friction condition library": FrictionConditionRecord,
 }
 
 
@@ -1127,6 +1231,7 @@ __all__ = [
     "MaterialRecord",
     "CoatingRecord",
     "LubricationRecord",
+    "FrictionConditionRecord",
     "StrengthClassRecord",
     "CompatibilityRecord",
     "OEMRecord",

@@ -81,8 +81,9 @@ def test_joint_hardware_library_registered_in_schema_map():
 
 def test_schema_map_still_has_eleven_domains_total():
     # 9 original domain shells + OEM (adapter-only) + joint hardware
-    # (Faz 2.4.1C, shell only) = 11.
-    assert len(LIBRARY_RECORD_MODELS) == 11
+    # (Faz 2.4.1C, shell only) + friction condition (Faz 2.6.2A, shell
+    # only) = 12.
+    assert len(LIBRARY_RECORD_MODELS) == 12
 
 
 # ---------------------------------------------------------------------

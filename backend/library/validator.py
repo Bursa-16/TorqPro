@@ -1568,3 +1568,28 @@ def validate_lubrication_library(records: Sequence[Dict[str, Any]]) -> Validatio
     issues.extend(find_restricted_legacy_missing_warning(records))
     subject = "Friction Condition Module - Lubrication Subsection (Faz 2.6.1)"
     return ValidationReport(subject=subject, issues=issues)
+
+
+def validate_friction_condition_library(
+    records: Sequence[Dict[str, Any]],
+) -> ValidationReport:
+    """Run the Faz 2.6.2A Friction Condition Library checks over
+    ``records`` in one pass. Deliberately reuses the exact same
+    friction-specific checks as ``validate_lubrication_library`` above
+    (they operate generically on field names present in a raw dict,
+    not on a specific Pydantic class -- ``FrictionConditionRecord``
+    and ``LubricationRecord`` share the same friction/nut-factor/
+    scatter field names by design, see ADR-0010). Currently always
+    returns an empty-issues report against the live data file -- it
+    has no records yet (Faz 2.6.2A is schema/decision only; see
+    ``friction_condition_library.py``)."""
+    issues: List[ValidationIssue] = []
+    issues.extend(find_duplicate_ids(records))
+    issues.extend(find_friction_min_max_violations(records))
+    issues.extend(find_friction_negative_values(records))
+    issues.extend(find_friction_asymmetric_min_max(records))
+    issues.extend(find_friction_one_sided_thread_bearing(records))
+    issues.extend(find_friction_coefficient_missing_source(records))
+    issues.extend(find_restricted_legacy_missing_warning(records))
+    subject = "Friction Condition Library (Faz 2.6.2A)"
+    return ValidationReport(subject=subject, issues=issues)

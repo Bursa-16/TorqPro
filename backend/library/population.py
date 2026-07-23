@@ -61,6 +61,7 @@ POPULATION_SOURCES: Dict[str, str] = {
     "strength class library": "strength_class_library.json",
     "compatibility library": "compatibility_library.json",
     "joint hardware library": "joint_hardware_library.json",
+    "friction condition library": "friction_condition_library.json",
 }
 
 OEM_SOURCE = "oem_library.json"
@@ -226,6 +227,16 @@ def validate_lubrication_library_records() -> List[str]:
     point -- does not replace ``validate_all_population_sources``."""
     records = load_population_records("lubrication library")
     report = validator_module.validate_lubrication_library(records)
+    return [issue.message for issue in report.issues]
+
+
+def validate_friction_condition_library_records() -> List[str]:
+    """Run the Faz 2.6.2A Friction Condition Library checks
+    (``validator.validate_friction_condition_library``) over the live
+    data file. Currently always returns an empty list -- the file has
+    no records yet (see ``friction_condition_library.py``, ADR-0010)."""
+    records = load_population_records("friction condition library")
+    report = validator_module.validate_friction_condition_library(records)
     return [issue.message for issue in report.issues]
 
 
@@ -451,6 +462,7 @@ def run_all_integrity_checks() -> Dict[str, List[str]]:
         "bolt_library_faz2_4_1b": validate_bolt_library_records(),
         "nut_library_faz2_4_1b": validate_nut_library_records(),
         "lubrication_library_faz2_6_1": validate_lubrication_library_records(),
+        "friction_condition_library_faz2_6_2a": validate_friction_condition_library_records(),
     }
 
 
@@ -887,6 +899,7 @@ __all__ = [
     "validate_bolt_library_records",
     "validate_nut_library_records",
     "validate_lubrication_library_records",
+    "validate_friction_condition_library_records",
     "validate_washer_library_records",
     "validate_joint_hardware_library_records",
     "find_bolt",

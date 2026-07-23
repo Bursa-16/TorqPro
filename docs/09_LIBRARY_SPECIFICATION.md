@@ -93,3 +93,30 @@ No existing lubrication data was renamed, removed or restructured by the Faz 2.6
 
 Schema extension confirmed as additive-flat (no nested `FrictionCoefficientSet` yet — ADR-0009 addendum). The 8-concept separation (surface condition, coating, lubricant, overall/combined coefficient, thread friction, bearing friction, nut factor, scatter) is documented on `LubricationRecord`'s docstring. Data-quality validation strengthened via `backend/library/validator.py::validate_lubrication_library` (8 checks), wired into `population.run_all_integrity_checks()`. No engineering coefficient value populated. Coating/Surface-Condition independence (whether they become their own record types) remains open for a later sub-phase.
 
+### 10.7 Faz 2.6.2A — Coating/Lubrication/Friction data ownership (2026-07-23)
+
+**Decision: Option D, hybrid** (`docs/adr/ADR-0010-coating-lubrication-friction-data-ownership.md`). Friction coefficients are not treated as an intrinsic property of a coating or lubricant — the same coating gives different friction results with different lubricants/surface conditions (Tablo 9.4 is the proof case). Three record types now share the domain:
+
+| Record | Owns | Live records |
+|---|---|---|
+| `CoatingRecord` (`coating_library.py`) | Coating identity: name, family, substrate applicability, corrosion metadata, temperature metadata, regulatory/status, source traceability | 10 |
+| `LubricationRecord` (`lubrication_library.py`) | Lubricant identity: name/type, family, application notes, temperature metadata, reusability, source traceability | 23 (8 Faz 2.4.x + 15 Tablo 9.4) |
+| `FrictionConditionRecord` (`friction_condition_library.py`, new) | Combination-dependent friction behaviour: coating+lubricant+surface/thread/bearing condition -> overall/split friction coefficient, nut factor, scatter | 0 (schema/decision phase only — see "Empty by design" below) |
+
+**`FrictionConditionRecord` field groups** (see ADR-0010 for full rationale, no field duplicated in meaning across record types):
+
+- Reference: `coating_id`, `lubricant_id` (free-text, advisory — not an enforced foreign key)
+- Assembly/surface condition: `surface_condition`, `thread_condition`, `bearing_condition`
+- Friction model: `friction_model` (shared `FrictionModelType` enum with `LubricationRecord`)
+- Engineering values: `overall_friction_coefficient_min/max`, `mu_thread_min/max`, `mu_bearing_min/max`, `k_factor_min/max`, `scatter_percent`, `max_temperature_c` — all unpopulated in Faz 2.6.2A
+- Applicability: `applicability`
+- Source traceability: `source_reference`, `source_type`, `source_page_or_table`, `verification_status`, `engineering_notes`
+
+**Existing coating data.** `coating_library.json` already carries 10 real, populated `CoatingRecord`s, including several items the original Faz 2.6 request named as "lubricants" but which are actually coatings: `COAT-GEOMET` (Geomet 321/500 zinc flake), `COAT-DACROMET` (Dacromet, legacy zinc-flake name), `COAT-DELTA_PROTEKT` (Delta Protekt zinc flake), `COAT-PHOSPHATE` (zinc/manganese phosphate + oil). **These are not re-created inside `LubricationRecord`.** Faz 2.6.2B must reference these existing `CoatingRecord` ids from any new `FrictionConditionRecord`, not duplicate their identity data.
+
+**Empty by design.** `friction_condition_library.json` ships with `"records": []` — a deliberate Faz 2.6.2A decision (schema/architecture phase, no data population), not an oversight. Registry, population and search calls against this library return empty results, never an error (tested).
+
+**Registry/population/search integration**: `LIBRARY_RECORD_MODELS["friction condition library"]`, `population.POPULATION_SOURCES["friction condition library"]`, `search.CATEGORY_LIBRARY_MAP["friction_condition"]`, `population.validate_friction_condition_library_records()` (reuses the Faz 2.6.1 friction-check functions — no duplicated validation logic since both record types share friction/nut-factor/scatter field names).
+
+**Migration plan for the 15 Tablo 9.4 records** (full detail in ADR-0010 "Migration plan"): not executed in Faz 2.6.2A. The 23 `LubricationRecord` records stay exactly as-is; migrating `LUBE-SURF-*` to `FrictionConditionRecord` is a separately-approved, idempotent, verifiable, source-traceability-preserving future phase.
+
