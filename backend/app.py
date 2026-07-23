@@ -436,6 +436,32 @@ def engineering_check(x: EngineeringCheck, u=Depends(user)):
     return result
 
 
+@app.get("/api/friction-condition")
+def friction_condition_list(u=Depends(user)):
+    # Faz 2.6.6: additive, read-only, minimal-field list for the
+    # frontend condition selector. No new engineering data -- the 18
+    # live records are unchanged; only a slimmed-down projection of
+    # already-stored fields is returned (no source_reference/
+    # engineering_notes/checksum here -- use /api/friction-condition/
+    # report-preview for full traceability on a selected condition).
+    from backend.library import population as population_module
+    records = population_module.load_population_records("friction condition library")
+    return [
+        {
+            "id": r.get("id", ""),
+            "coating_reference": r.get("coating_id", "") or "",
+            "lubricant_reference": r.get("lubricant_id", "") or "",
+            "friction_model": r.get("friction_model", "") or "",
+            "overall_friction_coefficient_min": r.get("overall_friction_coefficient_min"),
+            "overall_friction_coefficient_max": r.get("overall_friction_coefficient_max"),
+            "verification_status": r.get("verification_status", "") or "",
+            "source_type": r.get("source_type", "") or "",
+            "status": r.get("status", "") or "",
+        }
+        for r in records
+    ]
+
+
 class FrictionConditionAssess(BaseModel):
     # Faz 2.6.4: additive, new endpoint. Never touches
     # /api/engineering/check's request/response contract.

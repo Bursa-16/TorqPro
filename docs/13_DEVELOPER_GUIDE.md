@@ -27,6 +27,8 @@ Thin routes, resource naming, structured errors, idempotency for expensive creat
 
 Do not embed formulas. Use API schemas. Show units, source and validation state. Keep Turkish/English labels centralized. Preserve PWA assets.
 
+**Friction Condition workspace (Faz 2.6.6):** the `frontend/index.html` single-file structure was extended, not replaced -- no bundler/framework introduced. Reference implementation for future backend-integrated panels: `fcEsc()`/`fcEscRaw()` escape every dynamic value before `innerHTML` interpolation (never raw string concatenation of API text); a monotonic `FC_REQUEST_SEQ` counter discards stale async responses when the user changes selection quickly; render functions are pure formatters over the already-computed `POST /api/friction-condition/report-preview` response, never re-deriving a warning or recommendation client-side. See `docs/phases/PHASE_2.6.6_FRICTION_CONDITION_FRONTEND_WORKSPACE.md`.
+
 ## 6. Engineering code
 
 Pure functions, typed input/output, formula IDs, dimensional checks, no arbitrary fallback. Warnings are data, not console text. Rounding only at presentation/export.

@@ -416,6 +416,19 @@ Tightening Recommendation Generated`, `Production Approval Not
 Available`) are field-derived and, for all 18 live records, all five
 apply simultaneously -- confirmed by test, not just documented.
 
+## Faz 2.6.6 addendum (2026-07-23) — frontend consumption
+
+Faz 2.6.6 added a minimal frontend workspace consuming
+`GET /api/friction-condition` (new, list) and
+`POST /api/friction-condition/report-preview` (Faz 2.6.5) only --
+deliberately not also calling `POST /api/friction-condition/assess`
+(Faz 2.6.4) in parallel, since `report-preview`'s response already
+contains everything `assess` would return (readiness, warnings,
+comparison) plus source traceability, and duplicate calls would
+double network cost for no additional information. This does not
+change either endpoint's contract or ownership -- both remain
+available and unaffected for other callers.
+
 ## Consequences
 
 Implementation and documentation must follow this decision. New

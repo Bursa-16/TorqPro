@@ -81,7 +81,7 @@ The module governs the complete friction condition of a bolted joint -- lubricat
 - Current backend implementation status (Faz 2.6.0): `backend.library.models.LubricationRecord` (file `lubrication_library.py`, unchanged names -- see ADR-0009 for why) carries the Lubrication subsection's data, now extended with Friction-Condition-level fields (`overall_friction_coefficient_min/max`, `friction_model`, `mu_thread_min/max`, `mu_bearing_min/max`, `k_factor_min/max`, `scatter_percent`, `max_temperature_c`, `corrosion_resistance`, `reusability`, `recommended_standards`, `surface_condition`, and per-record source traceability: `source_reference`, `source_type`, `source_page_or_table`, `verification_status`, `applicability`, `engineering_notes`). Surface Condition, Coatings, Friction Model as independent domain concepts remain schema-only / not yet split into their own record types (Faz 2.6.1 decision).
 - `backend/engineering_core/friction.py` and `backend/engineering_core/torque.py` already implement independent `mu_thread`/`mu_bearing` tightening-torque calculation (VDI-style decomposition), currently fed by direct API input, not by the library. Connecting library-sourced friction values to this calculation path is Faz 2.6.3 scope, not yet implemented.
 
-### 10.4 Suggested UI sections (Faz 2.6.6, not yet implemented)
+### 10.4 Suggested UI sections (Faz 2.6.6, delivered as a minimal single-workspace implementation 2026-07-23 -- see §10.12)
 
 Navigation item: **Friction Condition**. Internal sections: Overview, Lubrication, Surface Condition, Coatings, Friction Properties, Engineering Notes, References.
 
@@ -151,4 +151,8 @@ No library data changed. `backend.calculation_engine.friction_recommendations` (
 ### 10.11 Faz 2.6.5 — Reporting and integration (2026-07-23)
 
 No library data changed. `backend.calculation_engine.friction_report` (additive) formats already-computed Faz 2.6.3/2.6.4 results into a JSON "Friction Condition Assessment" report section (`FrictionConditionReportSection`), including source traceability (`source_reference`, `source_type`, `source_page_or_table`, `verification_status`, `applicability`, `engineering_notes`, the record's own `checksum`, and the library's existing data-file `metadata.version` -- no parallel versioning mechanism was introduced). New additive `POST /api/friction-condition/report-preview` endpoint; `/api/engineering/check` and `/api/friction-condition/assess` are unaffected. See `docs/phases/PHASE_2.6.5_FRICTION_REPORTING_INTEGRATION.md`.
+
+### 10.12 Faz 2.6.6 — read-only list endpoint contract (2026-07-23)
+
+No library data changed. `GET /api/friction-condition` (additive, authenticated, read-only) returns a minimal per-record projection for the frontend condition selector -- not the full record. Fields: `id`, `coating_reference`, `lubricant_reference`, `friction_model`, `overall_friction_coefficient_min`, `overall_friction_coefficient_max`, `verification_status`, `source_type`, `status`. Deliberately excludes `source_reference`, `engineering_notes`, `checksum` and other traceability fields -- those are only returned by `POST /api/friction-condition/report-preview` (Faz 2.6.5) for a single selected record, avoiding sending the full dataset to every client. See `docs/phases/PHASE_2.6.6_FRICTION_CONDITION_FRONTEND_WORKSPACE.md`.
 

@@ -288,6 +288,40 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 @media(max-width:900px){.wizard-steps{grid-template-columns:1fr 1fr}}
 
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+/* FRICTION CONDITION (Faz 2.6.6) */
+.fc-muted{color:var(--text3);font-size:12px}
+.fc-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.fc-toolbar .form-input,.fc-toolbar .form-select{flex:1;min-width:160px}
+.fc-condition-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;max-height:360px;overflow-y:auto}
+.fc-condition-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;cursor:pointer;transition:border-color .15s}
+.fc-condition-card:hover{border-color:var(--border2)}
+.fc-condition-card:focus{outline:2px solid var(--accent);outline-offset:1px}
+.fc-condition-card.selected{border-color:var(--accent);background:rgba(79,126,248,.1)}
+.fc-condition-card .fc-cc-id{font-weight:600;font-size:13px;margin-bottom:4px;word-break:break-all}
+.fc-condition-card .fc-cc-meta{font-size:11px;color:var(--text3);line-height:1.5}
+.fc-field-row{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px}
+.fc-field-row:last-child{border-bottom:none}
+.fc-field-label{color:var(--text3)}
+.fc-field-value{color:var(--text);text-align:right;word-break:break-word;max-width:60%}
+.fc-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin:2px 4px 2px 0}
+.fc-badge-info{background:rgba(79,126,248,.15);color:var(--accent2)}
+.fc-badge-caution{background:rgba(245,158,11,.15);color:var(--warning)}
+.fc-badge-blocked{background:rgba(239,68,68,.15);color:var(--danger)}
+.fc-badge-restricted{background:rgba(239,68,68,.22);color:#fca5a5;border:1px solid var(--danger)}
+.fc-cap-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.fc-warning-item{padding:8px 10px;border-radius:6px;border-left:3px solid;margin-bottom:6px;font-size:12px}
+.fc-warning-item.fc-w-information{background:rgba(79,126,248,.08);border-color:var(--accent)}
+.fc-warning-item.fc-w-caution{background:rgba(245,158,11,.08);border-color:var(--warning)}
+.fc-warning-item.fc-w-blocked{background:rgba(239,68,68,.08);border-color:var(--danger)}
+.fc-warning-item.fc-w-restricted{background:rgba(239,68,68,.16);border-color:var(--danger);font-weight:600}
+.fc-range-svg-wrap{width:100%;overflow-x:auto}
+.fc-empty{padding:20px;text-align:center;color:var(--text3);font-size:13px}
+@media(max-width:900px){
+  .fc-toolbar{flex-direction:column}
+  .fc-toolbar .form-input,.fc-toolbar .form-select{width:100%}
+  .fc-condition-grid{grid-template-columns:1fr;max-height:none}
+  .fc-field-value{max-width:100%}
+}
 </style>
 </head>
 <body>
@@ -352,6 +386,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="sidebar-section">
     <div class="sidebar-label">Referans</div>
     <div class="sidebar-item" onclick="showPage('oem')"><span class="sidebar-icon">🔍</span> OEM Norm Sorgu</div>
+    <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> Friction Condition</div>
     <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> Norm Rehberi</div>
     <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> FMEA Kataloğu</div>
   </div>
@@ -750,6 +785,84 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="oem-section-tabs"></div>
   <div style="font-size:12px;color:var(--text3);margin-bottom:12px" id="oem-count"></div>
   <div id="oem-list"></div>
+</div>
+
+<!-- FRICTION CONDITION -->
+<div id="page-frictioncondition" class="page">
+  <div class="section-header"><span class="section-icon">🧪</span><div>
+    <div class="section-title">Friction Condition</div>
+    <div class="section-sub">Combination-dependent friction reference data · Lubrication is a subsection of this module</div>
+  </div></div>
+  <div class="alert alert-info" id="fc-scope-note">
+    This workspace shows already-verified reference friction data and the engineering limits of what can be
+    calculated from it today. It does not recommend a lubricant, coating, or torque value.
+  </div>
+
+  <div class="card">
+    <div class="card-title">Condition Selection</div>
+    <div class="card-sub">Select a Friction Condition record to see its Overview, Friction Range, Readiness, Engineering Warnings, Source &amp; Traceability and Report Preview.</div>
+    <div class="fc-toolbar">
+      <input class="form-input" id="fc-search" placeholder="Search by ID, coating or lubricant reference..." oninput="renderFrictionConditionList()">
+      <select class="form-select" id="fc-filter-group" onchange="renderFrictionConditionList()">
+        <option value="">All groups</option>
+        <option value="coating_based">Coating-based conditions</option>
+        <option value="lubricant_based">Lubricant-based conditions</option>
+      </select>
+      <select class="form-select" id="fc-filter-verification" onchange="renderFrictionConditionList()">
+        <option value="">Any verification status</option>
+      </select>
+      <select class="form-select" id="fc-filter-source-type" onchange="renderFrictionConditionList()">
+        <option value="">Any source type</option>
+      </select>
+    </div>
+    <div id="fc-list-status" class="fc-muted"></div>
+    <div id="fc-list" class="fc-condition-grid" role="listbox" aria-label="Friction condition list"></div>
+  </div>
+
+  <div id="fc-workspace" style="display:none">
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">Overview</div>
+        <div id="fc-overview"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Overall Friction Range</div>
+        <div id="fc-range-viz"></div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title">Recommendation Readiness</div>
+        <div id="fc-readiness"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Engineering Warnings</div>
+        <div id="fc-warnings"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title" style="margin-bottom:0">Comparison</div>
+          <div class="card-sub">Compare against a second Friction Condition. Comparisons are descriptive only.</div></div>
+      </div>
+      <div class="fc-toolbar">
+        <select class="form-select" id="fc-compare-select"><option value="">Select a condition to compare...</option></select>
+        <button class="btn btn-secondary btn-sm" onclick="clearFrictionComparison()">Clear</button>
+      </div>
+      <div id="fc-comparison"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title" style="margin-bottom:0">Source &amp; Traceability / Report Preview</div>
+          <div class="card-sub">JSON-verifiable report section (no PDF generated in this phase).</div></div>
+        <button class="btn btn-secondary btn-sm" onclick="downloadFrictionConditionReportJSON()">⬇ Download JSON</button>
+      </div>
+      <div id="fc-report"></div>
+    </div>
+  </div>
 </div>
 
 <!-- NORM REHBERİ -->
@@ -1221,12 +1334,314 @@ function showPage(id) {
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}
+  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}
 }
 function showNav(id, btn) {
   showPage(id);
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+}
+
+// ========== FRICTION CONDITION WORKSPACE (Faz 2.6.6) ==========
+// Displays already-verified Friction Condition data (Faz 2.6.0-2.6.5
+// backend) and its engineering limits. Produces no new engineering
+// value, torque number, or product recommendation client-side --
+// every rendered fact comes verbatim from the backend response.
+let FC_LIST = [];
+let FC_SELECTED_ID = null;
+let FC_COMPARE_ID = null;
+let FC_REQUEST_SEQ = 0;
+let FC_LAST_REPORT = null;
+
+function fcEsc(s) {
+  if (s === null || s === undefined || s === '') return '—';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fcEscRaw(s) {
+  // Same escaping, but does not substitute an em dash for empty
+  // strings -- used where an empty value is meaningful (e.g. inside
+  // a badge list where we skip rendering instead).
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fcFmtNum(v) { return (v === null || v === undefined) ? '—' : Number(v).toFixed(3); }
+function fcFmtLabel(s) { return fcEscRaw(String(s || '').replace(/_/g, ' ')); }
+
+async function loadFrictionConditionWorkspace() {
+  const statusEl = document.getElementById('fc-list-status');
+  const listEl = document.getElementById('fc-list');
+  document.getElementById('fc-workspace').style.display = 'none';
+  statusEl.textContent = 'Loading friction conditions...';
+  listEl.innerHTML = '';
+  try {
+    FC_LIST = await apiRequest('/api/friction-condition');
+    fcPopulateFilters();
+    fcRenderList();
+    statusEl.textContent = FC_LIST.length + ' friction condition(s) available.';
+    if (!FC_LIST.length) {
+      listEl.innerHTML = '<div class="fc-empty">No friction conditions are available yet.</div>';
+    }
+  } catch (e) {
+    statusEl.textContent = '';
+    listEl.innerHTML = '<div class="fc-empty">Could not load friction conditions: ' + fcEsc(e.message) + '</div>';
+  }
+}
+
+function fcPopulateFilters() {
+  const verifSel = document.getElementById('fc-filter-verification');
+  const srcSel = document.getElementById('fc-filter-source-type');
+  const verifValues = [...new Set(FC_LIST.map(r => r.verification_status).filter(Boolean))].sort();
+  const srcValues = [...new Set(FC_LIST.map(r => r.source_type).filter(Boolean))].sort();
+  verifSel.innerHTML = '<option value="">Any verification status</option>' +
+    verifValues.map(v => '<option value="' + fcEscRaw(v) + '">' + fcEscRaw(v) + '</option>').join('');
+  srcSel.innerHTML = '<option value="">Any source type</option>' +
+    srcValues.map(v => '<option value="' + fcEscRaw(v) + '">' + fcEscRaw(v) + '</option>').join('');
+}
+
+function fcGroupOf(r) {
+  if (r.coating_reference && r.lubricant_reference) return 'coating_and_lubricant_based';
+  if (r.coating_reference) return 'coating_based';
+  if (r.lubricant_reference) return 'lubricant_based';
+  return 'unclassified';
+}
+
+function fcRenderList() {
+  const q = (document.getElementById('fc-search').value || '').trim().toLowerCase();
+  const groupFilter = document.getElementById('fc-filter-group').value;
+  const verifFilter = document.getElementById('fc-filter-verification').value;
+  const srcFilter = document.getElementById('fc-filter-source-type').value;
+
+  const filtered = FC_LIST.filter(r => {
+    if (groupFilter && fcGroupOf(r) !== groupFilter) return false;
+    if (verifFilter && r.verification_status !== verifFilter) return false;
+    if (srcFilter && r.source_type !== srcFilter) return false;
+    if (q) {
+      const hay = [r.id, r.coating_reference, r.lubricant_reference].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  const listEl = document.getElementById('fc-list');
+  if (!filtered.length) {
+    listEl.innerHTML = '<div class="fc-empty">No friction conditions match the current filters.</div>';
+  } else {
+    listEl.innerHTML = filtered.map(r => {
+      const rangeText = (r.overall_friction_coefficient_min != null && r.overall_friction_coefficient_max != null)
+        ? (Number(r.overall_friction_coefficient_min).toFixed(2) + ' – ' + Number(r.overall_friction_coefficient_max).toFixed(2))
+        : 'range unavailable';
+      const refLabel = r.coating_reference ? ('Coating: ' + fcEscRaw(r.coating_reference))
+        : (r.lubricant_reference ? ('Lubricant: ' + fcEscRaw(r.lubricant_reference)) : 'Unclassified');
+      const selectedCls = (r.id === FC_SELECTED_ID) ? ' selected' : '';
+      const idAttr = fcEscRaw(r.id).replace(/'/g, "\\'");
+      return '<div class="fc-condition-card' + selectedCls + '" tabindex="0" role="option" aria-selected="' + (r.id === FC_SELECTED_ID) + '"' +
+        ' onclick="selectFrictionCondition(\'' + idAttr + '\')"' +
+        ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();selectFrictionCondition(\'' + idAttr + '\');}">' +
+        '<div class="fc-cc-id">' + fcEscRaw(r.id) + '</div>' +
+        '<div class="fc-cc-meta">' + refLabel + '<br>Range: ' + fcEscRaw(rangeText) + '<br>' + fcEscRaw(r.verification_status || 'unknown status') + '</div>' +
+      '</div>';
+    }).join('');
+  }
+  fcRenderCompareOptions();
+}
+
+function fcRenderCompareOptions() {
+  const sel = document.getElementById('fc-compare-select');
+  if (!sel) return;
+  const current = FC_COMPARE_ID || '';
+  sel.innerHTML = '<option value="">Select a condition to compare...</option>' +
+    FC_LIST.filter(r => r.id !== FC_SELECTED_ID)
+      .map(r => '<option value="' + fcEscRaw(r.id) + '">' + fcEscRaw(r.id) + '</option>').join('') +
+    (FC_SELECTED_ID ? '<option value="' + fcEscRaw(FC_SELECTED_ID) + '">' + fcEscRaw(FC_SELECTED_ID) + ' (self-comparison)</option>' : '');
+  sel.value = current;
+  sel.onchange = function () { FC_COMPARE_ID = sel.value || null; loadFrictionConditionSelection(); };
+}
+
+async function selectFrictionCondition(id) {
+  FC_SELECTED_ID = id;
+  FC_COMPARE_ID = null;
+  document.getElementById('fc-workspace').style.display = 'block';
+  fcRenderList();
+  await loadFrictionConditionSelection();
+}
+
+function clearFrictionComparison() {
+  FC_COMPARE_ID = null;
+  const sel = document.getElementById('fc-compare-select');
+  if (sel) sel.value = '';
+  loadFrictionConditionSelection();
+}
+
+async function loadFrictionConditionSelection() {
+  if (!FC_SELECTED_ID) return;
+  const seq = ++FC_REQUEST_SEQ;
+  fcRenderOverview(null, true);
+  fcRenderReadiness(null, true);
+  fcRenderWarnings(null, true);
+  fcRenderComparison(null, true);
+  fcRenderReport(null, true);
+  try {
+    const payload = { friction_condition_id: FC_SELECTED_ID };
+    if (FC_COMPARE_ID) payload.compare_with_friction_condition_id = FC_COMPARE_ID;
+    const report = await apiRequest('/api/friction-condition/report-preview', {method:'POST', body:JSON.stringify(payload)});
+    if (seq !== FC_REQUEST_SEQ) return; // a newer selection superseded this response
+    FC_LAST_REPORT = report;
+    fcRenderOverview(report);
+    fcRenderRangeViz(report);
+    fcRenderReadiness(report);
+    fcRenderWarnings(report);
+    fcRenderComparison(report);
+    fcRenderReport(report);
+  } catch (e) {
+    if (seq !== FC_REQUEST_SEQ) return;
+    const msg = '<div class="fc-empty">Could not load this friction condition: ' + fcEsc(e.message) + '</div>';
+    document.getElementById('fc-overview').innerHTML = msg;
+    document.getElementById('fc-range-viz').innerHTML = '';
+    document.getElementById('fc-readiness').innerHTML = '';
+    document.getElementById('fc-warnings').innerHTML = '';
+    document.getElementById('fc-report').innerHTML = '';
+  }
+}
+
+function fcRenderOverview(report, loading) {
+  const el = document.getElementById('fc-overview');
+  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (!report) { el.innerHTML = ''; return; }
+  const rows = [
+    ['Friction condition ID', report.friction_condition_id],
+    ['Coating', report.coating_reference],
+    ['Lubricant', report.lubricant_reference],
+    ['Friction model', fcFmtLabel(report.friction_model)],
+    ['Overall friction range', fcFmtNum(report.overall_friction_coefficient_minimum) + ' – ' + fcFmtNum(report.overall_friction_coefficient_maximum)],
+    ['Nominal midpoint estimate', fcFmtNum(report.overall_friction_coefficient_nominal_estimate)],
+    ['Verification status', report.source.verification_status],
+    ['Source reference', report.source.source_reference],
+    ['Applicability', report.source.applicability],
+  ];
+  el.innerHTML = rows.map(function (pair) {
+    return '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(pair[0]) + '</span><span class="fc-field-value">' + fcEsc(pair[1]) + '</span></div>';
+  }).join('') +
+    '<div class="fc-muted" style="margin-top:8px">Arithmetic midpoint of reference range — not a measured nominal value.</div>';
+}
+
+function fcRenderRangeViz(report) {
+  const el = document.getElementById('fc-range-viz');
+  const lo = report.overall_friction_coefficient_minimum;
+  const hi = report.overall_friction_coefficient_maximum;
+  const mid = report.overall_friction_coefficient_nominal_estimate;
+  if (lo === null || lo === undefined || hi === null || hi === undefined) {
+    el.innerHTML = '<div class="fc-empty">No overall friction coefficient range recorded.</div>';
+    return;
+  }
+  const axisMax = 1.0; // friction coefficients are stored bounded [0,1)
+  const pct = function (v) { return Math.max(0, Math.min(100, (v / axisMax) * 100)); };
+  const x = function (v) { return (10 + pct(v) * 3).toFixed(1); };
+  const refBadge = (report.source.verification_status === 'reference_only')
+    ? '<span class="fc-badge fc-badge-caution">Reference Only</span>' : '';
+  el.innerHTML =
+    '<div class="fc-range-svg-wrap"><svg viewBox="0 0 320 60" width="100%" height="60" role="img" ' +
+    'aria-label="Overall friction coefficient range from ' + fcFmtNum(lo) + ' to ' + fcFmtNum(hi) + ', midpoint ' + fcFmtNum(mid) + '">' +
+    '<line x1="10" y1="30" x2="310" y2="30" stroke="var(--border2)" stroke-width="2"/>' +
+    '<line x1="' + x(lo) + '" y1="18" x2="' + x(lo) + '" y2="42" stroke="var(--accent2)" stroke-width="2"/>' +
+    '<line x1="' + x(hi) + '" y1="18" x2="' + x(hi) + '" y2="42" stroke="var(--accent2)" stroke-width="2"/>' +
+    '<circle cx="' + x(mid) + '" cy="30" r="4" fill="var(--accent)"/>' +
+    '<text x="' + x(lo) + '" y="54" font-size="9" fill="var(--text3)" text-anchor="middle">' + fcFmtNum(lo) + '</text>' +
+    '<text x="' + x(mid) + '" y="12" font-size="9" fill="var(--text2)" text-anchor="middle">' + fcFmtNum(mid) + '</text>' +
+    '<text x="' + x(hi) + '" y="54" font-size="9" fill="var(--text3)" text-anchor="middle">' + fcFmtNum(hi) + '</text>' +
+    '</svg></div>' + refBadge +
+    '<div class="fc-muted" style="margin-top:6px">Descriptive reference range only — not a torque split, preload, or thread/bearing decomposition.</div>';
+}
+
+function fcRenderReadiness(report, loading) {
+  const el = document.getElementById('fc-readiness');
+  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (!report) { el.innerHTML = ''; return; }
+  const r = report.readiness;
+  const decompositionAvailable = r.torque_calculation_mode === 'mode_b_separated_model';
+  const caps = function (list, cls) {
+    return (list && list.length) ? list.map(function (c) { return '<span class="fc-badge ' + cls + '">' + fcFmtLabel(c) + '</span>'; }).join('')
+      : '<span class="fc-muted">None</span>';
+  };
+  const reasons = (r.blocking_reasons || []).map(function (b) {
+    return '<div class="fc-warning-item fc-w-blocked">' + fcEscRaw(b) + '</div>';
+  }).join('');
+  el.innerHTML =
+    '<div class="fc-field-row"><span class="fc-field-label">Calculation mode</span><span class="fc-field-value">' + fcFmtLabel(r.torque_calculation_mode) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">Recommendation readiness level</span><span class="fc-field-value">' + fcFmtLabel(r.recommendation_level) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">Decomposition available</span><span class="fc-field-value">' + (decompositionAvailable ? 'Yes' : 'No') + '</span></div>' +
+    '<div style="margin-top:10px"><div class="fc-field-label" style="margin-bottom:4px">Available capabilities</div><div class="fc-cap-list">' + caps(r.available_capabilities, 'fc-badge-info') + '</div></div>' +
+    '<div style="margin-top:10px"><div class="fc-field-label" style="margin-bottom:4px">Blocked capabilities</div><div class="fc-cap-list">' + caps(r.blocked_capabilities, 'fc-badge-blocked') + '</div></div>' +
+    (reasons ? '<div style="margin-top:10px"><div class="fc-field-label" style="margin-bottom:4px">Blocking reasons</div>' + reasons + '</div>' : '') +
+    '<div class="fc-muted" style="margin-top:10px">Comparison available · Torque decomposition unavailable · Tightening recommendation unavailable · Production approval unavailable</div>';
+}
+
+function fcWarningSeverity(text) {
+  // Display-only bucketing of already-approved backend text -- never
+  // generates new warning content, only chooses a CSS class.
+  if (/restricted|regulatory/i.test(text)) return 'restricted';
+  if (/no torque recommendation|decomposition is unavailable|unsupported_friction_model/i.test(text)) return 'blocked';
+  if (/reference-only|reference_only|not a certified/i.test(text)) return 'caution';
+  return 'information';
+}
+
+function fcRenderWarnings(report, loading) {
+  const el = document.getElementById('fc-warnings');
+  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (!report) { el.innerHTML = ''; return; }
+  const labels = (report.safety_labels || []).map(function (l) {
+    return '<span class="fc-badge fc-badge-caution">' + fcEscRaw(l) + '</span>';
+  }).join('');
+  const warnings = (report.engineering_warnings || []).map(function (w) {
+    return '<div class="fc-warning-item fc-w-' + fcWarningSeverity(w) + '">' + fcEscRaw(w) + '</div>';
+  }).join('') || '<div class="fc-muted">No warnings.</div>';
+  el.innerHTML = (labels ? '<div style="margin-bottom:10px">' + labels + '</div>' : '') + warnings;
+}
+
+function fcRenderComparison(report, loading) {
+  const el = document.getElementById('fc-comparison');
+  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (!report) { el.innerHTML = ''; return; }
+  const c = report.comparison;
+  if (!c) { el.innerHTML = '<div class="fc-muted">Select a second condition above to compare.</div>'; return; }
+  const selfBadge = c.is_self_comparison ? '<span class="fc-badge fc-badge-caution">Self-comparison</span>' : '';
+  const statements = (c.descriptive_statements || []).map(function (s) {
+    return '<div class="fc-warning-item fc-w-information">' + fcEscRaw(s) + '</div>';
+  }).join('');
+  el.innerHTML =
+    '<div class="fc-field-row"><span class="fc-field-label">Condition A</span><span class="fc-field-value">' + fcEscRaw(c.friction_condition_id_a) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">Condition B</span><span class="fc-field-value">' + fcEscRaw(c.friction_condition_id_b) + ' ' + selfBadge + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">Range relation</span><span class="fc-field-value">' + fcFmtLabel(c.range_relation) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">Width relation</span><span class="fc-field-value">' + fcFmtLabel(c.width_relation) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">Source classification</span><span class="fc-field-value">' + fcFmtLabel(c.source_classification_a) + ' vs ' + fcFmtLabel(c.source_classification_b) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">Verification status</span><span class="fc-field-value">' + fcEsc(c.verification_status_a) + ' vs ' + fcEsc(c.verification_status_b) + '</span></div>' +
+    (statements ? '<div style="margin-top:10px">' + statements + '</div>' : '');
+}
+
+function fcRenderReport(report, loading) {
+  const el = document.getElementById('fc-report');
+  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (!report) { el.innerHTML = ''; return; }
+  const s = report.source;
+  const rows = [
+    ['Source reference', s.source_reference],
+    ['Source type', s.source_type],
+    ['Source page/table', s.source_page_or_table],
+    ['Verification status', s.verification_status],
+    ['Applicability', s.applicability],
+    ['Engineering notes', s.engineering_notes],
+    ['Record checksum', s.record_checksum],
+    ['Data version', s.data_version],
+    ['Report generated at', report.report_generated_at],
+    ['Application version', report.application_version],
+  ];
+  el.innerHTML = rows.map(function (pair) {
+    return '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(pair[0]) + '</span><span class="fc-field-value">' + fcEsc(pair[1]) + '</span></div>';
+  }).join('');
+}
+
+function downloadFrictionConditionReportJSON() {
+  if (!FC_LAST_REPORT) { alert('No report loaded yet.'); return; }
+  downloadText('FrictionCondition_' + FC_LAST_REPORT.friction_condition_id + '.json', JSON.stringify(FC_LAST_REPORT, null, 2), 'application/json');
 }
 
 // ========== OEM GENEL ÖNGÖRÜ VERİ TABANI ==========
