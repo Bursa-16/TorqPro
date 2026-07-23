@@ -308,6 +308,51 @@ carried to a future phase.
 
 Full detail: `docs/phases/PHASE_2.6.2B_VERIFIED_FRICTION_DATA_POPULATION.md`.
 
+## Faz 2.6.3 addendum (2026-07-23) — torque-model readiness
+
+Faz 2.6.3 investigated whether `FrictionConditionRecord`'s data can
+feed any existing torque formula. Finding: **no formula in this
+codebase accepts a single combined friction coefficient.** The
+formula-spec Section 4 quick estimate needs `K` (not derivable from
+`mu` per this ADR's own decision and `docs/12_CLAUDE_CONTEXT.md` §4);
+the Section 5 detailed decomposition needs independent `mu_thread`/
+`mu_bearing` (not derivable by copying the combined value into both --
+an unjustified physical assumption, explicitly forbidden this phase).
+
+**No torque value is computed from any `FrictionConditionRecord` in
+Faz 2.6.3.** A new, additive module,
+`backend.calculation_engine.friction_readiness`, resolves a
+`friction_condition_id` (controlled `CalculationInputError` on
+unknown id / broken coating-lubricant reference / missing source
+traceability) and reports:
+
+- `calculation_mode`: `mode_a_combined_estimate` (data present, but
+  blocked from producing a torque value -- see `blocking_reasons`),
+  `mode_b_separated_model` (would require verified `mu_thread`/
+  `mu_bearing` + joint geometry + preload -- no live record qualifies
+  today), or `blocked` (no friction data at all).
+- A friction-*coefficient* min/nominal/max sensitivity range for Mode
+  A, where nominal is always the plain arithmetic midpoint of the
+  reference range, explicitly labelled
+  `nominal_estimate_policy = "arithmetic_midpoint_of_reference_range"`
+  -- never presented as a measured value, and never converted to a
+  torque number.
+- The four mandated engineering warnings whenever combined data is
+  used (see phase document).
+
+`/api/engineering/check` (`backend/app.py`) gains an additive,
+optional `friction_condition_id` field: when supplied, the response
+gains a `friction_readiness` key; the existing deterministic
+`mu_thread`/`mu_bearing`-based torque calculation is completely
+unaffected, and requests that omit the field behave identically to
+before this phase.
+
+This confirms and extends this ADR's core principle: a friction
+coefficient's *usability* for calculation, not just its storage
+location, depends on what was actually measured for the specific
+combination -- a combined value cannot be silently upgraded into
+component values by any code path, ever.
+
 ## Consequences
 
 Implementation and documentation must follow this decision. New

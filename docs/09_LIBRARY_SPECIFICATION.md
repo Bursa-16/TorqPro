@@ -133,3 +133,14 @@ Reference integrity (`coating_id`/`lubricant_id` must resolve to a live record, 
 
 Full detail, source coverage matrix and blocked items: `docs/phases/PHASE_2.6.2B_VERIFIED_FRICTION_DATA_POPULATION.md`.
 
+### 10.9 Faz 2.6.3 — Friction-aware torque model readiness (2026-07-23)
+
+No library data changed. A new orchestration module,
+`backend.calculation_engine.friction_readiness`, was added to resolve
+a `friction_condition_id` against this library (reference-integrity
+and source-traceability checked, controlled `CalculationInputError`
+on failure) and report calculation readiness -- it never computes a
+torque value from a `FrictionConditionRecord`. See
+`docs/phases/PHASE_2.6.3_FRICTION_AWARE_TORQUE_MODEL.md` and
+`docs/05_ENGINEERING_FORMULA_SPECIFICATION.md` §21.
+

@@ -16,9 +16,13 @@ from pydantic import BaseModel, Field
 try:
     from backend.engineering_core.joint import evaluate_joint
     from backend.engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed
+    from backend.calculation_engine.friction_readiness import assess_friction_readiness
+    from backend.calculation_engine.exceptions import CalculationInputError
 except ImportError:  # pragma: no cover - direct import with backend/ on sys.path
     from engineering_core.joint import evaluate_joint  # type: ignore[no-redef]
     from engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed  # type: ignore[no-redef]
+    from calculation_engine.friction_readiness import assess_friction_readiness  # type: ignore[no-redef]
+    from calculation_engine.exceptions import CalculationInputError  # type: ignore[no-redef]
 
 BASE=Path(__file__).resolve().parent.parent
 APP_VERSION="4.4"
@@ -402,11 +406,26 @@ class EngineeringCheck(BaseModel):
     internal_rm_mpa: float = Field(gt=0)
     bolt_rm_mpa: float = Field(gt=0)
     nut_proof_mpa: float = Field(gt=0)
+    # Faz 2.6.3: additive, optional. When supplied, the response gains
+    # a "friction_readiness" key reporting what (if anything) the
+    # referenced FrictionConditionRecord's data supports -- it never
+    # changes the deterministic mu_thread/mu_bearing-based result
+    # above, which is unaffected whether or not this field is set.
+    friction_condition_id: Optional[str] = None
 
 @app.post("/api/engineering/check")
 def engineering_check(x: EngineeringCheck, u=Depends(user)):
     # Orchestration only: input validated by Pydantic, calculation in engineering_core.
-    return evaluate_joint(**x.model_dump())
+    fields = x.model_dump()
+    friction_condition_id = fields.pop("friction_condition_id")
+    result = evaluate_joint(**fields)
+    if friction_condition_id:
+        try:
+            readiness = assess_friction_readiness(friction_condition_id)
+        except CalculationInputError as e:
+            raise HTTPException(422, str(e))
+        result["friction_readiness"] = readiness.to_dict()
+    return result
 
 
 DATA_DIR=BASE/"data"
