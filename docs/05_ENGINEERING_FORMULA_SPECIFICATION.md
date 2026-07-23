@@ -225,3 +225,15 @@ No formula pack becomes APPROVED without:
 5. documented tolerances;
 6. review and sign-off by qualified mechanical engineer;
 7. regression tests locking expected outputs.
+
+## 21. Friction Condition module linkage (Faz 2.6)
+
+**Naming (Faz 2.6 rename, 2026-07-23):** the source of `mu_G`/`mu_K` (thread/bearing friction, Section 2) and future `mu_thread`/`mu_bearing`/K-factor/scatter values is the **Friction Condition** module, not a "Lubrication Module". Lubrication is one subsection of Friction Condition; the module also covers surface condition, coatings, thread/bearing condition and related engineering warnings (see docs/09_LIBRARY_SPECIFICATION.md §10, ADR-0009).
+
+Current implementation status (Faz 2.6.0, architecture/spec only):
+
+- Section 5's `M_G`/`M_K` decomposition is already implemented (`backend/engineering_core/friction.py`, `torque.py`), fed by direct API `mu_thread`/`mu_bearing` input (`EngineeringCheck` model, `backend/app.py`). It is not yet library-sourced.
+- A percentage breakdown of `M_G`/`M_K`/useful-clamp-force generation (torque distribution reporting) is NOT_IMPLEMENTED; planned for Faz 2.6.3, additive on top of the existing formula -- no change to the Section 5 equation itself.
+- `backend.library.models.LubricationRecord` (Lubrication subsection of Friction Condition) now carries schema fields for `mu_thread_min/max`, `mu_bearing_min/max`, `k_factor_min/max` and `scatter_percent`, but no record populates them yet: per docs/12_CLAUDE_CONTEXT.md §4, no coefficient is invented without an approved, cited source. Populating and wiring these into Section 4/5's `K`/`mu_G`/`mu_K` is Faz 2.6.2/2.6.3 scope.
+- 15 Tablo-9.4-derived reference records (surface condition x dry/oiled/MoS2-with-oil, textbook_reference/reference_only) were added in Faz 2.6.0 as `overall_friction_coefficient_min/max` with `friction_model = combined_or_unspecified` -- a single combined coefficient, not a `mu_G`/`mu_K` split, and therefore not yet usable as direct Section 5 input.
+

@@ -44,3 +44,48 @@ JSON/CSV/XLSX imports are staged as data packages. Parsing does not activate dat
 ## 9. Current assets
 
 The package contains `torqpro_library_v3_1.json`, `Baglanti_Elemanlari_Kutuphanesi_v3_1.xlsx` and active JSON datasets for nut proof loads, bolt-nut compatibility, washer pressure, friction and technical sources. These are migration sources, not automatically production-approved truth.
+
+## 10. Friction Condition module (Faz 2.6)
+
+**Naming (Faz 2.6 rename, 2026-07-23):** the module is named **Friction Condition**, not "Lubrication Module" / "Lubrication Engineering Module". "Lubrication" is a subsection of Friction Condition, not the module itself. "Lubrication Module"/"Lubrication Engineering Module" may still be used only when referring specifically to lubricant data (e.g. the existing `LUBRICATION_LIBRARY` / `lubrication_library.json` dataset).
+
+### 10.1 Rationale
+
+The module governs the complete friction condition of a bolted joint -- lubrication, coatings, surface condition/finish and friction behaviour affecting preload and tightening torque -- not lubricant selection alone. Framing it as "Friction Condition" from Faz 2.6.0 onward lets Geomet, Dacromet, PTFE coating, surface roughness, mu_thread, mu_bearing, K-factor and scatter join the same module later without a rename.
+
+### 10.2 Module responsibilities
+
+- Lubrication
+- Surface Condition
+- Surface Finish
+- Coating
+- Thread Condition
+- Bearing Surface Condition
+- Friction Model
+- Overall Friction Coefficient
+- Thread Friction (future)
+- Bearing Friction (future)
+- Nut Factor (future)
+- Scatter (future)
+- Galling Risk
+- Corrosion Influence
+- Temperature Influence
+- Torque Correction
+- Engineering Warnings
+
+### 10.3 Architecture
+
+- Lubrication is a child component of Friction Condition, not the module itself.
+- Surface finish and coatings are independent components alongside Lubrication, not folded into it.
+- The schema is designed so future VDI 2230 and ISO 16047 friction models integrate without a further module rename (see ADR-0009).
+- Current backend implementation status (Faz 2.6.0): `backend.library.models.LubricationRecord` (file `lubrication_library.py`, unchanged names -- see ADR-0009 for why) carries the Lubrication subsection's data, now extended with Friction-Condition-level fields (`overall_friction_coefficient_min/max`, `friction_model`, `mu_thread_min/max`, `mu_bearing_min/max`, `k_factor_min/max`, `scatter_percent`, `max_temperature_c`, `corrosion_resistance`, `reusability`, `recommended_standards`, `surface_condition`, and per-record source traceability: `source_reference`, `source_type`, `source_page_or_table`, `verification_status`, `applicability`, `engineering_notes`). Surface Condition, Coatings, Friction Model as independent domain concepts remain schema-only / not yet split into their own record types (Faz 2.6.1 decision).
+- `backend/engineering_core/friction.py` and `backend/engineering_core/torque.py` already implement independent `mu_thread`/`mu_bearing` tightening-torque calculation (VDI-style decomposition), currently fed by direct API input, not by the library. Connecting library-sourced friction values to this calculation path is Faz 2.6.3 scope, not yet implemented.
+
+### 10.4 Suggested UI sections (Faz 2.6.6, not yet implemented)
+
+Navigation item: **Friction Condition**. Internal sections: Overview, Lubrication, Surface Condition, Coatings, Friction Properties, Engineering Notes, References.
+
+### 10.5 Compatibility
+
+No existing lubrication data was renamed, removed or restructured by the Faz 2.6 rename. `LUBRICATION_LIBRARY`, `lubrication_library.py`, `lubrication_library.json` and every field/record id predating Faz 2.6 are unchanged. See ADR-0009.
+

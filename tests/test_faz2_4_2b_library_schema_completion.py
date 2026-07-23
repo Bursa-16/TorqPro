@@ -560,12 +560,35 @@ def test_lubrication_record_defaults_keep_predating_records_valid():
 
 
 def test_lubrication_library_json_records_all_parse():
+    # Faz 2.4.2B: 8 lubricant-product records. Faz 2.6.0 adds 15
+    # Tablo-9.4-derived surface/lubrication-state records
+    # ("LUBE-SURF-*"), so 8 + 15 = 23.
     with open("backend/library/data/lubrication_library.json") as f:
         records = json.load(f)["records"]
-    assert len(records) == 8
+    assert len(records) == 23
     typed = [LubricationRecord.model_validate(r) for r in records]
     assert all(isinstance(t.lubricant_type, LubricationType) for t in typed)
-    assert all(t.oem_compatibility for t in typed)
+    # oem_compatibility is only populated on the 8 pre-existing
+    # lubricant-product records (Faz 2.4.2B); the 15 Faz 2.6.0
+    # surface-condition records are not tied to a specific OEM list.
+    faz_2_4_2b_records = [t for t in typed if not t.id.startswith("LUBE-SURF-")]
+    faz_2_6_0_records = [t for t in typed if t.id.startswith("LUBE-SURF-")]
+    assert len(faz_2_4_2b_records) == 8
+    assert len(faz_2_6_0_records) == 15
+    assert all(t.oem_compatibility for t in faz_2_4_2b_records)
+    # Faz 2.6.0 records: combined-friction architecture fields set,
+    # independent mu_thread/mu_bearing/K deliberately left unset (no
+    # approved source yet -- see ADR-0009).
+    assert all(t.overall_friction_coefficient_min is not None for t in faz_2_6_0_records)
+    assert all(t.overall_friction_coefficient_max is not None for t in faz_2_6_0_records)
+    assert all(t.friction_model.value == "combined_or_unspecified" for t in faz_2_6_0_records)
+    assert all(t.mu_thread_min is None and t.mu_bearing_min is None for t in faz_2_6_0_records)
+    assert all(t.source_type == "textbook" for t in faz_2_6_0_records)
+    assert all(t.verification_status == "reference_only" for t in faz_2_6_0_records)
+    cadmium_records = [t for t in faz_2_6_0_records if "CADMIUM" in t.id]
+    assert len(cadmium_records) == 3
+    assert all(t.status.value == "restricted_legacy" for t in cadmium_records)
+    assert all(t.regulatory_warning for t in cadmium_records)
 
 
 # ---------------------------------------------------------------------------
@@ -677,7 +700,7 @@ def test_all_faz_2_4_2b_enums_are_str_subclasses_for_transparent_json_output():
         ("thread library", "backend/library/data/thread_library.json", 134),
         ("material library", "backend/library/data/material_library.json", 8),
         ("coating library", "backend/library/data/coating_library.json", 10),
-        ("lubrication library", "backend/library/data/lubrication_library.json", 8),
+        ("lubrication library", "backend/library/data/lubrication_library.json", 23),
         (
             "strength class library",
             "backend/library/data/strength_class_library.json",

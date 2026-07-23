@@ -108,7 +108,28 @@ remain open for Faz 2.5B/2.5C.
 - advisory AI and optimization.
 - private-cloud/on-premise governance.
 
-## 12. Next approved sprint
+## 12. Faz 2.6 – Friction Condition Module
+
+**Naming (2026-07-23 rename directive):** the epic and module are named **Friction Condition**, not "Lubrication Module" / "Lubrication Engineering Module". Lubrication is a subsection of Friction Condition, not the module itself. "Lubrication Module"/"Lubrication Engineering Module" remain valid only when referring specifically to lubricant data (the existing `LUBRICATION_LIBRARY` dataset).
+
+**Rationale:** the module must own the complete friction condition of a bolted joint — lubrication, coatings, surface condition/finish, thread and bearing friction behaviour, and their effect on preload/tightening torque — not lubricant selection alone. See `docs/adr/ADR-0009-friction-condition-module.md` and `docs/09_LIBRARY_SPECIFICATION.md` §10.
+
+**Module responsibilities:** Lubrication; Surface Condition; Surface Finish; Coating; Thread Condition; Bearing Surface Condition; Friction Model; Overall Friction Coefficient; Thread Friction (future); Bearing Friction (future); Nut Factor (future); Scatter (future); Galling Risk; Corrosion Influence; Temperature Influence; Torque Correction; Engineering Warnings.
+
+**Sub-phases:**
+
+- **2.6.0 – Architecture & Specification.** Schema/architecture decision, `docs/09_LIBRARY_SPECIFICATION.md` and `docs/05_ENGINEERING_FORMULA_SPECIFICATION.md` updates, ADR-0009, source-traceability field design, Tablo 9.4-scoped reference data (15 records, combined coefficient only, no mu_thread/mu_bearing/K). **Delivered 2026-07-23** — see `docs/phases/PHASE_2.6.0_FRICTION_CONDITION_ARCHITECTURE.md`.
+- **2.6.1 – Friction Condition Schema Extension (Lubrication subsection).** Any further schema work the Faz 2.6.0 ADR defers (e.g. Surface Condition/Coating as independent record types vs. free-text fields).
+- **2.6.2 – Verified Data Population.** Independently sourced mu_thread/mu_bearing/K/scatter/max-temperature/corrosion-resistance/reusability values per lubricant, each with a cited, approved source. No value added without one (`docs/12_CLAUDE_CONTEXT.md` §4).
+- **2.6.3 – Friction and Torque Decomposition Engine.** Percentage breakdown of thread friction / bearing friction / useful clamp-load generation on top of the existing `M_G`/`M_K` formula (`backend/engineering_core/torque.py`, `friction.py`) — additive reporting, no change to the underlying equation without a formula-spec ADR.
+- **2.6.4 – Recommendation and Warning Engine.** Lubricant/friction-condition recommendation by bolt size, strength class, coating, environment, corrosion class, temperature, joint type; engineering warnings (dry-tightening scatter, anti-seize torque reduction, galling risk, etc.).
+- **2.6.5 – Reporting and Integration.** PDF report sections, integration with Calculation Engine, Standards Engine, Joint Calculator without logic duplication.
+- **2.6.6 – Frontend Friction Condition Workspace.** UI navigation item "Friction Condition"; sections: Overview, Lubrication, Surface Condition, Coatings, Friction Properties, Engineering Notes, References.
+- **2.6.7 – Verification, Documentation and Release.** Full test coverage, ruff/black/mypy/pytest gate, documentation (SDS, API, User Guide, Developer Guide, architecture diagrams) updated.
+
+**Compatibility constraint (all sub-phases):** the existing lubrication library is never renamed or restructured at the code/data level without a superseding ADR; no existing record or field is removed.
+
+## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.
 

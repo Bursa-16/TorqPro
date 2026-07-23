@@ -94,6 +94,17 @@ class Status(str, Enum):
     APPROVED = "approved"
     DEPRECATED = "deprecated"
     ARCHIVED = "archived"
+    #: Faz 2.6.0: record describes a lubrication/coating condition that
+    #: remains a physically valid reference value (e.g. cadmium
+    #: plating) but whose use in new production is restricted or
+    #: requires customer/regulatory sign-off. Distinct from
+    #: ``DEPRECATED`` ("superseded, do not use") -- a
+    #: ``RESTRICTED_LEGACY`` record stays a valid reference value, just
+    #: one that must carry a ``regulatory_warning`` (see
+    #: ``LubricationRecord``) and route through a compliance check
+    #: before use. No specific regulatory clause is asserted by this
+    #: value alone.
+    RESTRICTED_LEGACY = "restricted_legacy"
 
 
 class UnitSystem(str, Enum):
@@ -234,7 +245,41 @@ class LubricationType(str, Enum):
     GRAPHITE_PASTE = "Graphite-based paste"
     COPPER_NICKEL_ALUMINIUM_PASTE = "Copper/nickel/aluminium anti-seize style paste"
     ANTI_SEIZE_METAL_FILLED = "Anti-seize compound (metal-filled)"
+
+    # -- Faz 2.6.0 additions ------------------------------------------
+    # Added only to model the two generic lubrication states given by
+    # Tablo 9.4 (Makine Elemanlari, Sekil 9.23 kaynagi) that do not
+    # already have a matching member above: unspecified "oiled" ("Yagli")
+    # and MoS2-with-oil ("MoS2 ile Yagli"), each distinct from the more
+    # specific pre-existing members (``MINERAL_SYNTHETIC_OIL`` names a
+    # concrete oil type; ``MOLYBDENUM_DISULFIDE`` names a dry MoS2
+    # paste/film, not an oil-carried MoS2 film). "Kuru" ("Dry") reuses
+    # the pre-existing ``NO_LUBRICANT`` member -- no new member added
+    # for it.
+    OILED_GENERIC = "Generic oil film (unspecified oil type)"
+    MOS2_WITH_OIL = "Molybdenum disulfide with oil film"
+
     OTHER = "Other"
+    UNSPECIFIED = ""
+
+
+class FrictionModelType(str, Enum):
+    """Faz 2.6.0: declares whether a ``LubricationRecord``'s friction
+    value(s) represent a single combined coefficient (thread + bearing
+    friction not separated by the source) or independently sourced
+    ``mu_thread`` / ``mu_bearing`` values.
+
+    Every record populated in Faz 2.6.0 (the Tablo 9.4-derived
+    surface/lubrication-state records) uses
+    ``COMBINED_OR_UNSPECIFIED``: the source table gives one overall
+    coefficient per surface/state, with no thread/bearing split.
+    ``SPLIT_THREAD_BEARING`` is reserved for Faz 2.6.2 records once an
+    approved source for independent mu_thread/mu_bearing values per
+    lubricant is confirmed -- see ADR-0009.
+    """
+
+    COMBINED_OR_UNSPECIFIED = "combined_or_unspecified"
+    SPLIT_THREAD_BEARING = "split_thread_bearing"
     UNSPECIFIED = ""
 
 
@@ -763,6 +808,17 @@ class CoatingRecord(LibraryRecordBase):
 class LubricationRecord(LibraryRecordBase):
     """Lubricant/friction-condition record (see ``lubrication_library.py``).
 
+    Naming note (Faz 2.6 rename, 2026-07-23): at the product/
+    architecture level this record type is now the **Lubrication
+    subsection** of the **Friction Condition** module -- the module
+    that owns lubrication, surface condition, coatings, thread/bearing
+    friction and related engineering warnings as a whole (see
+    ADR-0009 and docs/09_LIBRARY_SPECIFICATION.md). The class name,
+    file name (``lubrication_library.py``) and every existing field/
+    record id are unchanged for backward compatibility -- only
+    documentation, backlog, ADR and UI-level naming moved to
+    "Friction Condition"; no code identifier was renamed.
+
     Faz 2.4.2B: closes the 1-field gap identified by the Faz 2.4.2A
     inventory (docs/phase_2_4_2_schema_inventory.md §5).
 
@@ -784,6 +840,77 @@ class LubricationRecord(LibraryRecordBase):
 
     # -- Faz 2.4.2B additions ----------------------------------------
     oem_compatibility: List[str] = Field(default_factory=list)
+
+    # -- Faz 2.6.0 additions (architecture/spec phase) ----------------
+    # All fields below are optional with safe defaults: additive only,
+    # per the same backward-compatibility rule used by every earlier
+    # phase (Faz 2.4.1A/2.4.2B). Every one of the 8 pre-existing
+    # records keeps validating unchanged. See ADR-0009 and
+    # docs/09_LIBRARY_SPECIFICATION.md Faz 2.6 section for the full
+    # rationale.
+    #
+    # ``overall_friction_coefficient_min/max`` and
+    # ``friction_coefficient_min/max`` above are intentionally kept
+    # side by side rather than merged: the pre-existing pair is the
+    # Faz 2.4.0 "typical range" concept (reference_only, ISO 16047
+    # methodology note, no declared source table/page); the new pair
+    # is the Faz 2.6.0 concept of a combined coefficient traceable to
+    # one specific, cited source (e.g. a named textbook table). Faz
+    # 2.6.0 does not backfill or reconcile the two on the 8 pre-
+    # existing records -- that reconciliation, if wanted, is a
+    # Faz 2.6.2 data-population decision, not an architecture one.
+    overall_friction_coefficient_min: float | None = Field(default=None, ge=0, lt=1)
+    overall_friction_coefficient_max: float | None = Field(default=None, ge=0, lt=1)
+    friction_model: FrictionModelType = FrictionModelType.UNSPECIFIED
+
+    # Independent thread/bearing friction and nut-factor fields.
+    # Schema only in Faz 2.6.0 -- deliberately left unset (None) on
+    # every record populated in this phase; no source yet approved for
+    # independent mu_thread/mu_bearing/K per lubricant (see ADR-0009,
+    # open data need #1). Populating these without a cited source
+    # would violate docs/12_CLAUDE_CONTEXT.md SS4 ("do not invent
+    # coefficients").
+    mu_thread_min: float | None = Field(default=None, ge=0, lt=1)
+    mu_thread_max: float | None = Field(default=None, ge=0, lt=1)
+    mu_bearing_min: float | None = Field(default=None, ge=0, lt=1)
+    mu_bearing_max: float | None = Field(default=None, ge=0, lt=1)
+    k_factor_min: float | None = Field(default=None, ge=0)
+    k_factor_max: float | None = Field(default=None, ge=0)
+    scatter_percent: float | None = Field(default=None, ge=0)
+    max_temperature_c: float | None = None
+    corrosion_resistance: str = ""
+    reusability: str = ""
+    recommended_standards: List[str] = Field(default_factory=list)
+
+    # Per-record source traceability, additive counterpart to the
+    # generic ``source`` / ``source_standard`` / ``notes`` fields
+    # already on ``LibraryRecordBase``. Kept as plain ``str`` (not
+    # enums) in Faz 2.6.0: the only values populated this phase are
+    # "textbook" / "textbook_reference" / "reference_only" (see
+    # ``LUBE-SURF-*`` records below); a closed vocabulary is deferred
+    # until Faz 2.6.2 sees the full range of source types in use
+    # (standard, supplier datasheet, internal test, ...).
+    source_status: str = ""
+    source_reference: str = ""
+    source_type: str = ""
+    source_page_or_table: str = ""
+    verification_status: str = ""
+    applicability: str = ""
+    engineering_notes: str = ""
+
+    # Faz 2.6.0 restricted-legacy support (e.g. cadmium plating): pairs
+    # with ``LibraryRecordBase.status = Status.RESTRICTED_LEGACY``.
+    # Free text, not a legal/regulatory determination -- see field
+    # docstring on ``Status.RESTRICTED_LEGACY``.
+    regulatory_warning: str = ""
+
+    # Faz 2.6.0: free-text substrate/surface-treatment description for
+    # records where the friction value is a surface-condition property
+    # rather than an applied lubricant product (e.g. "Fosfatlanmis",
+    # "Galvanize" from Tablo 9.4). Deliberately not modelled as a new
+    # enum or cross-reference to ``CoatingType``/``coating_library.py``
+    # in this phase -- see ADR-0009 open question #2.
+    surface_condition: str = ""
 
 
 class StrengthClassRecord(LibraryRecordBase):
@@ -920,6 +1047,7 @@ __all__ = [
     "MaterialType",
     "CoatingType",
     "LubricationType",
+    "FrictionModelType",
     "HeadType",
     "DriveType",
     "LockingType",
