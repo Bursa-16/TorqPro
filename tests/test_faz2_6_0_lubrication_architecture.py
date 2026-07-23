@@ -188,3 +188,151 @@ def test_engineering_core_friction_and_torque_untouched():
         mu_thread=0.12, mu_bearing=0.12, effective_bearing_diameter_mm=13.0,
     )
     assert t > 0
+
+
+# ---------------------------------------------------------------------
+# Faz 2.6.1: Friction Condition schema-extension validator checks.
+# ---------------------------------------------------------------------
+
+class TestFaz261LubricationValidators:
+    """Exercise the new backend.library.validator find_* functions and
+    the aggregate validate_lubrication_library() against both the live
+    data file (must be clean) and crafted violation cases."""
+
+    def test_live_lubrication_data_has_zero_validator_issues(self):
+        from backend.library import population
+
+        issues = population.validate_lubrication_library_records()
+        assert issues == []
+
+    def test_find_friction_min_max_violations_catches_inverted_range(self):
+        from backend.library.validator import find_friction_min_max_violations
+
+        records = [{"id": "x", "overall_friction_coefficient_min": 0.3,
+                    "overall_friction_coefficient_max": 0.1}]
+        issues = find_friction_min_max_violations(records)
+        assert len(issues) == 1
+        assert issues[0].code == "friction_min_max_violation"
+
+    def test_find_friction_min_max_violations_ignores_valid_range(self):
+        from backend.library.validator import find_friction_min_max_violations
+
+        records = [{"id": "x", "overall_friction_coefficient_min": 0.1,
+                    "overall_friction_coefficient_max": 0.3}]
+        assert find_friction_min_max_violations(records) == []
+
+    def test_find_friction_negative_values_catches_negative_mu(self):
+        from backend.library.validator import find_friction_negative_values
+
+        records = [{"id": "x", "mu_thread_min": -0.05}]
+        issues = find_friction_negative_values(records)
+        assert len(issues) == 1
+        assert issues[0].code == "negative_friction_value"
+
+    def test_find_friction_asymmetric_min_max_catches_one_sided_range(self):
+        from backend.library.validator import find_friction_asymmetric_min_max
+
+        records = [{"id": "x", "k_factor_min": 0.15}]
+        issues = find_friction_asymmetric_min_max(records)
+        assert len(issues) == 1
+        assert issues[0].code == "friction_asymmetric_min_max"
+
+    def test_find_friction_asymmetric_min_max_allows_both_or_neither(self):
+        from backend.library.validator import find_friction_asymmetric_min_max
+
+        records = [
+            {"id": "a", "k_factor_min": 0.15, "k_factor_max": 0.2},
+            {"id": "b"},
+        ]
+        assert find_friction_asymmetric_min_max(records) == []
+
+    def test_find_friction_one_sided_thread_bearing_catches_thread_only(self):
+        from backend.library.validator import find_friction_one_sided_thread_bearing
+
+        records = [{"id": "x", "mu_thread_min": 0.1, "mu_thread_max": 0.15}]
+        issues = find_friction_one_sided_thread_bearing(records)
+        assert len(issues) == 1
+        assert issues[0].code == "friction_one_sided_thread_bearing"
+
+    def test_find_friction_one_sided_thread_bearing_allows_both_set(self):
+        from backend.library.validator import find_friction_one_sided_thread_bearing
+
+        records = [{
+            "id": "x", "mu_thread_min": 0.1, "mu_thread_max": 0.15,
+            "mu_bearing_min": 0.1, "mu_bearing_max": 0.15,
+        }]
+        assert find_friction_one_sided_thread_bearing(records) == []
+
+    def test_find_friction_coefficient_missing_source_catches_unsourced_value(self):
+        from backend.library.validator import find_friction_coefficient_missing_source
+
+        records = [{"id": "x", "overall_friction_coefficient_min": 0.1}]
+        issues = find_friction_coefficient_missing_source(records)
+        assert len(issues) == 1
+        assert issues[0].code == "friction_coefficient_missing_source"
+
+    def test_find_friction_coefficient_missing_source_allows_sourced_value(self):
+        from backend.library.validator import find_friction_coefficient_missing_source
+
+        records = [{
+            "id": "x", "overall_friction_coefficient_min": 0.1,
+            "source_reference": "Some Standard, Table 4",
+        }]
+        assert find_friction_coefficient_missing_source(records) == []
+
+    def test_find_restricted_legacy_missing_warning_catches_empty_warning(self):
+        from backend.library.validator import find_restricted_legacy_missing_warning
+
+        records = [{"id": "x", "status": "restricted_legacy"}]
+        issues = find_restricted_legacy_missing_warning(records)
+        assert len(issues) == 1
+        assert issues[0].code == "restricted_legacy_missing_warning"
+
+    def test_find_restricted_legacy_missing_warning_allows_populated_warning(self):
+        from backend.library.validator import find_restricted_legacy_missing_warning
+
+        records = [{"id": "x", "status": "restricted_legacy", "regulatory_warning": "See ELV."}]
+        assert find_restricted_legacy_missing_warning(records) == []
+
+    def test_validate_lubrication_library_aggregates_all_checks(self):
+        from backend.library.validator import validate_lubrication_library
+
+        bad_record = {
+            "id": "BAD-1",
+            "overall_friction_coefficient_min": 0.4,
+            "overall_friction_coefficient_max": 0.1,  # min > max
+            "mu_thread_min": -0.02,  # negative
+            "k_factor_min": 0.1,  # one-sided (no k_factor_max)
+            "status": "restricted_legacy",  # missing regulatory_warning
+        }
+        report = validate_lubrication_library([bad_record])
+        codes = {issue.code for issue in report.issues}
+        assert "friction_min_max_violation" in codes
+        assert "negative_friction_value" in codes
+        assert "friction_asymmetric_min_max" in codes
+        assert "friction_coefficient_missing_source" in codes
+        assert "restricted_legacy_missing_warning" in codes
+
+    def test_run_all_integrity_checks_includes_lubrication_key(self):
+        from backend.library import population
+
+        report = population.run_all_integrity_checks()
+        assert "lubrication_library_faz2_6_1" in report
+        assert report["lubrication_library_faz2_6_1"] == []
+
+
+def test_faz_2_6_1_no_new_coefficient_values_populated():
+    """Faz 2.6.1 scope check: no mu_thread/mu_bearing/K/scatter/
+    temperature/corrosion value exists anywhere in the live data file
+    yet -- confirms the phase added validation/architecture only, not
+    data (docs/12_CLAUDE_CONTEXT.md SS4)."""
+    for raw in _load_records():
+        typed = LubricationRecord.model_validate(raw)
+        assert typed.mu_thread_min is None
+        assert typed.mu_thread_max is None
+        assert typed.mu_bearing_min is None
+        assert typed.mu_bearing_max is None
+        assert typed.k_factor_min is None
+        assert typed.k_factor_max is None
+        assert typed.scatter_percent is None
+        assert typed.corrosion_resistance == ""

@@ -112,3 +112,38 @@ coefficient is invented, per docs/12_CLAUDE_CONTEXT.md SS4.
    added in Faz 2.6.0 is a placeholder, not a final data model).
 3. Specific regulatory citation for the cadmium `regulatory_warning`
    text (RoHS/ELV clause, customer-specific restriction list, etc.).
+
+## Faz 2.6.1 addendum (2026-07-23)
+
+Faz 2.6.1 ("Friction Condition Schema Extension") re-evaluated point 2
+above against its own trigger condition and confirmed it is **not yet
+met**: every record populated through Faz 2.6.1 (the same 23 records
+as Faz 2.6.0) still uses one shared source per record. Decision
+stands unchanged — no `FrictionCoefficientSet`/nested model
+introduced. Faz 2.6.1 instead:
+
+- Documented the 8-concept separation (surface condition, coating,
+  lubricant, overall/combined coefficient, thread friction, bearing
+  friction, nut factor, scatter) directly on `LubricationRecord`'s
+  docstring, each concept mapped to its field group — see the class
+  docstring in `backend/library/models.py` for the authoritative
+  mapping.
+- Added `backend/library/validator.py::validate_lubrication_library`
+  (8 checks: min<=max for every relevant pair including the
+  pre-existing Faz 2.4.0 pair, no negative values, no one-sided
+  min/max, no one-sided mu_thread/mu_bearing, no engineering
+  coefficient without `source_reference`, no `restricted_legacy`
+  record without `regulatory_warning`), wired into
+  `population.run_all_integrity_checks()` as
+  `"lubrication_library_faz2_6_1"`. Non-raising, opt-in, same
+  convention as every other domain's checks in this module — no
+  Pydantic-level raising validator was added to `LubricationRecord`
+  itself, consistent with how every other domain record in this
+  codebase separates schema shape (Pydantic) from data-quality rules
+  (`validator.py`).
+- Coating/Surface Condition independence (open question #2) remains
+  open; `surface_condition` stays free-text.
+- No engineering coefficient value was added; all 23 records still
+  carry zero populated `mu_thread`/`mu_bearing`/`k_factor`/
+  `scatter_percent`/`max_temperature_c`/`corrosion_resistance` values
+  (verified by `test_faz_2_6_1_no_new_coefficient_values_populated`).

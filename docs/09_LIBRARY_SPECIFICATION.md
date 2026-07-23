@@ -89,3 +89,7 @@ Navigation item: **Friction Condition**. Internal sections: Overview, Lubricatio
 
 No existing lubrication data was renamed, removed or restructured by the Faz 2.6 rename. `LUBRICATION_LIBRARY`, `lubrication_library.py`, `lubrication_library.json` and every field/record id predating Faz 2.6 are unchanged. See ADR-0009.
 
+### 10.6 Faz 2.6.1 status (2026-07-23)
+
+Schema extension confirmed as additive-flat (no nested `FrictionCoefficientSet` yet — ADR-0009 addendum). The 8-concept separation (surface condition, coating, lubricant, overall/combined coefficient, thread friction, bearing friction, nut factor, scatter) is documented on `LubricationRecord`'s docstring. Data-quality validation strengthened via `backend/library/validator.py::validate_lubrication_library` (8 checks), wired into `population.run_all_integrity_checks()`. No engineering coefficient value populated. Coating/Surface-Condition independence (whether they become their own record types) remains open for a later sub-phase.
+

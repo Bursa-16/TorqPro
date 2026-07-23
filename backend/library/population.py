@@ -219,6 +219,16 @@ def validate_nut_library_records() -> List[str]:
     return [issue.message for issue in report.issues]
 
 
+def validate_lubrication_library_records() -> List[str]:
+    """Run the Faz 2.6.1 Friction Condition (Lubrication subsection)
+    checks (``validator.validate_lubrication_library``) over the live
+    lubrication library data file. Additional, lubrication-only entry
+    point -- does not replace ``validate_all_population_sources``."""
+    records = load_population_records("lubrication library")
+    report = validator_module.validate_lubrication_library(records)
+    return [issue.message for issue in report.issues]
+
+
 def validate_washer_library_records() -> List[str]:
     """Run the Faz 2.4.1C washer-specific checks
     (``validator.validate_washer_library``) over the live washer
@@ -440,6 +450,7 @@ def run_all_integrity_checks() -> Dict[str, List[str]]:
         "checksum_mismatches": find_checksum_mismatches(),
         "bolt_library_faz2_4_1b": validate_bolt_library_records(),
         "nut_library_faz2_4_1b": validate_nut_library_records(),
+        "lubrication_library_faz2_6_1": validate_lubrication_library_records(),
     }
 
 
@@ -875,6 +886,7 @@ __all__ = [
     "validate_thread_library_records",
     "validate_bolt_library_records",
     "validate_nut_library_records",
+    "validate_lubrication_library_records",
     "validate_washer_library_records",
     "validate_joint_hardware_library_records",
     "find_bolt",
