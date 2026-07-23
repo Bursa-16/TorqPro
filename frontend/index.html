@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TorqPro v4.4 — Kurulum Sihirbazı ve İlk Yayın</title>
+<title>TorqPro — Kurulum Sihirbazı ve İlk Yayın</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#111827">
 <meta name="mobile-web-app-capable" content="yes">
@@ -331,7 +331,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-logo">🔧 TorqPro</div>
-    <div class="login-sub">Bağlantı Elemanları Analiz Yazılımı · v4.4</div>
+    <div class="login-sub">Bağlantı Elemanları Analiz Yazılımı · <span id="login-version">v…</span></div>
     <div class="login-field">
       <label class="login-label">Kullanıcı Adı</label>
       <input class="login-input" type="text" id="loginUser" placeholder="Kullanıcı adınız"
@@ -351,7 +351,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- ANA UYGULAMA -->
 <div class="app" id="mainApp" style="display:none">
 <div class="topbar">
-  <div class="logo">TorqPro <span>v4.4 · Go-Live Wizard</span></div>
+  <div class="logo">TorqPro <span id="topbar-version">v… · Go-Live Wizard</span></div>
   <div class="topbar-nav">
     <button class="nav-btn active" onclick="showNav('dashboard',this)">📊 Dashboard</button>
     <button class="nav-btn" onclick="showNav('n01391',this)">⚡ OEM Tork Öngörüsü</button>
@@ -1280,6 +1280,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </div></div></div>
 
 <script>
+// ========== SÜRÜM (tek merkezi kaynak: backend VERSION dosyası, /api/health üzerinden) ==========
+// Frontend hiçbir sürüm numarasını hardcode etmez -- backend'in
+// APP_VERSION'ı (repo kökündeki VERSION dosyasından okunur) ile
+// aynı değeri /api/health üzerinden alıp gösterir.
+(async function loadAppVersion() {
+  try {
+    const r = await fetch('/api/health');
+    const d = await r.json();
+    const v = d.version || '';
+    if (v) {
+      document.title = 'TorqPro v' + v + ' — Kurulum Sihirbazı ve İlk Yayın';
+      const loginVersionEl = document.getElementById('login-version');
+      if (loginVersionEl) loginVersionEl.textContent = 'v' + v;
+      const topbarVersionEl = document.getElementById('topbar-version');
+      if (topbarVersionEl) topbarVersionEl.textContent = 'v' + v + ' · Go-Live Wizard';
+    }
+  } catch (e) { /* version display is non-critical; fail silently */ }
+})();
+
 // ========== KULLANICI GİRİŞİ ==========
 let AUTH_TOKEN = sessionStorage.getItem('torqpro_token') || '';
 let CURRENT_USER = sessionStorage.getItem('torqpro_user') || '';

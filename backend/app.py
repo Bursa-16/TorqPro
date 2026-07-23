@@ -33,7 +33,16 @@ except ImportError:  # pragma: no cover - direct import with backend/ on sys.pat
     from calculation_engine.exceptions import CalculationInputError  # type: ignore[no-redef]
 
 BASE=Path(__file__).resolve().parent.parent
-APP_VERSION="4.4"
+def _read_app_version() -> str:
+    # Single centralized version source (VERSION file at repo root).
+    # Backend and frontend must report the same value -- the
+    # frontend fetches it from /api/health rather than hardcoding it.
+    # Release/tag versions must match this file's contents.
+    try:
+        return (BASE / "VERSION").read_text(encoding="utf-8").strip()
+    except OSError:
+        return "0.0.0-unknown"
+APP_VERSION=_read_app_version()
 DB=Path(os.getenv("TORQPRO_DB_PATH") or (BASE/"torqpro.db")); FRONT=BASE/"frontend"; SECRET_FILE=BASE/".torqpro_secret"
 ALGORITHM="HS256"; ACCESS_TOKEN_MINUTES=480; SCHEMA_VERSION=3
 LOGIN_ATTEMPTS: dict[str, deque] = defaultdict(deque)
