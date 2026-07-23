@@ -263,6 +263,51 @@ migration of the 15 Tablo 9.4 (`LUBE-SURF-*`) records from
 4. Exact deprecation window/policy for `LUBE-SURF-*` ids once
    migrated (see migration plan point 4).
 
+## Faz 2.6.2B addendum (2026-07-23) — verified data population
+
+Faz 2.6.2B populated `FrictionConditionRecord` with **18 records**,
+each a deterministic 1:1 re-homing of an already-approved value:
+
+- **10 records** (`FC-COAT-*`) from every live `CoatingRecord`'s
+  `friction_coefficient_range` (source: "ISO 16047 / ISO 4042
+  (typical range, not a test report)").
+- **8 records** (`FC-LUBE-*`) from the 8 original (non-Tablo-9.4)
+  `LubricationRecord`s' `friction_coefficient_min/max` (source:
+  "ISO 16047 (typical range, not a test report)").
+
+No value was invented, derived, split or estimated — each record
+carries the exact numeric bounds and source citation of its origin
+record. Generation is idempotent
+(`tools/generate_faz_2_6_2b_friction_condition_records.py`).
+
+**Not migrated (per this ADR's own migration plan and the Faz 2.6.2B
+directive's explicit default)**: the 15 Tablo 9.4 (`LUBE-SURF-*`)
+records — no deterministic `lubricant_id` mapping exists (a
+Dry/Oiled/MoS2-with-oil *state* is not certain enough to equate with
+a specific lubricant *product* id). Also not populated: any
+independent `mu_thread`/`mu_bearing`/`k_factor`/`scatter_percent`/
+`max_temperature_c`/`corrosion_resistance`/`reusability`/
+`recommended_standards` value for any record — no cited source exists
+for any of these yet (see the phase document's source coverage
+matrix).
+
+**Reference integrity and duplicate prevention are now enforced**:
+`validator.find_dangling_coating_references` /
+`find_dangling_lubricant_references` (wired via
+`population.find_broken_friction_condition_references`, mirroring the
+pre-existing `find_broken_compatibility_references` pattern) and
+`validator.find_duplicate_friction_condition_combination` (uniqueness
+over `coating_id`+`lubricant_id`+`surface_condition`+
+`thread_condition`+`bearing_condition`+`source_reference`).
+
+**`CoatingRecord.friction_coefficient_range`**: kept, unmodified, not
+deleted. Its docstring now notes it should not be treated as the
+active friction-condition calculation source going forward — open
+decision #1 (formal deprecation plan/timeline) remains unresolved,
+carried to a future phase.
+
+Full detail: `docs/phases/PHASE_2.6.2B_VERIFIED_FRICTION_DATA_POPULATION.md`.
+
 ## Consequences
 
 Implementation and documentation must follow this decision. New

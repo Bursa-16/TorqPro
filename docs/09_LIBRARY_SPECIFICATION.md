@@ -120,3 +120,16 @@ Schema extension confirmed as additive-flat (no nested `FrictionCoefficientSet` 
 
 **Migration plan for the 15 Tablo 9.4 records** (full detail in ADR-0010 "Migration plan"): not executed in Faz 2.6.2A. The 23 `LubricationRecord` records stay exactly as-is; migrating `LUBE-SURF-*` to `FrictionConditionRecord` is a separately-approved, idempotent, verifiable, source-traceability-preserving future phase.
 
+### 10.8 Faz 2.6.2B — Verified data population (2026-07-23)
+
+`FrictionConditionRecord` now carries **18 records**, all deterministically re-homed from already-approved values — no coefficient invented:
+
+- 10 `FC-COAT-*` from every live `CoatingRecord.friction_coefficient_range` (ISO 16047 / ISO 4042 typical range).
+- 8 `FC-LUBE-*` from the 8 original `LubricationRecord`s' `friction_coefficient_min/max` (ISO 16047 typical range).
+
+Still unpopulated (no source): independent `mu_thread`/`mu_bearing`/`k_factor`/`scatter_percent`/`max_temperature_c`/`corrosion_resistance`/`reusability`/`recommended_standards` on every record; the 15 Tablo 9.4 records remain on `LubricationRecord`, not migrated (no deterministic `lubricant_id` mapping — see ADR-0010).
+
+Reference integrity (`coating_id`/`lubricant_id` must resolve to a live record, empty is valid) and duplicate-combination prevention (`coating_id`+`lubricant_id`+`surface_condition`+`thread_condition`+`bearing_condition`+`source_reference` unique) are enforced by `validator.py` and wired into `population.run_all_integrity_checks()` (`broken_friction_condition_references`, and the existing `friction_condition_library_faz2_6_2a` key which now also runs the duplicate check). Generation is idempotent (`tools/generate_faz_2_6_2b_friction_condition_records.py`).
+
+Full detail, source coverage matrix and blocked items: `docs/phases/PHASE_2.6.2B_VERIFIED_FRICTION_DATA_POPULATION.md`.
+

@@ -440,6 +440,21 @@ def find_broken_compatibility_references() -> List[str]:
     return issues
 
 
+def find_broken_friction_condition_references() -> List[str]:
+    """Flag ``friction condition library`` records whose non-empty
+    ``coating_id``/``lubricant_id`` is not present in the live
+    Coating Library / Lubrication Library (Faz 2.6.2B, ADR-0010). An
+    empty reference is not a violation -- see
+    ``validator.find_dangling_coating_references`` /
+    ``find_dangling_lubricant_references`` docstrings."""
+    coating_ids = {r["id"] for r in load_population_records("coating library")}
+    lubricant_ids = {r["id"] for r in load_population_records("lubrication library")}
+    records = load_population_records("friction condition library")
+    issues = validator_module.find_dangling_coating_references(records, coating_ids)
+    issues += validator_module.find_dangling_lubricant_references(records, lubricant_ids)
+    return [issue.message for issue in issues]
+
+
 def run_all_integrity_checks() -> Dict[str, List[str]]:
     """Run every Faz 2.4.1 data-integrity check and return a
     ``{check_name: [issue, ...]}`` report. An empty list for a check
@@ -457,6 +472,7 @@ def run_all_integrity_checks() -> Dict[str, List[str]]:
         "pitch_series": find_pitch_series_violations(),
         "dangling_thread_references": find_dangling_thread_references(),
         "broken_compatibility_references": find_broken_compatibility_references(),
+        "broken_friction_condition_references": find_broken_friction_condition_references(),
         "invalid_status_values": find_invalid_status_values(),
         "checksum_mismatches": find_checksum_mismatches(),
         "bolt_library_faz2_4_1b": validate_bolt_library_records(),
@@ -891,6 +907,7 @@ __all__ = [
     "find_pitch_series_violations",
     "find_dangling_thread_references",
     "find_broken_compatibility_references",
+    "find_broken_friction_condition_references",
     "run_all_integrity_checks",
     "find_thread",
     "count_iso_metric_thread_records",

@@ -794,6 +794,15 @@ class CoatingRecord(LibraryRecordBase):
     designation: str = ""
     coating_type: CoatingType = CoatingType.UNSPECIFIED
     thickness_um: float | None = Field(default=None, gt=0)
+    #: Faz 2.6.2B note (ADR-0010): kept, unmodified, for backward
+    #: compatibility -- all 10 live records still set it. Its value
+    #: was re-homed verbatim into ``FrictionConditionRecord``
+    #: (``FC-<this record's id>``) in Faz 2.6.2B. Not deprecated or
+    #: removed by this phase, but should not be treated as the active
+    #: friction-condition calculation source going forward -- use the
+    #: corresponding ``FrictionConditionRecord`` instead (see ADR-0010
+    #: "Open decisions" #1 for the not-yet-decided formal deprecation
+    #: plan/timeline for this field).
     friction_coefficient_range: str = ""
 
     # -- Faz 2.4.2B additions ----------------------------------------

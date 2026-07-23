@@ -1554,6 +1554,95 @@ def find_restricted_legacy_missing_warning(
     return issues
 
 
+# ---------------------------------------------------------------------
+# Faz 2.6.2B: FrictionConditionRecord-specific checks (ADR-0010).
+# ---------------------------------------------------------------------
+
+#: Fields whose combination must be unique across
+#: ``FrictionConditionRecord`` records (item 5 of the Faz 2.6.2B
+#: directive) -- prevents two records claiming the same
+#: coating+lubricant+condition+source as if they were different data.
+_FRICTION_CONDITION_UNIQUENESS_FIELDS = (
+    "coating_id", "lubricant_id", "surface_condition",
+    "thread_condition", "bearing_condition", "source_reference",
+)
+
+
+def find_duplicate_friction_condition_combination(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag a ``FrictionConditionRecord`` whose
+    (coating_id, lubricant_id, surface_condition, thread_condition,
+    bearing_condition, source_reference) combination repeats an
+    earlier record's. The first occurrence of a combination is not
+    flagged; every subsequent one is."""
+    issues: List[ValidationIssue] = []
+    seen: Dict[tuple, int] = {}
+    for index, record in enumerate(records):
+        key = tuple(record.get(name, "") for name in _FRICTION_CONDITION_UNIQUENESS_FIELDS)
+        if key in seen:
+            issues.append(
+                ValidationIssue(
+                    code="duplicate_friction_condition_combination",
+                    message=(
+                        f"combination {key} duplicates record at index {seen[key]}"
+                    ),
+                    record_index=index,
+                    field="coating_id",
+                )
+            )
+        else:
+            seen[key] = index
+    return issues
+
+
+def find_dangling_coating_references(
+    records: Sequence[Dict[str, Any]], known_coating_ids: Sequence[str],
+) -> List[ValidationIssue]:
+    """Flag a ``FrictionConditionRecord`` whose non-empty
+    ``coating_id`` is not in ``known_coating_ids`` (the live
+    ``CoatingRecord`` id set). An empty ``coating_id`` is not flagged
+    -- it means "no coating referenced", a valid state (ADR-0010)."""
+    known = set(known_coating_ids)
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        coating_id = record.get("coating_id") or ""
+        if coating_id and coating_id not in known:
+            issues.append(
+                ValidationIssue(
+                    code="dangling_coating_reference",
+                    message=f"coating_id={coating_id!r} not found in coating library",
+                    record_index=index,
+                    field="coating_id",
+                )
+            )
+    return issues
+
+
+def find_dangling_lubricant_references(
+    records: Sequence[Dict[str, Any]], known_lubricant_ids: Sequence[str],
+) -> List[ValidationIssue]:
+    """Flag a ``FrictionConditionRecord`` whose non-empty
+    ``lubricant_id`` is not in ``known_lubricant_ids`` (the live
+    ``LubricationRecord`` id set). An empty ``lubricant_id`` is not
+    flagged -- it means "no lubricant referenced", a valid state
+    (ADR-0010)."""
+    known = set(known_lubricant_ids)
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        lubricant_id = record.get("lubricant_id") or ""
+        if lubricant_id and lubricant_id not in known:
+            issues.append(
+                ValidationIssue(
+                    code="dangling_lubricant_reference",
+                    message=f"lubricant_id={lubricant_id!r} not found in lubrication library",
+                    record_index=index,
+                    field="lubricant_id",
+                )
+            )
+    return issues
+
+
 def validate_lubrication_library(records: Sequence[Dict[str, Any]]) -> ValidationReport:
     """Run every Faz 2.6.1 Friction Condition (Lubrication subsection)
     check over ``records`` in one pass, reusing the pre-existing
@@ -1591,5 +1680,6 @@ def validate_friction_condition_library(
     issues.extend(find_friction_one_sided_thread_bearing(records))
     issues.extend(find_friction_coefficient_missing_source(records))
     issues.extend(find_restricted_legacy_missing_warning(records))
-    subject = "Friction Condition Library (Faz 2.6.2A)"
+    issues.extend(find_duplicate_friction_condition_combination(records))
+    subject = "Friction Condition Library (Faz 2.6.2A/B)"
     return ValidationReport(subject=subject, issues=issues)

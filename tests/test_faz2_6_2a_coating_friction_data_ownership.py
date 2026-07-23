@@ -8,8 +8,11 @@ docs/phases/PHASE_2.6.2A_COATING_FRICTION_DATA_OWNERSHIP.md):
   ``friction_condition_library.py``/``.json`` registry shell exist,
   are wired into ``LIBRARY_RECORD_MODELS`` /
   ``population.POPULATION_SOURCES`` / ``search.CATEGORY_LIBRARY_MAP``,
-  and validate correctly -- but carry zero records (decision/schema
-  phase only, no data population).
+  and validate correctly. As of Faz 2.6.2B it carries 18
+  deterministically-sourced records (re-homed from already-approved
+  ``CoatingRecord``/``LubricationRecord`` friction ranges) -- it
+  shipped with 0 records through Faz 2.6.2A (decision/schema phase
+  only, no data population).
 - The Faz 2.6.2A additive fields on ``CoatingRecord``
   (``coating_family``, ``substrate_applicability``,
   ``regulatory_warning``, source-traceability fields) and
@@ -79,11 +82,19 @@ def test_population_sources_include_friction_condition_library():
 
 
 # ---------------------------------------------------------------------
-# Faz 2.6.2A schema: zero records populated (decision/schema phase only)
+# Faz 2.6.2A/B: friction condition library population state
 # ---------------------------------------------------------------------
 
-def test_friction_condition_data_file_has_zero_records():
-    assert _load(FRICTION_CONDITION_DATA_PATH) == []
+def test_friction_condition_data_file_was_empty_in_faz_2_6_2a_now_populated_in_2_6_2b():
+    records = _load(FRICTION_CONDITION_DATA_PATH)
+    # Faz 2.6.2B populated this library with deterministically-sourced
+    # records only -- every id is one of the two known generated
+    # prefixes (FC-COAT-* from CoatingRecord, FC-LUBE-* from
+    # LubricationRecord); no hand-authored or guessed record exists.
+    assert records
+    for r in records:
+        assert r["id"].startswith("FC-COAT-") or r["id"].startswith("FC-LUBE-")
+        assert r["source_reference"] != ""
 
 
 def test_friction_condition_library_validator_report_is_empty():
@@ -97,6 +108,7 @@ def test_run_all_integrity_checks_includes_friction_condition_key():
 
     report = population.run_all_integrity_checks()
     assert report["friction_condition_library_faz2_6_2a"] == []
+    assert report["broken_friction_condition_references"] == []
 
 
 # ---------------------------------------------------------------------

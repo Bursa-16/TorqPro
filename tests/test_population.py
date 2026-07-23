@@ -47,11 +47,13 @@ def test_total_population_record_count_exceeds_500():
 
 
 def test_record_distribution_covers_every_domain_with_real_records():
-    # "joint hardware library" and "friction condition library" are
-    # intentional exceptions (Faz 2.4.1C / Faz 2.6.2A shells, no
-    # verified data yet -- see backend/library/joint_hardware_library.py
-    # and backend/library/friction_condition_library.py).
-    empty_by_design = {"joint hardware library", "friction condition library"}
+    # "joint hardware library" is an intentional exception (Faz
+    # 2.4.1C shell, no verified data yet -- see
+    # backend/library/joint_hardware_library.py). "friction condition
+    # library" was the same kind of exception through Faz 2.6.2A;
+    # Faz 2.6.2B populated it with 18 deterministically-sourced
+    # records, so it is no longer exempt here.
+    empty_by_design = {"joint hardware library"}
     for key in population.POPULATION_SOURCES:
         records = population.load_population_records(key)
         if key in empty_by_design:
@@ -85,7 +87,7 @@ def test_populate_all_populates_every_mapped_library_and_restores_state():
         assert sum(results.values()) > 500
         for lib in touched:
             assert lib.metadata.record_count == len(lib.records)
-            if lib.metadata.key in ("joint hardware library", "friction condition library"):
+            if lib.metadata.key == "joint hardware library":
                 assert lib.records == []
             else:
                 assert lib.records != []
