@@ -20,6 +20,7 @@ try:
     from backend.calculation_engine.friction_recommendations import (
         assess_recommendation_readiness, generate_friction_warnings, compare_friction_conditions,
     )
+    from backend.calculation_engine.friction_report import build_friction_condition_report_section
     from backend.calculation_engine.exceptions import CalculationInputError
 except ImportError:  # pragma: no cover - direct import with backend/ on sys.path
     from engineering_core.joint import evaluate_joint  # type: ignore[no-redef]
@@ -28,6 +29,7 @@ except ImportError:  # pragma: no cover - direct import with backend/ on sys.pat
     from calculation_engine.friction_recommendations import (  # type: ignore[no-redef]
         assess_recommendation_readiness, generate_friction_warnings, compare_friction_conditions,
     )
+    from calculation_engine.friction_report import build_friction_condition_report_section  # type: ignore[no-redef]
     from calculation_engine.exceptions import CalculationInputError  # type: ignore[no-redef]
 
 BASE=Path(__file__).resolve().parent.parent
@@ -475,6 +477,33 @@ def friction_condition_assess(x: FrictionConditionAssess, u=Depends(user)):
             raise HTTPException(422, str(e))
         response["comparison"] = comparison.to_dict()
     return response
+
+
+class FrictionConditionReportPreview(BaseModel):
+    # Faz 2.6.5: additive, new endpoint. Produces the JSON "Friction
+    # Condition Assessment" report section -- see
+    # backend.calculation_engine.friction_report. No PDF is generated
+    # here; this is the pre-PDF, independently verifiable JSON form.
+    friction_condition_id: str
+    compare_with_friction_condition_id: Optional[str] = None
+    friction_intended_use: Optional[str] = None
+
+
+@app.post("/api/friction-condition/report-preview")
+def friction_condition_report_preview(x: FrictionConditionReportPreview, u=Depends(user)):
+    # Orchestration only: formatting lives in
+    # backend.calculation_engine.friction_report, which itself only
+    # re-uses friction_readiness/friction_recommendations -- no new
+    # engineering logic here or there.
+    try:
+        section = build_friction_condition_report_section(
+            x.friction_condition_id,
+            compare_with_id=x.compare_with_friction_condition_id,
+            intended_use=x.friction_intended_use,
+        )
+    except CalculationInputError as e:
+        raise HTTPException(422, str(e))
+    return section.to_dict()
 
 
 DATA_DIR=BASE/"data"

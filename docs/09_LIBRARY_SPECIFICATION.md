@@ -148,3 +148,7 @@ torque value from a `FrictionConditionRecord`. See
 
 No library data changed. `backend.calculation_engine.friction_recommendations` (additive) reads `FrictionConditionRecord` plus its referenced `CoatingRecord`/`LubricationRecord` (for `status`/`regulatory_warning` only) to generate deterministic warnings and a recommendation-readiness level. It is not a recommendation engine: it never ranks or selects a lubricant/coating, and every one of the 18 live records is capped at `comparison_only` (comparison of overall friction ranges only -- descriptive, never "better/worse"). See `docs/phases/PHASE_2.6.4_FRICTION_RECOMMENDATION_WARNING_FRAMEWORK.md`.
 
+### 10.11 Faz 2.6.5 — Reporting and integration (2026-07-23)
+
+No library data changed. `backend.calculation_engine.friction_report` (additive) formats already-computed Faz 2.6.3/2.6.4 results into a JSON "Friction Condition Assessment" report section (`FrictionConditionReportSection`), including source traceability (`source_reference`, `source_type`, `source_page_or_table`, `verification_status`, `applicability`, `engineering_notes`, the record's own `checksum`, and the library's existing data-file `metadata.version` -- no parallel versioning mechanism was introduced). New additive `POST /api/friction-condition/report-preview` endpoint; `/api/engineering/check` and `/api/friction-condition/assess` are unaffected. See `docs/phases/PHASE_2.6.5_FRICTION_REPORTING_INTEGRATION.md`.
+

@@ -386,6 +386,36 @@ tightening recommendation can be derived."
 New additive `POST /api/friction-condition/assess` endpoint;
 `/api/engineering/check`'s existing contract is unaffected (regression-tested).
 
+## Faz 2.6.5 addendum (2026-07-23) — reporting and integration
+
+Faz 2.6.5 investigated the existing report-generation architecture
+and found none: `docs/310_Reporting.md` is a one-line placeholder,
+and `backend.production_validation.service` handles study/dataset
+records, not report rendering. There was therefore no existing
+report request/response model to extend (directive option A) without
+inventing one from scratch. **Option B was selected**: a dedicated,
+additive `POST /api/friction-condition/report-preview` endpoint
+producing a self-contained JSON report section
+(`backend.calculation_engine.friction_report.FrictionConditionReportSection`),
+independently verifiable before any future PDF/HTML renderer
+consumes it.
+
+The report section computes no new engineering value -- every field
+traces to `assess_friction_readiness()`, `assess_recommendation_readiness()`,
+`generate_friction_warnings()`, `compare_friction_conditions()` (all
+Faz 2.6.3/2.6.4, reused unchanged) or to a field already stored on
+the resolved `FrictionConditionRecord`. Traceability reuses the
+record's existing `checksum` field and the friction condition
+library's existing data-file `metadata.version` -- no parallel
+checksum or versioning mechanism was introduced, per this ADR's
+"one canonical location per concept" spirit.
+
+Five deterministic safety labels (`Reference Only`, `Not a Certified
+ISO 16047 Test Result`, `Torque Decomposition Unavailable`, `No
+Tightening Recommendation Generated`, `Production Approval Not
+Available`) are field-derived and, for all 18 live records, all five
+apply simultaneously -- confirmed by test, not just documented.
+
 ## Consequences
 
 Implementation and documentation must follow this decision. New
