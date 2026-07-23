@@ -353,6 +353,39 @@ location, depends on what was actually measured for the specific
 combination -- a combined value cannot be silently upgraded into
 component values by any code path, ever.
 
+## Faz 2.6.4 addendum (2026-07-23) — recommendation readiness and warnings
+
+Faz 2.6.4 explicitly declined to build a recommendation engine. It
+added `backend.calculation_engine.friction_recommendations`
+(additive), producing exactly two output types over
+`FrictionConditionRecord` (and its referenced coating/lubricant
+record's `status`/`regulatory_warning` only, never other identity
+fields):
+
+1. **Deterministic engineering warnings** -- text derivable purely
+   from fields already present (`friction_model`,
+   `verification_status`, referenced record's `status`, readiness
+   blocking state). No judgement, no ranking.
+2. **Recommendation readiness** -- a capability level
+   (`warnings_only`/`comparison_only`/
+   `engineering_recommendation_ready`/`production_recommendation_ready`)
+   plus `available_capabilities`/`blocked_capabilities`/
+   `required_missing_data`. **All 18 live records cap at
+   `comparison_only`** (asserted by
+   `test_no_live_record_reaches_engineering_or_production_ready`) --
+   none has independent `mu_thread`/`mu_bearing`, `k_factor`,
+   `scatter`, verified corrosion/reusability/temperature data, or
+   `recommended_standards`.
+
+`compare_friction_conditions()` is purely descriptive (range
+relation, width relation, source classification, verification-status
+relation) and is tested to never contain "better"/"safer"/
+"recommended"/"superior"/"worse" in its output. It always states "No
+tightening recommendation can be derived."
+
+New additive `POST /api/friction-condition/assess` endpoint;
+`/api/engineering/check`'s existing contract is unaffected (regression-tested).
+
 ## Consequences
 
 Implementation and documentation must follow this decision. New

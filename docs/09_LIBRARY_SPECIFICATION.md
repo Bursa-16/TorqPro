@@ -144,3 +144,7 @@ torque value from a `FrictionConditionRecord`. See
 `docs/phases/PHASE_2.6.3_FRICTION_AWARE_TORQUE_MODEL.md` and
 `docs/05_ENGINEERING_FORMULA_SPECIFICATION.md` §21.
 
+### 10.10 Faz 2.6.4 — Recommendation and warning framework (2026-07-23)
+
+No library data changed. `backend.calculation_engine.friction_recommendations` (additive) reads `FrictionConditionRecord` plus its referenced `CoatingRecord`/`LubricationRecord` (for `status`/`regulatory_warning` only) to generate deterministic warnings and a recommendation-readiness level. It is not a recommendation engine: it never ranks or selects a lubricant/coating, and every one of the 18 live records is capped at `comparison_only` (comparison of overall friction ranges only -- descriptive, never "better/worse"). See `docs/phases/PHASE_2.6.4_FRICTION_RECOMMENDATION_WARNING_FRAMEWORK.md`.
+

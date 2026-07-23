@@ -17,11 +17,17 @@ try:
     from backend.engineering_core.joint import evaluate_joint
     from backend.engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed
     from backend.calculation_engine.friction_readiness import assess_friction_readiness
+    from backend.calculation_engine.friction_recommendations import (
+        assess_recommendation_readiness, generate_friction_warnings, compare_friction_conditions,
+    )
     from backend.calculation_engine.exceptions import CalculationInputError
 except ImportError:  # pragma: no cover - direct import with backend/ on sys.path
     from engineering_core.joint import evaluate_joint  # type: ignore[no-redef]
     from engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed  # type: ignore[no-redef]
     from calculation_engine.friction_readiness import assess_friction_readiness  # type: ignore[no-redef]
+    from calculation_engine.friction_recommendations import (  # type: ignore[no-redef]
+        assess_recommendation_readiness, generate_friction_warnings, compare_friction_conditions,
+    )
     from calculation_engine.exceptions import CalculationInputError  # type: ignore[no-redef]
 
 BASE=Path(__file__).resolve().parent.parent
@@ -426,6 +432,49 @@ def engineering_check(x: EngineeringCheck, u=Depends(user)):
             raise HTTPException(422, str(e))
         result["friction_readiness"] = readiness.to_dict()
     return result
+
+
+class FrictionConditionAssess(BaseModel):
+    # Faz 2.6.4: additive, new endpoint. Never touches
+    # /api/engineering/check's request/response contract.
+    friction_condition_id: str
+    compare_with_id: Optional[str] = None
+    # One of INTENDED_USE_MINIMUM_LEVEL's keys (reference_comparison /
+    # engineering_calculation / production_release), free-text
+    # otherwise -- never used to invent engineering data, only to
+    # annotate a readiness-level gap warning (see
+    # backend.calculation_engine.friction_recommendations).
+    intended_use: Optional[str] = None
+
+
+@app.post("/api/friction-condition/assess")
+def friction_condition_assess(x: FrictionConditionAssess, u=Depends(user)):
+    # Orchestration only: no engineering formula or judgement lives
+    # here -- see backend.calculation_engine.friction_recommendations
+    # and .friction_readiness for the deterministic logic.
+    try:
+        warnings = generate_friction_warnings(x.friction_condition_id)
+        readiness = assess_recommendation_readiness(
+            x.friction_condition_id, intended_use=x.intended_use,
+        )
+        torque_readiness = assess_friction_readiness(x.friction_condition_id)
+    except CalculationInputError as e:
+        raise HTTPException(422, str(e))
+    response = {
+        "friction_condition_id": x.friction_condition_id,
+        "warnings": warnings,
+        "recommendation_readiness": readiness.to_dict(),
+        "torque_readiness": torque_readiness.to_dict(),
+        "source_reference": readiness.source_reference,
+        "verification_status": readiness.verification_status,
+    }
+    if x.compare_with_id:
+        try:
+            comparison = compare_friction_conditions(x.friction_condition_id, x.compare_with_id)
+        except CalculationInputError as e:
+            raise HTTPException(422, str(e))
+        response["comparison"] = comparison.to_dict()
+    return response
 
 
 DATA_DIR=BASE/"data"
