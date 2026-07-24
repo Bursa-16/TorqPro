@@ -65,13 +65,19 @@ function extractFunctionDecl(script, name) {
     if (c === '{') depth++;
     else if (c === '}') { depth--; if (depth === 0) break; }
   }
-  return script.slice(m.index, j + 1);
+  // Preserve a leading `async` keyword (e.g. `async function foo(){...}`)
+  // -- without it, an extracted function using `await` is a syntax
+  // error when re-assembled into the test harness's standalone source.
+  let start = m.index;
+  const asyncMatch = /async\s+$/.exec(script.slice(Math.max(0, start - 10), start));
+  if (asyncMatch) start -= asyncMatch[0].length;
+  return script.slice(start, j + 1);
 }
 
 const CONST_NAMES = [
   'I18N', 'FC_ENUM_LABELS', 'CURRENT_LANG',
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
-  'N01391',
+  'N01391', 'CL',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -92,7 +98,8 @@ const FUNCTION_NAMES = [
   'fcPopulateFilters', 'fcGroupOf', 'fcRenderList', 'fcRenderCompareOptions',
   'fcRenderOverview', 'fcRenderRangeViz', 'fcRenderReadiness',
   'fcWarningSeverity', 'fcRenderWarnings', 'fcRenderComparison', 'fcRenderReport',
-  'n01391Hesapla',
+  'n01391Hesapla', 'buildCL', 'confLabel', 'vdiHesapla',
+  'saveCalibrationCase', 'loadCalibrationCases',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -250,20 +257,22 @@ function checkEqual(name, actual, expected) {
 // isolated vm context with its own document/localStorage, so each
 // scenario starts from a clean slate (mirrors a fresh page load).
 // ---------------------------------------------------------------
-function newContext(extractedSource, rawHtml, localStorageSeed) {
+function newContext(extractedSource, rawHtml, localStorageSeed, apiRequestImpl) {
   const byId = {};
   const localStorageStub = makeLocalStorage(localStorageSeed);
   const documentStub = buildDom(rawHtml, byId);
+  const alertCalls = [];
   const sandbox = {
     document: documentStub,
     localStorage: localStorageStub,
     console: console,
-    apiRequest: () => { throw new Error('apiRequest should not be called by this harness'); },
+    alert: (msg) => { alertCalls.push(msg); },
+    apiRequest: apiRequestImpl || (() => { throw new Error('apiRequest should not be called by this harness'); }),
     downloadText: () => { throw new Error('downloadText should not be called by this harness'); },
   };
   const context = vm.createContext(sandbox);
   vm.runInContext(extractedSource, context, { filename: 'fc_i18n_extracted.js' });
-  return { context, byId, localStorageStub, documentStub };
+  return { context, byId, localStorageStub, documentStub, alertCalls };
 }
 
 function getByI18nKey(ctx, key) {
@@ -316,7 +325,7 @@ function fakeReport() {
 }
 
 // =================================================================
-function main() {
+async function main() {
   const { source: extractedSource, rawHtml } = buildExtractedSource();
 
   // ---- 1. Default language is Turkish (fresh load, empty storage) ----
@@ -871,6 +880,196 @@ function main() {
     checkEqual('localStorage still en after simulated navigation', ctx.localStorageStub.getItem('torqpro_lang'), 'en');
   }
 
+  // ================================================================
+  // Faz 2.7.1b -- dynamic calculation/validation result text.
+  // ================================================================
+
+  // ---- 29. yontem dropdown: stable value regardless of language;
+  //          hesapla() branches on value, not translated option text
+  //          (regression guard for the language-dependent isC bug). ----
+  {
+    check('yontem select uses stable value="method_c" (not translated text)',
+      /<select class="form-select" id="yontem"[^>]*>[\s\S]{0,40}<option value="system_a"/.test(rawHtml));
+    check('yontem select "method_c" option value is present',
+      /<option value="method_c" data-i18n="hizli\.method_c">/.test(rawHtml));
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const hesaplaSrc = extractFunctionDecl(scriptSrc, 'hesapla');
+    check('hesapla() branches on yontem===\'method_c\' (stable value)', hesaplaSrc.indexOf("yontem==='method_c'") !== -1);
+    check('hesapla() no longer branches on translated option text ("C Metodu")', hesaplaSrc.indexOf(".includes('C Metodu')") === -1);
+    // Same check holds regardless of active language -- the option's
+    // *value* attribute is never touched by applyStaticTranslations()
+    // (only textContent/placeholder are), so switching language can't
+    // change what hesapla() reads via .value.
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.setLanguage('en');
+    const methodCEl = getByI18nKey(ctx, 'hizli.method_c');
+    checkEqual('method_c option label is translated to en', methodCEl.textContent, 'Method C (Static)');
+    check('method_c option element itself still carries value="method_c" in markup (en does not rewrite attributes)',
+      /<option value="method_c" data-i18n="hizli\.method_c">C Metodu \(Statik\)<\/option>/.test(rawHtml));
+  }
+
+  // ---- 30. v_malzeme dropdown: stable value; vdiHesapla() reads it,
+  //          not the translated option text (regression guard for the
+  //          language-dependent Ep/elastic-modulus bug). Runs the real
+  //          extracted vdiHesapla() end-to-end in both languages and
+  //          confirms the numeric result is identical. ----
+  {
+    check('v_malzeme select "steel"/"aluminum"/"castiron" values are present',
+      /<option value="steel" data-i18n="vdi\.material_steel">/.test(rawHtml) &&
+      /<option value="aluminum" data-i18n="vdi\.material_aluminum">/.test(rawHtml) &&
+      /<option value="castiron" data-i18n="vdi\.material_castiron">/.test(rawHtml));
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const vdiSrc = extractFunctionDecl(scriptSrc, 'vdiHesapla');
+    check('vdiHesapla() branches on value===\'aluminum\' (stable value)', vdiSrc.indexOf("==='aluminum'") !== -1);
+    check('vdiHesapla() no longer branches on translated option text ("Alüm")', vdiSrc.indexOf(".includes('Alüm')") === -1);
+
+    function runVdi(lang, material) {
+      const ctx = newContext(extractedSource, rawHtml, {});
+      if (lang === 'en') ctx.context.setLanguage('en');
+      ctx.byId['v_malzeme'] = { value: material };
+      ctx.byId['v_plaka'] = { value: '10' };
+      ctx.byId['v_boy'] = { value: '40' };
+      ctx.byId['v_n'] = { value: '0.5' };
+      ctx.byId['v_FA'] = { value: '15' };
+      ctx.byId['v_dT'] = { value: '0' };
+      ctx.context.vdiHesapla();
+      return ctx.byId['vdi-sonuc'].innerHTML;
+    }
+    const alSteelTr = runVdi('tr', 'steel');
+    const alSteelEn = runVdi('en', 'steel');
+    const alAlumTr = runVdi('tr', 'aluminum');
+    const alAlumEn = runVdi('en', 'aluminum');
+    // Extract the numeric plate-compliance result (depends directly on Ep).
+    const numRe = /result-val">([\d.]+) ×/;
+    const steelTrVal = numRe.exec(alSteelTr)[1];
+    const steelEnVal = numRe.exec(alSteelEn)[1];
+    const alumTrVal = numRe.exec(alAlumTr)[1];
+    const alumEnVal = numRe.exec(alAlumEn)[1];
+    checkEqual('steel plate compliance identical TR vs EN (language must not change Ep)', steelTrVal, steelEnVal);
+    checkEqual('aluminum plate compliance identical TR vs EN (language must not change Ep)', alumTrVal, alumEnVal);
+    check('steel (Ep=210000) and aluminum (Ep=70000) give genuinely different results', steelTrVal !== alumTrVal);
+  }
+
+  // ---- 31. Check-List (CL data array + buildCL()): all 20 items have
+  //          TR/EN text, category, and reference; no raw key leaks;
+  //          the stable `no` identity used for scoring is untouched. ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.buildCL();
+    const trHtml = ctx.byId['checklist-items'].innerHTML;
+    check('tr checklist renders category "Giriş Kontrolü"', trHtml.indexOf('Giriş Kontrolü') !== -1);
+    check('tr checklist renders item 1.1 text', trHtml.indexOf('Cıvata, pul, somun') !== -1);
+    check('tr checklist renders all 20 item numbers', ['1.1','1.2','1.3','2.1','2.2','2.3','2.4','2.9','2.14','2.19','2.20','3.1','3.2','3.5','3.6','4.1','4.2','5.1','5.2','5.3'].every((no) => trHtml.indexOf('>' + no + '<') !== -1));
+    ctx.context.setLanguage('en');
+    ctx.context.buildCL();
+    const enHtml = ctx.byId['checklist-items'].innerHTML;
+    check('en checklist renders category "Incoming Inspection"', enHtml.indexOf('Incoming Inspection') !== -1);
+    check('en checklist renders item 1.1 text in English', enHtml.indexOf('material control') !== -1);
+    check('en checklist item numbers (scoring identity) unchanged', ['1.1','5.3'].every((no) => enHtml.indexOf('>' + no + '<') !== -1));
+    check('en checklist no longer contains Turkish category text', enHtml.indexOf('Giriş Kontrolü') === -1);
+    check('tr checklist has no unresolved raw checklist.* keys', !/checklist\.(cat|item|ref)_[a-z0-9_]+(?!['"])/.test(trHtml.replace(/<[^>]*>/g, '')));
+  }
+
+  // ---- 32. confLabel(): all 4 confidence levels translate; the
+  //          numeric confidence input is never altered by translation. ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const trLabels = [1, 2, 3, 4].map((c) => ctx.context.confLabel(c));
+    checkEqual('confidence 4 tr label', trLabels[3], '4 — Doğrulandı');
+    checkEqual('confidence 3 tr label', trLabels[2], '3 — Standarttan');
+    checkEqual('confidence 2 tr label', trLabels[1], '2 — Hesap/çapraz kontrol');
+    checkEqual('confidence 1 tr label', trLabels[0], '1 — Taslak');
+    ctx.context.setLanguage('en');
+    const enLabels = [1, 2, 3, 4].map((c) => ctx.context.confLabel(c));
+    checkEqual('confidence 4 en label', enLabels[3], '4 — Verified');
+    checkEqual('confidence 3 en label', enLabels[2], '3 — From standard');
+    checkEqual('confidence 2 en label', enLabels[1], '2 — Calculation/cross-check');
+    checkEqual('confidence 1 en label', enLabels[0], '1 — Draft');
+    // The leading numeric confidence digit (the actual machine value)
+    // is identical across languages -- only the trailing label text differs.
+    for (let c = 1; c <= 4; c++) {
+      check('numeric confidence prefix unchanged for level ' + c,
+        trLabels[c - 1].startsWith(c + ' — ') && enLabels[c - 1].startsWith(c + ' — '));
+    }
+  }
+
+  // ---- 33. Calibration: empty state, Passed/Failed status, and the
+  //          invalid-value alert all translate; pass/fail decision
+  //          comes from the (mocked) backend response, never from
+  //          display language. ----
+  {
+    // Empty state
+    {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => []);
+      ctx.byId['calibrationBody'] = { innerHTML: '' };
+      await ctx.context.loadCalibrationCases();
+      checkEqual('calibration empty-state tr', ctx.byId['calibrationBody'].innerHTML.indexOf('Henüz kalibrasyon kaydı yok.') !== -1, true);
+      ctx.context.setLanguage('en');
+      await ctx.context.loadCalibrationCases();
+      checkEqual('calibration empty-state en', ctx.byId['calibrationBody'].innerHTML.indexOf('No calibration records yet.') !== -1, true);
+    }
+    // Passed / Failed rows -- decision (`passed`) is server data, fixed
+    // regardless of language; only the displayed label changes.
+    {
+      const rows = [
+        { thread: 'M10', program_value: 69.3, reference_value: 70, error_pct: 1.0, tolerance_pct: 5, passed: true, source_id: 'SRC-1' },
+        { thread: 'M12', program_value: 80, reference_value: 70, error_pct: 14.3, tolerance_pct: 5, passed: false, source_id: 'SRC-2' },
+      ];
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => rows);
+      ctx.byId['calibrationBody'] = { innerHTML: '' };
+      await ctx.context.loadCalibrationCases();
+      const trHtml = ctx.byId['calibrationBody'].innerHTML;
+      check('tr: passed row shows "Geçti"', trHtml.indexOf('Geçti') !== -1);
+      check('tr: failed row shows "Kaldı"', trHtml.indexOf('Kaldı') !== -1);
+      ctx.context.setLanguage('en');
+      await ctx.context.loadCalibrationCases();
+      const enHtml = ctx.byId['calibrationBody'].innerHTML;
+      check('en: passed row shows "Passed"', enHtml.indexOf('Passed') !== -1);
+      check('en: failed row shows "Failed"', enHtml.indexOf('Failed') !== -1);
+      check('en: no leftover Turkish "Geçti"/"Kaldı"', enHtml.indexOf('Geçti') === -1 && enHtml.indexOf('Kaldı') === -1);
+      // Underlying pass/fail data is untouched by language -- same
+      // `passed` booleans from the (mocked) API response in both cases.
+      check('error/tolerance numeric values rendered identically regardless of language',
+        trHtml.indexOf('1.00%') !== -1 && enHtml.indexOf('1.00%') !== -1 &&
+        trHtml.indexOf('14.30%') !== -1 && enHtml.indexOf('14.30%') !== -1);
+    }
+    // Invalid-value alert
+    {
+      const ctx = newContext(extractedSource, rawHtml, {});
+      ctx.byId['cal_program'] = { value: 'not-a-number' };
+      ctx.byId['cal_reference'] = { value: '70' };
+      ctx.byId['cal_tolerance'] = { value: '5' };
+      await ctx.context.saveCalibrationCase();
+      checkEqual('invalid-value alert message is tr', ctx.alertCalls[ctx.alertCalls.length - 1], 'Geçerli değer girin.');
+      ctx.context.setLanguage('en');
+      ctx.byId['cal_program'] = { value: 'not-a-number' };
+      await ctx.context.saveCalibrationCase();
+      checkEqual('invalid-value alert message is en', ctx.alertCalls[ctx.alertCalls.length - 1], 'Enter a valid value.');
+    }
+  }
+
+  // ---- 34. No hard-coded leftover user text anywhere in the Faz
+  //          2.7.1b dynamic-text scope: every checklist./calibration./
+  //          common.conf_* key used by these functions resolves in
+  //          both languages (no raw-key fallback). ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const dynamicKeys = [
+      'checklist.cat_incoming', 'checklist.cat_operation', 'checklist.cat_equipment',
+      'checklist.cat_product', 'checklist.cat_maintenance',
+      'checklist.item_1_1', 'checklist.item_5_3', 'checklist.ref_technical_drawing',
+      'checklist.ref_process_card', 'common.conf_verified', 'common.conf_from_standard',
+      'common.conf_calc_cross_check', 'common.conf_draft', 'calibration.err_enter_valid_value',
+      'calibration.status_passed', 'calibration.status_failed', 'calibration.no_records_yet',
+    ];
+    let unresolvedTr = 0, unresolvedEn = 0;
+    for (const k of dynamicKeys) if (ctx.context.t(k) === k) unresolvedTr++;
+    ctx.context.setLanguage('en');
+    for (const k of dynamicKeys) if (ctx.context.t(k) === k) unresolvedEn++;
+    checkEqual('no unresolved Faz 2.7.1b dynamic-text keys in tr', unresolvedTr, 0);
+    checkEqual('no unresolved Faz 2.7.1b dynamic-text keys in en', unresolvedEn, 0);
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
   if (fail > 0) {
     console.log('Failures: ' + failures.join('; '));
@@ -879,4 +1078,4 @@ function main() {
   process.exit(0);
 }
 
-main();
+main().catch((e) => { console.error('FATAL:', e); process.exit(1); });

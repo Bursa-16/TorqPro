@@ -670,7 +670,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       </div>
       <div class="form-row">
         <div class="form-group"><label class="form-label"><span data-i18n="hizli.tightening_class">Sıkma Sınıfı</span> <span class="norm-badge" data-i18n="hizli.per_sample_norm">Örnek norma göre</span></label><select class="form-select" id="sinif" onchange="hesapla()"><option value="A" data-i18n="hizli.class_a_opt">A — ±%5 (Kritik güvenlik)</option><option value="B" selected data-i18n="hizli.class_b_opt">B — ±%10 (Önemli)</option><option value="C" data-i18n="hizli.class_c_opt">C — ±%20 (Standart)</option><option value="D" data-i18n="hizli.class_d_opt">D — ±%30 (Genel)</option></select></div>
-        <div class="form-group"><label class="form-label" data-i18n="hizli.control_method">Kontrol Yöntemi</label><select class="form-select" id="yontem" onchange="hesapla()"><option data-i18n="hizli.method_system_a">Sistem A (Dinamik)</option><option data-i18n="hizli.method_c">C Metodu (Statik)</option><option data-i18n="hizli.method_torque_angle">Tork + Açı</option><option data-i18n="hizli.method_tty">Akma Kontrollü (TTY)</option></select></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.control_method">Kontrol Yöntemi</label><select class="form-select" id="yontem" onchange="hesapla()"><option value="system_a" data-i18n="hizli.method_system_a">Sistem A (Dinamik)</option><option value="method_c" data-i18n="hizli.method_c">C Metodu (Statik)</option><option value="torque_angle" data-i18n="hizli.method_torque_angle">Tork + Açı</option><option value="tty" data-i18n="hizli.method_tty">Akma Kontrollü (TTY)</option></select></div>
       </div>
       <div class="btn-group"><button class="btn btn-primary" onclick="hesapla()"><span data-i18n="hizli.calculate_btn">🔧 Hesapla</span></button><button class="btn btn-secondary" onclick="resetForm()" data-i18n="hizli.clear_btn">Temizle</button></div>
     </div>
@@ -694,7 +694,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="grid2">
     <div class="card">
       <div class="card-title" data-i18n="vdi.flange_geometry_title">Flanş Geometrisi</div>
-      <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="vdi.plate_thickness">Plaka kalınlığı (mm)</label><input class="form-input" type="number" value="10" id="v_plaka"></div><div class="form-group"><label class="form-label" data-i18n="vdi.plate_material">Plaka malzemesi</label><select class="form-select" id="v_malzeme"><option data-i18n="vdi.material_steel">Çelik (E=210 GPa)</option><option data-i18n="vdi.material_aluminum">Alüminyum (E=70 GPa)</option><option data-i18n="vdi.material_castiron">Dökme demir</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="vdi.plate_thickness">Plaka kalınlığı (mm)</label><input class="form-input" type="number" value="10" id="v_plaka"></div><div class="form-group"><label class="form-label" data-i18n="vdi.plate_material">Plaka malzemesi</label><select class="form-select" id="v_malzeme"><option value="steel" data-i18n="vdi.material_steel">Çelik (E=210 GPa)</option><option value="aluminum" data-i18n="vdi.material_aluminum">Alüminyum (E=70 GPa)</option><option value="castiron" data-i18n="vdi.material_castiron">Dökme demir</option></select></div></div>
       <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="vdi.bolt_length">Cıvata boyu (mm)</label><input class="form-input" type="number" value="40" id="v_boy"></div><div class="form-group"><label class="form-label" data-i18n="vdi.load_intro_factor">Yük giriş faktörü (n)</label><input class="form-input" type="number" value="0.5" step="0.1" id="v_n"></div></div>
       <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="vdi.operating_load">İşletme yükü FA (kN)</label><input class="form-input" type="number" value="15" id="v_FA"></div><div class="form-group"><label class="form-label">ΔT (°C)</label><input class="form-input" type="number" value="0" id="v_dT"></div></div>
       <button class="btn btn-primary" onclick="vdiHesapla()" style="width:100%" data-i18n="vdi.run_button">VDI 2230 Çalıştır</button>
@@ -1881,6 +1881,61 @@ const I18N = {
     'validation.ds_technical_source_records': 'Technical Source Records',
     'validation.ds_active': 'Active',
     'validation.ds_action_add_primary_source': 'Add primary source',
+
+    // ---- Faz 2.7.1b (cont.): CL checklist data, confLabel, calibration ----
+    'common.conf_verified': 'Verified',
+    'common.conf_from_standard': 'From standard',
+    'common.conf_calc_cross_check': 'Calculation/cross-check',
+    'common.conf_draft': 'Draft',
+
+    'checklist.cat_incoming': 'Incoming Inspection',
+    'checklist.cat_operation': 'Operation / Process',
+    'checklist.cat_equipment': 'Equipment Check',
+    'checklist.cat_product': 'Product Check',
+    'checklist.cat_maintenance': 'Machine / Maintenance',
+
+    'checklist.item_1_1': 'Has material control been performed on the bolt, washer, and nut?',
+    'checklist.item_1_2': 'Has dimensional control been performed?',
+    'checklist.item_1_3': 'Has prevailing-torque control been performed on self-locking nuts?',
+    'checklist.item_2_1': 'Is the expected tightness achieved at the end of the torque operation?',
+    'checklist.item_2_2': 'Has System A and Method C control been performed 1 hour after tightening?',
+    'checklist.item_2_3': 'Has the correct tightening program been selected?',
+    'checklist.item_2_4': 'Is the correct tool being used?',
+    'checklist.item_2_9': 'Does the process stop on a NOK tightening? (Is poka-yoke active?)',
+    'checklist.item_2_14': 'Does the tightening sequence create cross-loading?',
+    'checklist.item_2_19': 'Is there oil, rust, or contamination on the tightening elements?',
+    'checklist.item_2_20': 'Is there damage or breakage on the screw threads?',
+    'checklist.item_3_1': 'Has the torque wrench / tool verification been performed?',
+    'checklist.item_3_2': 'Is the tool error percentage correct?',
+    'checklist.item_3_5': 'Are the tightening values being recorded for each part?',
+    'checklist.item_3_6': 'Are the tightening values retained for a minimum of 2 months?',
+    'checklist.item_4_1': 'Have friction coefficient tests been performed?',
+    'checklist.item_4_2': 'Is the fastener type and calculation appropriate?',
+    'checklist.item_5_1': 'Are the calibration dates current?',
+    'checklist.item_5_2': 'Have new/repaired tools undergone 20 tighten-loosen cycles?',
+    'checklist.item_5_3': 'Is a periodic triple-verification record available?',
+
+    'checklist.ref_1_1': 'Sample norm: Incoming inspection',
+    'checklist.ref_1_2': 'Technical drawing specification',
+    'checklist.ref_technical_drawing': 'Technical drawing',
+    'checklist.ref_2_1': 'Joint tightness specification',
+    'checklist.ref_2_2': 'Torque control procedure',
+    'checklist.ref_process_card': 'Process card',
+    'checklist.ref_2_9': 'Machine software',
+    'checklist.ref_2_14': 'PFMEA · Operation card',
+    'checklist.ref_3_1': 'Equipment verification',
+    'checklist.ref_3_2': 'Calibration instruction',
+    'checklist.ref_3_6': 'Archive instruction',
+    'checklist.ref_4_1': 'Friction test method',
+    'checklist.ref_4_2': 'Selection guide',
+    'checklist.ref_5_1': 'Maintenance instruction',
+    'checklist.ref_5_2': 'Commissioning procedure',
+    'checklist.ref_5_3': 'Periodic verification',
+
+    'calibration.err_enter_valid_value': 'Enter a valid value.',
+    'calibration.status_passed': 'Passed',
+    'calibration.status_failed': 'Failed',
+    'calibration.no_records_yet': 'No calibration records yet.',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -2196,6 +2251,61 @@ const I18N = {
     'validation.ds_technical_source_records': 'Teknik Kaynak Kayıtları',
     'validation.ds_active': 'Aktif',
     'validation.ds_action_add_primary_source': 'Birincil kaynak ekle',
+
+    // ---- Faz 2.7.1b (cont.): CL checklist data, confLabel, calibration ----
+    'common.conf_verified': 'Doğrulandı',
+    'common.conf_from_standard': 'Standarttan',
+    'common.conf_calc_cross_check': 'Hesap/çapraz kontrol',
+    'common.conf_draft': 'Taslak',
+
+    'checklist.cat_incoming': 'Giriş Kontrolü',
+    'checklist.cat_operation': 'Operasyon / Proses',
+    'checklist.cat_equipment': 'Ekipman Kontrolü',
+    'checklist.cat_product': 'Ürün Kontrolü',
+    'checklist.cat_maintenance': 'Makina / Bakım',
+
+    'checklist.item_1_1': 'Cıvata, pul, somun — malzeme kontrolü yapıldı mı?',
+    'checklist.item_1_2': 'Boyutsal kontrol yapıldı mı?',
+    'checklist.item_1_3': 'Kendinden kilitli somunlarda sürüklenme kontrolü yapıldı mı?',
+    'checklist.item_2_1': 'Tork operasyonu sonunda beklenen sıkılık sağlanıyor mu?',
+    'checklist.item_2_2': 'Sıkımdan 1 saat sonra A ve C metodu kontrolü yapıldı mı?',
+    'checklist.item_2_3': 'Doğru sıkım programı seçilmiş mi?',
+    'checklist.item_2_4': 'Doğru sıkıcı kullanılıyor mu?',
+    'checklist.item_2_9': 'NOK sıkımda proses duruyor mu? (Poke-yoke aktif mi?)',
+    'checklist.item_2_14': 'Sıkım sırası kasıntı yaratıyor mu?',
+    'checklist.item_2_19': 'Sıkım elemanlarında yağ, pas, kirlilik var mı?',
+    'checklist.item_2_20': 'Vida dişlerinde bozukluk veya kırık var mı?',
+    'checklist.item_3_1': 'Torkmetre / sıkıcı doğrulaması yapıldı mı?',
+    'checklist.item_3_2': 'Sıkıcı hata yüzdesi doğru mu?',
+    'checklist.item_3_5': 'Sıkım değerleri her parça için kayıt altına alınıyor mu?',
+    'checklist.item_3_6': 'Sıkım değerleri minimum 2 ay saklanıyor mu?',
+    'checklist.item_4_1': 'Sürtünme katsayısı testleri yapılmış mı?',
+    'checklist.item_4_2': 'Bağlantı elemanı tipi ve hesaplama uygun mu?',
+    'checklist.item_5_1': 'Kalibrasyon tarihleri güncel mi?',
+    'checklist.item_5_2': 'Yeni/tamirden gelen sıkıcılara 20 sıkma-sökme yapıldı mı?',
+    'checklist.item_5_3': "Periyodik 3'lü doğrulama kaydı mevcut mu?",
+
+    'checklist.ref_1_1': 'Örnek norm: Giriş kontrolü',
+    'checklist.ref_1_2': 'Teknik resim şartnamesi',
+    'checklist.ref_technical_drawing': 'Teknik resim',
+    'checklist.ref_2_1': 'Bağlantı sıkılık şartnamesi',
+    'checklist.ref_2_2': 'Tork kontrol prosedürü',
+    'checklist.ref_process_card': 'Proses kartı',
+    'checklist.ref_2_9': 'Tezgah yazılımı',
+    'checklist.ref_2_14': 'PFMEA · Operasyon kartı',
+    'checklist.ref_3_1': 'Ekipman doğrulama',
+    'checklist.ref_3_2': 'Kalibrasyon talimatı',
+    'checklist.ref_3_6': 'Arşiv talimatı',
+    'checklist.ref_4_1': 'Sürtünme test metodu',
+    'checklist.ref_4_2': 'Seçim kılavuzu',
+    'checklist.ref_5_1': 'Bakım talimatı',
+    'checklist.ref_5_2': 'Devreye alma prosedürü',
+    'checklist.ref_5_3': 'Periyodik doğrulama',
+
+    'calibration.err_enter_valid_value': 'Geçerli değer girin.',
+    'calibration.status_passed': 'Geçti',
+    'calibration.status_failed': 'Kaldı',
+    'calibration.no_records_yet': 'Henüz kalibrasyon kaydı yok.',
 
     'sidebar.frictioncondition': 'Yüzey Sürtünme Koşulu',
     'fc.page_title': 'Yüzey Sürtünme Koşulu',
@@ -3077,7 +3187,7 @@ const TORQPRO_LIBRARY = {"metadata":{"name":"TorqPro Bağlantı Elemanları Küt
 
 function libById(arr,key,val){return arr.find(x=>x[key]===val)||null;}
 function libSafeNum(v){return Number.isFinite(Number(v))?Number(v):null;}
-function confLabel(c){return c===4?'4 — Doğrulandı':c===3?'3 — Standarttan':c===2?'2 — Hesap/çapraz kontrol':'1 — Taslak';}
+function confLabel(c){return c===4?'4 — '+t('common.conf_verified'):c===3?'3 — '+t('common.conf_from_standard'):c===2?'2 — '+t('common.conf_calc_cross_check'):'1 — '+t('common.conf_draft');}
 function confClass(c){return 'conf-'+(c||1);}
 function optionHtml(value,text,selected=false){return `<option value="${value}"${selected?' selected':''}>${text}</option>`;}
 
@@ -3329,7 +3439,7 @@ function hesapla(){
   const sfExt=Ftarget>0?stripCapExt/Ftarget:0;
 
   const yieldUtil=Ftarget/(rp*As)*100;
-  const isC=yontem.includes('C Metodu');
+  const isC=yontem==='method_c';
   const nl=lookupTable(isC?TABLE_C_RAW:TABLE_A_RAW,tNom.total,{A:0,B:1,C:2,D:3}[sinif]);
 
   const confs=[sel.thread?.confidence,sel.bolt?.confidence,strength?.confidence].filter(Number.isFinite);
@@ -3392,7 +3502,7 @@ function hesapla(){
 function resetForm(){document.getElementById('sonuc-box').innerHTML='<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">🔧</div><div>' + t('hizli.enter_parameters') + '</div></div>';document.getElementById('tork-dagilim').style.display='none';}
 
 function vdiHesapla(){
-  const Ep=document.getElementById('v_malzeme').value.includes('Alüm')?70000:210000;
+  const Ep=document.getElementById('v_malzeme').value==='aluminum'?70000:210000;
   const vPlaka=parseFloat(document.getElementById('v_plaka').value),L=parseFloat(document.getElementById('v_boy').value);
   const n=parseFloat(document.getElementById('v_n').value),FA=parseFloat(document.getElementById('v_FA').value)*1000;
   const dp=vPlaka/(Ep*100),db=L/(210000*78.5),phi=dp/(dp+db),FK=n*phi*FA;
@@ -3400,11 +3510,11 @@ function vdiHesapla(){
 }
 
 // ========== CHECK-LIST ==========
-const CL=[{no:'1.1',kat:'Giriş Kontrolü',text:'Cıvata, pul, somun — malzeme kontrolü yapıldı mı?',ref:'Örnek norm: Giriş kontrolü'},{no:'1.2',kat:'Giriş Kontrolü',text:'Boyutsal kontrol yapıldı mı?',ref:'Teknik resim şartnamesi'},{no:'1.3',kat:'Giriş Kontrolü',text:'Kendinden kilitli somunlarda sürüklenme kontrolü yapıldı mı?',ref:'Teknik resim'},{no:'2.1',kat:'Operasyon / Proses',text:'Tork operasyonu sonunda beklenen sıkılık sağlanıyor mu?',ref:'Bağlantı sıkılık şartnamesi'},{no:'2.2',kat:'Operasyon / Proses',text:'Sıkımdan 1 saat sonra A ve C metodu kontrolü yapıldı mı?',ref:'Tork kontrol prosedürü'},{no:'2.3',kat:'Operasyon / Proses',text:'Doğru sıkım programı seçilmiş mi?',ref:'Proses kartı'},{no:'2.4',kat:'Operasyon / Proses',text:'Doğru sıkıcı kullanılıyor mu?',ref:'Proses kartı'},{no:'2.9',kat:'Operasyon / Proses',text:'NOK sıkımda proses duruyor mu? (Poke-yoke aktif mi?)',ref:'Tezgah yazılımı'},{no:'2.14',kat:'Operasyon / Proses',text:'Sıkım sırası kasıntı yaratıyor mu?',ref:'PFMEA · Operasyon kartı'},{no:'2.19',kat:'Operasyon / Proses',text:'Sıkım elemanlarında yağ, pas, kirlilik var mı?',ref:'Teknik resim'},{no:'2.20',kat:'Operasyon / Proses',text:'Vida dişlerinde bozukluk veya kırık var mı?',ref:'Teknik resim'},{no:'3.1',kat:'Ekipman Kontrolü',text:'Torkmetre / sıkıcı doğrulaması yapıldı mı?',ref:'Ekipman doğrulama'},{no:'3.2',kat:'Ekipman Kontrolü',text:'Sıkıcı hata yüzdesi doğru mu?',ref:'Kalibrasyon talimatı'},{no:'3.5',kat:'Ekipman Kontrolü',text:'Sıkım değerleri her parça için kayıt altına alınıyor mu?',ref:'Proses kartı'},{no:'3.6',kat:'Ekipman Kontrolü',text:'Sıkım değerleri minimum 2 ay saklanıyor mu?',ref:'Arşiv talimatı'},{no:'4.1',kat:'Ürün Kontrolü',text:'Sürtünme katsayısı testleri yapılmış mı?',ref:'Sürtünme test metodu'},{no:'4.2',kat:'Ürün Kontrolü',text:'Bağlantı elemanı tipi ve hesaplama uygun mu?',ref:'Seçim kılavuzu'},{no:'5.1',kat:'Makina / Bakım',text:'Kalibrasyon tarihleri güncel mi?',ref:'Bakım talimatı'},{no:'5.2',kat:'Makina / Bakım',text:'Yeni/tamirden gelen sıkıcılara 20 sıkma-sökme yapıldı mı?',ref:'Devreye alma prosedürü'},{no:'5.3',kat:'Makina / Bakım',text:"Periyodik 3'lü doğrulama kaydı mevcut mu?",ref:'Periyodik doğrulama'}];
+const CL=[{no:'1.1',katKey:'checklist.cat_incoming',textKey:'checklist.item_1_1',refKey:'checklist.ref_1_1'},{no:'1.2',katKey:'checklist.cat_incoming',textKey:'checklist.item_1_2',refKey:'checklist.ref_1_2'},{no:'1.3',katKey:'checklist.cat_incoming',textKey:'checklist.item_1_3',refKey:'checklist.ref_technical_drawing'},{no:'2.1',katKey:'checklist.cat_operation',textKey:'checklist.item_2_1',refKey:'checklist.ref_2_1'},{no:'2.2',katKey:'checklist.cat_operation',textKey:'checklist.item_2_2',refKey:'checklist.ref_2_2'},{no:'2.3',katKey:'checklist.cat_operation',textKey:'checklist.item_2_3',refKey:'checklist.ref_process_card'},{no:'2.4',katKey:'checklist.cat_operation',textKey:'checklist.item_2_4',refKey:'checklist.ref_process_card'},{no:'2.9',katKey:'checklist.cat_operation',textKey:'checklist.item_2_9',refKey:'checklist.ref_2_9'},{no:'2.14',katKey:'checklist.cat_operation',textKey:'checklist.item_2_14',refKey:'checklist.ref_2_14'},{no:'2.19',katKey:'checklist.cat_operation',textKey:'checklist.item_2_19',refKey:'checklist.ref_technical_drawing'},{no:'2.20',katKey:'checklist.cat_operation',textKey:'checklist.item_2_20',refKey:'checklist.ref_technical_drawing'},{no:'3.1',katKey:'checklist.cat_equipment',textKey:'checklist.item_3_1',refKey:'checklist.ref_3_1'},{no:'3.2',katKey:'checklist.cat_equipment',textKey:'checklist.item_3_2',refKey:'checklist.ref_3_2'},{no:'3.5',katKey:'checklist.cat_equipment',textKey:'checklist.item_3_5',refKey:'checklist.ref_process_card'},{no:'3.6',katKey:'checklist.cat_equipment',textKey:'checklist.item_3_6',refKey:'checklist.ref_3_6'},{no:'4.1',katKey:'checklist.cat_product',textKey:'checklist.item_4_1',refKey:'checklist.ref_4_1'},{no:'4.2',katKey:'checklist.cat_product',textKey:'checklist.item_4_2',refKey:'checklist.ref_4_2'},{no:'5.1',katKey:'checklist.cat_maintenance',textKey:'checklist.item_5_1',refKey:'checklist.ref_5_1'},{no:'5.2',katKey:'checklist.cat_maintenance',textKey:'checklist.item_5_2',refKey:'checklist.ref_5_2'},{no:'5.3',katKey:'checklist.cat_maintenance',textKey:'checklist.item_5_3',refKey:'checklist.ref_5_3'}];
 
 function buildCL(){
-  let cats={};CL.forEach(i=>{if(!cats[i.kat])cats[i.kat]=[];cats[i.kat].push(i);});
-  let h='';for(let k in cats){h+=`<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:8px;text-transform:uppercase">${k}</div>`;cats[k].forEach(i=>{h+=`<div class="check-item" id="ci${i.no.replace('.','_')}"><div class="check-number">${i.no}</div><div style="flex:1"><div class="check-text">${i.text}</div><div class="check-ref">${i.ref}</div></div><div class="check-actions"><button class="check-btn ok-btn" onclick="sc('${i.no}','ok',this)">✓</button><button class="check-btn nok-btn" onclick="sc('${i.no}','nok',this)">✗</button><button class="check-btn na-btn" onclick="sc('${i.no}','na',this)">—</button></div></div>`;});h+='</div>';}
+  let cats={};CL.forEach(i=>{if(!cats[i.katKey])cats[i.katKey]=[];cats[i.katKey].push(i);});
+  let h='';for(let k in cats){h+=`<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:8px;text-transform:uppercase">${t(k)}</div>`;cats[k].forEach(i=>{h+=`<div class="check-item" id="ci${i.no.replace('.','_')}"><div class="check-number">${i.no}</div><div style="flex:1"><div class="check-text">${t(i.textKey)}</div><div class="check-ref">${t(i.refKey)}</div></div><div class="check-actions"><button class="check-btn ok-btn" onclick="sc('${i.no}','ok',this)">✓</button><button class="check-btn nok-btn" onclick="sc('${i.no}','nok',this)">✗</button><button class="check-btn na-btn" onclick="sc('${i.no}','na',this)">—</button></div></div>`;});h+='</div>';}
   document.getElementById('checklist-items').innerHTML=h;
 }
 const cls={};
@@ -3744,16 +3854,16 @@ async function setPackageStatus(id,status){
   catch(e){alert(e.message);}
 }
 async function saveCalibrationCase(){
-  const p=parseFloat(document.getElementById('cal_program').value),r=parseFloat(document.getElementById('cal_reference').value),t=parseFloat(document.getElementById('cal_tolerance').value);
-  if(!Number.isFinite(p)||!Number.isFinite(r)||r===0){alert('Geçerli değer girin.');return;}
-  const payload={thread:document.getElementById('cal_thread').value,program_value:p,reference_value:r,tolerance_pct:t,source_id:document.getElementById('cal_source_id').value.trim(),note:document.getElementById('cal_note').value.trim()};
+  const p=parseFloat(document.getElementById('cal_program').value),r=parseFloat(document.getElementById('cal_reference').value),tol=parseFloat(document.getElementById('cal_tolerance').value);
+  if(!Number.isFinite(p)||!Number.isFinite(r)||r===0){alert(t('calibration.err_enter_valid_value'));return;}
+  const payload={thread:document.getElementById('cal_thread').value,program_value:p,reference_value:r,tolerance_pct:tol,source_id:document.getElementById('cal_source_id').value.trim(),note:document.getElementById('cal_note').value.trim()};
   try{await apiRequest('/api/calibration/cases',{method:'POST',body:JSON.stringify(payload)});await loadCalibrationCases();}
   catch(e){alert(e.message);}
 }
 async function loadCalibrationCases(){
   const e=document.getElementById('calibrationBody');if(!e)return;
   const rows=await apiRequest('/api/calibration/cases');
-  e.innerHTML=rows.length?rows.map(r=>`<tr><td>${r.thread}</td><td>${Number(r.program_value).toFixed(2)}</td><td>${Number(r.reference_value).toFixed(2)}</td><td>${Number(r.error_pct).toFixed(2)}%</td><td>${Number(r.tolerance_pct).toFixed(2)}%</td><td><span class="badge-prod ${r.passed?'ok':'nok'}">${r.passed?'Geçti':'Kaldı'}</span></td><td>${r.source_id||'—'}</td></tr>`).join(''):'<tr><td colspan="7">Henüz kalibrasyon kaydı yok.</td></tr>';
+  e.innerHTML=rows.length?rows.map(r=>`<tr><td>${r.thread}</td><td>${Number(r.program_value).toFixed(2)}</td><td>${Number(r.reference_value).toFixed(2)}</td><td>${Number(r.error_pct).toFixed(2)}%</td><td>${Number(r.tolerance_pct).toFixed(2)}%</td><td><span class="badge-prod ${r.passed?'ok':'nok'}">${r.passed?t('calibration.status_passed'):t('calibration.status_failed')}</span></td><td>${r.source_id||'—'}</td></tr>`).join(''):`<tr><td colspan="7">${t('calibration.no_records_yet')}</td></tr>`;
 }
 
 
