@@ -1757,6 +1757,130 @@ const I18N = {
     'validation.th_production': 'Production',
     'validation.th_action': 'Action',
     'validation.footer_warning': 'Draft data must not be used as a production torque value without a verified standard or test report.',
+
+    // ---- Faz 2.7.1b: dynamic calculation/validation result text ----
+    'n01391.thread_not_in_norm': 'This thread size is not defined in the norm.',
+    'n01391.result_title': 'Sample Torque Study Result',
+    'n01391.demo_dataset': 'Demo dataset',
+    'n01391.selection_label': 'Selection',
+    'n01391.bolt_label': 'Bolt',
+    'n01391.nut_label': 'Nut',
+    'n01391.mismatch_warning': 'Bolt and nut class are mismatched — the lower class values are being used.',
+    'n01391.forecast_nominal_torque': 'Forecast Nominal Torque',
+    'n01391.forecast_tensile_force': 'Forecast Tensile Force',
+    'n01391.disclaimer_line1': 'This value is a sample general OEM forecast — it is not a definitive or approved production torque.',
+    'n01391.disclaimer_line2': 'If a technical drawing or model-based OEM norm specifies a particular value, that value takes priority.',
+    'n01391.disclaimer_line3': 'The production value must be finalized with joint testing, friction verification, tool capability, and product verification.',
+    'n01391.disclaimer_line4': 'The values apply to fasteners as they leave production, with no additional lubricant applied.',
+    'n01391.goto_theoretical': '→ Go to Theoretical Calculation',
+    'n01391.goto_oem_search': '→ Search OEM Norm',
+    'hizli.missing_data': 'Data required for the calculation is missing.',
+    'hizli.fallback': 'Fallback',
+    'hizli.result_standard_thread_class': 'Standard / Thread / Class',
+    'hizli.result_target_preload': 'Target Preload',
+    'hizli.result_torque_min_nom_max': 'Torque Min / Nom / Max',
+    'hizli.result_preload_range_at_nom': 'Preload Range at Nominal Torque',
+    'hizli.result_yield_utilization': 'Yield Utilization',
+    'hizli.result_nut_proof_utilization': 'Nut Proof-Load Utilization',
+    'hizli.no_data': 'No data',
+    'hizli.result_thread_strip_safety': 'Internal / External Thread Strip Safety',
+    'hizli.result_bearing_pressure_safety': 'Bearing Pressure / Safety',
+    'hizli.result_nut_class_compat': 'Nut Class Compatibility',
+    'hizli.compat_ok': 'Compatible',
+    'hizli.compat_not_ok': 'Not compatible',
+    'hizli.compat_min_prefix': 'Min',
+    'hizli.result_overall_decision': 'Overall Decision',
+    'hizli.decision_ok': 'Acceptable preliminary assessment',
+    'hizli.decision_borderline': 'Borderline',
+    'hizli.decision_risky': 'Risky',
+    'hizli.result_confidence_level': 'Confidence Level',
+    'hizli.result_01393_ref_range': '01393/01 Reference Range',
+    'hizli.eng_thread_torque': 'Thread Torque',
+    'hizli.eng_bearing_torque': 'Bearing Torque',
+    'hizli.eng_internal_thread_capacity': 'Internal Thread Capacity',
+    'hizli.eng_external_thread_capacity': 'External Thread Capacity',
+    'hizli.eng_table_scenario': 'Scenario',
+    'hizli.eng_table_torque': 'Torque',
+    'hizli.eng_table_preload': 'Preload',
+    'hizli.scenario_min_friction': 'Minimum friction',
+    'hizli.scenario_nominal': 'Nominal',
+    'hizli.scenario_max_friction': 'Maximum friction',
+    'hizli.src_proof_load': 'Proof-load',
+    'hizli.src_friction': 'Friction',
+    'hizli.src_washer_surface': 'Washer/Surface',
+    'hizli.src_compatibility': 'Compatibility',
+    'hizli.active_standard_data_used': 'Active standard data used in the calculation:',
+    'hizli.no_active_data_fallback': 'None — user input/library fallback',
+    'hizli.no_active_data_version': 'No active data version found',
+    'hizli.confidence_insufficient': 'The data confidence level is not sufficient for production approval.',
+    'hizli.strip_proof_disclaimer': 'Thread strip and proof-load checks are an engineering pre-assessment. Actual material data and a verified ISO 898-2 table take priority.',
+    'hizli.report_btn': '📄 Report',
+    'hizli.save_btn': '💾 Save',
+    'hizli.bar_head_bearing': 'Head/Bearing',
+    'hizli.bar_thread': 'Thread',
+    'hizli.validation_summary_label': 'Validation Summary:',
+    'hizli.validation_summary_text': 'Min-nom-max friction spread, nut proof-load, internal/external thread strip, and bearing pressure were evaluated together.',
+    'hizli.enter_parameters': 'Enter parameters',
+    'vdi.result_title': 'VDI 2230 Results',
+    'vdi.result_plate_compliance': 'Plate Compliance δp',
+    'vdi.result_bolt_compliance': 'Bolt Compliance δb',
+    'vdi.result_load_factor': 'Load Distribution Factor Φ',
+    'vdi.result_additional_bolt_force': 'Additional Bolt Force ΔFb',
+    'vdi.result_assessment': 'Assessment',
+    'vdi.assessment_optimal': 'Optimal',
+    'vdi.assessment_check': 'Should be checked',
+    'checklist.stat_total': 'Total',
+    'checklist.stat_compliance': 'Compliance',
+    'checklist.result_all_ok': 'All items OK',
+    'checklist.result_n_nok': 'item(s) NOK',
+    'checklist.result_line_stop_consider': 'line stoppage should be considered',
+    'checklist.action_line_must_stop': 'The line must be stopped.',
+    'checklist.action_check_previous_5': 'The 5 units preceding the faulty unit must be checked.',
+    'checklist.report_btn': '📄 Report',
+    'checklist.save_btn': '💾 Save',
+    'checklist.corrective_action_btn': '⚠️ Corrective Action',
+    'yetenek.err_min_30': 'Minimum 30 measurements are required.',
+    'yetenek.err_current_count': 'Current count',
+    'yetenek.err_lsl_usl_invalid': 'LSL and USL must be valid and LSL &lt; USL must hold.',
+    'yetenek.err_std_near_zero': 'Standard deviation is too close to zero — all measurements appear to be the same value. Check the data.',
+    'yetenek.analysis_suffix': 'Analysis',
+    'yetenek.measurement_suffix': 'Measurements',
+    'yetenek.oem_tmin_tmax': 'OEM t_min/t_max',
+    'yetenek.method_label': 'Method',
+    'yetenek.system_prefix': 'System',
+    'yetenek.mean_label': 'Mean x̄',
+    'yetenek.assessment_label': 'Assessment',
+    'yetenek.status_sufficient': 'SUFFICIENT',
+    'yetenek.status_borderline': 'BORDERLINE',
+    'yetenek.status_insufficient': 'INSUFFICIENT',
+    'yetenek.normality_warning': 'Normality: The data distribution may deviate significantly from a normal distribution — interpret with caution.',
+    'yetenek.outlier_label': 'Outlier',
+    'yetenek.outlier_suffix': 'measurement(s) outside 3σ',
+    'yetenek.outlier_review': 'Review the data.',
+    'yetenek.action_check_tool': 'Check the tool setting, get technical service.',
+    'yetenek.action_remove_tool': 'Remove the tool from production. The capability study must be repeated.',
+    'validation.connection_data_confidence': 'Connection Data Confidence',
+    'validation.friction_confidence': 'Friction Confidence',
+    'validation.no_verified_table': 'No verified table',
+    'validation.production_decision': 'Production Decision',
+    'validation.not_usable': 'Not usable',
+    'validation.thread_label': 'Thread',
+    'validation.yes': 'Yes',
+    'validation.no': 'No',
+    'validation.ds_nut_proof_load': 'ISO 898-2 Nut Proof-Load',
+    'validation.ds_schema_ready_missing': 'Schema ready / data missing',
+    'validation.ds_action_load_verified_table': 'Load the verified table',
+    'validation.ds_bolt_nut_compat': 'Bolt-Nut Compatibility',
+    'validation.ds_engineering_ruleset': 'Engineering rule set',
+    'validation.ds_action_verify_proof_load': 'Verify with proof-load',
+    'validation.ds_washer_hardness': 'Washer Hardness / Bearing Pressure',
+    'validation.ds_action_add_standard_data': 'Add standard data',
+    'validation.ds_friction_db': 'Friction Database',
+    'validation.ds_draft': 'Draft',
+    'validation.ds_action_add_iso16047_report': 'Add ISO 16047 test report',
+    'validation.ds_technical_source_records': 'Technical Source Records',
+    'validation.ds_active': 'Active',
+    'validation.ds_action_add_primary_source': 'Add primary source',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -1948,6 +2072,130 @@ const I18N = {
     'validation.th_production': 'Üretim',
     'validation.th_action': 'Aksiyon',
     'validation.footer_warning': 'Doğrulanmış standart veya test raporu olmadan taslak veri seri üretim torku olarak kullanılmamalıdır.',
+
+    // ---- Faz 2.7.1b: dynamic calculation/validation result text ----
+    'n01391.thread_not_in_norm': 'Bu diş ölçüsü normda tanımlı değil.',
+    'n01391.result_title': 'Örnek Tork Çalışması Sonucu',
+    'n01391.demo_dataset': 'Demo veri seti',
+    'n01391.selection_label': 'Seçim',
+    'n01391.bolt_label': 'Cıvata',
+    'n01391.nut_label': 'Somun',
+    'n01391.mismatch_warning': 'Cıvata ve somun sınıfı uyumsuz — düşük sınıf değerleri kullanılmaktadır.',
+    'n01391.forecast_nominal_torque': 'Öngörü Nominal Torku',
+    'n01391.forecast_tensile_force': 'Öngörü Çekme Kuvveti',
+    'n01391.disclaimer_line1': 'Bu değer örnek OEM genel öngörüsüdür — kesin veya onaylı üretim torku değildir.',
+    'n01391.disclaimer_line2': 'Teknik resim veya model bazlı OEM normunda özel bir değer varsa o değer önceliklidir.',
+    'n01391.disclaimer_line3': 'Seri üretim değeri; bağlantı testi, sürtünme doğrulaması, sıkıcı yeteneği ve ürün doğrulaması ile kesinleştirilmelidir.',
+    'n01391.disclaimer_line4': 'Değerler ek yağlayıcı uygulanmamış, üretimden çıktığı durumdaki bağlantı elemanları için geçerlidir.',
+    'n01391.goto_theoretical': '→ Teorik Hesaba Geç',
+    'n01391.goto_oem_search': '→ OEM Normunda Ara',
+    'hizli.missing_data': 'Hesap için gerekli veri eksik.',
+    'hizli.fallback': 'Fallback',
+    'hizli.result_standard_thread_class': 'Standart / Diş / Sınıf',
+    'hizli.result_target_preload': 'Hedef Ön Yük',
+    'hizli.result_torque_min_nom_max': 'Tork Min / Nom / Max',
+    'hizli.result_preload_range_at_nom': 'Nominal Torkta Ön Yük Aralığı',
+    'hizli.result_yield_utilization': 'Akma Kullanımı',
+    'hizli.result_nut_proof_utilization': 'Somun Proof-Load Kullanımı',
+    'hizli.no_data': 'Veri yok',
+    'hizli.result_thread_strip_safety': 'İç / Dış Diş Sıyırma Emniyeti',
+    'hizli.result_bearing_pressure_safety': 'Yüzey Basıncı / Emniyet',
+    'hizli.result_nut_class_compat': 'Somun Sınıf Uyumluluğu',
+    'hizli.compat_ok': 'Uygun',
+    'hizli.compat_not_ok': 'Uygun değil',
+    'hizli.compat_min_prefix': 'Min',
+    'hizli.result_overall_decision': 'Genel Karar',
+    'hizli.decision_ok': 'Uygun ön değerlendirme',
+    'hizli.decision_borderline': 'Sınırda',
+    'hizli.decision_risky': 'Riskli',
+    'hizli.result_confidence_level': 'Güven Seviyesi',
+    'hizli.result_01393_ref_range': '01393/01 Referans Aralığı',
+    'hizli.eng_thread_torque': 'Diş Torku',
+    'hizli.eng_bearing_torque': 'Yatak Torku',
+    'hizli.eng_internal_thread_capacity': 'İç Diş Kapasitesi',
+    'hizli.eng_external_thread_capacity': 'Dış Diş Kapasitesi',
+    'hizli.eng_table_scenario': 'Senaryo',
+    'hizli.eng_table_torque': 'Tork',
+    'hizli.eng_table_preload': 'Ön Yük',
+    'hizli.scenario_min_friction': 'Minimum sürtünme',
+    'hizli.scenario_nominal': 'Nominal',
+    'hizli.scenario_max_friction': 'Maksimum sürtünme',
+    'hizli.src_proof_load': 'Proof-load',
+    'hizli.src_friction': 'Sürtünme',
+    'hizli.src_washer_surface': 'Pul/Yüzey',
+    'hizli.src_compatibility': 'Uyumluluk',
+    'hizli.active_standard_data_used': 'Hesapta kullanılan aktif standart verileri:',
+    'hizli.no_active_data_fallback': 'Yok — kullanıcı girdisi/kütüphane fallback',
+    'hizli.no_active_data_version': 'Aktif veri sürümü bulunmuyor',
+    'hizli.confidence_insufficient': 'Veri güven seviyesi üretim onayı için yeterli değildir.',
+    'hizli.strip_proof_disclaimer': 'Diş sıyırma ve proof-load kontrolleri mühendislik ön değerlendirmesidir. Gerçek malzeme verisi ve doğrulanmış ISO 898-2 tablosu önceliklidir.',
+    'hizli.report_btn': '📄 Rapor',
+    'hizli.save_btn': '💾 Kaydet',
+    'hizli.bar_head_bearing': 'Baş/Yatak',
+    'hizli.bar_thread': 'Diş',
+    'hizli.validation_summary_label': 'Doğrulama Özeti:',
+    'hizli.validation_summary_text': 'Min–nom–max sürtünme saçılımı, somun proof-load, iç/dış diş sıyırma ve yüzey basıncı birlikte değerlendirildi.',
+    'hizli.enter_parameters': 'Parametreleri girin',
+    'vdi.result_title': 'VDI 2230 Sonuçları',
+    'vdi.result_plate_compliance': 'Plaka Esnekliği δp',
+    'vdi.result_bolt_compliance': 'Cıvata Esnekliği δb',
+    'vdi.result_load_factor': 'Yük Dağılım Faktörü Φ',
+    'vdi.result_additional_bolt_force': 'Ek Cıvata Kuvveti ΔFb',
+    'vdi.result_assessment': 'Değerlendirme',
+    'vdi.assessment_optimal': 'Optimal',
+    'vdi.assessment_check': 'Kontrol edilmeli',
+    'checklist.stat_total': 'Toplam',
+    'checklist.stat_compliance': 'Uygunluk',
+    'checklist.result_all_ok': 'Tüm maddeler OK',
+    'checklist.result_n_nok': 'madde NOK',
+    'checklist.result_line_stop_consider': 'hat durdurulması değerlendirilmeli',
+    'checklist.action_line_must_stop': 'Hat durdurulmalı.',
+    'checklist.action_check_previous_5': 'Hatalı birimden önceki 5 birim kontrol edilmeli.',
+    'checklist.report_btn': '📄 Rapor',
+    'checklist.save_btn': '💾 Kaydet',
+    'checklist.corrective_action_btn': '⚠️ Düzeltici Faaliyet',
+    'yetenek.err_min_30': 'Minimum 30 ölçüm gereklidir.',
+    'yetenek.err_current_count': 'Şu an',
+    'yetenek.err_lsl_usl_invalid': 'LSL ve USL geçerli olmalı ve LSL &lt; USL şartı sağlanmalıdır.',
+    'yetenek.err_std_near_zero': 'Standart sapma sıfıra çok yakın — tüm ölçümler aynı değerde görünüyor. Veriyi kontrol edin.',
+    'yetenek.analysis_suffix': 'Analizi',
+    'yetenek.measurement_suffix': 'Ölçüm',
+    'yetenek.oem_tmin_tmax': 'OEM t_min/t_max',
+    'yetenek.method_label': 'Yöntem',
+    'yetenek.system_prefix': 'Sistem',
+    'yetenek.mean_label': 'Ortalama x̄',
+    'yetenek.assessment_label': 'Değerlendirme',
+    'yetenek.status_sufficient': 'YETERLİ',
+    'yetenek.status_borderline': 'SINIRDA',
+    'yetenek.status_insufficient': 'YETERSİZ',
+    'yetenek.normality_warning': 'Normallik: Veri dağılımı normal dağılımdan önemli ölçüde sapıyor olabilir — yorum dikkatli yapılmalıdır.',
+    'yetenek.outlier_label': 'Aykırı değer',
+    'yetenek.outlier_suffix': 'ölçüm 3σ dışında',
+    'yetenek.outlier_review': 'Veriyi gözden geçirin.',
+    'yetenek.action_check_tool': 'Sıkıcı ayarını kontrol edin, teknik servis alın.',
+    'yetenek.action_remove_tool': 'Sıkıcıyı üretimden çıkarın. Yetenek çalışması tekrarlanmalı.',
+    'validation.connection_data_confidence': 'Bağlantı Verisi Güveni',
+    'validation.friction_confidence': 'Sürtünme Güveni',
+    'validation.no_verified_table': 'Doğrulanmış tablo yok',
+    'validation.production_decision': 'Seri Üretim Kararı',
+    'validation.not_usable': 'Kullanılamaz',
+    'validation.thread_label': 'Diş',
+    'validation.yes': 'Evet',
+    'validation.no': 'Hayır',
+    'validation.ds_nut_proof_load': 'ISO 898-2 Somun Proof-Load',
+    'validation.ds_schema_ready_missing': 'Şema hazır / veri eksik',
+    'validation.ds_action_load_verified_table': 'Doğrulanmış tabloyu yükle',
+    'validation.ds_bolt_nut_compat': 'Civata-Somun Uyumluluğu',
+    'validation.ds_engineering_ruleset': 'Mühendislik kural seti',
+    'validation.ds_action_verify_proof_load': 'Proof-load ile doğrula',
+    'validation.ds_washer_hardness': 'Pul Sertlik / Yüzey Basıncı',
+    'validation.ds_action_add_standard_data': 'Standart verisi ekle',
+    'validation.ds_friction_db': 'Sürtünme Veritabanı',
+    'validation.ds_draft': 'Taslak',
+    'validation.ds_action_add_iso16047_report': 'ISO 16047 test raporu ekle',
+    'validation.ds_technical_source_records': 'Teknik Kaynak Kayıtları',
+    'validation.ds_active': 'Aktif',
+    'validation.ds_action_add_primary_source': 'Birincil kaynak ekle',
 
     'sidebar.frictioncondition': 'Yüzey Sürtünme Koşulu',
     'fc.page_title': 'Yüzey Sürtünme Koşulu',
@@ -2785,7 +3033,7 @@ function n01391Hesapla() {
   const civata = document.getElementById('n_civata').value;
   const somun = document.getElementById('n_somun').value;
   const row = N01391[dis];
-  if (!row) { document.getElementById('n01391-sonuc').innerHTML = '<div class="alert alert-danger">Bu diş ölçüsü normda tanımlı değil.</div>'; return; }
+  if (!row) { document.getElementById('n01391-sonuc').innerHTML = '<div class="alert alert-danger">' + t('n01391.thread_not_in_norm') + '</div>'; return; }
 
   // Uyumlu sınıf: uyumsuzsa düşük sınıf geçerli
   const is109 = (civata === '10.9' && somun === '10');
@@ -2796,30 +3044,30 @@ function n01391Hesapla() {
   const uyumsuz = (civata === '10.9' && somun === '8') || (civata === '8.8' && somun === '10');
 
   document.getElementById('n01391-sonuc').innerHTML = `
-    <div class="card-title">Örnek Tork Çalışması Sonucu <span class="norm-badge">Demo veri seti</span></div>
-    <div style="font-size:11px;color:var(--text3);margin:8px 0 4px">Seçim: ${dis} · ${flans?'Flanşlı':'Flanşsız'} · Cıvata ${civata} · Somun ${somun}</div>
-    ${uyumsuz ? '<div class="alert alert-warn" style="margin-bottom:8px">⚠️ Cıvata ve somun sınıfı uyumsuz — düşük sınıf değerleri kullanılmaktadır.</div>' : ''}
+    <div class="card-title">${t('n01391.result_title')} <span class="norm-badge">${t('n01391.demo_dataset')}</span></div>
+    <div style="font-size:11px;color:var(--text3);margin:8px 0 4px">${t('n01391.selection_label')}: ${dis} · ${flans ? t('n01391.with_flange') : t('n01391.no_flange')} · ${t('n01391.bolt_label')} ${civata} · ${t('n01391.nut_label')} ${somun}</div>
+    ${uyumsuz ? '<div class="alert alert-warn" style="margin-bottom:8px">⚠️ ' + t('n01391.mismatch_warning') + '</div>' : ''}
     <div class="n01391-result">
       <div style="display:flex;gap:24px;flex-wrap:wrap">
         <div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Öngörü Nominal Torku</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">${t('n01391.forecast_nominal_torque')}</div>
           <div class="n01391-val">${cnom} <span style="font-size:16px;font-weight:400">Nm</span></div>
         </div>
         <div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Öngörü Çekme Kuvveti</div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">${t('n01391.forecast_tensile_force')}</div>
           <div class="n01391-val">${trac.toLocaleString('tr')} <span style="font-size:16px;font-weight:400">N</span></div>
         </div>
       </div>
     </div>
     <div class="n01391-warn">
-      <strong>Bu değer örnek OEM genel öngörüsüdür — kesin veya onaylı üretim torku değildir.</strong><br>
-      Teknik resim veya model bazlı OEM normunda özel bir değer varsa o değer önceliklidir.<br>
-      Seri üretim değeri; bağlantı testi, sürtünme doğrulaması, sıkıcı yeteneği ve ürün doğrulaması ile kesinleştirilmelidir.<br>
-      Değerler ek yağlayıcı uygulanmamış, üretimden çıktığı durumdaki bağlantı elemanları için geçerlidir.
+      <strong>${t('n01391.disclaimer_line1')}</strong><br>
+      ${t('n01391.disclaimer_line2')}<br>
+      ${t('n01391.disclaimer_line3')}<br>
+      ${t('n01391.disclaimer_line4')}
     </div>
     <div class="btn-group" style="margin-top:12px">
-      <button class="btn btn-secondary btn-sm" onclick="showPage('hizli',this)">→ Teorik Hesaba Geç</button>
-      <button class="btn btn-secondary btn-sm" onclick="showPage('oem',this)">→ OEM Normunda Ara</button>
+      <button class="btn btn-secondary btn-sm" onclick="showPage('hizli',this)">${t('n01391.goto_theoretical')}</button>
+      <button class="btn btn-secondary btn-sm" onclick="showPage('oem',this)">${t('n01391.goto_oem_search')}</button>
     </div>`;
 }
 
@@ -3013,7 +3261,7 @@ function hesapla(){
   const As=sel.thread?.stress_area_iso_mm2 ?? (Math.PI/4*Math.pow(d-0.9382*p,2));
   const strength=sel.strength;
   const rp=strength?.rp02_min_mpa ?? RP02[kalite];
-  if(!d||!p||!rp||!As){document.getElementById('sonuc-box').innerHTML='<div class="alert alert-danger">Hesap için gerekli veri eksik.</div>';return;}
+  if(!d||!p||!rp||!As){document.getElementById('sonuc-box').innerHTML='<div class="alert alert-danger">' + t('hizli.missing_data') + '</div>';return;}
 
   let mtMin=parseFloat(document.getElementById('mu_thread_min').value);
   let mtNom=parseFloat(document.getElementById('mu_thread_nom').value);
@@ -3092,63 +3340,63 @@ function hesapla(){
   const selectedNutClass=sel.nut?.property_class||sel.nut?.nut_class||null;
   const compatibilityOk=!requiredNutClass||!selectedNutClass||Number(selectedNutClass)>=Number(requiredNutClass);
   const liveSources=[
-    live.proof?'Proof-load':'',
-    live.friction?'Sürtünme':'',
-    live.washer?'Pul/Yüzey':'',
-    live.compatibility?'Uyumluluk':''
+    live.proof?t('hizli.src_proof_load'):'',
+    live.friction?t('hizli.src_friction'):'',
+    live.washer?t('hizli.src_washer_surface'):'',
+    live.compatibility?t('hizli.src_compatibility'):''
   ].filter(Boolean);
   const overallOk=yieldUtil<=90 && nutUtil<=100 && sfInt>=1.2 && sfExt>=1.2 && bearingSF>=1.0 && compatibilityOk;
   const overallWarn=!overallOk && yieldUtil<=95 && nutUtil<=110 && sfInt>=1.0 && sfExt>=1.0 && bearingSF>=0.9;
 
   document.getElementById('sonuc-box').innerHTML=`
     <div class="result-box">
-      <div class="result-row"><span class="result-key">Standart / Diş / Sınıf</span><span class="result-val">${sel.standard||'Fallback'} · ${sel.thread?.thread_code||fallbackCap} · ${kalite}</span></div>
-      <div class="result-row"><span class="result-key">Hedef Ön Yük</span><span class="result-val blue">${Math.round(Ftarget).toLocaleString('tr-TR')} N</span></div>
-      <div class="result-row"><span class="result-key">Tork Min / Nom / Max</span><span class="result-val blue">${tMin.total.toFixed(1)} / ${tNom.total.toFixed(1)} / ${tMax.total.toFixed(1)} Nm</span></div>
-      <div class="result-row"><span class="result-key">Nominal Torkta Ön Yük Aralığı</span><span class="result-val">${Math.round(FminAtNomTorque).toLocaleString('tr-TR')} – ${Math.round(FmaxAtNomTorque).toLocaleString('tr-TR')} N</span></div>
-      <div class="result-row"><span class="result-key">Akma Kullanımı</span><span class="result-val ${yieldUtil<=90?'ok':yieldUtil<=95?'warn':'nok'}">${yieldUtil.toFixed(1)}%</span></div>
-      <div class="result-row"><span class="result-key">Somun Proof-Load Kullanımı</span><span class="result-val ${nutUtil<=100?'ok':nutUtil<=110?'warn':'nok'}">${Number.isFinite(nutUtil)?nutUtil.toFixed(1)+'%':'Veri yok'}</span></div>
-      <div class="result-row"><span class="result-key">İç / Dış Diş Sıyırma Emniyeti</span><span class="result-val ${(sfInt>=1.2&&sfExt>=1.2)?'ok':(sfInt>=1&&sfExt>=1)?'warn':'nok'}">${sfInt.toFixed(2)} / ${sfExt.toFixed(2)}</span></div>
-      <div class="result-row"><span class="result-key">Yüzey Basıncı / Emniyet</span><span class="result-val ${bearingSF>=1?'ok':bearingSF>=0.9?'warn':'nok'}">${bearingPressure.toFixed(1)} MPa / SF ${bearingSF.toFixed(2)}</span></div>
-      <div class="result-row"><span class="result-key">Somun Sınıf Uyumluluğu</span><span class="result-val ${compatibilityOk?'ok':'nok'}">${compatibilityOk?'Uygun':'Uygun değil'}${requiredNutClass?` · Min ${requiredNutClass}`:''}</span></div><div class="result-row"><span class="result-key">Genel Karar</span><span class="result-val ${overallOk?'ok':overallWarn?'warn':'nok'}">${overallOk?'✅ Uygun ön değerlendirme':overallWarn?'⚠️ Sınırda':'❌ Riskli'}</span></div>
-      <div class="result-row"><span class="result-key">Güven Seviyesi</span><span class="result-val"><span class="confidence ${confClass(minConf)}">${confLabel(minConf)}</span></span></div>
-      <div class="result-row"><span class="result-key">01393/01 Referans Aralığı</span><span class="result-val">${nl.vmin} – ${nl.vmax} Nm</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_standard_thread_class')}</span><span class="result-val">${sel.standard||t('hizli.fallback')} · ${sel.thread?.thread_code||fallbackCap} · ${kalite}</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_target_preload')}</span><span class="result-val blue">${Math.round(Ftarget).toLocaleString('tr-TR')} N</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_torque_min_nom_max')}</span><span class="result-val blue">${tMin.total.toFixed(1)} / ${tNom.total.toFixed(1)} / ${tMax.total.toFixed(1)} Nm</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_preload_range_at_nom')}</span><span class="result-val">${Math.round(FminAtNomTorque).toLocaleString('tr-TR')} – ${Math.round(FmaxAtNomTorque).toLocaleString('tr-TR')} N</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_yield_utilization')}</span><span class="result-val ${yieldUtil<=90?'ok':yieldUtil<=95?'warn':'nok'}">${yieldUtil.toFixed(1)}%</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_nut_proof_utilization')}</span><span class="result-val ${nutUtil<=100?'ok':nutUtil<=110?'warn':'nok'}">${Number.isFinite(nutUtil)?nutUtil.toFixed(1)+'%':t('hizli.no_data')}</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_thread_strip_safety')}</span><span class="result-val ${(sfInt>=1.2&&sfExt>=1.2)?'ok':(sfInt>=1&&sfExt>=1)?'warn':'nok'}">${sfInt.toFixed(2)} / ${sfExt.toFixed(2)}</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_bearing_pressure_safety')}</span><span class="result-val ${bearingSF>=1?'ok':bearingSF>=0.9?'warn':'nok'}">${bearingPressure.toFixed(1)} MPa / SF ${bearingSF.toFixed(2)}</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_nut_class_compat')}</span><span class="result-val ${compatibilityOk?'ok':'nok'}">${compatibilityOk?t('hizli.compat_ok'):t('hizli.compat_not_ok')}${requiredNutClass?` · ${t('hizli.compat_min_prefix')} ${requiredNutClass}`:''}</span></div><div class="result-row"><span class="result-key">${t('hizli.result_overall_decision')}</span><span class="result-val ${overallOk?'ok':overallWarn?'warn':'nok'}">${overallOk?'✅ '+t('hizli.decision_ok'):overallWarn?'⚠️ '+t('hizli.decision_borderline'):'❌ '+t('hizli.decision_risky')}</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_confidence_level')}</span><span class="result-val"><span class="confidence ${confClass(minConf)}">${confLabel(minConf)}</span></span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_01393_ref_range')}</span><span class="result-val">${nl.vmin} – ${nl.vmax} Nm</span></div>
     </div>
 
     <div class="eng-grid">
-      <div class="eng-card"><div class="calc-box-label">Diş Torku</div><div class="eng-value blue">${tNom.thread.toFixed(1)} Nm</div><div class="stat-sub">${(tNom.thread/tNom.total*100).toFixed(0)}%</div></div>
-      <div class="eng-card"><div class="calc-box-label">Yatak Torku</div><div class="eng-value blue">${tNom.bearing.toFixed(1)} Nm</div><div class="stat-sub">${(tNom.bearing/tNom.total*100).toFixed(0)}%</div></div>
-      <div class="eng-card"><div class="calc-box-label">İç Diş Kapasitesi</div><div class="eng-value ${sfInt>=1.2?'green':sfInt>=1?'yellow':'red'}">${Math.round(stripCapInt).toLocaleString('tr-TR')} N</div><div class="stat-sub">SF ${sfInt.toFixed(2)}</div></div>
-      <div class="eng-card"><div class="calc-box-label">Dış Diş Kapasitesi</div><div class="eng-value ${sfExt>=1.2?'green':sfExt>=1?'yellow':'red'}">${Math.round(stripCapExt).toLocaleString('tr-TR')} N</div><div class="stat-sub">SF ${sfExt.toFixed(2)}</div></div>
+      <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_thread_torque')}</div><div class="eng-value blue">${tNom.thread.toFixed(1)} Nm</div><div class="stat-sub">${(tNom.thread/tNom.total*100).toFixed(0)}%</div></div>
+      <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_bearing_torque')}</div><div class="eng-value blue">${tNom.bearing.toFixed(1)} Nm</div><div class="stat-sub">${(tNom.bearing/tNom.total*100).toFixed(0)}%</div></div>
+      <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_internal_thread_capacity')}</div><div class="eng-value ${sfInt>=1.2?'green':sfInt>=1?'yellow':'red'}">${Math.round(stripCapInt).toLocaleString('tr-TR')} N</div><div class="stat-sub">SF ${sfInt.toFixed(2)}</div></div>
+      <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_external_thread_capacity')}</div><div class="eng-value ${sfExt>=1.2?'green':sfExt>=1?'yellow':'red'}">${Math.round(stripCapExt).toLocaleString('tr-TR')} N</div><div class="stat-sub">SF ${sfExt.toFixed(2)}</div></div>
     </div>
 
     <table class="eng-table">
-      <thead><tr><th>Senaryo</th><th>μthread</th><th>μbearing</th><th>Tork</th><th>Ön Yük</th></tr></thead>
+      <thead><tr><th>${t('hizli.eng_table_scenario')}</th><th>μthread</th><th>μbearing</th><th>${t('hizli.eng_table_torque')}</th><th>${t('hizli.eng_table_preload')}</th></tr></thead>
       <tbody>
-        <tr><td>Minimum sürtünme</td><td>${mtMin.toFixed(3)}</td><td>${mbMin.toFixed(3)}</td><td>${tMin.total.toFixed(1)} Nm</td><td>${Math.round(Ftarget).toLocaleString('tr-TR')} N</td></tr>
-        <tr><td>Nominal</td><td>${mtNom.toFixed(3)}</td><td>${mbNom.toFixed(3)}</td><td>${tNom.total.toFixed(1)} Nm</td><td>${Math.round(Ftarget).toLocaleString('tr-TR')} N</td></tr>
-        <tr><td>Maksimum sürtünme</td><td>${mtMax.toFixed(3)}</td><td>${mbMax.toFixed(3)}</td><td>${tMax.total.toFixed(1)} Nm</td><td>${Math.round(Ftarget).toLocaleString('tr-TR')} N</td></tr>
+        <tr><td>${t('hizli.scenario_min_friction')}</td><td>${mtMin.toFixed(3)}</td><td>${mbMin.toFixed(3)}</td><td>${tMin.total.toFixed(1)} Nm</td><td>${Math.round(Ftarget).toLocaleString('tr-TR')} N</td></tr>
+        <tr><td>${t('hizli.scenario_nominal')}</td><td>${mtNom.toFixed(3)}</td><td>${mbNom.toFixed(3)}</td><td>${tNom.total.toFixed(1)} Nm</td><td>${Math.round(Ftarget).toLocaleString('tr-TR')} N</td></tr>
+        <tr><td>${t('hizli.scenario_max_friction')}</td><td>${mtMax.toFixed(3)}</td><td>${mbMax.toFixed(3)}</td><td>${tMax.total.toFixed(1)} Nm</td><td>${Math.round(Ftarget).toLocaleString('tr-TR')} N</td></tr>
       </tbody>
     </table>
 
-    <div class="alert ${liveSources.length?'alert-success':'alert-warn'}"><strong>Hesapta kullanılan aktif standart verileri:</strong> ${liveSources.length?liveSources.join(', '):'Yok — kullanıcı girdisi/kütüphane fallback'}<br><span style="font-size:11px">${ACTIVE_STANDARD_LIBRARY.version_signature||'Aktif veri sürümü bulunmuyor'}</span></div>
-    ${!prodAllowed?'<div class="alert alert-warn">Veri güven seviyesi üretim onayı için yeterli değildir.</div>':''}
-    <div class="alert alert-info">Diş sıyırma ve proof-load kontrolleri mühendislik ön değerlendirmesidir. Gerçek malzeme verisi ve doğrulanmış ISO 898-2 tablosu önceliklidir.</div>
-    <div style="margin-top:12px;display:flex;gap:8px"><button class="btn btn-success btn-sm" onclick="printCurrentReport()">📄 Rapor</button><button class="btn btn-secondary btn-sm" onclick="saveCurrentCalculation()">💾 Kaydet</button></div>`;
+    <div class="alert ${liveSources.length?'alert-success':'alert-warn'}"><strong>${t('hizli.active_standard_data_used')}</strong> ${liveSources.length?liveSources.join(', '):t('hizli.no_active_data_fallback')}<br><span style="font-size:11px">${ACTIVE_STANDARD_LIBRARY.version_signature||t('hizli.no_active_data_version')}</span></div>
+    ${!prodAllowed?'<div class="alert alert-warn">' + t('hizli.confidence_insufficient') + '</div>':''}
+    <div class="alert alert-info">${t('hizli.strip_proof_disclaimer')}</div>
+    <div style="margin-top:12px;display:flex;gap:8px"><button class="btn btn-success btn-sm" onclick="printCurrentReport()">${t('hizli.report_btn')}</button><button class="btn btn-secondary btn-sm" onclick="saveCurrentCalculation()">${t('hizli.save_btn')}</button></div>`;
 
   document.getElementById('tork-dagilim').style.display='block';
-  document.getElementById('torkBar').innerHTML=`<div class="tork-seg" style="width:${tNom.bearing/tNom.total*100}%;background:#ef4444;color:#fff">${(tNom.bearing/tNom.total*100).toFixed(0)}% Baş/Yatak</div><div class="tork-seg" style="width:${tNom.thread/tNom.total*100}%;background:#f59e0b;color:#fff">${(tNom.thread/tNom.total*100).toFixed(0)}% Diş</div>`;
-  document.getElementById('tolerans-box').innerHTML=`<div class="alert alert-info"><strong>Doğrulama Özeti:</strong> Min–nom–max sürtünme saçılımı, somun proof-load, iç/dış diş sıyırma ve yüzey basıncı birlikte değerlendirildi.</div>`;
+  document.getElementById('torkBar').innerHTML=`<div class="tork-seg" style="width:${tNom.bearing/tNom.total*100}%;background:#ef4444;color:#fff">${(tNom.bearing/tNom.total*100).toFixed(0)}% ${t('hizli.bar_head_bearing')}</div><div class="tork-seg" style="width:${tNom.thread/tNom.total*100}%;background:#f59e0b;color:#fff">${(tNom.thread/tNom.total*100).toFixed(0)}% ${t('hizli.bar_thread')}</div>`;
+  document.getElementById('tolerans-box').innerHTML=`<div class="alert alert-info"><strong>${t('hizli.validation_summary_label')}</strong> ${t('hizli.validation_summary_text')}</div>`;
   LAST_CALCULATION={...(LAST_CALCULATION||{}),torque_nm:tNom.total,preload_n:Ftarget,confidence:minConf,engineering:{yield_util:yieldUtil,nut_util:nutUtil,sf_internal:sfInt,sf_external:sfExt,bearing_pressure:bearingPressure,bearing_sf:bearingSF,t_min:tMin.total,t_nom:tNom.total,t_max:tMax.total,preload_min:FminAtNomTorque,preload_max:FmaxAtNomTorque}};
 }
-function resetForm(){document.getElementById('sonuc-box').innerHTML='<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">🔧</div><div>Parametreleri girin</div></div>';document.getElementById('tork-dagilim').style.display='none';}
+function resetForm(){document.getElementById('sonuc-box').innerHTML='<div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">🔧</div><div>' + t('hizli.enter_parameters') + '</div></div>';document.getElementById('tork-dagilim').style.display='none';}
 
 function vdiHesapla(){
   const Ep=document.getElementById('v_malzeme').value.includes('Alüm')?70000:210000;
-  const t=parseFloat(document.getElementById('v_plaka').value),L=parseFloat(document.getElementById('v_boy').value);
+  const vPlaka=parseFloat(document.getElementById('v_plaka').value),L=parseFloat(document.getElementById('v_boy').value);
   const n=parseFloat(document.getElementById('v_n').value),FA=parseFloat(document.getElementById('v_FA').value)*1000;
-  const dp=t/(Ep*100),db=L/(210000*78.5),phi=dp/(dp+db),FK=n*phi*FA;
-  document.getElementById('vdi-sonuc').innerHTML=`<div class="card-title">VDI 2230 Sonuçları</div><div class="result-box"><div class="result-row"><span class="result-key">Plaka Esnekliği δp</span><span class="result-val">${(dp*1e6).toFixed(2)} ×10⁻⁶ mm/N</span></div><div class="result-row"><span class="result-key">Cıvata Esnekliği δb</span><span class="result-val">${(db*1e6).toFixed(2)} ×10⁻⁶ mm/N</span></div><div class="result-row"><span class="result-key">Yük Dağılım Faktörü Φ</span><span class="result-val blue">${phi.toFixed(3)}</span></div><div class="result-row"><span class="result-key">Ek Cıvata Kuvveti ΔFb</span><span class="result-val warn">${(FK/1000).toFixed(2)} kN</span></div><div class="result-row"><span class="result-key">Değerlendirme</span><span class="result-val ${phi<0.2?'ok':'warn'}">${phi<0.2?'✅ Optimal':'⚠️ Kontrol edilmeli'}</span></div></div>`;
+  const dp=vPlaka/(Ep*100),db=L/(210000*78.5),phi=dp/(dp+db),FK=n*phi*FA;
+  document.getElementById('vdi-sonuc').innerHTML=`<div class="card-title">${t('vdi.result_title')}</div><div class="result-box"><div class="result-row"><span class="result-key">${t('vdi.result_plate_compliance')}</span><span class="result-val">${(dp*1e6).toFixed(2)} ×10⁻⁶ mm/N</span></div><div class="result-row"><span class="result-key">${t('vdi.result_bolt_compliance')}</span><span class="result-val">${(db*1e6).toFixed(2)} ×10⁻⁶ mm/N</span></div><div class="result-row"><span class="result-key">${t('vdi.result_load_factor')}</span><span class="result-val blue">${phi.toFixed(3)}</span></div><div class="result-row"><span class="result-key">${t('vdi.result_additional_bolt_force')}</span><span class="result-val warn">${(FK/1000).toFixed(2)} kN</span></div><div class="result-row"><span class="result-key">${t('vdi.result_assessment')}</span><span class="result-val ${phi<0.2?'ok':'warn'}">${phi<0.2?'✅ '+t('vdi.assessment_optimal'):'⚠️ '+t('vdi.assessment_check')}</span></div></div>`;
 }
 
 // ========== CHECK-LIST ==========
@@ -3163,7 +3411,7 @@ const cls={};
 function sc(no,val,btn){cls[no]=val;const r=btn.closest('.check-item');r.classList.remove('ok','nok');if(val==='ok')r.classList.add('ok');if(val==='nok')r.classList.add('nok');r.querySelectorAll('.check-btn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');}
 function checklistSonuc(){
   const v=Object.values(cls),ok=v.filter(x=>x==='ok').length,nok=v.filter(x=>x==='nok').length,tot=CL.length,oran=Math.round(ok/tot*100);
-  document.getElementById('cl-sonuc').innerHTML=`<div class="card"><div class="grid4" style="margin-bottom:12px"><div class="stat"><div class="stat-label">Toplam</div><div class="stat-val blue">${tot}</div></div><div class="stat"><div class="stat-label">OK</div><div class="stat-val green">${ok}</div></div><div class="stat"><div class="stat-label">NOK</div><div class="stat-val ${nok>0?'red':'green'}">${nok}</div></div><div class="stat"><div class="stat-label">Uygunluk</div><div class="stat-val ${oran>=90?'green':oran>=70?'yellow':'red'}">${oran}%</div></div></div><div class="alert alert-${nok===0?'ok':nok<=2?'warn':'danger'}">${nok===0?'✅ Tüm maddeler OK':nok<=2?`⚠️ ${nok} madde NOK`:`❌ ${nok} madde NOK — hat durdurulması değerlendirilmeli`}</div>${nok>0?`<div class="alert alert-warn">${nok>=3?'Hat durdurulmalı.':'Hatalı birimden önceki 5 birim kontrol edilmeli.'}</div>`:''}<div class="btn-group"><button class="btn btn-primary btn-sm">📄 Rapor</button><button class="btn btn-secondary btn-sm">💾 Kaydet</button>${nok>0?'<button class="btn btn-danger btn-sm">⚠️ Düzeltici Faaliyet</button>':''}</div></div>`;
+  document.getElementById('cl-sonuc').innerHTML=`<div class="card"><div class="grid4" style="margin-bottom:12px"><div class="stat"><div class="stat-label">${t('checklist.stat_total')}</div><div class="stat-val blue">${tot}</div></div><div class="stat"><div class="stat-label">OK</div><div class="stat-val green">${ok}</div></div><div class="stat"><div class="stat-label">NOK</div><div class="stat-val ${nok>0?'red':'green'}">${nok}</div></div><div class="stat"><div class="stat-label">${t('checklist.stat_compliance')}</div><div class="stat-val ${oran>=90?'green':oran>=70?'yellow':'red'}">${oran}%</div></div></div><div class="alert alert-${nok===0?'ok':nok<=2?'warn':'danger'}">${nok===0?'✅ '+t('checklist.result_all_ok'):nok<=2?`⚠️ ${nok} ${t('checklist.result_n_nok')}`:`❌ ${nok} ${t('checklist.result_n_nok')} — ${t('checklist.result_line_stop_consider')}`}</div>${nok>0?`<div class="alert alert-warn">${nok>=3?t('checklist.action_line_must_stop'):t('checklist.action_check_previous_5')}</div>`:''}<div class="btn-group"><button class="btn btn-primary btn-sm">${t('checklist.report_btn')}</button><button class="btn btn-secondary btn-sm">${t('checklist.save_btn')}</button>${nok>0?'<button class="btn btn-danger btn-sm">'+t('checklist.corrective_action_btn')+'</button>':''}</div></div>`;
 }
 function resetChecklist(){Object.keys(cls).forEach(k=>delete cls[k]);document.querySelectorAll('.check-item').forEach(el=>{el.classList.remove('ok','nok');el.querySelectorAll('.check-btn').forEach(b=>b.classList.remove('sel'));});document.getElementById('cl-sonuc').innerHTML='';}
 
@@ -3181,7 +3429,7 @@ function yetenekHesapla(){
   const yontemKod=document.getElementById('y_olcumYontemi').value;
 
   // Min 30 ölçüm
-  if(vals.length<30){document.getElementById('yetenek-sonuc').innerHTML='<div class="alert alert-danger">Minimum 30 ölçüm gereklidir. Şu an: '+vals.length+' adet.</div>';return;}
+  if(vals.length<30){document.getElementById('yetenek-sonuc').innerHTML='<div class="alert alert-danger">'+t('yetenek.err_min_30')+' '+t('yetenek.err_current_count')+': '+vals.length+'.</div>';return;}
 
   // LSL / USL
   let LSL,USL;
@@ -3193,14 +3441,14 @@ function yetenekHesapla(){
     LSL=parseFloat(document.getElementById('y_oemlsl').value);
     USL=parseFloat(document.getElementById('y_oemusl').value);
   }
-  if(isNaN(LSL)||isNaN(USL)||LSL>=USL){document.getElementById('yetenek-sonuc').innerHTML='<div class="alert alert-danger">LSL ve USL geçerli olmalı ve LSL &lt; USL şartı sağlanmalıdır.</div>';return;}
+  if(isNaN(LSL)||isNaN(USL)||LSL>=USL){document.getElementById('yetenek-sonuc').innerHTML='<div class="alert alert-danger">'+t('yetenek.err_lsl_usl_invalid')+'</div>';return;}
 
   const n=vals.length;
   const mean=vals.reduce((a,b)=>a+b,0)/n;
   const std=Math.sqrt(vals.reduce((a,b)=>a+(b-mean)**2,0)/(n-1));
 
   // Standart sapma sıfır kontrolü
-  if(std<0.0001){document.getElementById('yetenek-sonuc').innerHTML='<div class="alert alert-danger">Standart sapma sıfıra çok yakın — tüm ölçümler aynı değerde görünüyor. Veriyi kontrol edin.</div>';return;}
+  if(std<0.0001){document.getElementById('yetenek-sonuc').innerHTML='<div class="alert alert-danger">'+t('yetenek.err_std_near_zero')+'</div>';return;}
 
   const Cp=(USL-LSL)/(6*std);
   const Cpu=(USL-mean)/(3*std);
@@ -3228,22 +3476,22 @@ function yetenekHesapla(){
   const bars=hist.map((c,i)=>`<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div style="font-size:10px;color:var(--text3)">${c}</div><div style="width:28px;background:${(smin+i*bw)>=LSL&&(smin+(i+1)*bw)<=USL?'var(--accent)':'var(--danger)'};border-radius:3px 3px 0 0;height:${Math.round(c/mh*100)}px;min-height:2px"></div><div style="font-size:9px;color:var(--text3);transform:rotate(-30deg);margin-top:4px">${(smin+i*bw).toFixed(1)}</div></div>`).join('');
 
   document.getElementById('yetenek-sonuc').innerHTML=`
-    <div class="card-title">${etiket.p}/${etiket.pk} Analizi — ${n} Ölçüm ${kaynak==='oem'?'<span class="norm-badge">OEM t_min/t_max</span>':''}</div>
-    <div style="font-size:11px;color:var(--text3);margin-bottom:8px">Yöntem: Sistem ${yontemKod} · LSL=${LSL} Nm / USL=${USL} Nm</div>
+    <div class="card-title">${etiket.p}/${etiket.pk} ${t('yetenek.analysis_suffix')} — ${n} ${t('yetenek.measurement_suffix')} ${kaynak==='oem'?'<span class="norm-badge">'+t('yetenek.oem_tmin_tmax')+'</span>':''}</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px">${t('yetenek.method_label')}: ${t('yetenek.system_prefix')} ${yontemKod} · LSL=${LSL} Nm / USL=${USL} Nm</div>
     <div class="grid4" style="margin:8px 0">
       <div class="stat"><div class="stat-label">${etiket.p}</div><div class="stat-val ${Cp>=hedef_p?'green':Cp>=1.33?'yellow':'red'}">${Cp.toFixed(2)}</div><div class="stat-sub">≥${hedef_p}</div></div>
       <div class="stat"><div class="stat-label">${etiket.pk}</div><div class="stat-val ${Cpk>=hedef_pk?'green':Cpk>=1.33?'yellow':'red'}">${Cpk.toFixed(2)}</div><div class="stat-sub">≥${hedef_pk}</div></div>
-      <div class="stat"><div class="stat-label">Ortalama x̄</div><div class="stat-val blue">${mean.toFixed(2)}</div></div>
+      <div class="stat"><div class="stat-label">${t('yetenek.mean_label')}</div><div class="stat-val blue">${mean.toFixed(2)}</div></div>
       <div class="stat"><div class="stat-label">σ</div><div class="stat-val">${std.toFixed(3)}</div></div>
     </div>
     <div style="display:flex;align-items:flex-end;gap:3px;height:100px;margin:10px 0;padding:0 8px">${bars}</div>
     <div class="result-box">
       <div class="result-row"><span class="result-key">LSL / USL</span><span class="result-val">${LSL} – ${USL} Nm</span></div>
-      <div class="result-row"><span class="result-key">Değerlendirme</span><span class="result-val ${durum==='ok'?'ok':durum==='warn'?'warn':'nok'}">${durum==='ok'?'✅ YETERLİ':durum==='warn'?'⚠️ SINIRDA':'❌ YETERSİZ'}</span></div>
+      <div class="result-row"><span class="result-key">${t('yetenek.assessment_label')}</span><span class="result-val ${durum==='ok'?'ok':durum==='warn'?'warn':'nok'}">${durum==='ok'?'✅ '+t('yetenek.status_sufficient'):durum==='warn'?'⚠️ '+t('yetenek.status_borderline'):'❌ '+t('yetenek.status_insufficient')}</span></div>
     </div>
-    ${!normOk?'<div class="alert alert-warn" style="margin-top:8px">⚠️ Normallik: Veri dağılımı normal dağılımdan önemli ölçüde sapıyor olabilir — yorum dikkatli yapılmalıdır.</div>':''}
-    ${aykirilar.length>0?`<div class="alert alert-warn" style="margin-top:8px">⚠️ Aykırı değer: ${aykirilar.length} ölçüm 3σ dışında (${aykirilar.map(v=>v.toFixed(2)).join(', ')}). Veriyi gözden geçirin.</div>`:''}
-    ${durum!=='ok'?`<div class="alert alert-${durum==='warn'?'warn':'danger'}" style="margin-top:8px">${durum==='warn'?'Sıkıcı ayarını kontrol edin, teknik servis alın.':'Sıkıcıyı üretimden çıkarın. Yetenek çalışması tekrarlanmalı.'}</div>`:''}`;
+    ${!normOk?'<div class="alert alert-warn" style="margin-top:8px">⚠️ '+t('yetenek.normality_warning')+'</div>':''}
+    ${aykirilar.length>0?`<div class="alert alert-warn" style="margin-top:8px">⚠️ ${t('yetenek.outlier_label')}: ${aykirilar.length} ${t('yetenek.outlier_suffix')} (${aykirilar.map(v=>v.toFixed(2)).join(', ')}). ${t('yetenek.outlier_review')}</div>`:''}
+    ${durum!=='ok'?`<div class="alert alert-${durum==='warn'?'warn':'danger'}" style="margin-top:8px">${durum==='warn'?t('yetenek.action_check_tool'):t('yetenek.action_remove_tool')}</div>`:''}`;
 }
 
 // ========== PROBLEM ==========
@@ -3451,13 +3699,13 @@ async function loadSystemHealth(){
 
 
 const VALIDATION_DATASETS=[
-{name:'ISO 898-2 Somun Proof-Load',status:'Şema hazır / veri eksik',count:0,production:false,action:'Doğrulanmış tabloyu yükle'},
-{name:'Civata-Somun Uyumluluğu',status:'Mühendislik kural seti',count:5,production:false,action:'Proof-load ile doğrula'},
-{name:'Pul Sertlik / Yüzey Basıncı',status:'Şema hazır / veri eksik',count:0,production:false,action:'Standart verisi ekle'},
-{name:'Sürtünme Veritabanı',status:'Taslak',count:1,production:false,action:'ISO 16047 test raporu ekle'},
-{name:'Teknik Kaynak Kayıtları',status:'Aktif',count:1,production:false,action:'Birincil kaynak ekle'}];
-function renderValidationDatasets(){const e=document.getElementById('validationDatasets');if(!e)return;e.innerHTML=VALIDATION_DATASETS.map(d=>`<tr><td>${d.name}</td><td>${d.status}</td><td>${d.count}</td><td><span class="badge-prod ${d.production?'ok':'nok'}">${d.production?'Evet':'Hayır'}</span></td><td>${d.action}</td></tr>`).join('');}
-function refreshValidationPanel(){const s=getLibrarySelection();const c=[s.thread?.confidence,s.bolt?.confidence,s.strength?.confidence,s.nut?.confidence,s.washer?.confidence].filter(Number.isFinite);const m=c.length?Math.min(...c):1;const fc=s.coating?.confidence||1;document.getElementById('validationCurrent').innerHTML=`<table class="source-table"><tr><th>Standart</th><td>${s.standard||'—'}</td></tr><tr><th>Diş</th><td>${s.thread?.thread_code||'—'}</td></tr><tr><th>Bağlantı Verisi Güveni</th><td><span class="confidence ${confClass(m)}">${confLabel(m)}</span></td></tr><tr><th>Sürtünme Güveni</th><td><span class="confidence ${confClass(fc)}">${confLabel(fc)}</span></td></tr><tr><th>Somun Proof-Load</th><td><span class="badge-prod nok">Doğrulanmış tablo yok</span></td></tr><tr><th>Seri Üretim Kararı</th><td><span class="badge-prod nok">Kullanılamaz</span></td></tr></table>`;}
+{nameKey:'validation.ds_nut_proof_load',statusKey:'validation.ds_schema_ready_missing',count:0,production:false,actionKey:'validation.ds_action_load_verified_table'},
+{nameKey:'validation.ds_bolt_nut_compat',statusKey:'validation.ds_engineering_ruleset',count:5,production:false,actionKey:'validation.ds_action_verify_proof_load'},
+{nameKey:'validation.ds_washer_hardness',statusKey:'validation.ds_schema_ready_missing',count:0,production:false,actionKey:'validation.ds_action_add_standard_data'},
+{nameKey:'validation.ds_friction_db',statusKey:'validation.ds_draft',count:1,production:false,actionKey:'validation.ds_action_add_iso16047_report'},
+{nameKey:'validation.ds_technical_source_records',statusKey:'validation.ds_active',count:1,production:false,actionKey:'validation.ds_action_add_primary_source'}];
+function renderValidationDatasets(){const e=document.getElementById('validationDatasets');if(!e)return;e.innerHTML=VALIDATION_DATASETS.map(d=>`<tr><td>${t(d.nameKey)}</td><td>${t(d.statusKey)}</td><td>${d.count}</td><td><span class="badge-prod ${d.production?'ok':'nok'}">${d.production?t('validation.yes'):t('validation.no')}</span></td><td>${t(d.actionKey)}</td></tr>`).join('');}
+function refreshValidationPanel(){const s=getLibrarySelection();const c=[s.thread?.confidence,s.bolt?.confidence,s.strength?.confidence,s.nut?.confidence,s.washer?.confidence].filter(Number.isFinite);const m=c.length?Math.min(...c):1;const fc=s.coating?.confidence||1;document.getElementById('validationCurrent').innerHTML=`<table class="source-table"><tr><th>${t('hizli.standard')}</th><td>${s.standard||'—'}</td></tr><tr><th>${t('validation.thread_label')}</th><td>${s.thread?.thread_code||'—'}</td></tr><tr><th>${t('validation.connection_data_confidence')}</th><td><span class="confidence ${confClass(m)}">${confLabel(m)}</span></td></tr><tr><th>${t('validation.friction_confidence')}</th><td><span class="confidence ${confClass(fc)}">${confLabel(fc)}</span></td></tr><tr><th>${t('validation.nut_proof_load')}</th><td><span class="badge-prod nok">${t('validation.no_verified_table')}</span></td></tr><tr><th>${t('validation.production_decision')}</th><td><span class="badge-prod nok">${t('validation.not_usable')}</span></td></tr></table>`;}
 
 
 async function uploadStandardData(){

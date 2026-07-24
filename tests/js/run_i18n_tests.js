@@ -71,6 +71,7 @@ function extractFunctionDecl(script, name) {
 const CONST_NAMES = [
   'I18N', 'FC_ENUM_LABELS', 'CURRENT_LANG',
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
+  'N01391',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -91,6 +92,7 @@ const FUNCTION_NAMES = [
   'fcPopulateFilters', 'fcGroupOf', 'fcRenderList', 'fcRenderCompareOptions',
   'fcRenderOverview', 'fcRenderRangeViz', 'fcRenderReadiness',
   'fcWarningSeverity', 'fcRenderWarnings', 'fcRenderComparison', 'fcRenderReport',
+  'n01391Hesapla',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
