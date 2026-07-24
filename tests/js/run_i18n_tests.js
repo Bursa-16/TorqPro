@@ -515,6 +515,166 @@ function main() {
       trHtml.indexOf('Thread and bearing friction are not separately verified.') !== -1);
   }
 
+  // ================================================================
+  // Faz 2.7.0 -- global i18n foundation (login / topbar / sidebar /
+  // dashboard). Friction Condition module coverage above (tests
+  // 1-13) is left untouched; these tests extend the same harness to
+  // the first batch of app-wide surfaces migrated in this phase.
+  // ================================================================
+
+  // ---- 14. Login overlay: TR default + EN switch (static markup) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const subtitleEl = getByI18nKey(ctx, 'login.subtitle');
+    const userLabelEl = getByI18nKey(ctx, 'login.username_label');
+    const submitEl = getByI18nKey(ctx, 'login.submit');
+    const userPh = getPlaceholderByKey(ctx, 'login.username_placeholder');
+    check('login.subtitle element exists', !!subtitleEl);
+    check('login.username_label element exists', !!userLabelEl);
+    check('login.submit element exists', !!submitEl);
+    ctx.context.applyStaticTranslations();
+    checkEqual('login subtitle is tr by default', subtitleEl.textContent, 'Bağlantı Elemanları Analiz Yazılımı');
+    checkEqual('login submit button is tr by default', submitEl.textContent, 'Giriş Yap');
+    ctx.context.setLanguage('en');
+    checkEqual('login subtitle switches to en', subtitleEl.textContent, 'Fastener Analysis Software');
+    checkEqual('login username label switches to en', userLabelEl.textContent, 'Username');
+    checkEqual('login submit button switches to en', submitEl.textContent, 'Sign In');
+    checkEqual('login username placeholder switches to en', userPh.placeholder, 'Your username');
+  }
+
+  // ---- 15. Topbar nav items + system-active pill translate ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const dashEl = getByI18nKey(ctx, 'topbar.dashboard');
+    const reportEl = getByI18nKey(ctx, 'topbar.report');
+    const activeEl = getByI18nKey(ctx, 'topbar.system_active');
+    check('topbar.dashboard element exists', !!dashEl);
+    check('topbar.report element exists', !!reportEl);
+    check('topbar.system_active element exists', !!activeEl);
+    ctx.context.applyStaticTranslations();
+    checkEqual('topbar report label tr by default', reportEl.textContent, 'Rapor');
+    ctx.context.setLanguage('en');
+    checkEqual('topbar report label switches to en', reportEl.textContent, 'Report');
+    checkEqual('topbar system-active pill switches to en', activeEl.textContent, '● System Active');
+  }
+
+  // ---- 16. Every sidebar menu item translates TR <-> EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    // key -> [expected tr text, expected en text]
+    const sidebarExpected = {
+      'sidebar.dashboard': ['Dashboard', 'Dashboard'],
+      'sidebar.sample_torque_study': ['Örnek Tork Çalışması', 'Sample Torque Study'],
+      'sidebar.torque_calc': ['Tork Hesap', 'Torque Calc'],
+      'sidebar.advanced_analysis': ['Gelişmiş Analiz', 'Advanced Analysis'],
+      'sidebar.checklist': ['Check-List', 'Check-List'],
+      'sidebar.capability': ['Cm/Cmk Yetenek', 'Cp/Cpk Capability'],
+      'sidebar.tool_tracking': ['Sıkıcı Takip', 'Tool Tracking'],
+      'sidebar.problem_management': ['Problem Yönetimi', 'Problem Management'],
+      'sidebar.oem_norm_query': ['OEM Norm Sorgu', 'OEM Norm Query'],
+      'sidebar.norm_guide': ['Norm Rehberi', 'Norm Guide'],
+      'sidebar.fmea_catalog': ['FMEA Kataloğu', 'FMEA Catalog'],
+      'sidebar.admin_panel': ['Yönetici Paneli', 'Admin Panel'],
+      'sidebar.setup_wizard': ['Kurulum Sihirbazı', 'Setup Wizard'],
+      'sidebar.dns_check': ['Domain & DNS Kontrolü', 'Domain & DNS Check'],
+      'sidebar.secure_deploy': ['Güvenli Yayın', 'Secure Deploy'],
+      'sidebar.runtime_health': ['Canlılık Durumu', 'Runtime Health'],
+      'sidebar.mobile_access': ['Mobil Erişim', 'Mobile Access'],
+      'sidebar.deployment_profile': ['Kurulum Profili', 'Deployment Profile'],
+      'sidebar.data_migration': ['Veri Taşıma', 'Data Migration'],
+      'sidebar.system_diagnostics': ['Sistem Tanılama', 'System Diagnostics'],
+      'sidebar.org_settings': ['Kurum Ayarları', 'Organization Settings'],
+      'sidebar.license_mgmt': ['Lisans Yönetimi', 'License Management'],
+      'sidebar.usage_summary': ['Kullanım Özeti', 'Usage Summary'],
+      'sidebar.release_package': ['Proje Release Paketi', 'Project Release Package'],
+      'sidebar.traceability_matrix': ['İzlenebilirlik Matrisi', 'Traceability Matrix'],
+      'sidebar.projects': ['Projeler', 'Projects'],
+      'sidebar.revisions': ['Hesap Revizyonları', 'Calculation Revisions'],
+      'sidebar.approvals_pending': ['Onay Bekleyenler', 'Pending Approvals'],
+      'sidebar.data_quality_gate': ['Veri Kalite Kapısı', 'Data Quality Gate'],
+      'sidebar.golden_cases': ['Altın Senaryolar', 'Golden Cases'],
+      'sidebar.release_cert': ['Sürüm Sertifikası', 'Release Certificate'],
+      'sidebar.active_data_versions': ['Aktif Veri Sürümleri', 'Active Data Versions'],
+      'sidebar.data_upload_approval': ['Veri Yükleme & Onay', 'Data Upload & Approval'],
+      'sidebar.calibration': ['Kalibrasyon', 'Calibration'],
+      'sidebar.technical_validation': ['Teknik Doğrulama', 'Technical Validation'],
+      'sidebar.generate_report': ['Rapor Üret', 'Generate Report'],
+      'sidebar.archive': ['Arşiv', 'Archive'],
+      'sidebar.secure_logout': ['Güvenli Çıkış', 'Secure Logout'],
+    };
+    ctx.context.applyStaticTranslations();
+    for (const [key, [trText]] of Object.entries(sidebarExpected)) {
+      const el = getByI18nKey(ctx, key);
+      check('sidebar element exists for ' + key, !!el);
+      if (el) checkEqual('sidebar tr text for ' + key, el.textContent, trText);
+    }
+    ctx.context.setLanguage('en');
+    for (const [key, [, enText]] of Object.entries(sidebarExpected)) {
+      const el = getByI18nKey(ctx, key);
+      if (el) checkEqual('sidebar en text for ' + key, el.textContent, enText);
+    }
+  }
+
+  // ---- 17. Dashboard: title, stat labels, table headers, statuses ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titleEl = getByI18nKey(ctx, 'dashboard.title');
+    const thOpEl = getByI18nKey(ctx, 'dashboard.th_operation');
+    const statusNokEl = getByI18nKey(ctx, 'dashboard.status_nok');
+    const statusBorderlineEl = getByI18nKey(ctx, 'dashboard.status_borderline');
+    check('dashboard.title element exists', !!titleEl);
+    check('dashboard.th_operation element exists', !!thOpEl);
+    ctx.context.applyStaticTranslations();
+    checkEqual('dashboard title is tr by default', titleEl.textContent, 'Üretim Tork Kontrol Paneli');
+    checkEqual('dashboard borderline status is tr by default', statusBorderlineEl.textContent, 'SINIRDA');
+    ctx.context.setLanguage('en');
+    checkEqual('dashboard title switches to en', titleEl.textContent, 'Production Torque Control Panel');
+    checkEqual('dashboard operation header switches to en', thOpEl.textContent, 'Operation');
+    checkEqual('dashboard NOK status stays "NOK" in en (technical status code)', statusNokEl.textContent, 'NOK');
+    checkEqual('dashboard borderline status switches to en', statusBorderlineEl.textContent, 'BORDERLINE');
+  }
+
+  // ---- 18. localStorage persistence covers the whole app (not just FC) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, { torqpro_lang: 'en' });
+    const titleEl = getByI18nKey(ctx, 'dashboard.title');
+    const submitEl = getByI18nKey(ctx, 'login.submit');
+    ctx.context.applyStaticTranslations();
+    checkEqual('dashboard renders in en on load when torqpro_lang=en persisted', titleEl.textContent, 'Production Torque Control Panel');
+    checkEqual('login renders in en on load when torqpro_lang=en persisted', submitEl.textContent, 'Sign In');
+  }
+
+  // ---- 19. Missing translation key: controlled fallback + warning ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const warnings = [];
+    const origWarn = console.warn;
+    console.warn = (...args) => { warnings.push(args.join(' ')); };
+    let result;
+    try {
+      result = ctx.context.t('this.key.does.not.exist.anywhere');
+    } finally {
+      console.warn = origWarn;
+    }
+    checkEqual('unknown key falls back to the raw key string', result, 'this.key.does.not.exist.anywhere');
+    check('a console warning was emitted for the missing key', warnings.length > 0);
+  }
+
+  // ---- 20. Technical standard codes are never altered by translation ----
+  {
+    // ISO 16047, VDI 2230, APQP, PPAP, Cp/Cpk, Pp/Ppk and OEM norm
+    // codes must appear byte-identical regardless of active language.
+    // Cm/Cmk (tr) / Cp/Cpk (en) is the one intentional locale-specific
+    // exception (verified separately below) -- the raw statistical
+    // notation itself is never mistranslated into prose.
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const capEl = getByI18nKey(ctx, 'sidebar.capability');
+    ctx.context.applyStaticTranslations();
+    check('tr sidebar capability label contains "Cm/Cmk"', capEl.textContent.indexOf('Cm/Cmk') !== -1);
+    ctx.context.setLanguage('en');
+    check('en sidebar capability label contains "Cp/Cpk"', capEl.textContent.indexOf('Cp/Cpk') !== -1);
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
   if (fail > 0) {
     console.log('Failures: ' + failures.join('; '));

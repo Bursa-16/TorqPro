@@ -351,20 +351,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <div class="login-logo">🔧 TorqPro</div>
-    <div class="login-sub">Bağlantı Elemanları Analiz Yazılımı · <span id="login-version">v…</span></div>
+    <div class="login-sub"><span data-i18n="login.subtitle">Bağlantı Elemanları Analiz Yazılımı</span> · <span id="login-version">v…</span></div>
     <div class="login-field">
-      <label class="login-label">Kullanıcı Adı</label>
-      <input class="login-input" type="text" id="loginUser" placeholder="Kullanıcı adınız"
+      <label class="login-label" data-i18n="login.username_label">Kullanıcı Adı</label>
+      <input class="login-input" type="text" id="loginUser" data-i18n-placeholder="login.username_placeholder" placeholder="Kullanıcı adınız"
         autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <div class="login-field">
-      <label class="login-label">Şifre</label>
+      <label class="login-label" data-i18n="login.password_label">Şifre</label>
       <input class="login-input" type="password" id="loginPass" placeholder="••••••••"
         autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="login-btn" onclick="doLogin()">Giriş Yap</button>
+    <button class="login-btn" onclick="doLogin()" data-i18n="login.submit">Giriş Yap</button>
     <div class="login-error" id="loginError"></div>
-    <div class="login-footer">Demo sürümü — yetkisiz erişim yasaktır</div>
+    <div class="login-footer" data-i18n="login.footer">Demo sürümü — yetkisiz erişim yasaktır</div>
   </div>
 </div>
 
@@ -373,117 +373,117 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <div class="topbar">
   <div class="logo">TorqPro <span id="topbar-version">v… · Go-Live Wizard</span></div>
   <div class="topbar-nav">
-    <button class="nav-btn active" onclick="showNav('dashboard',this)">📊 Dashboard</button>
-    <button class="nav-btn" onclick="showNav('n01391',this)">⚡ OEM Tork Öngörüsü</button>
-    <button class="nav-btn" onclick="showNav('hizli',this)">🔧 Tork Hesap</button>
-    <button class="nav-btn" onclick="showNav('checklist',this)">✅ Check-List</button>
-    <button class="nav-btn" onclick="showNav('yetenek',this)">📈 Yetenek</button>
-    <button class="nav-btn" onclick="showNav('problem',this)">⚠️ Problem</button>
-    <button class="nav-btn" onclick="showNav('oem',this)">🔍 OEM Norm</button>
-    <button class="nav-btn" onclick="showNav('rapor',this)">📄 Rapor</button>
+    <button class="nav-btn active" onclick="showNav('dashboard',this)">📊 <span data-i18n="topbar.dashboard">Dashboard</span></button>
+    <button class="nav-btn" onclick="showNav('n01391',this)">⚡ <span data-i18n="topbar.oem_torque_estimate">OEM Tork Öngörüsü</span></button>
+    <button class="nav-btn" onclick="showNav('hizli',this)">🔧 <span data-i18n="topbar.torque_calc">Tork Hesap</span></button>
+    <button class="nav-btn" onclick="showNav('checklist',this)">✅ <span data-i18n="topbar.checklist">Check-List</span></button>
+    <button class="nav-btn" onclick="showNav('yetenek',this)">📈 <span data-i18n="topbar.capability">Yetenek</span></button>
+    <button class="nav-btn" onclick="showNav('problem',this)">⚠️ <span data-i18n="topbar.problem">Problem</span></button>
+    <button class="nav-btn" onclick="showNav('oem',this)">🔍 <span data-i18n="topbar.oem_norm">OEM Norm</span></button>
+    <button class="nav-btn" onclick="showNav('rapor',this)">📄 <span data-i18n="topbar.report">Rapor</span></button>
   </div>
   <div class="topbar-right" id="topbarRight">
     <div class="lang-switch" role="group" aria-label="Language / Dil">
       <button type="button" class="lang-btn" data-lang="tr" onclick="setLanguage('tr')">TR</button>
       <button type="button" class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
     </div>
-    <span class="pill pill-ok">● Sistem Aktif</span>
+    <span class="pill pill-ok" data-i18n="topbar.system_active">● Sistem Aktif</span>
   </div>
 </div>
 
 <div class="main">
 <div class="sidebar">
   <div class="sidebar-section">
-    <div class="sidebar-label">Hızlı Erişim</div>
-    <div class="sidebar-item active" onclick="showPage('dashboard',this)"><span class="sidebar-icon">📊</span> Dashboard</div>
-    <div class="sidebar-item" onclick="showPage('n01391',this)"><span class="sidebar-icon">⚡</span> Örnek Tork Çalışması</div>
-    <div class="sidebar-item" onclick="showPage('hizli',this)"><span class="sidebar-icon">🔧</span> Tork Hesap</div>
-    <div class="sidebar-item" onclick="showPage('vdi',this)"><span class="sidebar-icon">🔬</span> Gelişmiş Analiz</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_quick_access">Hızlı Erişim</div>
+    <div class="sidebar-item active" onclick="showPage('dashboard',this)"><span class="sidebar-icon">📊</span> <span data-i18n="sidebar.dashboard">Dashboard</span></div>
+    <div class="sidebar-item" onclick="showPage('n01391',this)"><span class="sidebar-icon">⚡</span> <span data-i18n="sidebar.sample_torque_study">Örnek Tork Çalışması</span></div>
+    <div class="sidebar-item" onclick="showPage('hizli',this)"><span class="sidebar-icon">🔧</span> <span data-i18n="sidebar.torque_calc">Tork Hesap</span></div>
+    <div class="sidebar-item" onclick="showPage('vdi',this)"><span class="sidebar-icon">🔬</span> <span data-i18n="sidebar.advanced_analysis">Gelişmiş Analiz</span></div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-label">Üretim</div>
-    <div class="sidebar-item" onclick="showPage('checklist',this)"><span class="sidebar-icon">✅</span> Check-List</div>
-    <div class="sidebar-item" onclick="showPage('yetenek',this)"><span class="sidebar-icon">📈</span> Cm/Cmk Yetenek</div>
-    <div class="sidebar-item" onclick="showPage('sikici',this)"><span class="sidebar-icon">🔩</span> Sıkıcı Takip <span class="sidebar-badge">3</span></div>
-    <div class="sidebar-item" onclick="showPage('problem',this)"><span class="sidebar-icon">⚠️</span> Problem Yönetimi</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_production">Üretim</div>
+    <div class="sidebar-item" onclick="showPage('checklist',this)"><span class="sidebar-icon">✅</span> <span data-i18n="sidebar.checklist">Check-List</span></div>
+    <div class="sidebar-item" onclick="showPage('yetenek',this)"><span class="sidebar-icon">📈</span> <span data-i18n="sidebar.capability">Cm/Cmk Yetenek</span></div>
+    <div class="sidebar-item" onclick="showPage('sikici',this)"><span class="sidebar-icon">🔩</span> <span data-i18n="sidebar.tool_tracking">Sıkıcı Takip</span> <span class="sidebar-badge">3</span></div>
+    <div class="sidebar-item" onclick="showPage('problem',this)"><span class="sidebar-icon">⚠️</span> <span data-i18n="sidebar.problem_management">Problem Yönetimi</span></div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-label">Referans</div>
-    <div class="sidebar-item" onclick="showPage('oem')"><span class="sidebar-icon">🔍</span> OEM Norm Sorgu</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_reference">Referans</div>
+    <div class="sidebar-item" onclick="showPage('oem')"><span class="sidebar-icon">🔍</span> <span data-i18n="sidebar.oem_norm_query">OEM Norm Sorgu</span></div>
     <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> <span data-i18n="sidebar.frictioncondition">Friction Condition</span></div>
-    <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> Norm Rehberi</div>
-    <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> FMEA Kataloğu</div>
+    <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> <span data-i18n="sidebar.norm_guide">Norm Rehberi</span></div>
+    <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> <span data-i18n="sidebar.fmea_catalog">FMEA Kataloğu</span></div>
   </div>
   <div class="sidebar-section" id="adminSidebar" style="display:none">
-    <div class="sidebar-label">Yönetim</div>
-    <div class="sidebar-item" onclick="showPage('admin',this)"><span class="sidebar-icon">🛡️</span> Yönetici Paneli</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_admin">Yönetim</div>
+    <div class="sidebar-item" onclick="showPage('admin',this)"><span class="sidebar-icon">🛡️</span> <span data-i18n="sidebar.admin_panel">Yönetici Paneli</span></div>
   </div>
   <div class="sidebar-section" id="goliveSidebar" style="display:none">
-    <div class="sidebar-label">İlk Yayın</div>
-    <div class="sidebar-item" onclick="showPage('golivewizard',this)"><span class="sidebar-icon">🧭</span> Kurulum Sihirbazı</div>
-    <div class="sidebar-item" onclick="showPage('dnscheck',this)"><span class="sidebar-icon">🌐</span> Domain & DNS Kontrolü</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_golive">İlk Yayın</div>
+    <div class="sidebar-item" onclick="showPage('golivewizard',this)"><span class="sidebar-icon">🧭</span> <span data-i18n="sidebar.setup_wizard">Kurulum Sihirbazı</span></div>
+    <div class="sidebar-item" onclick="showPage('dnscheck',this)"><span class="sidebar-icon">🌐</span> <span data-i18n="sidebar.dns_check">Domain & DNS Kontrolü</span></div>
   </div>
   <div class="sidebar-section" id="cloudSidebar" style="display:none">
-    <div class="sidebar-label">İnternet Yayını</div>
-    <div class="sidebar-item" onclick="showPage('clouddeploy',this)"><span class="sidebar-icon">☁️</span> Güvenli Yayın</div>
-    <div class="sidebar-item" onclick="showPage('runtimehealth',this)"><span class="sidebar-icon">❤️</span> Canlılık Durumu</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_cloud">İnternet Yayını</div>
+    <div class="sidebar-item" onclick="showPage('clouddeploy',this)"><span class="sidebar-icon">☁️</span> <span data-i18n="sidebar.secure_deploy">Güvenli Yayın</span></div>
+    <div class="sidebar-item" onclick="showPage('runtimehealth',this)"><span class="sidebar-icon">❤️</span> <span data-i18n="sidebar.runtime_health">Canlılık Durumu</span></div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-label">Mobil Erişim</div>
-    <div class="sidebar-item" onclick="showPage('mobileaccess',this)"><span class="sidebar-icon">📱</span> Mobil Erişim</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_mobile">Mobil Erişim</div>
+    <div class="sidebar-item" onclick="showPage('mobileaccess',this)"><span class="sidebar-icon">📱</span> <span data-i18n="sidebar.mobile_access">Mobil Erişim</span></div>
   </div>
   <div class="sidebar-section" id="deploymentSidebar" style="display:none">
-    <div class="sidebar-label">Dağıtım ve Destek</div>
-    <div class="sidebar-item" onclick="showPage('deployment',this)"><span class="sidebar-icon">🚀</span> Kurulum Profili</div>
-    <div class="sidebar-item" onclick="showPage('migration',this)"><span class="sidebar-icon">🔄</span> Veri Taşıma</div>
-    <div class="sidebar-item" onclick="showPage('diagnostics',this)"><span class="sidebar-icon">🩺</span> Sistem Tanılama</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_deployment">Dağıtım ve Destek</div>
+    <div class="sidebar-item" onclick="showPage('deployment',this)"><span class="sidebar-icon">🚀</span> <span data-i18n="sidebar.deployment_profile">Kurulum Profili</span></div>
+    <div class="sidebar-item" onclick="showPage('migration',this)"><span class="sidebar-icon">🔄</span> <span data-i18n="sidebar.data_migration">Veri Taşıma</span></div>
+    <div class="sidebar-item" onclick="showPage('diagnostics',this)"><span class="sidebar-icon">🩺</span> <span data-i18n="sidebar.system_diagnostics">Sistem Tanılama</span></div>
   </div>
   <div class="sidebar-section" id="enterpriseSidebar" style="display:none">
-    <div class="sidebar-label">Kurumsal</div>
-    <div class="sidebar-item" onclick="showPage('organization',this)"><span class="sidebar-icon">🏢</span> Kurum Ayarları</div>
-    <div class="sidebar-item" onclick="showPage('license',this)"><span class="sidebar-icon">🔐</span> Lisans Yönetimi</div>
-    <div class="sidebar-item" onclick="showPage('usage',this)"><span class="sidebar-icon">📊</span> Kullanım Özeti</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_enterprise">Kurumsal</div>
+    <div class="sidebar-item" onclick="showPage('organization',this)"><span class="sidebar-icon">🏢</span> <span data-i18n="sidebar.org_settings">Kurum Ayarları</span></div>
+    <div class="sidebar-item" onclick="showPage('license',this)"><span class="sidebar-icon">🔐</span> <span data-i18n="sidebar.license_mgmt">Lisans Yönetimi</span></div>
+    <div class="sidebar-item" onclick="showPage('usage',this)"><span class="sidebar-icon">📊</span> <span data-i18n="sidebar.usage_summary">Kullanım Özeti</span></div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-label">Release ve Rapor</div>
-    <div class="sidebar-item" onclick="showPage('releasepackage',this)"><span class="sidebar-icon">📦</span> Proje Release Paketi</div>
-    <div class="sidebar-item" onclick="showPage('traceability',this)"><span class="sidebar-icon">🧾</span> İzlenebilirlik Matrisi</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_release">Release ve Rapor</div>
+    <div class="sidebar-item" onclick="showPage('releasepackage',this)"><span class="sidebar-icon">📦</span> <span data-i18n="sidebar.release_package">Proje Release Paketi</span></div>
+    <div class="sidebar-item" onclick="showPage('traceability',this)"><span class="sidebar-icon">🧾</span> <span data-i18n="sidebar.traceability_matrix">İzlenebilirlik Matrisi</span></div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-label">Proje ve Onay</div>
-    <div class="sidebar-item" onclick="showPage('projects',this)"><span class="sidebar-icon">📁</span> Projeler</div>
-    <div class="sidebar-item" onclick="showPage('revisions',this)"><span class="sidebar-icon">🔁</span> Hesap Revizyonları</div>
-    <div class="sidebar-item" onclick="showPage('approvals',this)"><span class="sidebar-icon">✍️</span> Onay Bekleyenler</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_project">Proje ve Onay</div>
+    <div class="sidebar-item" onclick="showPage('projects',this)"><span class="sidebar-icon">📁</span> <span data-i18n="sidebar.projects">Projeler</span></div>
+    <div class="sidebar-item" onclick="showPage('revisions',this)"><span class="sidebar-icon">🔁</span> <span data-i18n="sidebar.revisions">Hesap Revizyonları</span></div>
+    <div class="sidebar-item" onclick="showPage('approvals',this)"><span class="sidebar-icon">✍️</span> <span data-i18n="sidebar.approvals_pending">Onay Bekleyenler</span></div>
   </div>
   <div class="sidebar-section" id="qualitySidebar" style="display:none">
-    <div class="sidebar-label">Kalite Kapısı</div>
-    <div class="sidebar-item" onclick="showPage('qualitygate',this)"><span class="sidebar-icon">✅</span> Veri Kalite Kapısı</div>
-    <div class="sidebar-item" onclick="showPage('goldencases',this)"><span class="sidebar-icon">🏆</span> Altın Senaryolar</div>
-    <div class="sidebar-item" onclick="showPage('releasecert',this)"><span class="sidebar-icon">📜</span> Sürüm Sertifikası</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_quality_gate">Kalite Kapısı</div>
+    <div class="sidebar-item" onclick="showPage('qualitygate',this)"><span class="sidebar-icon">✅</span> <span data-i18n="sidebar.data_quality_gate">Veri Kalite Kapısı</span></div>
+    <div class="sidebar-item" onclick="showPage('goldencases',this)"><span class="sidebar-icon">🏆</span> <span data-i18n="sidebar.golden_cases">Altın Senaryolar</span></div>
+    <div class="sidebar-item" onclick="showPage('releasecert',this)"><span class="sidebar-icon">📜</span> <span data-i18n="sidebar.release_cert">Sürüm Sertifikası</span></div>
   </div>
   <div class="sidebar-section" id="versionSidebar" style="display:none">
-    <div class="sidebar-label">Veri Sürümleri</div>
-    <div class="sidebar-item" onclick="showPage('versions',this)"><span class="sidebar-icon">🧬</span> Aktif Veri Sürümleri</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_data_versions">Veri Sürümleri</div>
+    <div class="sidebar-item" onclick="showPage('versions',this)"><span class="sidebar-icon">🧬</span> <span data-i18n="sidebar.active_data_versions">Aktif Veri Sürümleri</span></div>
   </div>
   <div class="sidebar-section" id="dataAdminSidebar" style="display:none">
-    <div class="sidebar-label">Standart Verisi</div>
-    <div class="sidebar-item" onclick="showPage('dataadmin',this)"><span class="sidebar-icon">📥</span> Veri Yükleme & Onay</div>
-    <div class="sidebar-item" onclick="showPage('calibration',this)"><span class="sidebar-icon">📐</span> Kalibrasyon</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_standard_data">Standart Verisi</div>
+    <div class="sidebar-item" onclick="showPage('dataadmin',this)"><span class="sidebar-icon">📥</span> <span data-i18n="sidebar.data_upload_approval">Veri Yükleme & Onay</span></div>
+    <div class="sidebar-item" onclick="showPage('calibration',this)"><span class="sidebar-icon">📐</span> <span data-i18n="sidebar.calibration">Kalibrasyon</span></div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-label">Doğrulama</div>
-    <div class="sidebar-item" onclick="showPage('validation',this)"><span class="sidebar-icon">🔎</span> Teknik Doğrulama</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_validation">Doğrulama</div>
+    <div class="sidebar-item" onclick="showPage('validation',this)"><span class="sidebar-icon">🔎</span> <span data-i18n="sidebar.technical_validation">Teknik Doğrulama</span></div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-label">Çıktılar</div>
-    <div class="sidebar-item" onclick="showPage('rapor',this)"><span class="sidebar-icon">📄</span> Rapor Üret</div>
-    <div class="sidebar-item" onclick="showPage('arsiv',this)"><span class="sidebar-icon">🗂️</span> Arşiv</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_outputs">Çıktılar</div>
+    <div class="sidebar-item" onclick="showPage('rapor',this)"><span class="sidebar-icon">📄</span> <span data-i18n="sidebar.generate_report">Rapor Üret</span></div>
+    <div class="sidebar-item" onclick="showPage('arsiv',this)"><span class="sidebar-icon">🗂️</span> <span data-i18n="sidebar.archive">Arşiv</span></div>
   </div>
   <div class="sidebar-exit">
     <div class="sidebar-item" style="color:var(--danger)" onclick="guvenliCikis()">
-      <span class="sidebar-icon">🔒</span> Güvenli Çıkış
+      <span class="sidebar-icon">🔒</span> <span data-i18n="sidebar.secure_logout">Güvenli Çıkış</span>
     </div>
-    <div style="font-size:10px;color:var(--text3);padding:2px 10px">Oturum kapatılır</div>
+    <div style="font-size:10px;color:var(--text3);padding:2px 10px" data-i18n="sidebar.session_closed_note">Oturum kapatılır</div>
   </div>
 </div>
 
@@ -492,31 +492,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
   <div class="section-header"><span class="section-icon">📊</span><div>
-    <div class="section-title">Üretim Tork Kontrol Paneli</div>
-    <div class="section-sub">Bugün: <span id="tarih"></span></div>
+    <div class="section-title" data-i18n="dashboard.title">Üretim Tork Kontrol Paneli</div>
+    <div class="section-sub"><span data-i18n="dashboard.today">Bugün</span>: <span id="tarih"></span></div>
   </div></div>
   <div class="grid4" style="margin-bottom:16px">
-    <div class="stat"><div class="stat-label">Günlük Ölçüm</div><div class="stat-val blue">247</div><div class="stat-sub">↑ 12 dün'den fazla</div></div>
-    <div class="stat"><div class="stat-label">OK Oranı</div><div class="stat-val green">98.4%</div><div class="stat-sub">Hedef: ≥97%</div></div>
-    <div class="stat"><div class="stat-label">NOK Kayıt</div><div class="stat-val red">4</div><div class="stat-sub">2'si müdahale bekliyor</div></div>
-    <div class="stat"><div class="stat-label">Aktif Sıkıcı</div><div class="stat-val yellow">112</div><div class="stat-sub">3 yetenek süresi dolmuş</div></div>
+    <div class="stat"><div class="stat-label" data-i18n="dashboard.stat_daily_measurement">Günlük Ölçüm</div><div class="stat-val blue">247</div><div class="stat-sub"><span data-i18n="dashboard.stat_daily_measurement_delta">↑ 12 dün'den fazla</span></div></div>
+    <div class="stat"><div class="stat-label" data-i18n="dashboard.stat_ok_rate">OK Oranı</div><div class="stat-val green">98.4%</div><div class="stat-sub"><span data-i18n="dashboard.stat_ok_rate_target">Hedef: ≥97%</span></div></div>
+    <div class="stat"><div class="stat-label" data-i18n="dashboard.stat_nok_records">NOK Kayıt</div><div class="stat-val red">4</div><div class="stat-sub"><span data-i18n="dashboard.stat_nok_records_note">2'si müdahale bekliyor</span></div></div>
+    <div class="stat"><div class="stat-label" data-i18n="dashboard.stat_active_tools">Aktif Sıkıcı</div><div class="stat-val yellow">112</div><div class="stat-sub"><span data-i18n="dashboard.stat_active_tools_note">3 yetenek süresi dolmuş</span></div></div>
   </div>
   <div class="grid2">
     <div class="card">
-      <div class="card-title">Sıkma Sınıfı Dağılımı</div>
-      <div class="card-sub">Aktif operasyonlar <span class="norm-badge">Örnek norma göre</span></div>
-      <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Sınıf A — Kritik Güvenlik</span><span style="color:var(--danger)">18 nokta</span></div><div class="progress-bar"><div class="progress-fill" style="width:23%;background:var(--danger)"></div></div></div>
-      <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Sınıf B — Önemli</span><span style="color:var(--warning)">34 nokta</span></div><div class="progress-bar"><div class="progress-fill" style="width:44%;background:var(--warning)"></div></div></div>
-      <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Sınıf C — Standart</span><span style="color:var(--accent2)">21 nokta</span></div><div class="progress-bar"><div class="progress-fill" style="width:27%;background:var(--accent)"></div></div></div>
-      <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Sınıf D — Genel</span><span style="color:var(--success)">5 nokta</span></div><div class="progress-bar"><div class="progress-fill" style="width:6%;background:var(--success)"></div></div></div>
+      <div class="card-title" data-i18n="dashboard.class_distribution_title">Sıkma Sınıfı Dağılımı</div>
+      <div class="card-sub"><span data-i18n="dashboard.active_operations">Aktif operasyonlar</span> <span class="norm-badge" data-i18n="dashboard.per_sample_norm">Örnek norma göre</span></div>
+      <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_a">Sınıf A — Kritik Güvenlik</span><span style="color:var(--danger)"><span data-i18n="dashboard.point_count_18">18 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:23%;background:var(--danger)"></div></div></div>
+      <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_b">Sınıf B — Önemli</span><span style="color:var(--warning)"><span data-i18n="dashboard.point_count_34">34 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:44%;background:var(--warning)"></div></div></div>
+      <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_c">Sınıf C — Standart</span><span style="color:var(--accent2)"><span data-i18n="dashboard.point_count_21">21 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:27%;background:var(--accent)"></div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_d">Sınıf D — Genel</span><span style="color:var(--success)"><span data-i18n="dashboard.point_count_5">5 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:6%;background:var(--success)"></div></div></div>
     </div>
     <div class="card">
-      <div class="card-title">Son NOK Kayıtlar</div><div class="card-sub">Müdahale gerektiren ölçümler</div>
-      <table class="table"><tr><th>Operasyon</th><th>Şase</th><th>Değer</th><th>Durum</th></tr>
-      <tr><td>Ön süsp. travers</td><td>YH24-001823</td><td style="color:var(--danger)">87 Nm</td><td><span class="pill pill-nok">NOK</span></td></tr>
-      <tr><td>Emniyet kemeri</td><td>YH24-001819</td><td style="color:var(--warning)">31 Nm</td><td><span class="pill pill-warn">SINIRDA</span></td></tr>
-      <tr><td>Motor takozu</td><td>YH24-001804</td><td style="color:var(--danger)">42 Nm</td><td><span class="pill pill-nok">NOK</span></td></tr>
-      <tr><td>Fren rekoru</td><td>YH24-001797</td><td style="color:var(--success)">16 Nm ✓</td><td><span class="pill pill-ok">Çözüldü</span></td></tr></table>
+      <div class="card-title" data-i18n="dashboard.recent_nok_title">Son NOK Kayıtlar</div><div class="card-sub" data-i18n="dashboard.recent_nok_sub">Müdahale gerektiren ölçümler</div>
+      <table class="table"><tr><th data-i18n="dashboard.th_operation">Operasyon</th><th data-i18n="dashboard.th_chassis">Şase</th><th data-i18n="dashboard.th_value">Değer</th><th data-i18n="dashboard.th_status">Durum</th></tr>
+      <tr><td data-i18n="dashboard.op_front_susp_crossmember">Ön süsp. travers</td><td>YH24-001823</td><td style="color:var(--danger)">87 Nm</td><td><span class="pill pill-nok" data-i18n="dashboard.status_nok">NOK</span></td></tr>
+      <tr><td data-i18n="dashboard.op_seatbelt">Emniyet kemeri</td><td>YH24-001819</td><td style="color:var(--warning)">31 Nm</td><td><span class="pill pill-warn" data-i18n="dashboard.status_borderline">SINIRDA</span></td></tr>
+      <tr><td data-i18n="dashboard.op_engine_mount">Motor takozu</td><td>YH24-001804</td><td style="color:var(--danger)">42 Nm</td><td><span class="pill pill-nok" data-i18n="dashboard.status_nok">NOK</span></td></tr>
+      <tr><td data-i18n="dashboard.op_brake_fitting">Fren rekoru</td><td>YH24-001797</td><td style="color:var(--success)">16 Nm ✓</td><td><span class="pill pill-ok" data-i18n="dashboard.status_resolved">Çözüldü</span></td></tr></table>
     </div>
   </div>
 </div>
@@ -1448,6 +1448,118 @@ const I18N = {
     'fc.field.data_version': 'Data version',
     'fc.field.report_generated_at': 'Report generated at',
     'fc.field.application_version': 'Application version',
+
+    // ---- Faz 2.7.0: global i18n foundation -- login ----
+    'login.subtitle': 'Fastener Analysis Software',
+    'login.username_label': 'Username',
+    'login.username_placeholder': 'Your username',
+    'login.password_label': 'Password',
+    'login.submit': 'Sign In',
+    'login.footer': 'Demo version — unauthorized access is prohibited',
+
+    // ---- topbar ----
+    'topbar.dashboard': 'Dashboard',
+    'topbar.oem_torque_estimate': 'OEM Torque Estimate',
+    'topbar.torque_calc': 'Torque Calc',
+    'topbar.checklist': 'Check-List',
+    'topbar.capability': 'Capability',
+    'topbar.problem': 'Problem',
+    'topbar.oem_norm': 'OEM Norm',
+    'topbar.report': 'Report',
+    'topbar.system_active': '● System Active',
+
+    // ---- sidebar ----
+    'sidebar.section_quick_access': 'Quick Access',
+    'sidebar.dashboard': 'Dashboard',
+    'sidebar.sample_torque_study': 'Sample Torque Study',
+    'sidebar.torque_calc': 'Torque Calc',
+    'sidebar.advanced_analysis': 'Advanced Analysis',
+    'sidebar.section_production': 'Production',
+    'sidebar.checklist': 'Check-List',
+    'sidebar.capability': 'Cp/Cpk Capability',
+    'sidebar.tool_tracking': 'Tool Tracking',
+    'sidebar.problem_management': 'Problem Management',
+    'sidebar.section_reference': 'Reference',
+    'sidebar.oem_norm_query': 'OEM Norm Query',
+    'sidebar.norm_guide': 'Norm Guide',
+    'sidebar.fmea_catalog': 'FMEA Catalog',
+    'sidebar.section_admin': 'Administration',
+    'sidebar.admin_panel': 'Admin Panel',
+    'sidebar.section_golive': 'Go-Live',
+    'sidebar.setup_wizard': 'Setup Wizard',
+    'sidebar.dns_check': 'Domain & DNS Check',
+    'sidebar.section_cloud': 'Cloud Deployment',
+    'sidebar.secure_deploy': 'Secure Deploy',
+    'sidebar.runtime_health': 'Runtime Health',
+    'sidebar.section_mobile': 'Mobile Access',
+    'sidebar.mobile_access': 'Mobile Access',
+    'sidebar.section_deployment': 'Deployment & Support',
+    'sidebar.deployment_profile': 'Deployment Profile',
+    'sidebar.data_migration': 'Data Migration',
+    'sidebar.system_diagnostics': 'System Diagnostics',
+    'sidebar.section_enterprise': 'Enterprise',
+    'sidebar.org_settings': 'Organization Settings',
+    'sidebar.license_mgmt': 'License Management',
+    'sidebar.usage_summary': 'Usage Summary',
+    'sidebar.section_release': 'Release & Report',
+    'sidebar.release_package': 'Project Release Package',
+    'sidebar.traceability_matrix': 'Traceability Matrix',
+    'sidebar.section_project': 'Project & Approval',
+    'sidebar.projects': 'Projects',
+    'sidebar.revisions': 'Calculation Revisions',
+    'sidebar.approvals_pending': 'Pending Approvals',
+    'sidebar.section_quality_gate': 'Quality Gate',
+    'sidebar.data_quality_gate': 'Data Quality Gate',
+    'sidebar.golden_cases': 'Golden Cases',
+    'sidebar.release_cert': 'Release Certificate',
+    'sidebar.section_data_versions': 'Data Versions',
+    'sidebar.active_data_versions': 'Active Data Versions',
+    'sidebar.section_standard_data': 'Standards Data',
+    'sidebar.data_upload_approval': 'Data Upload & Approval',
+    'sidebar.calibration': 'Calibration',
+    'sidebar.section_validation': 'Validation',
+    'sidebar.technical_validation': 'Technical Validation',
+    'sidebar.section_outputs': 'Outputs',
+    'sidebar.generate_report': 'Generate Report',
+    'sidebar.archive': 'Archive',
+    'sidebar.secure_logout': 'Secure Logout',
+    'sidebar.session_closed_note': 'Session will be closed',
+
+    // ---- dashboard ----
+    'dashboard.title': 'Production Torque Control Panel',
+    'dashboard.today': 'Today',
+    'dashboard.stat_daily_measurement': 'Daily Measurements',
+    'dashboard.stat_daily_measurement_delta': "↑ 12 more than yesterday",
+    'dashboard.stat_ok_rate': 'OK Rate',
+    'dashboard.stat_ok_rate_target': 'Target: ≥97%',
+    'dashboard.stat_nok_records': 'NOK Records',
+    'dashboard.stat_nok_records_note': '2 awaiting intervention',
+    'dashboard.stat_active_tools': 'Active Tools',
+    'dashboard.stat_active_tools_note': '3 capability studies expired',
+    'dashboard.class_distribution_title': 'Tightening Class Distribution',
+    'dashboard.active_operations': 'Active operations',
+    'dashboard.per_sample_norm': 'Per sample norm',
+    'dashboard.class_a': 'Class A — Safety Critical',
+    'dashboard.class_b': 'Class B — Important',
+    'dashboard.class_c': 'Class C — Standard',
+    'dashboard.class_d': 'Class D — General',
+    'dashboard.point_count_18': '18 points',
+    'dashboard.point_count_34': '34 points',
+    'dashboard.point_count_21': '21 points',
+    'dashboard.point_count_5': '5 points',
+    'dashboard.recent_nok_title': 'Recent NOK Records',
+    'dashboard.recent_nok_sub': 'Measurements requiring intervention',
+    'dashboard.th_operation': 'Operation',
+    'dashboard.th_chassis': 'Chassis',
+    'dashboard.th_value': 'Value',
+    'dashboard.th_status': 'Status',
+    'dashboard.op_front_susp_crossmember': 'Front susp. crossmember',
+    'dashboard.op_seatbelt': 'Seatbelt',
+    'dashboard.op_engine_mount': 'Engine mount',
+    'dashboard.op_brake_fitting': 'Brake fitting',
+    'dashboard.status_nok': 'NOK',
+    'dashboard.status_borderline': 'BORDERLINE',
+    'dashboard.status_resolved': 'Resolved',
   },
   tr: {
     'sidebar.frictioncondition': 'Yüzey Sürtünme Koşulu',
@@ -1528,6 +1640,118 @@ const I18N = {
     'fc.field.data_version': 'Veri sürümü',
     'fc.field.report_generated_at': 'Rapor oluşturulma zamanı',
     'fc.field.application_version': 'Uygulama sürümü',
+
+    // ---- Faz 2.7.0: global i18n foundation -- login ----
+    'login.subtitle': 'Bağlantı Elemanları Analiz Yazılımı',
+    'login.username_label': 'Kullanıcı Adı',
+    'login.username_placeholder': 'Kullanıcı adınız',
+    'login.password_label': 'Şifre',
+    'login.submit': 'Giriş Yap',
+    'login.footer': 'Demo sürümü — yetkisiz erişim yasaktır',
+
+    // ---- topbar ----
+    'topbar.dashboard': 'Dashboard',
+    'topbar.oem_torque_estimate': 'OEM Tork Öngörüsü',
+    'topbar.torque_calc': 'Tork Hesap',
+    'topbar.checklist': 'Check-List',
+    'topbar.capability': 'Yetenek',
+    'topbar.problem': 'Problem',
+    'topbar.oem_norm': 'OEM Norm',
+    'topbar.report': 'Rapor',
+    'topbar.system_active': '● Sistem Aktif',
+
+    // ---- sidebar ----
+    'sidebar.section_quick_access': 'Hızlı Erişim',
+    'sidebar.dashboard': 'Dashboard',
+    'sidebar.sample_torque_study': 'Örnek Tork Çalışması',
+    'sidebar.torque_calc': 'Tork Hesap',
+    'sidebar.advanced_analysis': 'Gelişmiş Analiz',
+    'sidebar.section_production': 'Üretim',
+    'sidebar.checklist': 'Check-List',
+    'sidebar.capability': 'Cm/Cmk Yetenek',
+    'sidebar.tool_tracking': 'Sıkıcı Takip',
+    'sidebar.problem_management': 'Problem Yönetimi',
+    'sidebar.section_reference': 'Referans',
+    'sidebar.oem_norm_query': 'OEM Norm Sorgu',
+    'sidebar.norm_guide': 'Norm Rehberi',
+    'sidebar.fmea_catalog': 'FMEA Kataloğu',
+    'sidebar.section_admin': 'Yönetim',
+    'sidebar.admin_panel': 'Yönetici Paneli',
+    'sidebar.section_golive': 'İlk Yayın',
+    'sidebar.setup_wizard': 'Kurulum Sihirbazı',
+    'sidebar.dns_check': 'Domain & DNS Kontrolü',
+    'sidebar.section_cloud': 'İnternet Yayını',
+    'sidebar.secure_deploy': 'Güvenli Yayın',
+    'sidebar.runtime_health': 'Canlılık Durumu',
+    'sidebar.section_mobile': 'Mobil Erişim',
+    'sidebar.mobile_access': 'Mobil Erişim',
+    'sidebar.section_deployment': 'Dağıtım ve Destek',
+    'sidebar.deployment_profile': 'Kurulum Profili',
+    'sidebar.data_migration': 'Veri Taşıma',
+    'sidebar.system_diagnostics': 'Sistem Tanılama',
+    'sidebar.section_enterprise': 'Kurumsal',
+    'sidebar.org_settings': 'Kurum Ayarları',
+    'sidebar.license_mgmt': 'Lisans Yönetimi',
+    'sidebar.usage_summary': 'Kullanım Özeti',
+    'sidebar.section_release': 'Release ve Rapor',
+    'sidebar.release_package': 'Proje Release Paketi',
+    'sidebar.traceability_matrix': 'İzlenebilirlik Matrisi',
+    'sidebar.section_project': 'Proje ve Onay',
+    'sidebar.projects': 'Projeler',
+    'sidebar.revisions': 'Hesap Revizyonları',
+    'sidebar.approvals_pending': 'Onay Bekleyenler',
+    'sidebar.section_quality_gate': 'Kalite Kapısı',
+    'sidebar.data_quality_gate': 'Veri Kalite Kapısı',
+    'sidebar.golden_cases': 'Altın Senaryolar',
+    'sidebar.release_cert': 'Sürüm Sertifikası',
+    'sidebar.section_data_versions': 'Veri Sürümleri',
+    'sidebar.active_data_versions': 'Aktif Veri Sürümleri',
+    'sidebar.section_standard_data': 'Standart Verisi',
+    'sidebar.data_upload_approval': 'Veri Yükleme & Onay',
+    'sidebar.calibration': 'Kalibrasyon',
+    'sidebar.section_validation': 'Doğrulama',
+    'sidebar.technical_validation': 'Teknik Doğrulama',
+    'sidebar.section_outputs': 'Çıktılar',
+    'sidebar.generate_report': 'Rapor Üret',
+    'sidebar.archive': 'Arşiv',
+    'sidebar.secure_logout': 'Güvenli Çıkış',
+    'sidebar.session_closed_note': 'Oturum kapatılır',
+
+    // ---- dashboard ----
+    'dashboard.title': 'Üretim Tork Kontrol Paneli',
+    'dashboard.today': 'Bugün',
+    'dashboard.stat_daily_measurement': 'Günlük Ölçüm',
+    'dashboard.stat_daily_measurement_delta': "↑ 12 dün'den fazla",
+    'dashboard.stat_ok_rate': 'OK Oranı',
+    'dashboard.stat_ok_rate_target': 'Hedef: ≥97%',
+    'dashboard.stat_nok_records': 'NOK Kayıt',
+    'dashboard.stat_nok_records_note': "2'si müdahale bekliyor",
+    'dashboard.stat_active_tools': 'Aktif Sıkıcı',
+    'dashboard.stat_active_tools_note': '3 yetenek süresi dolmuş',
+    'dashboard.class_distribution_title': 'Sıkma Sınıfı Dağılımı',
+    'dashboard.active_operations': 'Aktif operasyonlar',
+    'dashboard.per_sample_norm': 'Örnek norma göre',
+    'dashboard.class_a': 'Sınıf A — Kritik Güvenlik',
+    'dashboard.class_b': 'Sınıf B — Önemli',
+    'dashboard.class_c': 'Sınıf C — Standart',
+    'dashboard.class_d': 'Sınıf D — Genel',
+    'dashboard.point_count_18': '18 nokta',
+    'dashboard.point_count_34': '34 nokta',
+    'dashboard.point_count_21': '21 nokta',
+    'dashboard.point_count_5': '5 nokta',
+    'dashboard.recent_nok_title': 'Son NOK Kayıtlar',
+    'dashboard.recent_nok_sub': 'Müdahale gerektiren ölçümler',
+    'dashboard.th_operation': 'Operasyon',
+    'dashboard.th_chassis': 'Şase',
+    'dashboard.th_value': 'Değer',
+    'dashboard.th_status': 'Durum',
+    'dashboard.op_front_susp_crossmember': 'Ön süsp. travers',
+    'dashboard.op_seatbelt': 'Emniyet kemeri',
+    'dashboard.op_engine_mount': 'Motor takozu',
+    'dashboard.op_brake_fitting': 'Fren rekoru',
+    'dashboard.status_nok': 'NOK',
+    'dashboard.status_borderline': 'SINIRDA',
+    'dashboard.status_resolved': 'Çözüldü',
   },
 };
 
@@ -1609,7 +1833,15 @@ let CURRENT_LANG = localStorage.getItem('torqpro_lang') || 'tr';
 if (!I18N[CURRENT_LANG]) CURRENT_LANG = 'tr';
 
 function t(key) {
-  return (I18N[CURRENT_LANG] && I18N[CURRENT_LANG][key]) || I18N.en[key] || key;
+  const active = I18N[CURRENT_LANG] && I18N[CURRENT_LANG][key];
+  if (active !== undefined) return active;
+  const enFallback = I18N.en[key];
+  if (enFallback !== undefined) {
+    console.warn('[i18n] missing key "' + key + '" for lang "' + CURRENT_LANG + '" -- using en fallback');
+    return enFallback;
+  }
+  console.warn('[i18n] missing key "' + key + '" -- no translation found in any language, showing raw key');
+  return key;
 }
 
 // Translates a known backend enum/status value for display.
