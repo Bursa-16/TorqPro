@@ -924,7 +924,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <!-- FMEA -->
 <div id="page-fmea" class="page">
-  <div class="section-header"><span class="section-icon">🧩</span><div><div class="section-title">FMEA Hata Kataloğu</div><div class="section-sub">Seri üretim deneyiminden derlenen hatalar ve çözümler</div></div></div>
+  <div class="section-header"><span class="section-icon">🧩</span><div><div class="section-title" data-i18n="fmea.title">FMEA Hata Kataloğu</div><div class="section-sub" data-i18n="fmea.subtitle">Seri üretim deneyiminden derlenen hatalar ve çözümler</div></div></div>
   <div id="fmea-list"></div>
 </div>
 
@@ -2182,6 +2182,56 @@ const I18N = {
     'norm.demo_dataset': 'Demo dataset',
     'norm.sample_study_sub': "A sample reference table for use when no technical drawing or specific norm value exists (not affiliated with Tofas/FIAT/Stellantis or any other OEM). Valid as supplied from production, with no additional lubricant applied.",
     'norm.flanged': 'Flanged',
+
+    // ---- Faz 2.7.2c: FMEA Catalog ----
+    'fmea.title': 'FMEA Failure Catalog',
+    'fmea.subtitle': 'Failures and solutions compiled from serial production experience',
+    'fmea.cause_label': 'Cause',
+    'fmea.effect_label': 'Effect',
+    'fmea.recommendation_label': 'Recommendation',
+    'fmea.severity_critical': 'CRITICAL',
+    'fmea.severity_high': 'HIGH',
+    'fmea.severity_medium': 'MEDIUM',
+
+    'fmea.error.fmea_001': 'Torque out of limits',
+    'fmea.cause.fmea_001': 'Tool parameter too high / low friction',
+    'fmea.effect.fmea_001': 'Risk of screw failure',
+    'fmea.recommendation.fmea_001': 'Renew calibration, check the friction coefficient',
+
+    'fmea.error.fmea_002': 'Loose joint',
+    'fmea.cause.fmea_002': 'Vibration, low preload',
+    'fmea.effect.fmea_002': 'Safety risk',
+    'fmea.recommendation.fmea_002': 'Perform System A measurement, check prevailing torque',
+
+    'fmea.error.fmea_003': 'Thread damage',
+    'fmea.cause.fmea_003': 'Cross-threading, wrong socket',
+    'fmea.effect.fmea_003': 'Loss of joint strength',
+    'fmea.recommendation.fmea_003': 'Check the socket, select the correct tool',
+
+    'fmea.error.fmea_004': 'Tool incapability',
+    'fmea.cause.fmea_004': 'Mechanical wear',
+    'fmea.effect.fmea_004': 'Inconsistent torque',
+    'fmea.recommendation.fmea_004': 'Remove from production if Cm/Cmk < 1.67',
+
+    'fmea.error.fmea_005': 'Wrong torque program',
+    'fmea.cause.fmea_005': 'Operator error, no poka-yoke',
+    'fmea.effect.fmea_005': 'Incorrect torque',
+    'fmea.recommendation.fmea_005': 'Activate poka-yoke',
+
+    'fmea.error.fmea_006': 'Coating mismatch',
+    'fmea.cause.fmea_006': 'Lot change',
+    'fmea.effect.fmea_006': '30-50% torque deviation',
+    'fmea.recommendation.fmea_006': 'Run a friction test, fill out the deviation form',
+
+    'fmea.error.fmea_007': 'Repair-zone error',
+    'fmea.cause.fmea_007': 'Undefined tool',
+    'fmea.effect.fmea_007': 'Uncontrolled joint',
+    'fmea.recommendation.fmea_007': 'Only a defined torque wrench, under authorized personnel supervision',
+
+    'fmea.error.fmea_008': 'SPC limit exceeded',
+    'fmea.cause.fmea_008': 'Process drift',
+    'fmea.effect.fmea_008': 'Risk of a serial NOK run',
+    'fmea.recommendation.fmea_008': '5+5 sweep rule: check the 5 units before/after the faulty unit',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -2799,6 +2849,56 @@ const I18N = {
     'norm.sample_study_sub': "Teknik resim veya özel norm değeri yoksa kullanılabilecek örnek referans tablosudur (Tofaş/FIAT/Stellantis veya başka bir OEM'e ait değildir). Ek yağlayıcı uygulanmamış, üretimden çıktığı haliyle geçerlidir.",
     'norm.flanged': 'Flanşlı',
 
+    // ---- Faz 2.7.2c: FMEA Kataloğu ----
+    'fmea.title': 'FMEA Hata Kataloğu',
+    'fmea.subtitle': 'Seri üretim deneyiminden derlenen hatalar ve çözümler',
+    'fmea.cause_label': 'Neden',
+    'fmea.effect_label': 'Etki',
+    'fmea.recommendation_label': 'Öneri',
+    'fmea.severity_critical': 'KRİTİK',
+    'fmea.severity_high': 'YÜKSEK',
+    'fmea.severity_medium': 'ORTA',
+
+    'fmea.error.fmea_001': 'Tork limit dışı',
+    'fmea.cause.fmea_001': 'Sıkıcı parametresi yüksek / düşük sürtünme',
+    'fmea.effect.fmea_001': 'Vida kırılması riski',
+    'fmea.recommendation.fmea_001': 'Kalibrasyon yenile, sürtünme katsayısını kontrol et',
+
+    'fmea.error.fmea_002': 'Gevşek bağlantı',
+    'fmea.cause.fmea_002': 'Titreşim, düşük ön yük',
+    'fmea.effect.fmea_002': 'Güvenlik riski',
+    'fmea.recommendation.fmea_002': 'A metodu ölçümü yap, prevailing torque kontrol et',
+
+    'fmea.error.fmea_003': 'Vida dişi hasarı',
+    'fmea.cause.fmea_003': 'Çapraz sıkma, yanlış lokma',
+    'fmea.effect.fmea_003': 'Bağlantı gücü kaybı',
+    'fmea.recommendation.fmea_003': 'Lokma kontrolü, doğru tabanca seçimi',
+
+    'fmea.error.fmea_004': 'Sıkıcı yeteneksizliği',
+    'fmea.cause.fmea_004': 'Mekanik aşınma',
+    'fmea.effect.fmea_004': 'Tutarsız tork',
+    'fmea.recommendation.fmea_004': 'Cm/Cmk < 1.67 ise üretimden çıkar',
+
+    'fmea.error.fmea_005': 'Yanlış tork programı',
+    'fmea.cause.fmea_005': 'Operatör hatası, poke-yoke yok',
+    'fmea.effect.fmea_005': 'Yanlış tork',
+    'fmea.recommendation.fmea_005': 'Poke-yoke devreye al',
+
+    'fmea.error.fmea_006': 'Kaplama uyumsuzluğu',
+    'fmea.cause.fmea_006': 'Lot değişimi',
+    'fmea.effect.fmea_006': '%30-50 tork sapması',
+    'fmea.recommendation.fmea_006': 'Sürtünme testi yap, sapma formu doldur',
+
+    'fmea.error.fmea_007': 'Tamir bölgesi hatası',
+    'fmea.cause.fmea_007': 'Tanımsız tabanca',
+    'fmea.effect.fmea_007': 'Denetimsiz bağlantı',
+    'fmea.recommendation.fmea_007': 'Sadece tanımlı torkmetre, yetkili personel gözetimi',
+
+    'fmea.error.fmea_008': 'SPC limit aşımı',
+    'fmea.cause.fmea_008': 'Proses kayması',
+    'fmea.effect.fmea_008': 'Seri NOK riski',
+    'fmea.recommendation.fmea_008': '5+5 tarama kuralı: hatalı birimden önceki/sonraki 5 kontrol',
+
     'sidebar.frictioncondition': 'Yüzey Sürtünme Koşulu',
     'fc.page_title': 'Yüzey Sürtünme Koşulu',
     'fc.page_subtitle': 'Kaplama, yağlama ve temas yüzeylerine bağlı sürtünme referans verileri',
@@ -3162,6 +3262,7 @@ function setLanguage(lang) {
   }
   if (typeof libraryReapplyLanguage === 'function') libraryReapplyLanguage();
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
+  if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
 }
 
 document.addEventListener('DOMContentLoaded', applyStaticTranslations);
@@ -4183,8 +4284,18 @@ function problemAnaliz(){
 }
 
 // ========== FMEA ==========
-const FMEA=[{hata:'Tork limit dışı',neden:'Sıkıcı parametresi yüksek / düşük sürtünme',etki:'Vida kırılması riski',oneri:'Kalibrasyon yenile, sürtünme katsayısını kontrol et',p:'YÜKSEK'},{hata:'Gevşek bağlantı',neden:'Titreşim, düşük ön yük',etki:'Güvenlik riski',oneri:'A metodu ölçümü yap, prevailing torque kontrol et',p:'KRİTİK'},{hata:'Vida dişi hasarı',neden:'Çapraz sıkma, yanlış lokma',etki:'Bağlantı gücü kaybı',oneri:'Lokma kontrolü, doğru tabanca seçimi',p:'YÜKSEK'},{hata:'Sıkıcı yeteneksizliği',neden:'Mekanik aşınma',etki:'Tutarsız tork',oneri:'Cm/Cmk < 1.67 ise üretimden çıkar',p:'ORTA'},{hata:'Yanlış tork programı',neden:'Operatör hatası, poke-yoke yok',etki:'Yanlış tork',oneri:'Poke-yoke devreye al',p:'YÜKSEK'},{hata:'Kaplama uyumsuzluğu',neden:'Lot değişimi',etki:'%30-50 tork sapması',oneri:'Sürtünme testi yap, sapma formu doldur',p:'YÜKSEK'},{hata:'Tamir bölgesi hatası',neden:'Tanımsız tabanca',etki:'Denetimsiz bağlantı',oneri:'Sadece tanımlı torkmetre, yetkili personel gözetimi',p:'KRİTİK'},{hata:'SPC limit aşımı',neden:'Proses kayması',etki:'Seri NOK riski',oneri:'5+5 tarama kuralı: hatalı birimden önceki/sonraki 5 kontrol',p:'KRİTİK'}];
-function buildFmea(){const rc={KRİTİK:'danger',YÜKSEK:'warn',ORTA:'info'};document.getElementById('fmea-list').innerHTML=FMEA.map(f=>`<div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="pill pill-${rc[f.p]||'info'}">${f.p}</span><span style="font-size:14px;font-weight:600">${f.hata}</span></div><div style="font-size:12px;color:var(--text3);margin-bottom:4px">⚡ Neden: ${f.neden}</div><div style="font-size:12px;color:var(--text3);margin-bottom:8px">💥 Etki: ${f.etki}</div><div style="font-size:12px;background:rgba(79,126,248,.1);padding:8px;border-radius:6px;color:var(--accent2)">✅ Öneri: ${f.oneri}</div></div>`).join('');}
+const FMEA=[
+  {id:'fmea_001',errorKey:'fmea.error.fmea_001',causeKey:'fmea.cause.fmea_001',effectKey:'fmea.effect.fmea_001',recommendationKey:'fmea.recommendation.fmea_001',severityCode:'high',severityKey:'fmea.severity_high'},
+  {id:'fmea_002',errorKey:'fmea.error.fmea_002',causeKey:'fmea.cause.fmea_002',effectKey:'fmea.effect.fmea_002',recommendationKey:'fmea.recommendation.fmea_002',severityCode:'critical',severityKey:'fmea.severity_critical'},
+  {id:'fmea_003',errorKey:'fmea.error.fmea_003',causeKey:'fmea.cause.fmea_003',effectKey:'fmea.effect.fmea_003',recommendationKey:'fmea.recommendation.fmea_003',severityCode:'high',severityKey:'fmea.severity_high'},
+  {id:'fmea_004',errorKey:'fmea.error.fmea_004',causeKey:'fmea.cause.fmea_004',effectKey:'fmea.effect.fmea_004',recommendationKey:'fmea.recommendation.fmea_004',severityCode:'medium',severityKey:'fmea.severity_medium'},
+  {id:'fmea_005',errorKey:'fmea.error.fmea_005',causeKey:'fmea.cause.fmea_005',effectKey:'fmea.effect.fmea_005',recommendationKey:'fmea.recommendation.fmea_005',severityCode:'high',severityKey:'fmea.severity_high'},
+  {id:'fmea_006',errorKey:'fmea.error.fmea_006',causeKey:'fmea.cause.fmea_006',effectKey:'fmea.effect.fmea_006',recommendationKey:'fmea.recommendation.fmea_006',severityCode:'high',severityKey:'fmea.severity_high'},
+  {id:'fmea_007',errorKey:'fmea.error.fmea_007',causeKey:'fmea.cause.fmea_007',effectKey:'fmea.effect.fmea_007',recommendationKey:'fmea.recommendation.fmea_007',severityCode:'critical',severityKey:'fmea.severity_critical'},
+  {id:'fmea_008',errorKey:'fmea.error.fmea_008',causeKey:'fmea.cause.fmea_008',effectKey:'fmea.effect.fmea_008',recommendationKey:'fmea.recommendation.fmea_008',severityCode:'critical',severityKey:'fmea.severity_critical'},
+];
+const FMEA_SEVERITY_CLASS={critical:'danger',high:'warn',medium:'info'};
+function buildFmea(){document.getElementById('fmea-list').innerHTML=FMEA.map(f=>`<div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="pill pill-${FMEA_SEVERITY_CLASS[f.severityCode]||'info'}">${t(f.severityKey)}</span><span style="font-size:14px;font-weight:600">${t(f.errorKey)}</span></div><div style="font-size:12px;color:var(--text3);margin-bottom:4px">⚡ ${t('fmea.cause_label')}: ${t(f.causeKey)}</div><div style="font-size:12px;color:var(--text3);margin-bottom:8px">💥 ${t('fmea.effect_label')}: ${t(f.effectKey)}</div><div style="font-size:12px;background:rgba(79,126,248,.1);padding:8px;border-radius:6px;color:var(--accent2)">✅ ${t('fmea.recommendation_label')}: ${t(f.recommendationKey)}</div></div>`).join('');}
 
 // ========== OEM NORM ==========
 const OEM_NORM_DB={meta:{norm_no:'2.00176/86',arac:'Araç Tipi 263 (Yeni Doblò)',revizyon:'Issue A',tarih:'19.11.2008',kontrol_metodu:'NP 0.00010/01 Metod A'},sections:[{id:'7',baslikKey:'oem.section.7',noktalar:[{id:'7.1',tanimKey:'oem.tanim.7_1',thread:'M12x1.25',malzeme:'10R RIV/DAC',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:105,t_min:100,t_max:110,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 7.1',sourceNoteKey:null},{id:'7.4',tanimKey:'oem.tanim.7_4',thread:'M12x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:105,t_min:95,t_max:115,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 7.4',sourceNoteKey:null},{id:'7.5',tanimKey:'oem.tanim.7_5',thread:'M10x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:70,t_min:63,t_max:77,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 7.5',sourceNoteKey:null}]},{id:'10',baslikKey:'oem.section.10',noktalar:[{id:'10.1',tanimKey:'oem.tanim.10_1',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:60,t_min:57,t_max:63,aci_deg:null,ilk_tork:null,status:'active',variantKey:'oem.variant.only_13jtd',sourceReference:'2.00176/86 Madde 10.1',sourceNoteKey:null},{id:'10.7',tanimKey:'oem.tanim.10_7',thread:'M12x1.25x45',malzeme:'8.8 RIV/EC 5',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:80,t_min:77,t_max:104,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 10.7',sourceNoteKey:null},{id:'10.14',tanimKey:'oem.tanim.10_14_deleted',thread:'-',malzeme:'-',sinif:'-',experimental:false,tip:'deleted',nominal_nm:null,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'deleted',variantKey:null,sourceReference:null,sourceNoteKey:'oem.source_note.deleted_issue_a'},{id:'10.15',tanimKey:'oem.tanim.10_15',thread:'M10x1.25x75',malzeme:'8.8 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:90,t_min:null,t_max:null,aci_deg:45,ilk_tork:90,status:'active',variantKey:'oem.variant.jtd_16_20_c635',sourceReference:'2.00176/86 Madde 10.15',sourceNoteKey:null},{id:'10.19',tanimKey:'oem.tanim.10_19',thread:'M12x1.25x105',malzeme:'R10 RIV/DAC',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:80,t_min:null,t_max:null,aci_deg:45,ilk_tork:80,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 10.19',sourceNoteKey:null}]},{id:'11',baslikKey:'oem.section.11',noktalar:[{id:'11.1',tanimKey:'oem.tanim.11_1',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:40,t_min:66,t_max:74,aci_deg:45,ilk_tork:40,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.1',sourceNoteKey:null},{id:'11.2',tanimKey:'oem.tanim.11_2',thread:'M12x1.25x105',malzeme:'8.8 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:45,t_min:76,t_max:97,aci_deg:90,ilk_tork:45,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.2',sourceNoteKey:null},{id:'11.4',tanimKey:'oem.tanim.11_4',thread:'M12x1.25',malzeme:'8 Fe/Zn 7 IV',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:70,t_min:64,t_max:93,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.4',sourceNoteKey:null},{id:'11.7',tanimKey:'oem.tanim.11_7',thread:'M12x1.25x65',malzeme:'R10 RIV/DAC 5 PL',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:125,t_min:121,t_max:162,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.7',sourceNoteKey:null},{id:'11.12',tanimKey:'oem.tanim.11_12',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:106,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.12',sourceNoteKey:null},{id:'11.13',tanimKey:'oem.tanim.11_13',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:false,tip:'no_control',nominal_nm:120,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.13',sourceNoteKey:'oem.source_note.no_control_limit'}]},{id:'12',baslikKey:'oem.section.12',noktalar:[{id:'12.10',tanimKey:'oem.tanim.12_10',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:109,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 12.10',sourceNoteKey:null},{id:'12.12',tanimKey:'oem.tanim.12_12',thread:'M22x1.5',malzeme:'R10',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:280,t_min:271,t_max:364,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 12.12',sourceNoteKey:null}]},{id:'6',baslikKey:'oem.section.6',noktalar:[{id:'6.4',tanimKey:'oem.tanim.6_4',thread:'M12x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_only',nominal_nm:88,t_min:81,t_max:117,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 6.4',sourceNoteKey:null},{id:'6.1',tanimKey:'oem.tanim.6_1',thread:'M16',malzeme:'C70',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:50,t_min:40,t_max:66,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 6.1',sourceNoteKey:null}]},{id:'19',baslikKey:'oem.section.19',noktalar:[{id:'19.1',tanimKey:'oem.tanim.19_1',thread:'7/16',malzeme:'-',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:40,t_min:30,t_max:60,aci_deg:null,ilk_tork:null,status:'active',variantKey:'oem.variant.cargo_version',sourceReference:'2.00176/86 Madde 19.1',sourceNoteKey:null}]}]};

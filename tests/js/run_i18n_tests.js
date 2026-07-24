@@ -78,7 +78,7 @@ const CONST_NAMES = [
   'I18N', 'FC_ENUM_LABELS', 'CURRENT_LANG',
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
   'N01391', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
-  'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF',
+  'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -106,7 +106,7 @@ const FUNCTION_NAMES = [
   'libraryCompatibilityChanged', 'parseHardnessMin', 'compatibilityResults', 'libraryRenderMeta',
   'libraryReapplyLanguage', 'confClass', 'captureCurrentCalculation',
   'translationValue', 'oemGetAll', 'oemSearch', 'oemRenderCard', 'oemFilter',
-  'oemSecFilter', 'oemRenderList', 'oemInit', 'oemReapplyLanguage',
+  'oemSecFilter', 'oemRenderList', 'oemInit', 'oemReapplyLanguage', 'buildFmea',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -168,6 +168,7 @@ function buildExtractedSource() {
   parts.push('function __getTorqProLibrary() { return TORQPRO_LIBRARY; }');
   parts.push('function __getOemNormDb() { return OEM_NORM_DB; }');
   parts.push('function __getI18N() { return I18N; }');
+  parts.push('function __getFmea() { return FMEA; }');
   return { source: parts.join('\n\n'), rawHtml: html };
 }
 
@@ -1832,6 +1833,176 @@ async function main() {
     checkEqual('t() still has exactly 2 console.warn call sites', (tSrc.match(/console\.warn\(/g) || []).length, 2);
     check('t() en-fallback warning text unchanged', tSrc.indexOf('using en fallback') !== -1);
     check('t() total-miss warning text unchanged', tSrc.indexOf('no translation found in any language') !== -1);
+  }
+
+  // ================================================================
+  // Faz 2.7.2c -- FMEA Failure Catalog.
+  // ================================================================
+
+  // ---- 71. FMEA record count preserved: 8 records ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    checkEqual('FMEA has 8 records', ctx.context.__getFmea().length, 8);
+  }
+
+  // ---- 72. Every record has a severityCode in {critical, high, medium} ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const fmea = ctx.context.__getFmea();
+    const allowed = new Set(['critical', 'high', 'medium']);
+    check('every FMEA record has a severityCode', fmea.every((f) => typeof f.severityCode === 'string'));
+    check('every severityCode is one of critical/high/medium', fmea.every((f) => allowed.has(f.severityCode)));
+  }
+
+  // ---- 73. Visible Turkish severity label is not used as a decision input
+  //          (source-level check: no object keyed by KRİTİK/YÜKSEK/ORTA) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    check('no object literal keyed by the Turkish severity words remains', !/\{[^}]*KRİTİK\s*:/.test(scriptSrc) && !/\{[^}]*YÜKSEK\s*:/.test(scriptSrc));
+  }
+
+  // ---- 74. rc[f.p] anti-pattern no longer present ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    check('rc[f.p] anti-pattern is gone', scriptSrc.indexOf('rc[f.p]') === -1);
+    check('buildFmea() now indexes the severity class map by severityCode', scriptSrc.indexOf('FMEA_SEVERITY_CLASS[f.severityCode]') !== -1);
+  }
+
+  // ---- 75. Severity CSS class mapping: critical->danger, high->warn,
+  //          medium->info, identical in tr and en ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    // FMEA_SEVERITY_CLASS is a plain const object -- exercise it via
+    // buildFmea()'s actual rendered output instead of relying on a
+    // dedicated accessor, which more faithfully tests the real path.
+    ctx.byId = ctx.byId || {};
+    ctx.byId['fmea-list'] = ctx.documentStub.getElementById('fmea-list');
+    ctx.context.buildFmea();
+    const htmlTr = ctx.byId['fmea-list'].innerHTML;
+    check('tr render contains pill-danger (critical)', htmlTr.indexOf('pill-danger') !== -1);
+    check('tr render contains pill-warn (high)', htmlTr.indexOf('pill-warn') !== -1);
+    check('tr render contains pill-info (medium)', htmlTr.indexOf('pill-info') !== -1);
+    ctx.context.setLanguage('en');
+    ctx.context.buildFmea();
+    const htmlEn = ctx.byId['fmea-list'].innerHTML;
+    check('en render still contains pill-danger (critical, unchanged)', htmlEn.indexOf('pill-danger') !== -1);
+    check('en render still contains pill-warn (high, unchanged)', htmlEn.indexOf('pill-warn') !== -1);
+    check('en render still contains pill-info (medium, unchanged)', htmlEn.indexOf('pill-info') !== -1);
+  }
+
+  // ---- 76. Severity labels translate TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    checkEqual('severity_critical tr', ctx.context.t('fmea.severity_critical'), 'KRİTİK');
+    checkEqual('severity_high tr', ctx.context.t('fmea.severity_high'), 'YÜKSEK');
+    checkEqual('severity_medium tr', ctx.context.t('fmea.severity_medium'), 'ORTA');
+    ctx.context.setLanguage('en');
+    checkEqual('severity_critical en', ctx.context.t('fmea.severity_critical'), 'CRITICAL');
+    checkEqual('severity_high en', ctx.context.t('fmea.severity_high'), 'HIGH');
+    checkEqual('severity_medium en', ctx.context.t('fmea.severity_medium'), 'MEDIUM');
+  }
+
+  // ---- 77. All 8 records' errorKey/causeKey/effectKey/recommendationKey
+  //          resolve in both languages ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const fmea = ctx.context.__getFmea();
+    checkEqual('all 8 records have errorKey', fmea.filter((f) => f.errorKey).length, 8);
+    checkEqual('all 8 records have causeKey', fmea.filter((f) => f.causeKey).length, 8);
+    checkEqual('all 8 records have effectKey', fmea.filter((f) => f.effectKey).length, 8);
+    checkEqual('all 8 records have recommendationKey', fmea.filter((f) => f.recommendationKey).length, 8);
+    let allResolvedTr = true, allResolvedEn = true;
+    fmea.forEach((f) => {
+      [f.errorKey, f.causeKey, f.effectKey, f.recommendationKey].forEach((k) => {
+        if (ctx.context.t(k) === k) allResolvedTr = false;
+      });
+    });
+    ctx.context.setLanguage('en');
+    fmea.forEach((f) => {
+      [f.errorKey, f.causeKey, f.effectKey, f.recommendationKey].forEach((k) => {
+        if (ctx.context.t(k) === k) allResolvedEn = false;
+      });
+    });
+    check('all 32 content fields resolve in tr', allResolvedTr);
+    check('all 32 content fields resolve in en', allResolvedEn);
+  }
+
+  // ---- 78. 32 content fields have distinct, non-empty TR and EN text
+  //          (sample-verified against the original source strings) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    checkEqual('fmea_001 error tr', ctx.context.t('fmea.error.fmea_001'), 'Tork limit dışı');
+    checkEqual('fmea_004 recommendation tr (contains Cm/Cmk threshold)', ctx.context.t('fmea.recommendation.fmea_004'), 'Cm/Cmk < 1.67 ise üretimden çıkar');
+    ctx.context.setLanguage('en');
+    checkEqual('fmea_001 error en', ctx.context.t('fmea.error.fmea_001'), 'Torque out of limits');
+    checkEqual('fmea_004 recommendation en (Cm/Cmk threshold preserved verbatim)', ctx.context.t('fmea.recommendation.fmea_004'), 'Remove from production if Cm/Cmk < 1.67');
+  }
+
+  // ---- 79. No raw translation-key leakage in FMEA dynamic HTML ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.byId['fmea-list'] = ctx.documentStub.getElementById('fmea-list');
+    ctx.context.buildFmea();
+    const htmlTr = ctx.byId['fmea-list'].innerHTML;
+    check('no raw "fmea.xxx" key text leaks into tr rendering', !/fmea\.[a-z_.0-9]+(?![\w])/.test(htmlTr.replace(/<[^>]*>/g, ' ')));
+    ctx.context.setLanguage('en');
+    ctx.context.buildFmea();
+    const htmlEn = ctx.byId['fmea-list'].innerHTML;
+    check('no raw "fmea.xxx" key text leaks into en rendering', !/fmea\.[a-z_.0-9]+(?![\w])/.test(htmlEn.replace(/<[^>]*>/g, ' ')));
+  }
+
+  // ---- 80. Language switch: record count/order/severityCode/CSS class
+  //          unchanged; only displayed text changes ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const before = ctx.context.__getFmea().map((f) => ({ id: f.id, severityCode: f.severityCode }));
+    ctx.byId['fmea-list'] = ctx.documentStub.getElementById('fmea-list');
+    ctx.context.buildFmea();
+    const htmlTr = ctx.byId['fmea-list'].innerHTML;
+    ctx.context.setLanguage('en');
+    const after = ctx.context.__getFmea().map((f) => ({ id: f.id, severityCode: f.severityCode }));
+    checkEqual('record count unchanged after language switch', after.length, before.length);
+    checkEqual('record order and IDs unchanged after language switch', JSON.stringify(after.map((f) => f.id)), JSON.stringify(before.map((f) => f.id)));
+    checkEqual('severityCode values unchanged after language switch', JSON.stringify(after), JSON.stringify(before));
+    ctx.context.buildFmea();
+    const htmlEn = ctx.byId['fmea-list'].innerHTML;
+    const classesTr = [...htmlTr.matchAll(/pill-(danger|warn|info)/g)].map((m) => m[1]);
+    const classesEn = [...htmlEn.matchAll(/pill-(danger|warn|info)/g)].map((m) => m[1]);
+    checkEqual('CSS severity classes identical (same order) across language switch', JSON.stringify(classesTr), JSON.stringify(classesEn));
+    check('displayed text actually changed (Turkish error text no longer present in en)', htmlEn.indexOf('Tork limit dışı') === -1);
+  }
+
+  // ---- 81. Cm/Cmk and technical threshold text preserved verbatim ----
+  {
+    check('"Cm/Cmk < 1.67" appears verbatim in the tr FMEA data', /'fmea\.recommendation\.fmea_004': 'Cm\/Cmk < 1\.67/.test(rawHtml));
+    check('"Cm\\/Cmk < 1.67" appears verbatim in the en FMEA data', /'fmea\.recommendation\.fmea_004': 'Remove from production if Cm\/Cmk < 1\.67'/.test(rawHtml));
+  }
+
+  // ---- 82. FMEA static UI TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titleEl = getByI18nKey(ctx, 'fmea.title');
+    ctx.context.applyStaticTranslations();
+    checkEqual('fmea page title tr', titleEl.textContent, 'FMEA Hata Kataloğu');
+    ctx.context.setLanguage('en');
+    checkEqual('fmea page title en', titleEl.textContent, 'FMEA Failure Catalog');
+  }
+
+  // ---- 83. Hard-coded Turkish user text scan (FMEA scope) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const src = extractFunctionDecl(scriptSrc, 'buildFmea');
+    const turkishCharRe = /[şğüöçİĞÜŞÖÇı]/;
+    const strs = [...src.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]).filter((s) => turkishCharRe.test(s));
+    check('no hard-coded Turkish string literals remain in buildFmea()', strs.length === 0);
+  }
+
+  // ---- 84. Language-dependent decision anti-pattern scan (FMEA scope) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const fmeaSrc = scriptSrc.slice(scriptSrc.indexOf('const FMEA='), scriptSrc.indexOf('function buildFmea') + 800);
+    check('no severity-label-keyed object (translated-text-as-decision anti-pattern) in FMEA scope',
+      !/\{[^}]*(KRİTİK|YÜKSEK|ORTA)\s*:/.test(fmeaSrc));
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
