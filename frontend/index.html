@@ -524,23 +524,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- 01391 HIZLI ÖNGÖRÜ -->
 <div id="page-n01391" class="page">
   <div class="section-header"><span class="section-icon">⚡</span><div>
-    <div class="section-title">Örnek Tork Çalışması <span style="font-size:11px;color:var(--text3);font-weight:400">(Sample Torque Study)</span></div>
-    <div class="section-sub">Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları</div>
+    <div class="section-title" data-i18n="n01391.title">Örnek Tork Çalışması <span style="font-size:11px;color:var(--text3);font-weight:400">(Sample Torque Study)</span></div>
+    <div class="section-sub" data-i18n="n01391.subtitle">Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları</div>
   </div></div>
   <div class="alert alert-warn" style="display:flex;align-items:center;gap:8px">
-    <span><strong>⚠️ Kapsam ve Öncelik:</strong> Teknik resim veya proje şartnamesi varsa o değer önceliklidir; bu ekran örnek referans amaçlıdır.</span>
+    <span><strong data-i18n="n01391.scope_priority_label">⚠️ Kapsam ve Öncelik:</strong> <span data-i18n="n01391.scope_priority_text">Teknik resim veya proje şartnamesi varsa o değer önceliklidir; bu ekran örnek referans amaçlıdır.</span></span>
     <span id="n01391-scope-info"></span>
   </div>
   <div class="alert alert-info" style="font-size:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
-    <span><strong>Referans Kaynak:</strong> TorqPro Demo Engineering Dataset v1.0 — gerçek bir OEM standardı değildir.</span>
+    <span><strong data-i18n="n01391.ref_source_label">Referans Kaynak:</strong> <span data-i18n="n01391.ref_source_text">TorqPro Demo Engineering Dataset v1.0 — gerçek bir OEM standardı değildir.</span></span>
   </div>
   <div class="grid2">
     <div class="card">
-      <div class="card-title">Parametre Seçimi</div>
-      <div class="card-sub">Seçili veri setinde tanımlı ölçüler listelenmiştir</div>
+      <div class="card-title" data-i18n="n01391.param_selection_title">Parametre Seçimi</div>
+      <div class="card-sub" data-i18n="n01391.param_selection_sub">Seçili veri setinde tanımlı ölçüler listelenmiştir</div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Diş Ölçüsü</label>
+          <label class="form-label" data-i18n="n01391.thread_size">Diş Ölçüsü</label>
           <select class="form-select" id="n_dis" onchange="n01391Hesapla()">
             <option value="M5">M5</option>
             <option value="M6">M6</option>
@@ -554,37 +554,37 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Bağlantı Tipi</label>
+          <label class="form-label" data-i18n="n01391.connection_type">Bağlantı Tipi</label>
           <select class="form-select" id="n_flans" onchange="n01391Hesapla()">
-            <option value="no">Flanşsız</option>
-            <option value="yes" selected>Flanşlı</option>
+            <option value="no" data-i18n="n01391.no_flange">Flanşsız</option>
+            <option value="yes" selected data-i18n="n01391.with_flange">Flanşlı</option>
           </select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Cıvata Dayanım Sınıfı</label>
+          <label class="form-label" data-i18n="n01391.bolt_strength_class">Cıvata Dayanım Sınıfı</label>
           <select class="form-select" id="n_civata" onchange="n01391Hesapla()">
             <option value="8.8">8.8</option>
             <option value="10.9" selected>10.9</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label">Somun Dayanım Sınıfı</label>
+          <label class="form-label" data-i18n="n01391.nut_strength_class">Somun Dayanım Sınıfı</label>
           <select class="form-select" id="n_somun" onchange="n01391Hesapla()">
             <option value="8">8</option>
             <option value="10" selected>10</option>
           </select>
         </div>
       </div>
-      <div class="alert alert-info" style="margin-top:8px;font-size:12px">
+      <div class="alert alert-info" style="margin-top:8px;font-size:12px" data-i18n="n01391.matching_rule">
         Somun sınıfı 8 → cıvata sınıfı 8.8 ile, somun sınıfı 10 → cıvata sınıfı 10.9 ile eşleştirilir.
         Uyumsuz kombinasyonlarda düşük sınıf geçerlidir.
       </div>
     </div>
     <div class="card" id="n01391-sonuc">
-      <div class="card-title">Öngörü Sonucu</div>
-      <div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">⚡</div><div>Parametreleri seçin</div></div>
+      <div class="card-title" data-i18n="n01391.forecast_result_title">Öngörü Sonucu</div>
+      <div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">⚡</div><div data-i18n="n01391.select_parameters">Parametreleri seçin</div></div>
     </div>
   </div>
 </div>
@@ -592,185 +592,185 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- HIZLI TORK HESAP -->
 <div id="page-hizli" class="page">
   <div class="section-header"><span class="section-icon">🔧</span><div>
-    <div class="section-title">Teorik Tork Hesaplama</div>
-    <div class="section-sub">ISO 16047 prensipli bileşen tork hesabı · yüzey basıncı · diş kavrama</div>
+    <div class="section-title" data-i18n="hizli.title">Teorik Tork Hesaplama</div>
+    <div class="section-sub" data-i18n="hizli.subtitle">ISO 16047 prensipli bileşen tork hesabı · yüzey basıncı · diş kavrama</div>
   </div></div>
-  <div class="alert alert-info">Bu mod diş ve yatak sürtünmesini ayrı hesaplayan mühendislik ön değerlendirmesidir. OEM seri üretim değeri için "OEM Norm Sorgu" veya "Örnek Tork Çalışması" modülünü kullanın.</div>
+  <div class="alert alert-info" data-i18n="hizli.mode_note">Bu mod diş ve yatak sürtünmesini ayrı hesaplayan mühendislik ön değerlendirmesidir. OEM seri üretim değeri için "OEM Norm Sorgu" veya "Örnek Tork Çalışması" modülünü kullanın.</div>
   <div class="grid2">
     <div class="card">
-      <div class="card-title">Bağlantı Parametreleri</div>
+      <div class="card-title" data-i18n="hizli.connection_params_title">Bağlantı Parametreleri</div>
       <div class="library-panel">
         <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
           <div>
-            <div style="font-size:13px;font-weight:700;color:var(--accent2)">📚 v3.1 Kütüphane Seçici</div>
-            <div style="font-size:11px;color:var(--text3)">Ürün ailesi → standart → diş → somun → pul</div>
+            <div style="font-size:13px;font-weight:700;color:var(--accent2)" data-i18n="hizli.library_selector_title">📚 v3.1 Kütüphane Seçici</div>
+            <div style="font-size:11px;color:var(--text3)" data-i18n="hizli.library_selector_path">Ürün ailesi → standart → diş → somun → pul</div>
           </div>
-          <span class="pill pill-info" id="libStatus">Kütüphane yüklendi</span>
+          <span class="pill pill-info" id="libStatus" data-i18n="hizli.library_loaded">Kütüphane yüklendi</span>
         </div>
         <div class="library-grid">
-          <div class="form-group"><label class="form-label">Ürün Ailesi</label><select class="form-select" id="lib_family" onchange="libraryFamilyChanged()"></select></div>
-          <div class="form-group"><label class="form-label">Standart</label><select class="form-select" id="lib_standard" onchange="libraryStandardChanged()"></select></div>
-          <div class="form-group"><label class="form-label">Diş / Hatve</label><select class="form-select" id="lib_thread" onchange="libraryThreadChanged()"></select></div>
-          <div class="form-group"><label class="form-label">Somun</label><select class="form-select" id="lib_nut" onchange="libraryCompatibilityChanged()"></select></div>
-          <div class="form-group"><label class="form-label">Pul</label><select class="form-select" id="lib_washer" onchange="libraryCompatibilityChanged()"></select></div>
-          <div class="form-group"><label class="form-label">Kaplama / μ Kaydı</label><select class="form-select" id="lib_coating" onchange="libraryCoatingChanged()"></select></div>
-          <div class="form-group"><label class="form-label">Veri Kullanımı</label><select class="form-select" id="lib_policy" onchange="libraryRenderMeta()"><option value="engineering">Mühendislik — Güven ≥3</option><option value="all">Taslaklar dahil</option></select></div>
-          <div class="form-group"><label class="form-label">Hesap Veri Kaynağı</label><input class="form-input" id="lib_mode" value="Kütüphane" readonly></div>
+          <div class="form-group"><label class="form-label" data-i18n="hizli.product_family">Ürün Ailesi</label><select class="form-select" id="lib_family" onchange="libraryFamilyChanged()"></select></div>
+          <div class="form-group"><label class="form-label" data-i18n="hizli.standard">Standart</label><select class="form-select" id="lib_standard" onchange="libraryStandardChanged()"></select></div>
+          <div class="form-group"><label class="form-label" data-i18n="hizli.thread_pitch">Diş / Hatve</label><select class="form-select" id="lib_thread" onchange="libraryThreadChanged()"></select></div>
+          <div class="form-group"><label class="form-label" data-i18n="hizli.nut">Somun</label><select class="form-select" id="lib_nut" onchange="libraryCompatibilityChanged()"></select></div>
+          <div class="form-group"><label class="form-label" data-i18n="hizli.washer">Pul</label><select class="form-select" id="lib_washer" onchange="libraryCompatibilityChanged()"></select></div>
+          <div class="form-group"><label class="form-label" data-i18n="hizli.coating_mu_record">Kaplama / μ Kaydı</label><select class="form-select" id="lib_coating" onchange="libraryCoatingChanged()"></select></div>
+          <div class="form-group"><label class="form-label" data-i18n="hizli.data_usage">Veri Kullanımı</label><select class="form-select" id="lib_policy" onchange="libraryRenderMeta()"><option value="engineering" data-i18n="hizli.data_usage_engineering">Mühendislik — Güven ≥3</option><option value="all" data-i18n="hizli.data_usage_all">Taslaklar dahil</option></select></div>
+          <div class="form-group"><label class="form-label" data-i18n="hizli.calc_data_source">Hesap Veri Kaynağı</label><input class="form-input" id="lib_mode" value="Kütüphane" readonly></div>
         </div>
         <div class="library-meta" id="libraryMeta"></div>
         <div class="compat-list" id="compatibilityBox"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Cıvata Çapı</label><select class="form-select" id="cap" onchange="hesapla()"><option>M6</option><option>M8</option><option selected>M10</option><option>M12</option><option>M14</option><option>M16</option><option>M18</option><option>M20</option><option>M24</option></select></div>
-        <div class="form-group"><label class="form-label">Kalite Sınıfı</label><select class="form-select" id="kalite" onchange="hesapla()"><option>4.6</option><option>5.6</option><option>6.8</option><option>8.8</option><option selected>10.9</option><option>12.9</option></select></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.bolt_diameter">Cıvata Çapı</label><select class="form-select" id="cap" onchange="hesapla()"><option>M6</option><option>M8</option><option selected>M10</option><option>M12</option><option>M14</option><option>M16</option><option>M18</option><option>M20</option><option>M24</option></select></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.quality_class">Kalite Sınıfı</label><select class="form-select" id="kalite" onchange="hesapla()"><option>4.6</option><option>5.6</option><option>6.8</option><option>8.8</option><option selected>10.9</option><option>12.9</option></select></div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label" style="display:flex;align-items:center;gap:6px">Bağlantı Elemanı Sürtünme / Yüzey Durumu (μ) <span id="surtunme-uyari-info"></span></label>
+          <label class="form-label" style="display:flex;align-items:center;gap:6px"><span data-i18n="hizli.friction_surface_condition">Bağlantı Elemanı Sürtünme / Yüzey Durumu (μ)</span> <span id="surtunme-uyari-info"></span></label>
           <select class="form-select" id="surtunme" onchange="hesapla()">
-            <option value="0.08">0.08 — Önceden uygulanmış kontrollü yağlayıcı (MoS₂)</option>
-            <option value="0.10">0.10 — Üretici kontrollü kaplama (Fosfat + kontrollü yağlayıcı)</option>
-            <option value="0.12" selected>0.12 — Üretici kontrollü kaplama (Çinko kaplama)</option>
-            <option value="0.14">0.14 — Sürtünme sınıfı doğrulanmamış (genel varsayım)</option>
-            <option value="0.16">0.16 — Kuru / ilave yağlayıcı uygulanmamış</option>
-            <option value="0.20">0.20 — Kuru / ilave yağlayıcı uygulanmamış (paslanmaz)</option>
+            <option value="0.08" data-i18n="hizli.friction_opt_008">0.08 — Önceden uygulanmış kontrollü yağlayıcı (MoS₂)</option>
+            <option value="0.10" data-i18n="hizli.friction_opt_010">0.10 — Üretici kontrollü kaplama (Fosfat + kontrollü yağlayıcı)</option>
+            <option value="0.12" selected data-i18n="hizli.friction_opt_012">0.12 — Üretici kontrollü kaplama (Çinko kaplama)</option>
+            <option value="0.14" data-i18n="hizli.friction_opt_014">0.14 — Sürtünme sınıfı doğrulanmamış (genel varsayım)</option>
+            <option value="0.16" data-i18n="hizli.friction_opt_016">0.16 — Kuru / ilave yağlayıcı uygulanmamış</option>
+            <option value="0.20" data-i18n="hizli.friction_opt_020">0.20 — Kuru / ilave yağlayıcı uygulanmamış (paslanmaz)</option>
           </select>
-          <div class="form-hint">Değer, bağlantı elemanının üretici tanımlı yüzey/kaplama durumuna göre seçilmelidir — bkz. uyarı ikonu.</div>
+          <div class="form-hint" data-i18n="hizli.friction_hint">Değer, bağlantı elemanının üretici tanımlı yüzey/kaplama durumuna göre seçilmelidir — bkz. uyarı ikonu.</div>
         </div>
-        <div class="form-group"><label class="form-label">Ön Yük Oranı</label><select class="form-select" id="onYuk" onchange="hesapla()"><option value="70">%70 — Genel</option><option value="75" selected>%75 — Standart</option><option value="80">%80 — Kritik</option><option value="90">%90 — Yüksek</option></select></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.preload_ratio">Ön Yük Oranı</label><select class="form-select" id="onYuk" onchange="hesapla()"><option value="70" data-i18n="hizli.preload_general">%70 — Genel</option><option value="75" selected data-i18n="hizli.preload_standard">%75 — Standart</option><option value="80" data-i18n="hizli.preload_critical">%80 — Kritik</option><option value="90" data-i18n="hizli.preload_high">%90 — Yüksek</option></select></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Diş Sürtünmesi μthread</label><input class="form-input" type="number" id="mu_thread" value="0.12" min="0.03" max="0.40" step="0.01" oninput="hesapla()"><div class="form-hint">ISO 16047 test verisi yoksa yaklaşık kabul</div></div>
-        <div class="form-group"><label class="form-label">Baş/Somun Altı μbearing</label><input class="form-input" type="number" id="mu_bearing" value="0.12" min="0.03" max="0.40" step="0.01" oninput="hesapla()"><div class="form-hint">Kaplama ve oturma yüzeyine bağlıdır</div></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.mu_thread">Diş Sürtünmesi μthread</label><input class="form-input" type="number" id="mu_thread" value="0.12" min="0.03" max="0.40" step="0.01" oninput="hesapla()"><div class="form-hint" data-i18n="hizli.mu_thread_hint">ISO 16047 test verisi yoksa yaklaşık kabul</div></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.mu_bearing">Baş/Somun Altı μbearing</label><input class="form-input" type="number" id="mu_bearing" value="0.12" min="0.03" max="0.40" step="0.01" oninput="hesapla()"><div class="form-hint" data-i18n="hizli.mu_bearing_hint">Kaplama ve oturma yüzeyine bağlıdır</div></div>
       </div>
       <div class="form-row3">
-        <div class="form-group"><label class="form-label">μthread Min</label><input class="form-input" type="number" id="mu_thread_min" value="0.10" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
-        <div class="form-group"><label class="form-label">μthread Nom</label><input class="form-input" type="number" id="mu_thread_nom" value="0.12" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
-        <div class="form-group"><label class="form-label">μthread Max</label><input class="form-input" type="number" id="mu_thread_max" value="0.14" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.mu_thread_min">μthread Min</label><input class="form-input" type="number" id="mu_thread_min" value="0.10" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.mu_thread_nom">μthread Nom</label><input class="form-input" type="number" id="mu_thread_nom" value="0.12" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.mu_thread_max">μthread Max</label><input class="form-input" type="number" id="mu_thread_max" value="0.14" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
       </div>
       <div class="form-row3">
-        <div class="form-group"><label class="form-label">μbearing Min</label><input class="form-input" type="number" id="mu_bearing_min" value="0.10" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
-        <div class="form-group"><label class="form-label">μbearing Nom</label><input class="form-input" type="number" id="mu_bearing_nom" value="0.12" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
-        <div class="form-group"><label class="form-label">μbearing Max</label><input class="form-input" type="number" id="mu_bearing_max" value="0.14" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.mu_bearing_min">μbearing Min</label><input class="form-input" type="number" id="mu_bearing_min" value="0.10" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.mu_bearing_nom">μbearing Nom</label><input class="form-input" type="number" id="mu_bearing_nom" value="0.12" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.mu_bearing_max">μbearing Max</label><input class="form-input" type="number" id="mu_bearing_max" value="0.14" min="0.03" max="0.40" step="0.01" oninput="hesapla()"></div>
       </div>
       <div class="form-row3">
-        <div class="form-group"><label class="form-label">İç Diş Çekme Dayanımı Rm (MPa)</label><input class="form-input" type="number" id="internal_rm" value="500" min="50" step="10" oninput="hesapla()"></div>
-        <div class="form-group"><label class="form-label">Civata Çekme Dayanımı Rm (MPa)</label><input class="form-input" type="number" id="bolt_rm" value="1000" min="100" step="10" oninput="hesapla()"></div>
-        <div class="form-group"><label class="form-label">Somun Proof-Load (MPa)</label><input class="form-input" type="number" id="nut_proof" value="830" min="0" step="10" oninput="hesapla()"><div class="form-hint">ISO 898-2 tablosu tamamlanana kadar kullanıcı girdisi</div></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.internal_rm">İç Diş Çekme Dayanımı Rm (MPa)</label><input class="form-input" type="number" id="internal_rm" value="500" min="50" step="10" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.bolt_rm">Civata Çekme Dayanımı Rm (MPa)</label><input class="form-input" type="number" id="bolt_rm" value="1000" min="100" step="10" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.nut_proof">Somun Proof-Load (MPa)</label><input class="form-input" type="number" id="nut_proof" value="830" min="0" step="10" oninput="hesapla()"><div class="form-hint" data-i18n="hizli.nut_proof_hint">ISO 898-2 tablosu tamamlanana kadar kullanıcı girdisi</div></div>
       </div>
       <div class="form-row3">
-        <div class="form-group"><label class="form-label">Hedef Akma Kullanımı (%)</label><input class="form-input" type="number" id="target_yield" value="75" min="10" max="95" step="1" oninput="hesapla()"></div>
-        <div class="form-group"><label class="form-label">Delik Tipi</label><select class="form-select" id="hole_type" onchange="hesapla()"><option value="nut">Somunlu bağlantı</option><option value="through">Geçme delik + iç diş</option><option value="blind">Kör delik</option></select></div>
-        <div class="form-group"><label class="form-label">Yüzey Malzemesi</label><select class="form-select" id="surface_material" onchange="hesapla()"><option value="steel">Çelik</option><option value="aluminum">Alüminyum</option><option value="castiron">Dökme demir</option></select></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.target_yield">Hedef Akma Kullanımı (%)</label><input class="form-input" type="number" id="target_yield" value="75" min="10" max="95" step="1" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.hole_type">Delik Tipi</label><select class="form-select" id="hole_type" onchange="hesapla()"><option value="nut" data-i18n="hizli.hole_type_nut">Somunlu bağlantı</option><option value="through" data-i18n="hizli.hole_type_through">Geçme delik + iç diş</option><option value="blind" data-i18n="hizli.hole_type_blind">Kör delik</option></select></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.surface_material">Yüzey Malzemesi</label><select class="form-select" id="surface_material" onchange="hesapla()"><option value="steel" data-i18n="hizli.material_steel">Çelik</option><option value="aluminum" data-i18n="hizli.material_aluminum">Alüminyum</option><option value="castiron" data-i18n="hizli.material_castiron">Dökme demir</option></select></div>
       </div>
       <div class="form-row3">
-        <div class="form-group"><label class="form-label">Diş Kavrama Boyu Le (mm)</label><input class="form-input" type="number" id="engagement_len" value="10" min="0" step="0.1" oninput="hesapla()"></div>
-        <div class="form-group"><label class="form-label">İç Diş Malzemesi</label><select class="form-select" id="internal_material" onchange="hesapla()"><option value="steel" selected>Çelik</option><option value="aluminum">Alüminyum</option><option value="castiron">Dökme demir</option></select></div>
-        <div class="form-group"><label class="form-label">Yüzey Basınç Sınırı (MPa)</label><input class="form-input" type="number" id="bearing_limit" value="300" min="1" step="10" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.engagement_len">Diş Kavrama Boyu Le (mm)</label><input class="form-input" type="number" id="engagement_len" value="10" min="0" step="0.1" oninput="hesapla()"></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.internal_material">İç Diş Malzemesi</label><select class="form-select" id="internal_material" onchange="hesapla()"><option value="steel" selected data-i18n="hizli.material_steel">Çelik</option><option value="aluminum" data-i18n="hizli.material_aluminum">Alüminyum</option><option value="castiron" data-i18n="hizli.material_castiron">Dökme demir</option></select></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.bearing_limit">Yüzey Basınç Sınırı (MPa)</label><input class="form-input" type="number" id="bearing_limit" value="300" min="1" step="10" oninput="hesapla()"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Sıkma Sınıfı <span class="norm-badge">Örnek norma göre</span></label><select class="form-select" id="sinif" onchange="hesapla()"><option value="A">A — ±%5 (Kritik güvenlik)</option><option value="B" selected>B — ±%10 (Önemli)</option><option value="C">C — ±%20 (Standart)</option><option value="D">D — ±%30 (Genel)</option></select></div>
-        <div class="form-group"><label class="form-label">Kontrol Yöntemi</label><select class="form-select" id="yontem" onchange="hesapla()"><option>Sistem A (Dinamik)</option><option>C Metodu (Statik)</option><option>Tork + Açı</option><option>Akma Kontrollü (TTY)</option></select></div>
+        <div class="form-group"><label class="form-label"><span data-i18n="hizli.tightening_class">Sıkma Sınıfı</span> <span class="norm-badge" data-i18n="hizli.per_sample_norm">Örnek norma göre</span></label><select class="form-select" id="sinif" onchange="hesapla()"><option value="A" data-i18n="hizli.class_a_opt">A — ±%5 (Kritik güvenlik)</option><option value="B" selected data-i18n="hizli.class_b_opt">B — ±%10 (Önemli)</option><option value="C" data-i18n="hizli.class_c_opt">C — ±%20 (Standart)</option><option value="D" data-i18n="hizli.class_d_opt">D — ±%30 (Genel)</option></select></div>
+        <div class="form-group"><label class="form-label" data-i18n="hizli.control_method">Kontrol Yöntemi</label><select class="form-select" id="yontem" onchange="hesapla()"><option data-i18n="hizli.method_system_a">Sistem A (Dinamik)</option><option data-i18n="hizli.method_c">C Metodu (Statik)</option><option data-i18n="hizli.method_torque_angle">Tork + Açı</option><option data-i18n="hizli.method_tty">Akma Kontrollü (TTY)</option></select></div>
       </div>
-      <div class="btn-group"><button class="btn btn-primary" onclick="hesapla()">🔧 Hesapla</button><button class="btn btn-secondary" onclick="resetForm()">Temizle</button></div>
+      <div class="btn-group"><button class="btn btn-primary" onclick="hesapla()"><span data-i18n="hizli.calculate_btn">🔧 Hesapla</span></button><button class="btn btn-secondary" onclick="resetForm()" data-i18n="hizli.clear_btn">Temizle</button></div>
     </div>
-    <div class="card"><div class="card-title">Hesaplama Sonuçları</div><div class="card-sub">VDI 2230 · ISO 16047 · Teorik hesap</div><div id="liveDataBanner" class="live-data-banner passive">
+    <div class="card"><div class="card-title" data-i18n="hizli.results_title">Hesaplama Sonuçları</div><div class="card-sub">VDI 2230 · ISO 16047 · <span data-i18n="hizli.theoretical_calc">Teorik hesap</span></div><div id="liveDataBanner" class="live-data-banner passive" data-i18n="hizli.live_data_banner">
   Aktif onaylı standart verileri yükleniyor. Veri yoksa kütüphane ve kullanıcı girdileri kullanılacaktır.
 </div>
-<div id="sonuc-box"><div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">🔧</div><div>Parametreleri girin</div></div></div></div>
+<div id="sonuc-box"><div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">🔧</div><div data-i18n="hizli.enter_parameters">Parametreleri girin</div></div></div></div>
   </div>
   <div class="card" id="tork-dagilim" style="display:none">
-    <div class="card-title">Tork Bileşenleri Dağılımı</div><div class="card-sub">Uygulanan torkun nereye gittiği</div>
+    <div class="card-title" data-i18n="hizli.torque_components_title">Tork Bileşenleri Dağılımı</div><div class="card-sub" data-i18n="hizli.torque_components_sub">Uygulanan torkun nereye gittiği</div>
     <div class="tork-bar" id="torkBar"></div>
-    <div style="font-size:12px;color:var(--text3);margin-top:8px">⚠️ Sürtünme katsayısı değişince dağılım tamamen değişir. Gerçek bağlantı kuvveti yalnızca ~%10 civarındadır.</div>
+    <div style="font-size:12px;color:var(--text3);margin-top:8px" data-i18n="hizli.torque_components_note">⚠️ Sürtünme katsayısı değişince dağılım tamamen değişir. Gerçek bağlantı kuvveti yalnızca ~%10 civarındadır.</div>
     <div id="tolerans-box" style="margin-top:12px"></div>
   </div>
 </div>
 
 <!-- GELİŞMİŞ VDI -->
 <div id="page-vdi" class="page">
-  <div class="section-header"><span class="section-icon">🔬</span><div><div class="section-title">Gelişmiş Bağlantı Analizi</div><div class="section-sub">VDI 2230 Blatt 1 — Esneklik ve yük dağılımı</div></div></div>
-  <div class="alert alert-info">VDI 2230 R1–R13: flanş esnekliği, yük dağılım faktörü, emniyet faktörü.</div>
+  <div class="section-header"><span class="section-icon">🔬</span><div><div class="section-title" data-i18n="vdi.title">Gelişmiş Bağlantı Analizi</div><div class="section-sub" data-i18n="vdi.subtitle">VDI 2230 Blatt 1 — Esneklik ve yük dağılımı</div></div></div>
+  <div class="alert alert-info" data-i18n="vdi.intro">VDI 2230 R1–R13: flanş esnekliği, yük dağılım faktörü, emniyet faktörü.</div>
   <div class="grid2">
     <div class="card">
-      <div class="card-title">Flanş Geometrisi</div>
-      <div class="form-row"><div class="form-group"><label class="form-label">Plaka kalınlığı (mm)</label><input class="form-input" type="number" value="10" id="v_plaka"></div><div class="form-group"><label class="form-label">Plaka malzemesi</label><select class="form-select" id="v_malzeme"><option>Çelik (E=210 GPa)</option><option>Alüminyum (E=70 GPa)</option><option>Dökme demir</option></select></div></div>
-      <div class="form-row"><div class="form-group"><label class="form-label">Cıvata boyu (mm)</label><input class="form-input" type="number" value="40" id="v_boy"></div><div class="form-group"><label class="form-label">Yük giriş faktörü (n)</label><input class="form-input" type="number" value="0.5" step="0.1" id="v_n"></div></div>
-      <div class="form-row"><div class="form-group"><label class="form-label">İşletme yükü FA (kN)</label><input class="form-input" type="number" value="15" id="v_FA"></div><div class="form-group"><label class="form-label">ΔT (°C)</label><input class="form-input" type="number" value="0" id="v_dT"></div></div>
-      <button class="btn btn-primary" onclick="vdiHesapla()" style="width:100%">VDI 2230 Çalıştır</button>
+      <div class="card-title" data-i18n="vdi.flange_geometry_title">Flanş Geometrisi</div>
+      <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="vdi.plate_thickness">Plaka kalınlığı (mm)</label><input class="form-input" type="number" value="10" id="v_plaka"></div><div class="form-group"><label class="form-label" data-i18n="vdi.plate_material">Plaka malzemesi</label><select class="form-select" id="v_malzeme"><option data-i18n="vdi.material_steel">Çelik (E=210 GPa)</option><option data-i18n="vdi.material_aluminum">Alüminyum (E=70 GPa)</option><option data-i18n="vdi.material_castiron">Dökme demir</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="vdi.bolt_length">Cıvata boyu (mm)</label><input class="form-input" type="number" value="40" id="v_boy"></div><div class="form-group"><label class="form-label" data-i18n="vdi.load_intro_factor">Yük giriş faktörü (n)</label><input class="form-input" type="number" value="0.5" step="0.1" id="v_n"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="vdi.operating_load">İşletme yükü FA (kN)</label><input class="form-input" type="number" value="15" id="v_FA"></div><div class="form-group"><label class="form-label">ΔT (°C)</label><input class="form-input" type="number" value="0" id="v_dT"></div></div>
+      <button class="btn btn-primary" onclick="vdiHesapla()" style="width:100%" data-i18n="vdi.run_button">VDI 2230 Çalıştır</button>
     </div>
-    <div class="card" id="vdi-sonuc"><div class="card-title">Analiz Sonuçları</div><div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">🔬</div><div>Parametreleri girin</div></div></div>
+    <div class="card" id="vdi-sonuc"><div class="card-title" data-i18n="vdi.results_title">Analiz Sonuçları</div><div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">🔬</div><div data-i18n="vdi.enter_parameters">Parametreleri girin</div></div></div>
   </div>
 </div>
 
 <!-- CHECK-LIST -->
 <div id="page-checklist" class="page">
-  <div class="section-header"><span class="section-icon">✅</span><div><div class="section-title">Torklama Proses Check-List</div><div class="section-sub">5 kategori · 20 madde <span class="norm-badge">Örnek norma göre</span></div></div></div>
+  <div class="section-header"><span class="section-icon">✅</span><div><div class="section-title" data-i18n="checklist.title">Torklama Proses Check-List</div><div class="section-sub"><span data-i18n="checklist.subtitle">5 kategori · 20 madde</span> <span class="norm-badge" data-i18n="checklist.per_sample_norm">Örnek norma göre</span></div></div></div>
   <div class="card" style="margin-bottom:12px"><div class="form-row3">
-    <div class="form-group"><label class="form-label">Operasyon</label><input class="form-input" id="cl_op" placeholder="Ön süspansiyon travers"></div>
-    <div class="form-group"><label class="form-label">Şase / Parça No</label><input class="form-input" id="cl_sase" placeholder="YH24-001234"></div>
-    <div class="form-group"><label class="form-label">Denetçi</label><input class="form-input" id="cl_den" placeholder="Ad Soyad"></div>
+    <div class="form-group"><label class="form-label" data-i18n="checklist.operation">Operasyon</label><input class="form-input" id="cl_op" data-i18n-placeholder="checklist.operation_placeholder" placeholder="Ön süspansiyon travers"></div>
+    <div class="form-group"><label class="form-label" data-i18n="checklist.chassis_part_no">Şase / Parça No</label><input class="form-input" id="cl_sase" placeholder="YH24-001234"></div>
+    <div class="form-group"><label class="form-label" data-i18n="checklist.inspector">Denetçi</label><input class="form-input" id="cl_den" data-i18n-placeholder="checklist.name_placeholder" placeholder="Ad Soyad"></div>
   </div></div>
   <div id="checklist-items"></div>
-  <div class="btn-group" style="margin-top:12px"><button class="btn btn-primary" onclick="checklistSonuc()">📊 Değerlendir</button><button class="btn btn-secondary" onclick="resetChecklist()">Sıfırla</button></div>
+  <div class="btn-group" style="margin-top:12px"><button class="btn btn-primary" onclick="checklistSonuc()"><span data-i18n="checklist.evaluate_btn">📊 Değerlendir</span></button><button class="btn btn-secondary" onclick="resetChecklist()" data-i18n="checklist.reset_btn">Sıfırla</button></div>
   <div id="cl-sonuc" style="margin-top:12px"></div>
 </div>
 
 <!-- YETENEK -->
 <div id="page-yetenek" class="page">
   <div class="section-header"><span class="section-icon">📈</span><div>
-    <div class="section-title">Cm / Cmk Makine Yetenek Analizi</div>
-    <div class="section-sub">Min 30 ölçüm · Cp/Cpk ile Cm/Cmk ayrımı · Manuel veya OEM limitli</div>
+    <div class="section-title" data-i18n="yetenek.title">Cm / Cmk Makine Yetenek Analizi</div>
+    <div class="section-sub" data-i18n="yetenek.subtitle">Min 30 ölçüm · Cp/Cpk ile Cm/Cmk ayrımı · Manuel veya OEM limitli</div>
   </div></div>
-  <div class="alert alert-info"><strong>Limit kaynağı:</strong> LSL/USL'yi manuel girin ya da OEM norm kaydından aktarın. Teorik ±% tolerans <em>kullanılmaz</em> — bu sadece teorik hesap moduna aittir.</div>
+  <div class="alert alert-info"><strong data-i18n="yetenek.limit_source_label">Limit kaynağı:</strong> <span data-i18n="yetenek.limit_source_text">LSL/USL'yi manuel girin ya da OEM norm kaydından aktarın. Teorik ±% tolerans <em>kullanılmaz</em> — bu sadece teorik hesap moduna aittir.</span></div>
   <div class="grid2">
     <div class="card">
-      <div class="card-title">Ölçüm ve Limit Girişi</div>
+      <div class="card-title" data-i18n="yetenek.measurement_limit_title">Ölçüm ve Limit Girişi</div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Nominal Tork (Nm)</label><input class="form-input" type="number" id="y_nom" value="28"></div>
-        <div class="form-group"><label class="form-label">Limit Kaynağı</label>
+        <div class="form-group"><label class="form-label" data-i18n="yetenek.nominal_torque">Nominal Tork (Nm)</label><input class="form-input" type="number" id="y_nom" value="28"></div>
+        <div class="form-group"><label class="form-label" data-i18n="yetenek.limit_source">Limit Kaynağı</label>
           <select class="form-select" id="y_kaynakMod" onchange="toggleLimitKaynak()">
-            <option value="manuel">Manuel LSL/USL</option>
-            <option value="oem">OEM t_min / t_max</option>
+            <option value="manuel" data-i18n="yetenek.manual_lsl_usl">Manuel LSL/USL</option>
+            <option value="oem" data-i18n="yetenek.oem_tmin_tmax">OEM t_min / t_max</option>
           </select>
         </div>
       </div>
       <div id="y_manuelAlani">
         <div class="form-row">
-          <div class="form-group"><label class="form-label">LSL — Alt Kontrol Limiti (Nm)</label><input class="form-input" type="number" id="y_lsl" value="25.2"></div>
-          <div class="form-group"><label class="form-label">USL — Üst Kontrol Limiti (Nm)</label><input class="form-input" type="number" id="y_usl" value="30.8"></div>
+          <div class="form-group"><label class="form-label" data-i18n="yetenek.lsl">LSL — Alt Kontrol Limiti (Nm)</label><input class="form-input" type="number" id="y_lsl" value="25.2"></div>
+          <div class="form-group"><label class="form-label" data-i18n="yetenek.usl">USL — Üst Kontrol Limiti (Nm)</label><input class="form-input" type="number" id="y_usl" value="30.8"></div>
         </div>
       </div>
       <div id="y_oemAlani" style="display:none">
         <div class="form-row">
-          <div class="form-group"><label class="form-label">OEM T' min (Nm)</label><input class="form-input" type="number" id="y_oemlsl" placeholder="Normdan al"></div>
-          <div class="form-group"><label class="form-label">OEM T' max (Nm)</label><input class="form-input" type="number" id="y_oemusl" placeholder="Normdan al"></div>
+          <div class="form-group"><label class="form-label">OEM T' min (Nm)</label><input class="form-input" type="number" id="y_oemlsl" data-i18n-placeholder="yetenek.take_from_norm" placeholder="Normdan al"></div>
+          <div class="form-group"><label class="form-label">OEM T' max (Nm)</label><input class="form-input" type="number" id="y_oemusl" data-i18n-placeholder="yetenek.take_from_norm" placeholder="Normdan al"></div>
         </div>
-        <div class="alert alert-info" style="font-size:12px">OEM limitlerini "OEM Norm Sorgu" modülünden kopyalayarak buraya girin.</div>
+        <div class="alert alert-info" style="font-size:12px" data-i18n="yetenek.oem_copy_note">OEM limitlerini "OEM Norm Sorgu" modülünden kopyalayarak buraya girin.</div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Ölçüm Yöntemi</label>
+        <div class="form-group"><label class="form-label" data-i18n="yetenek.measurement_method">Ölçüm Yöntemi</label>
           <select class="form-select" id="y_olcumYontemi">
-            <option value="A">Sistem A — Dinamik (sıkma anında)</option>
-            <option value="C">C Metodu — Statik (oturma sonrası)</option>
+            <option value="A" data-i18n="yetenek.method_system_a">Sistem A — Dinamik (sıkma anında)</option>
+            <option value="C" data-i18n="yetenek.method_c">C Metodu — Statik (oturma sonrası)</option>
           </select>
-          <div class="form-hint">Limitler bu yönteme uygun seçilmelidir</div>
+          <div class="form-hint" data-i18n="yetenek.method_hint">Limitler bu yönteme uygun seçilmelidir</div>
         </div>
-        <div class="form-group"><label class="form-label">Analiz Türü</label>
+        <div class="form-group"><label class="form-label" data-i18n="yetenek.analysis_type">Analiz Türü</label>
           <select class="form-select" id="y_analizTur">
-            <option value="cm">Cm / Cmk — Makine yeteneği</option>
-            <option value="cp">Cp / Cpk — Proses yeteneği</option>
+            <option value="cm" data-i18n="yetenek.analysis_cm">Cm / Cmk — Makine yeteneği</option>
+            <option value="cp" data-i18n="yetenek.analysis_cp">Cp / Cpk — Proses yeteneği</option>
           </select>
         </div>
       </div>
       <div class="form-group" style="margin-bottom:12px">
-        <label class="form-label">Ölçüm Değerleri (virgülle ayırın, min 30 adet)</label>
+        <label class="form-label" data-i18n="yetenek.measurement_values">Ölçüm Değerleri (virgülle ayırın, min 30 adet)</label>
         <textarea class="form-input" id="y_olcumler" rows="5" style="resize:none;font-family:monospace;font-size:12px"
           placeholder="27.2, 28.1, 27.8, 28.4, 27.6, 28.0, 28.2, 27.9, 28.3, 27.7, 28.1, 28.0, 27.5, 28.2, 27.8, 28.1, 27.9, 28.4, 28.0, 27.8, 28.2, 27.6, 28.1, 27.9, 28.3, 28.0, 27.8, 28.1, 28.2, 27.9"></textarea>
       </div>
-      <button class="btn btn-primary" onclick="yetenekHesapla()" style="width:100%">📈 Yetenek Hesapla</button>
+      <button class="btn btn-primary" onclick="yetenekHesapla()" style="width:100%"><span data-i18n="yetenek.calculate_btn">📈 Yetenek Hesapla</span></button>
     </div>
-    <div class="card" id="yetenek-sonuc"><div class="card-title">Yetenek Sonucu</div><div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">📈</div><div>Ölçümleri girin</div></div></div>
+    <div class="card" id="yetenek-sonuc"><div class="card-title" data-i18n="yetenek.result_title">Yetenek Sonucu</div><div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">📈</div><div data-i18n="yetenek.enter_measurements">Ölçümleri girin</div></div></div>
   </div>
 </div>
 
@@ -1202,40 +1202,40 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <div id="page-calibration" class="page">
   <div class="section-header"><span class="section-icon">📐</span><div>
-    <div class="section-title">Kalibrasyon ve Referans Karşılaştırma</div>
-    <div class="section-sub">Program sonucu · referans değer · hata yüzdesi · tolerans kararı</div>
+    <div class="section-title" data-i18n="calibration.title">Kalibrasyon ve Referans Karşılaştırma</div>
+    <div class="section-sub" data-i18n="calibration.subtitle">Program sonucu · referans değer · hata yüzdesi · tolerans kararı</div>
   </div></div>
 
   <div class="card">
     <div class="form-row3">
-      <div class="form-group"><label class="form-label">Diş</label><select class="form-select" id="cal_thread"><option>M6</option><option>M8</option><option selected>M10</option><option>M12</option><option>M16</option><option>M20</option></select></div>
-      <div class="form-group"><label class="form-label">Referans Tork (Nm)</label><input class="form-input" type="number" id="cal_reference" value="70" step="0.1"></div>
-      <div class="form-group"><label class="form-label">İzin Verilen Hata (%)</label><input class="form-input" type="number" id="cal_tolerance" value="5" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="calibration.thread">Diş</label><select class="form-select" id="cal_thread"><option>M6</option><option>M8</option><option selected>M10</option><option>M12</option><option>M16</option><option>M20</option></select></div>
+      <div class="form-group"><label class="form-label" data-i18n="calibration.reference_torque">Referans Tork (Nm)</label><input class="form-input" type="number" id="cal_reference" value="70" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="calibration.allowed_error">İzin Verilen Hata (%)</label><input class="form-input" type="number" id="cal_tolerance" value="5" step="0.1"></div>
     </div>
     <div class="form-row3">
-      <div class="form-group"><label class="form-label">Program Torku (Nm)</label><input class="form-input" type="number" id="cal_program" value="69.3" step="0.1"></div>
-      <div class="form-group"><label class="form-label">Kaynak ID</label><input class="form-input" id="cal_source_id" placeholder="SRC-..."></div>
-      <div class="form-group"><label class="form-label">Senaryo Notu</label><input class="form-input" id="cal_note"></div>
+      <div class="form-group"><label class="form-label" data-i18n="calibration.program_torque">Program Torku (Nm)</label><input class="form-input" type="number" id="cal_program" value="69.3" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="calibration.source_id">Kaynak ID</label><input class="form-input" id="cal_source_id" placeholder="SRC-..."></div>
+      <div class="form-group"><label class="form-label" data-i18n="calibration.scenario_note">Senaryo Notu</label><input class="form-input" id="cal_note"></div>
     </div>
-    <button class="btn btn-primary" onclick="saveCalibrationCase()">Kalibrasyon Kaydet</button>
+    <button class="btn btn-primary" onclick="saveCalibrationCase()" data-i18n="calibration.save_btn">Kalibrasyon Kaydet</button>
   </div>
 
   <div class="card">
-    <div class="card-header"><div><div class="card-title">Kalibrasyon Sonuçları</div></div><button class="btn btn-secondary btn-sm" onclick="loadCalibrationCases()">Yenile</button></div>
-    <table class="cal-table"><thead><tr><th>Diş</th><th>Program</th><th>Referans</th><th>Hata</th><th>Tolerans</th><th>Karar</th><th>Kaynak</th></tr></thead><tbody id="calibrationBody"></tbody></table>
+    <div class="card-header"><div><div class="card-title" data-i18n="calibration.results_title">Kalibrasyon Sonuçları</div></div><button class="btn btn-secondary btn-sm" onclick="loadCalibrationCases()" data-i18n="calibration.refresh_btn">Yenile</button></div>
+    <table class="cal-table"><thead><tr><th data-i18n="calibration.th_thread">Diş</th><th data-i18n="calibration.th_program">Program</th><th data-i18n="calibration.th_reference">Referans</th><th data-i18n="calibration.th_error">Hata</th><th data-i18n="calibration.th_tolerance">Tolerans</th><th data-i18n="calibration.th_decision">Karar</th><th data-i18n="calibration.th_source">Kaynak</th></tr></thead><tbody id="calibrationBody"></tbody></table>
   </div>
 </div>
 
 <div id="page-validation" class="page">
-  <div class="section-header"><span class="section-icon">🔎</span><div><div class="section-title">Teknik Doğrulama Paneli</div><div class="section-sub">Standart kaynağı · güven seviyesi · üretimde kullanılabilirlik</div></div></div>
+  <div class="section-header"><span class="section-icon">🔎</span><div><div class="section-title" data-i18n="validation.title">Teknik Doğrulama Paneli</div><div class="section-sub" data-i18n="validation.subtitle">Standart kaynağı · güven seviyesi · üretimde kullanılabilirlik</div></div></div>
   <div class="validation-grid">
-    <div class="validation-card"><div class="card-title">Somun Proof-Load</div><div class="stat-val red">Veri eksik</div><div class="stat-sub">Şema hazır; doğrulanmış ISO 898-2 kaydı bekleniyor.</div></div>
-    <div class="validation-card"><div class="card-title">Sürtünme Verisi</div><div class="stat-val yellow">Taslak</div><div class="stat-sub">Test raporu olmadan üretim için kullanılamaz.</div></div>
-    <div class="validation-card"><div class="card-title">Genel Karar</div><div class="stat-val yellow">Ön değerlendirme</div><div class="stat-sub">Güven 4 olmayan kayıt seri üretim onayı oluşturmaz.</div></div>
+    <div class="validation-card"><div class="card-title" data-i18n="validation.nut_proof_load">Somun Proof-Load</div><div class="stat-val red" data-i18n="validation.data_missing">Veri eksik</div><div class="stat-sub" data-i18n="validation.nut_proof_load_note">Şema hazır; doğrulanmış ISO 898-2 kaydı bekleniyor.</div></div>
+    <div class="validation-card"><div class="card-title" data-i18n="validation.friction_data">Sürtünme Verisi</div><div class="stat-val yellow" data-i18n="validation.draft">Taslak</div><div class="stat-sub" data-i18n="validation.friction_data_note">Test raporu olmadan üretim için kullanılamaz.</div></div>
+    <div class="validation-card"><div class="card-title" data-i18n="validation.overall_decision">Genel Karar</div><div class="stat-val yellow" data-i18n="validation.preliminary_assessment">Ön değerlendirme</div><div class="stat-sub" data-i18n="validation.overall_decision_note">Güven 4 olmayan kayıt seri üretim onayı oluşturmaz.</div></div>
   </div>
-  <div class="card"><div class="card-header"><div><div class="card-title">Mevcut Hesabın İzlenebilirliği</div></div><button class="btn btn-secondary btn-sm" onclick="refreshValidationPanel()">Yenile</button></div><div id="validationCurrent"></div></div>
-  <div class="card"><div class="card-title">Veri Seti Durumu</div><table class="source-table"><thead><tr><th>Veri Seti</th><th>Durum</th><th>Kayıt</th><th>Üretim</th><th>Aksiyon</th></tr></thead><tbody id="validationDatasets"></tbody></table></div>
-  <div class="alert alert-warn">Doğrulanmış standart veya test raporu olmadan taslak veri seri üretim torku olarak kullanılmamalıdır.</div>
+  <div class="card"><div class="card-header"><div><div class="card-title" data-i18n="validation.current_traceability">Mevcut Hesabın İzlenebilirliği</div></div><button class="btn btn-secondary btn-sm" onclick="refreshValidationPanel()" data-i18n="validation.refresh_btn">Yenile</button></div><div id="validationCurrent"></div></div>
+  <div class="card"><div class="card-title" data-i18n="validation.dataset_status_title">Veri Seti Durumu</div><table class="source-table"><thead><tr><th data-i18n="validation.th_dataset">Veri Seti</th><th data-i18n="validation.th_status">Durum</th><th data-i18n="validation.th_record">Kayıt</th><th data-i18n="validation.th_production">Üretim</th><th data-i18n="validation.th_action">Aksiyon</th></tr></thead><tbody id="validationDatasets"></tbody></table></div>
+  <div class="alert alert-warn" data-i18n="validation.footer_warning">Doğrulanmış standart veya test raporu olmadan taslak veri seri üretim torku olarak kullanılmamalıdır.</div>
 </div>
 
 <div id="page-arsiv" class="page">
@@ -1560,8 +1560,395 @@ const I18N = {
     'dashboard.status_nok': 'NOK',
     'dashboard.status_borderline': 'BORDERLINE',
     'dashboard.status_resolved': 'Resolved',
+
+    // ---- Faz 2.7.1: Calculations & Production Validation ----
+    // n01391 (Sample Torque Study)
+    'n01391.title': 'Sample Torque Study <span style="font-size:11px;color:var(--text3);font-weight:400">(Sample Torque Study)</span>',
+    'n01391.subtitle': 'Size and class combinations defined in the selected demo dataset',
+    'n01391.scope_priority_label': '⚠️ Scope & Priority:',
+    'n01391.scope_priority_text': 'If a technical drawing or project specification exists, that value takes priority; this screen is for sample reference only.',
+    'n01391.ref_source_label': 'Reference Source:',
+    'n01391.ref_source_text': 'TorqPro Demo Engineering Dataset v1.0 — not an actual OEM standard.',
+    'n01391.param_selection_title': 'Parameter Selection',
+    'n01391.param_selection_sub': 'Sizes defined in the selected dataset are listed',
+    'n01391.thread_size': 'Thread Size',
+    'n01391.connection_type': 'Connection Type',
+    'n01391.no_flange': 'No Flange',
+    'n01391.with_flange': 'Flanged',
+    'n01391.bolt_strength_class': 'Bolt Strength Class',
+    'n01391.nut_strength_class': 'Nut Strength Class',
+    'n01391.matching_rule': 'Nut class 8 → matched with bolt class 8.8, nut class 10 → matched with bolt class 10.9. The lower class governs in incompatible combinations.',
+    'n01391.forecast_result_title': 'Forecast Result',
+    'n01391.select_parameters': 'Select parameters',
+
+    // hizli (Theoretical Torque Calculation)
+    'hizli.title': 'Theoretical Torque Calculation',
+    'hizli.subtitle': 'ISO 16047-principled component torque calculation · surface pressure · thread engagement',
+    'hizli.mode_note': 'This mode is an engineering pre-assessment that calculates thread and bearing friction separately. Use "OEM Norm Query" or "Sample Torque Study" for an OEM production value.',
+    'hizli.connection_params_title': 'Connection Parameters',
+    'hizli.library_selector_title': '📚 v3.1 Library Selector',
+    'hizli.library_selector_path': 'Product family → standard → thread → nut → washer',
+    'hizli.library_loaded': 'Library loaded',
+    'hizli.product_family': 'Product Family',
+    'hizli.standard': 'Standard',
+    'hizli.thread_pitch': 'Thread / Pitch',
+    'hizli.nut': 'Nut',
+    'hizli.washer': 'Washer',
+    'hizli.coating_mu_record': 'Coating / μ Record',
+    'hizli.data_usage': 'Data Usage',
+    'hizli.data_usage_engineering': 'Engineering — Confidence ≥3',
+    'hizli.data_usage_all': 'Including drafts',
+    'hizli.calc_data_source': 'Calculation Data Source',
+    'hizli.bolt_diameter': 'Bolt Diameter',
+    'hizli.quality_class': 'Quality Class',
+    'hizli.friction_surface_condition': 'Fastener Friction / Surface Condition (μ)',
+    'hizli.friction_opt_008': '0.08 — Pre-applied controlled lubricant (MoS₂)',
+    'hizli.friction_opt_010': '0.10 — Manufacturer-controlled coating (Phosphate + controlled lubricant)',
+    'hizli.friction_opt_012': '0.12 — Manufacturer-controlled coating (Zinc coating)',
+    'hizli.friction_opt_014': '0.14 — Friction class unverified (general assumption)',
+    'hizli.friction_opt_016': '0.16 — Dry / no additional lubricant applied',
+    'hizli.friction_opt_020': '0.20 — Dry / no additional lubricant applied (stainless)',
+    'hizli.friction_hint': 'The value should be selected according to the fastener\u2019s manufacturer-defined surface/coating condition — see the warning icon.',
+    'hizli.preload_ratio': 'Preload Ratio',
+    'hizli.preload_general': '70% — General',
+    'hizli.preload_standard': '75% — Standard',
+    'hizli.preload_critical': '80% — Critical',
+    'hizli.preload_high': '90% — High',
+    'hizli.mu_thread': 'Thread Friction μthread',
+    'hizli.mu_thread_hint': 'Approximate assumption if no ISO 16047 test data is available',
+    'hizli.mu_bearing': 'Head/Under-nut μbearing',
+    'hizli.mu_bearing_hint': 'Depends on coating and bearing surface',
+    'hizli.mu_thread_min': 'μthread Min',
+    'hizli.mu_thread_nom': 'μthread Nom',
+    'hizli.mu_thread_max': 'μthread Max',
+    'hizli.mu_bearing_min': 'μbearing Min',
+    'hizli.mu_bearing_nom': 'μbearing Nom',
+    'hizli.mu_bearing_max': 'μbearing Max',
+    'hizli.internal_rm': 'Internal Thread Tensile Strength Rm (MPa)',
+    'hizli.bolt_rm': 'Bolt Tensile Strength Rm (MPa)',
+    'hizli.nut_proof': 'Nut Proof Load (MPa)',
+    'hizli.nut_proof_hint': 'User input until the ISO 898-2 table is completed',
+    'hizli.target_yield': 'Target Yield Utilization (%)',
+    'hizli.hole_type': 'Hole Type',
+    'hizli.hole_type_nut': 'Nutted connection',
+    'hizli.hole_type_through': 'Through-hole + internal thread',
+    'hizli.hole_type_blind': 'Blind hole',
+    'hizli.surface_material': 'Surface Material',
+    'hizli.material_steel': 'Steel',
+    'hizli.material_aluminum': 'Aluminum',
+    'hizli.material_castiron': 'Cast Iron',
+    'hizli.engagement_len': 'Thread Engagement Length Le (mm)',
+    'hizli.internal_material': 'Internal Thread Material',
+    'hizli.bearing_limit': 'Surface Pressure Limit (MPa)',
+    'hizli.tightening_class': 'Tightening Class',
+    'hizli.per_sample_norm': 'Per sample norm',
+    'hizli.class_a_opt': 'A — ±5% (Safety critical)',
+    'hizli.class_b_opt': 'B — ±10% (Important)',
+    'hizli.class_c_opt': 'C — ±20% (Standard)',
+    'hizli.class_d_opt': 'D — ±30% (General)',
+    'hizli.control_method': 'Control Method',
+    'hizli.method_system_a': 'System A (Dynamic)',
+    'hizli.method_c': 'Method C (Static)',
+    'hizli.method_torque_angle': 'Torque + Angle',
+    'hizli.method_tty': 'Yield Controlled (TTY)',
+    'hizli.calculate_btn': '🔧 Calculate',
+    'hizli.clear_btn': 'Clear',
+    'hizli.results_title': 'Calculation Results',
+    'hizli.theoretical_calc': 'Theoretical calculation',
+    'hizli.live_data_banner': 'Loading active approved standard data. Library and user inputs will be used if none is available.',
+    'hizli.enter_parameters': 'Enter parameters',
+    'hizli.torque_components_title': 'Torque Component Distribution',
+    'hizli.torque_components_sub': 'Where the applied torque goes',
+    'hizli.torque_components_note': '⚠️ The distribution changes completely when the friction coefficient changes. The actual clamp force is only ~10%.',
+
+    // vdi (Advanced Analysis)
+    'vdi.title': 'Advanced Joint Analysis',
+    'vdi.subtitle': 'VDI 2230 Blatt 1 — Compliance and load distribution',
+    'vdi.intro': 'VDI 2230 R1–R13: flange compliance, load introduction factor, safety factor.',
+    'vdi.flange_geometry_title': 'Flange Geometry',
+    'vdi.plate_thickness': 'Plate thickness (mm)',
+    'vdi.plate_material': 'Plate material',
+    'vdi.material_steel': 'Steel (E=210 GPa)',
+    'vdi.material_aluminum': 'Aluminum (E=70 GPa)',
+    'vdi.material_castiron': 'Cast iron',
+    'vdi.bolt_length': 'Bolt length (mm)',
+    'vdi.load_intro_factor': 'Load introduction factor (n)',
+    'vdi.operating_load': 'Operating load FA (kN)',
+    'vdi.run_button': 'Run VDI 2230',
+    'vdi.results_title': 'Analysis Results',
+    'vdi.enter_parameters': 'Enter parameters',
+
+    // checklist (Torque Process Check-List)
+    'checklist.title': 'Torque Process Check-List',
+    'checklist.subtitle': '5 categories · 20 items',
+    'checklist.per_sample_norm': 'Per sample norm',
+    'checklist.operation': 'Operation',
+    'checklist.operation_placeholder': 'Front suspension crossmember',
+    'checklist.chassis_part_no': 'Chassis / Part No.',
+    'checklist.inspector': 'Inspector',
+    'checklist.name_placeholder': 'Full name',
+    'checklist.evaluate_btn': '📊 Evaluate',
+    'checklist.reset_btn': 'Reset',
+
+    // yetenek (Cm/Cmk capability)
+    'yetenek.title': 'Cm / Cmk Machine Capability Analysis',
+    'yetenek.subtitle': 'Min 30 measurements · Cp/Cpk vs Cm/Cmk distinction · Manual or OEM-limited',
+    'yetenek.limit_source_label': 'Limit source:',
+    'yetenek.limit_source_text': 'Enter LSL/USL manually or import from the OEM norm record. The theoretical ±% tolerance is <em>not used</em> — that applies only to the theoretical calculation mode.',
+    'yetenek.measurement_limit_title': 'Measurement and Limit Entry',
+    'yetenek.nominal_torque': 'Nominal Torque (Nm)',
+    'yetenek.limit_source': 'Limit Source',
+    'yetenek.manual_lsl_usl': 'Manual LSL/USL',
+    'yetenek.oem_tmin_tmax': "OEM t_min / t_max",
+    'yetenek.lsl': 'LSL — Lower Control Limit (Nm)',
+    'yetenek.usl': 'USL — Upper Control Limit (Nm)',
+    'yetenek.take_from_norm': 'Take from norm',
+    'yetenek.oem_copy_note': 'Copy the OEM limits from the "OEM Norm Query" module and enter them here.',
+    'yetenek.measurement_method': 'Measurement Method',
+    'yetenek.method_system_a': 'System A — Dynamic (at tightening)',
+    'yetenek.method_c': 'Method C — Static (after relaxation)',
+    'yetenek.method_hint': 'Limits must be selected consistent with this method',
+    'yetenek.analysis_type': 'Analysis Type',
+    'yetenek.analysis_cm': 'Cm / Cmk — Machine capability',
+    'yetenek.analysis_cp': 'Cp / Cpk — Process capability',
+    'yetenek.measurement_values': 'Measurement Values (comma-separated, min 30 items)',
+    'yetenek.calculate_btn': '📈 Calculate Capability',
+    'yetenek.result_title': 'Capability Result',
+    'yetenek.enter_measurements': 'Enter measurements',
+
+    // calibration
+    'calibration.title': 'Calibration & Reference Comparison',
+    'calibration.subtitle': 'Program result · reference value · error percentage · tolerance decision',
+    'calibration.thread': 'Thread',
+    'calibration.reference_torque': 'Reference Torque (Nm)',
+    'calibration.allowed_error': 'Allowed Error (%)',
+    'calibration.program_torque': 'Program Torque (Nm)',
+    'calibration.source_id': 'Source ID',
+    'calibration.scenario_note': 'Scenario Note',
+    'calibration.save_btn': 'Save Calibration',
+    'calibration.results_title': 'Calibration Results',
+    'calibration.refresh_btn': 'Refresh',
+    'calibration.th_thread': 'Thread',
+    'calibration.th_program': 'Program',
+    'calibration.th_reference': 'Reference',
+    'calibration.th_error': 'Error',
+    'calibration.th_tolerance': 'Tolerance',
+    'calibration.th_decision': 'Decision',
+    'calibration.th_source': 'Source',
+
+    // validation
+    'validation.title': 'Technical Validation Panel',
+    'validation.subtitle': 'Standard source · confidence level · production usability',
+    'validation.nut_proof_load': 'Nut Proof Load',
+    'validation.data_missing': 'Data missing',
+    'validation.nut_proof_load_note': 'Schema ready; a verified ISO 898-2 record is pending.',
+    'validation.friction_data': 'Friction Data',
+    'validation.draft': 'Draft',
+    'validation.friction_data_note': 'Cannot be used for production without a test report.',
+    'validation.overall_decision': 'Overall Decision',
+    'validation.preliminary_assessment': 'Preliminary assessment',
+    'validation.overall_decision_note': 'A record without confidence level 4 does not produce production approval.',
+    'validation.current_traceability': 'Current Calculation Traceability',
+    'validation.refresh_btn': 'Refresh',
+    'validation.dataset_status_title': 'Dataset Status',
+    'validation.th_dataset': 'Dataset',
+    'validation.th_status': 'Status',
+    'validation.th_record': 'Record',
+    'validation.th_production': 'Production',
+    'validation.th_action': 'Action',
+    'validation.footer_warning': 'Draft data must not be used as a production torque value without a verified standard or test report.',
   },
   tr: {
+    // ---- Faz 2.7.1: Calculations & Production Validation ----
+    'n01391.title': 'Örnek Tork Çalışması <span style="font-size:11px;color:var(--text3);font-weight:400">(Sample Torque Study)</span>',
+    'n01391.subtitle': 'Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları',
+    'n01391.scope_priority_label': '⚠️ Kapsam ve Öncelik:',
+    'n01391.scope_priority_text': 'Teknik resim veya proje şartnamesi varsa o değer önceliklidir; bu ekran örnek referans amaçlıdır.',
+    'n01391.ref_source_label': 'Referans Kaynak:',
+    'n01391.ref_source_text': 'TorqPro Demo Engineering Dataset v1.0 — gerçek bir OEM standardı değildir.',
+    'n01391.param_selection_title': 'Parametre Seçimi',
+    'n01391.param_selection_sub': 'Seçili veri setinde tanımlı ölçüler listelenmiştir',
+    'n01391.thread_size': 'Diş Ölçüsü',
+    'n01391.connection_type': 'Bağlantı Tipi',
+    'n01391.no_flange': 'Flanşsız',
+    'n01391.with_flange': 'Flanşlı',
+    'n01391.bolt_strength_class': 'Cıvata Dayanım Sınıfı',
+    'n01391.nut_strength_class': 'Somun Dayanım Sınıfı',
+    'n01391.matching_rule': 'Somun sınıfı 8 → cıvata sınıfı 8.8 ile, somun sınıfı 10 → cıvata sınıfı 10.9 ile eşleştirilir. Uyumsuz kombinasyonlarda düşük sınıf geçerlidir.',
+    'n01391.forecast_result_title': 'Öngörü Sonucu',
+    'n01391.select_parameters': 'Parametreleri seçin',
+
+    'hizli.title': 'Teorik Tork Hesaplama',
+    'hizli.subtitle': 'ISO 16047 prensipli bileşen tork hesabı · yüzey basıncı · diş kavrama',
+    'hizli.mode_note': 'Bu mod diş ve yatak sürtünmesini ayrı hesaplayan mühendislik ön değerlendirmesidir. OEM seri üretim değeri için "OEM Norm Sorgu" veya "Örnek Tork Çalışması" modülünü kullanın.',
+    'hizli.connection_params_title': 'Bağlantı Parametreleri',
+    'hizli.library_selector_title': '📚 v3.1 Kütüphane Seçici',
+    'hizli.library_selector_path': 'Ürün ailesi → standart → diş → somun → pul',
+    'hizli.library_loaded': 'Kütüphane yüklendi',
+    'hizli.product_family': 'Ürün Ailesi',
+    'hizli.standard': 'Standart',
+    'hizli.thread_pitch': 'Diş / Hatve',
+    'hizli.nut': 'Somun',
+    'hizli.washer': 'Pul',
+    'hizli.coating_mu_record': 'Kaplama / μ Kaydı',
+    'hizli.data_usage': 'Veri Kullanımı',
+    'hizli.data_usage_engineering': 'Mühendislik — Güven ≥3',
+    'hizli.data_usage_all': 'Taslaklar dahil',
+    'hizli.calc_data_source': 'Hesap Veri Kaynağı',
+    'hizli.bolt_diameter': 'Cıvata Çapı',
+    'hizli.quality_class': 'Kalite Sınıfı',
+    'hizli.friction_surface_condition': 'Bağlantı Elemanı Sürtünme / Yüzey Durumu (μ)',
+    'hizli.friction_opt_008': '0.08 — Önceden uygulanmış kontrollü yağlayıcı (MoS₂)',
+    'hizli.friction_opt_010': '0.10 — Üretici kontrollü kaplama (Fosfat + kontrollü yağlayıcı)',
+    'hizli.friction_opt_012': '0.12 — Üretici kontrollü kaplama (Çinko kaplama)',
+    'hizli.friction_opt_014': '0.14 — Sürtünme sınıfı doğrulanmamış (genel varsayım)',
+    'hizli.friction_opt_016': '0.16 — Kuru / ilave yağlayıcı uygulanmamış',
+    'hizli.friction_opt_020': '0.20 — Kuru / ilave yağlayıcı uygulanmamış (paslanmaz)',
+    'hizli.friction_hint': 'Değer, bağlantı elemanının üretici tanımlı yüzey/kaplama durumuna göre seçilmelidir — bkz. uyarı ikonu.',
+    'hizli.preload_ratio': 'Ön Yük Oranı',
+    'hizli.preload_general': '%70 — Genel',
+    'hizli.preload_standard': '%75 — Standart',
+    'hizli.preload_critical': '%80 — Kritik',
+    'hizli.preload_high': '%90 — Yüksek',
+    'hizli.mu_thread': 'Diş Sürtünmesi μthread',
+    'hizli.mu_thread_hint': 'ISO 16047 test verisi yoksa yaklaşık kabul',
+    'hizli.mu_bearing': 'Baş/Somun Altı μbearing',
+    'hizli.mu_bearing_hint': 'Kaplama ve oturma yüzeyine bağlıdır',
+    'hizli.mu_thread_min': 'μthread Min',
+    'hizli.mu_thread_nom': 'μthread Nom',
+    'hizli.mu_thread_max': 'μthread Max',
+    'hizli.mu_bearing_min': 'μbearing Min',
+    'hizli.mu_bearing_nom': 'μbearing Nom',
+    'hizli.mu_bearing_max': 'μbearing Max',
+    'hizli.internal_rm': 'İç Diş Çekme Dayanımı Rm (MPa)',
+    'hizli.bolt_rm': 'Civata Çekme Dayanımı Rm (MPa)',
+    'hizli.nut_proof': 'Somun Proof-Load (MPa)',
+    'hizli.nut_proof_hint': 'ISO 898-2 tablosu tamamlanana kadar kullanıcı girdisi',
+    'hizli.target_yield': 'Hedef Akma Kullanımı (%)',
+    'hizli.hole_type': 'Delik Tipi',
+    'hizli.hole_type_nut': 'Somunlu bağlantı',
+    'hizli.hole_type_through': 'Geçme delik + iç diş',
+    'hizli.hole_type_blind': 'Kör delik',
+    'hizli.surface_material': 'Yüzey Malzemesi',
+    'hizli.material_steel': 'Çelik',
+    'hizli.material_aluminum': 'Alüminyum',
+    'hizli.material_castiron': 'Dökme demir',
+    'hizli.engagement_len': 'Diş Kavrama Boyu Le (mm)',
+    'hizli.internal_material': 'İç Diş Malzemesi',
+    'hizli.bearing_limit': 'Yüzey Basınç Sınırı (MPa)',
+    'hizli.tightening_class': 'Sıkma Sınıfı',
+    'hizli.per_sample_norm': 'Örnek norma göre',
+    'hizli.class_a_opt': 'A — ±%5 (Kritik güvenlik)',
+    'hizli.class_b_opt': 'B — ±%10 (Önemli)',
+    'hizli.class_c_opt': 'C — ±%20 (Standart)',
+    'hizli.class_d_opt': 'D — ±%30 (Genel)',
+    'hizli.control_method': 'Kontrol Yöntemi',
+    'hizli.method_system_a': 'Sistem A (Dinamik)',
+    'hizli.method_c': 'C Metodu (Statik)',
+    'hizli.method_torque_angle': 'Tork + Açı',
+    'hizli.method_tty': 'Akma Kontrollü (TTY)',
+    'hizli.calculate_btn': '🔧 Hesapla',
+    'hizli.clear_btn': 'Temizle',
+    'hizli.results_title': 'Hesaplama Sonuçları',
+    'hizli.theoretical_calc': 'Teorik hesap',
+    'hizli.live_data_banner': 'Aktif onaylı standart verileri yükleniyor. Veri yoksa kütüphane ve kullanıcı girdileri kullanılacaktır.',
+    'hizli.enter_parameters': 'Parametreleri girin',
+    'hizli.torque_components_title': 'Tork Bileşenleri Dağılımı',
+    'hizli.torque_components_sub': 'Uygulanan torkun nereye gittiği',
+    'hizli.torque_components_note': '⚠️ Sürtünme katsayısı değişince dağılım tamamen değişir. Gerçek bağlantı kuvveti yalnızca ~%10 civarındadır.',
+
+    'vdi.title': 'Gelişmiş Bağlantı Analizi',
+    'vdi.subtitle': 'VDI 2230 Blatt 1 — Esneklik ve yük dağılımı',
+    'vdi.intro': 'VDI 2230 R1–R13: flanş esnekliği, yük dağılım faktörü, emniyet faktörü.',
+    'vdi.flange_geometry_title': 'Flanş Geometrisi',
+    'vdi.plate_thickness': 'Plaka kalınlığı (mm)',
+    'vdi.plate_material': 'Plaka malzemesi',
+    'vdi.material_steel': 'Çelik (E=210 GPa)',
+    'vdi.material_aluminum': 'Alüminyum (E=70 GPa)',
+    'vdi.material_castiron': 'Dökme demir',
+    'vdi.bolt_length': 'Cıvata boyu (mm)',
+    'vdi.load_intro_factor': 'Yük giriş faktörü (n)',
+    'vdi.operating_load': 'İşletme yükü FA (kN)',
+    'vdi.run_button': 'VDI 2230 Çalıştır',
+    'vdi.results_title': 'Analiz Sonuçları',
+    'vdi.enter_parameters': 'Parametreleri girin',
+
+    'checklist.title': 'Torklama Proses Check-List',
+    'checklist.subtitle': '5 kategori · 20 madde',
+    'checklist.per_sample_norm': 'Örnek norma göre',
+    'checklist.operation': 'Operasyon',
+    'checklist.operation_placeholder': 'Ön süspansiyon travers',
+    'checklist.chassis_part_no': 'Şase / Parça No',
+    'checklist.inspector': 'Denetçi',
+    'checklist.name_placeholder': 'Ad Soyad',
+    'checklist.evaluate_btn': '📊 Değerlendir',
+    'checklist.reset_btn': 'Sıfırla',
+
+    'yetenek.title': 'Cm / Cmk Makine Yetenek Analizi',
+    'yetenek.subtitle': 'Min 30 ölçüm · Cp/Cpk ile Cm/Cmk ayrımı · Manuel veya OEM limitli',
+    'yetenek.limit_source_label': 'Limit kaynağı:',
+    'yetenek.limit_source_text': 'LSL/USL\u2019yi manuel girin ya da OEM norm kaydından aktarın. Teorik ±% tolerans <em>kullanılmaz</em> — bu sadece teorik hesap moduna aittir.',
+    'yetenek.measurement_limit_title': 'Ölçüm ve Limit Girişi',
+    'yetenek.nominal_torque': 'Nominal Tork (Nm)',
+    'yetenek.limit_source': 'Limit Kaynağı',
+    'yetenek.manual_lsl_usl': 'Manuel LSL/USL',
+    'yetenek.oem_tmin_tmax': 'OEM t_min / t_max',
+    'yetenek.lsl': 'LSL — Alt Kontrol Limiti (Nm)',
+    'yetenek.usl': 'USL — Üst Kontrol Limiti (Nm)',
+    'yetenek.take_from_norm': 'Normdan al',
+    'yetenek.oem_copy_note': 'OEM limitlerini "OEM Norm Sorgu" modülünden kopyalayarak buraya girin.',
+    'yetenek.measurement_method': 'Ölçüm Yöntemi',
+    'yetenek.method_system_a': 'Sistem A — Dinamik (sıkma anında)',
+    'yetenek.method_c': 'C Metodu — Statik (oturma sonrası)',
+    'yetenek.method_hint': 'Limitler bu yönteme uygun seçilmelidir',
+    'yetenek.analysis_type': 'Analiz Türü',
+    'yetenek.analysis_cm': 'Cm / Cmk — Makine yeteneği',
+    'yetenek.analysis_cp': 'Cp / Cpk — Proses yeteneği',
+    'yetenek.measurement_values': 'Ölçüm Değerleri (virgülle ayırın, min 30 adet)',
+    'yetenek.calculate_btn': '📈 Yetenek Hesapla',
+    'yetenek.result_title': 'Yetenek Sonucu',
+    'yetenek.enter_measurements': 'Ölçümleri girin',
+
+    'calibration.title': 'Kalibrasyon ve Referans Karşılaştırma',
+    'calibration.subtitle': 'Program sonucu · referans değer · hata yüzdesi · tolerans kararı',
+    'calibration.thread': 'Diş',
+    'calibration.reference_torque': 'Referans Tork (Nm)',
+    'calibration.allowed_error': 'İzin Verilen Hata (%)',
+    'calibration.program_torque': 'Program Torku (Nm)',
+    'calibration.source_id': 'Kaynak ID',
+    'calibration.scenario_note': 'Senaryo Notu',
+    'calibration.save_btn': 'Kalibrasyon Kaydet',
+    'calibration.results_title': 'Kalibrasyon Sonuçları',
+    'calibration.refresh_btn': 'Yenile',
+    'calibration.th_thread': 'Diş',
+    'calibration.th_program': 'Program',
+    'calibration.th_reference': 'Referans',
+    'calibration.th_error': 'Hata',
+    'calibration.th_tolerance': 'Tolerans',
+    'calibration.th_decision': 'Karar',
+    'calibration.th_source': 'Kaynak',
+
+    'validation.title': 'Teknik Doğrulama Paneli',
+    'validation.subtitle': 'Standart kaynağı · güven seviyesi · üretimde kullanılabilirlik',
+    'validation.nut_proof_load': 'Somun Proof-Load',
+    'validation.data_missing': 'Veri eksik',
+    'validation.nut_proof_load_note': 'Şema hazır; doğrulanmış ISO 898-2 kaydı bekleniyor.',
+    'validation.friction_data': 'Sürtünme Verisi',
+    'validation.draft': 'Taslak',
+    'validation.friction_data_note': 'Test raporu olmadan üretim için kullanılamaz.',
+    'validation.overall_decision': 'Genel Karar',
+    'validation.preliminary_assessment': 'Ön değerlendirme',
+    'validation.overall_decision_note': 'Güven 4 olmayan kayıt seri üretim onayı oluşturmaz.',
+    'validation.current_traceability': 'Mevcut Hesabın İzlenebilirliği',
+    'validation.refresh_btn': 'Yenile',
+    'validation.dataset_status_title': 'Veri Seti Durumu',
+    'validation.th_dataset': 'Veri Seti',
+    'validation.th_status': 'Durum',
+    'validation.th_record': 'Kayıt',
+    'validation.th_production': 'Üretim',
+    'validation.th_action': 'Aksiyon',
+    'validation.footer_warning': 'Doğrulanmış standart veya test raporu olmadan taslak veri seri üretim torku olarak kullanılmamalıdır.',
+
     'sidebar.frictioncondition': 'Yüzey Sürtünme Koşulu',
     'fc.page_title': 'Yüzey Sürtünme Koşulu',
     'fc.page_subtitle': 'Kaplama, yağlama ve temas yüzeylerine bağlı sürtünme referans verileri',

@@ -675,6 +675,200 @@ function main() {
     check('en sidebar capability label contains "Cp/Cpk"', capEl.textContent.indexOf('Cp/Cpk') !== -1);
   }
 
+  // ================================================================
+  // Faz 2.7.1 -- Calculations & Production Validation pages
+  // (n01391 / hizli / vdi / checklist / yetenek / calibration /
+  // validation). Same harness pattern as Faz 2.7.0.
+  // ================================================================
+
+  // ---- 21. Page titles + subtitles: TR default, EN switch ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titles = {
+      'n01391.title': ['Örnek Tork Çalışması', 'Sample Torque Study'], // startsWith check below
+      'hizli.title': ['Teorik Tork Hesaplama', 'Theoretical Torque Calculation'],
+      'vdi.title': ['Gelişmiş Bağlantı Analizi', 'Advanced Joint Analysis'],
+      'checklist.title': ['Torklama Proses Check-List', 'Torque Process Check-List'],
+      'yetenek.title': ['Cm / Cmk Makine Yetenek Analizi', 'Cm / Cmk Machine Capability Analysis'],
+      'calibration.title': ['Kalibrasyon ve Referans Karşılaştırma', 'Calibration & Reference Comparison'],
+      'validation.title': ['Teknik Doğrulama Paneli', 'Technical Validation Panel'],
+    };
+    ctx.context.applyStaticTranslations();
+    for (const [key, [trText]] of Object.entries(titles)) {
+      const el = getByI18nKey(ctx, key);
+      check('page title element exists for ' + key, !!el);
+      if (el) check('page title tr text starts correctly for ' + key, el.textContent.indexOf(trText) === 0);
+    }
+    ctx.context.setLanguage('en');
+    for (const [key, [, enText]] of Object.entries(titles)) {
+      const el = getByI18nKey(ctx, key);
+      if (el) check('page title en text starts correctly for ' + key, el.textContent.indexOf(enText) === 0);
+    }
+  }
+
+  // ---- 22. Form labels, buttons, table headers translate (sample across all 7 pages) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const fields = {
+      'n01391.thread_size': ['Diş Ölçüsü', 'Thread Size'],
+      'hizli.bolt_diameter': ['Cıvata Çapı', 'Bolt Diameter'],
+      'hizli.calculate_btn': ['🔧 Hesapla', '🔧 Calculate'],
+      'vdi.run_button': ['VDI 2230 Çalıştır', 'Run VDI 2230'],
+      'checklist.evaluate_btn': ['📊 Değerlendir', '📊 Evaluate'],
+      'checklist.chassis_part_no': ['Şase / Parça No', 'Chassis / Part No.'],
+      'yetenek.nominal_torque': ['Nominal Tork (Nm)', 'Nominal Torque (Nm)'],
+      'yetenek.calculate_btn': ['📈 Yetenek Hesapla', '📈 Calculate Capability'],
+      'calibration.th_decision': ['Karar', 'Decision'],
+      'calibration.save_btn': ['Kalibrasyon Kaydet', 'Save Calibration'],
+      'validation.th_status': ['Durum', 'Status'],
+      'validation.nut_proof_load': ['Somun Proof-Load', 'Nut Proof Load'],
+    };
+    ctx.context.applyStaticTranslations();
+    for (const [key, [trText]] of Object.entries(fields)) {
+      const el = getByI18nKey(ctx, key);
+      check('field element exists for ' + key, !!el);
+      if (el) checkEqual('field tr text for ' + key, el.textContent, trText);
+    }
+    ctx.context.setLanguage('en');
+    for (const [key, [, enText]] of Object.entries(fields)) {
+      const el = getByI18nKey(ctx, key);
+      if (el) checkEqual('field en text for ' + key, el.textContent, enText);
+    }
+  }
+
+  // ---- 23. Dropdown option text translates (technical values e.g. M6/M10/8.8/10.9 untouched) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const options = {
+      'hizli.class_a_opt': ['A — ±%5 (Kritik güvenlik)', 'A — ±5% (Safety critical)'],
+      'hizli.hole_type_blind': ['Kör delik', 'Blind hole'],
+      'hizli.material_aluminum': ['Alüminyum', 'Aluminum'],
+      'yetenek.manual_lsl_usl': ['Manuel LSL/USL', 'Manual LSL/USL'],
+      'yetenek.analysis_cm': ['Cm / Cmk — Makine yeteneği', 'Cm / Cmk — Machine capability'],
+    };
+    ctx.context.applyStaticTranslations();
+    for (const [key, [trText]] of Object.entries(options)) {
+      const el = getByI18nKey(ctx, key);
+      check('option element exists for ' + key, !!el);
+      if (el) checkEqual('option tr text for ' + key, el.textContent, trText);
+    }
+    ctx.context.setLanguage('en');
+    for (const [key, [, enText]] of Object.entries(options)) {
+      const el = getByI18nKey(ctx, key);
+      if (el) checkEqual('option en text for ' + key, el.textContent, enText);
+    }
+    // Technical values (thread sizes, strength classes) are raw <option> text
+    // with NO data-i18n attribute -- confirming they are untouched by design.
+    check('M10 bolt diameter option is untouched by i18n (no data-i18n)',
+      /<option selected>M10<\/option>/.test(rawHtml));
+    check('10.9 quality class option is untouched by i18n (no data-i18n)',
+      /<option selected>10\.9<\/option>/.test(rawHtml));
+  }
+
+  // ---- 24. Placeholders translate (checklist operation/inspector, OEM limit fields) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const opPh = getPlaceholderByKey(ctx, 'checklist.operation_placeholder');
+    const namePh = getPlaceholderByKey(ctx, 'checklist.name_placeholder');
+    check('checklist operation placeholder element exists', !!opPh);
+    check('checklist inspector name placeholder element exists', !!namePh);
+    ctx.context.applyStaticTranslations();
+    checkEqual('operation placeholder tr', opPh.placeholder, 'Ön süspansiyon travers');
+    ctx.context.setLanguage('en');
+    checkEqual('operation placeholder en', opPh.placeholder, 'Front suspension crossmember');
+    checkEqual('inspector name placeholder en', namePh.placeholder, 'Full name');
+  }
+
+  // ---- 25. Empty-state / "enter parameters" messages translate on every calc page ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const emptyStates = {
+      'n01391.select_parameters': ['Parametreleri seçin', 'Select parameters'],
+      'hizli.enter_parameters': ['Parametreleri girin', 'Enter parameters'],
+      'vdi.enter_parameters': ['Parametreleri girin', 'Enter parameters'],
+      'yetenek.enter_measurements': ['Ölçümleri girin', 'Enter measurements'],
+    };
+    ctx.context.applyStaticTranslations();
+    for (const [key, [trText]] of Object.entries(emptyStates)) {
+      const el = getByI18nKey(ctx, key);
+      check('empty-state element exists for ' + key, !!el);
+      if (el) checkEqual('empty-state tr text for ' + key, el.textContent, trText);
+    }
+    ctx.context.setLanguage('en');
+    for (const [key, [, enText]] of Object.entries(emptyStates)) {
+      const el = getByI18nKey(ctx, key);
+      if (el) checkEqual('empty-state en text for ' + key, el.textContent, enText);
+    }
+  }
+
+  // ---- 26. Warning / info banners translate (mode notes, footer warnings) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const banners = {
+      'hizli.mode_note': ['Bu mod diş ve yatak sürtünmesini ayrı hesaplayan mühendislik ön değerlendirmesidir. OEM seri üretim değeri için "OEM Norm Sorgu" veya "Örnek Tork Çalışması" modülünü kullanın.',
+        'This mode is an engineering pre-assessment that calculates thread and bearing friction separately. Use "OEM Norm Query" or "Sample Torque Study" for an OEM production value.'],
+      'validation.footer_warning': ['Doğrulanmış standart veya test raporu olmadan taslak veri seri üretim torku olarak kullanılmamalıdır.',
+        'Draft data must not be used as a production torque value without a verified standard or test report.'],
+    };
+    ctx.context.applyStaticTranslations();
+    for (const [key, [trText]] of Object.entries(banners)) {
+      const el = getByI18nKey(ctx, key);
+      check('banner element exists for ' + key, !!el);
+      if (el) checkEqual('banner tr text for ' + key, el.textContent, trText);
+    }
+    ctx.context.setLanguage('en');
+    for (const [key, [, enText]] of Object.entries(banners)) {
+      const el = getByI18nKey(ctx, key);
+      if (el) checkEqual('banner en text for ' + key, el.textContent, enText);
+    }
+  }
+
+  // ---- 27. No stray English text visible in TR mode / Turkish text in EN mode
+  //          for every scraped data-i18n[-placeholder] key in the Faz 2.7.1
+  //          namespaces (n01391/hizli/vdi/checklist/yetenek/calibration/validation).
+  //          A key "leaking" means t() returned the raw key itself (unresolved). ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const prefixes = ['n01391.', 'hizli.', 'vdi.', 'checklist.', 'yetenek.', 'calibration.', 'validation.'];
+    const allI18nKeys = scrapeDataI18nKeys(rawHtml, 'data-i18n')
+      .concat(scrapeDataI18nKeys(rawHtml, 'data-i18n-placeholder'));
+    const scoped = [...new Set(allI18nKeys)].filter((k) => prefixes.some((p) => k.startsWith(p)));
+    check('at least 150 Faz 2.7.1 keys were scraped from markup', scoped.length >= 150);
+    let unresolvedTr = 0;
+    let unresolvedEn = 0;
+    for (const key of scoped) {
+      if (ctx.context.t(key) === key) unresolvedTr++;
+    }
+    ctx.context.setLanguage('en');
+    for (const key of scoped) {
+      if (ctx.context.t(key) === key) unresolvedEn++;
+    }
+    checkEqual('no unresolved (raw-key-fallback) Faz 2.7.1 keys in tr', unresolvedTr, 0);
+    checkEqual('no unresolved (raw-key-fallback) Faz 2.7.1 keys in en', unresolvedEn, 0);
+  }
+
+  // ---- 28. Language persists across page navigation (showPage does not reset it) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.setLanguage('en');
+    // showPage() is not part of the extracted source (it manipulates
+    // .page/.sidebar-item classList, orthogonal to i18n and outside
+    // this harness's DOM stub) -- what matters for i18n is that
+    // CURRENT_LANG / localStorage are untouched by navigation, which
+    // showPage() never writes to (verified statically below) and
+    // that re-running applyStaticTranslations after a page swap
+    // still renders in the active language.
+    check('showPage() function does not reference torqpro_lang or CURRENT_LANG',
+      (function () {
+        const m = /function showPage\([^)]*\)\s*\{[\s\S]*?\n\}/.exec(rawHtml.match(/<script>([\s\S]*)<\/script>/)[1]);
+        return !!m && m[0].indexOf('torqpro_lang') === -1 && m[0].indexOf('CURRENT_LANG') === -1;
+      })());
+    ctx.context.applyStaticTranslations();
+    const hizliTitleEl = getByI18nKey(ctx, 'hizli.title');
+    checkEqual('language still en after simulated navigation', hizliTitleEl.textContent, 'Theoretical Torque Calculation');
+    checkEqual('localStorage still en after simulated navigation', ctx.localStorageStub.getItem('torqpro_lang'), 'en');
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
   if (fail > 0) {
     console.log('Failures: ' + failures.join('; '));
