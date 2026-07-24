@@ -34,7 +34,6 @@ from .friction_readiness import _resolve_raw_record
 from .friction_recommendations import (
     INTENDED_USE_MINIMUM_LEVEL,
     compare_friction_conditions,
-    generate_friction_warnings,
 )
 from .friction_recommendations import assess_recommendation_readiness as _assess_recommendation
 from .friction_readiness import assess_friction_readiness as _assess_torque_readiness
@@ -232,7 +231,6 @@ def build_friction_condition_report_section(
     _validate_intended_use(intended_use)
 
     raw = _resolve_raw_record(friction_condition_id)  # raises on unknown id
-    warnings = generate_friction_warnings(friction_condition_id)
     readiness = _assess_recommendation(friction_condition_id, intended_use=intended_use)
     torque_readiness = _assess_torque_readiness(friction_condition_id)
 
@@ -301,7 +299,7 @@ def build_friction_condition_report_section(
         ),
         source=source,
         readiness=readiness_summary,
-        engineering_warnings=warnings,
+        engineering_warnings=readiness.engineering_warnings,
         safety_labels=safety_labels,
         intended_use=intended_use,
         comparison=comparison_summary,

@@ -230,3 +230,64 @@ def test_frontend_download_reuses_existing_download_helper(frontend_html):
 
 def test_frontend_json_download_function_exists(frontend_html):
     assert "function downloadFrictionConditionReportJSON()" in frontend_html
+
+
+# ---------------------------------------------------------------------
+# Faz 2.6.7 -- Intended Use control (closes the gap where
+# INTENDED_USE_MINIMUM_LEVEL / friction_intended_use existed on the
+# backend since Faz 2.6.4/2.6.5 but had no frontend input control, so
+# the intended-use gap warning could never be triggered from the UI).
+# ---------------------------------------------------------------------
+
+def test_frontend_intended_use_selector_present(frontend_html):
+    assert 'id="fc-intended-use"' in frontend_html
+    for value in ("reference_comparison", "engineering_calculation", "production_release"):
+        assert f'value="{value}"' in frontend_html
+
+
+def test_frontend_intended_use_selector_matches_backend_enum(frontend_html):
+    """The three option values must be exactly the keys backend
+    INTENDED_USE_MINIMUM_LEVEL recognizes -- no invented values."""
+    from backend.calculation_engine.friction_recommendations import INTENDED_USE_MINIMUM_LEVEL
+    start = frontend_html.index('id="fc-intended-use"')
+    end = frontend_html.index("</select>", start)
+    section = frontend_html[start:end]
+    option_values = set(re.findall(r'<option value="([a-z_]+)">', section))
+    assert option_values == set(INTENDED_USE_MINIMUM_LEVEL.keys())
+
+
+def test_frontend_intended_use_sent_as_friction_intended_use_field(frontend_html):
+    """Guards against payload key drift: the API model field is
+    ``friction_intended_use`` (FrictionConditionReportPreview), not
+    ``intended_use`` (that name belongs to the /assess model)."""
+    assert "payload.friction_intended_use" in frontend_html
+    assert "getElementById('fc-intended-use')" in frontend_html
+
+
+def test_frontend_intended_use_resets_on_condition_change(frontend_html):
+    start = frontend_html.index("async function selectFrictionCondition(id)")
+    end = frontend_html.index("\n}", start)
+    section = frontend_html[start:end]
+    assert "fc-intended-use" in section
+
+
+def test_report_preview_surfaces_intended_use_gap_warning():
+    """End-to-end: an intended_use that exceeds what FC-COAT-GEOMET's
+    data supports must produce a gap warning in engineering_warnings,
+    the same list fcRenderWarnings() reads."""
+    payload = {
+        "friction_condition_id": "FC-COAT-GEOMET",
+        "friction_intended_use": "production_release",
+    }
+    r = client.post("/api/friction-condition/report-preview", json=payload, headers=_auth())
+    assert r.status_code == 200, r.text
+    warnings = r.json()["engineering_warnings"]
+    assert any("intended_use='production_release'" in w for w in warnings)
+
+
+def test_report_preview_no_gap_warning_when_intended_use_omitted():
+    payload = {"friction_condition_id": "FC-COAT-GEOMET"}
+    r = client.post("/api/friction-condition/report-preview", json=payload, headers=_auth())
+    assert r.status_code == 200, r.text
+    warnings = r.json()["engineering_warnings"]
+    assert not any("intended_use=" in w for w in warnings)

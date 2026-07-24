@@ -865,7 +865,15 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="grid2">
       <div class="card">
         <div class="card-title">Recommendation Readiness</div>
+        <div class="card-sub" style="margin-bottom:8px">Selecting an intended use does not change the data or unlock a capability -- it only adds a gap warning below if the requested use exceeds what the current data supports.</div>
+        <select class="form-select" id="fc-intended-use" style="margin-bottom:10px" onchange="loadFrictionConditionSelection()">
+          <option value="">No intended use selected</option>
+          <option value="reference_comparison">Reference comparison</option>
+          <option value="engineering_calculation">Engineering calculation</option>
+          <option value="production_release">Production release</option>
+        </select>
         <div id="fc-readiness"></div>
+
       </div>
       <div class="card">
         <div class="card-title">Engineering Warnings</div>
@@ -1596,6 +1604,8 @@ function fcRenderCompareOptions() {
 async function selectFrictionCondition(id) {
   FC_SELECTED_ID = id;
   FC_COMPARE_ID = null;
+  const intendedUseSel = document.getElementById('fc-intended-use');
+  if (intendedUseSel) intendedUseSel.value = '';
   document.getElementById('fc-workspace').style.display = 'block';
   fcRenderList();
   await loadFrictionConditionSelection();
@@ -1619,6 +1629,8 @@ async function loadFrictionConditionSelection() {
   try {
     const payload = { friction_condition_id: FC_SELECTED_ID };
     if (FC_COMPARE_ID) payload.compare_with_friction_condition_id = FC_COMPARE_ID;
+    const intendedUseSel = document.getElementById('fc-intended-use');
+    if (intendedUseSel && intendedUseSel.value) payload.friction_intended_use = intendedUseSel.value;
     const report = await apiRequest('/api/friction-condition/report-preview', {method:'POST', body:JSON.stringify(payload)});
     if (seq !== FC_REQUEST_SEQ) return; // a newer selection superseded this response
     FC_LAST_REPORT = report;
