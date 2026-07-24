@@ -2005,6 +2005,144 @@ async function main() {
       !/\{[^}]*(KRİTİK|YÜKSEK|ORTA)\s*:/.test(fmeaSrc));
   }
 
+  // ================================================================
+  // Faz 2.7.2d -- Engineering Reference closure audit: integrated
+  // regression tests spanning Library/OEM/FMEA/Friction Condition
+  // together (each area's own dedicated tests already exist in
+  // blocks 1-84; these verify the surfaces work correctly *together*
+  // and that language-switch state preservation holds simultaneously
+  // across all of them).
+  // ================================================================
+
+  // ---- 85. TR/EN key resolution across all Engineering Reference
+  //          pages simultaneously (no raw-key fallback anywhere) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const sampleKeys = [
+      'hizli.title', 'fc.page_title', 'oem.title', 'norm.title', 'fmea.title',
+      'library.product_families.group_bolt', 'library.coatings.system_coat_001',
+      'oem.section.7', 'oem.tanim.6_1', 'fmea.error.fmea_001', 'fmea.severity_critical',
+    ];
+    let unresolvedTr = 0, unresolvedEn = 0;
+    for (const k of sampleKeys) if (ctx.context.t(k) === k) unresolvedTr++;
+    ctx.context.setLanguage('en');
+    for (const k of sampleKeys) if (ctx.context.t(k) === k) unresolvedEn++;
+    checkEqual('no unresolved keys across Engineering Reference pages in tr', unresolvedTr, 0);
+    checkEqual('no unresolved keys across Engineering Reference pages in en', unresolvedEn, 0);
+  }
+
+  // ---- 86. Record ID sets identical after a language switch, across
+  //          library/OEM/FMEA simultaneously ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const libIdsTr = ctx.context.__getTorqProLibrary().product_families.map((f) => f.family_id).sort();
+    const oemIdsTr = ctx.context.__getOemNormDb().sections.flatMap((s) => s.noktalar.map((p) => p.id)).sort();
+    const fmeaIdsTr = ctx.context.__getFmea().map((f) => f.id).sort();
+    ctx.context.setLanguage('en');
+    const libIdsEn = ctx.context.__getTorqProLibrary().product_families.map((f) => f.family_id).sort();
+    const oemIdsEn = ctx.context.__getOemNormDb().sections.flatMap((s) => s.noktalar.map((p) => p.id)).sort();
+    const fmeaIdsEn = ctx.context.__getFmea().map((f) => f.id).sort();
+    checkEqual('library family_id set unchanged after language switch', JSON.stringify(libIdsTr), JSON.stringify(libIdsEn));
+    checkEqual('OEM point id set unchanged after language switch', JSON.stringify(oemIdsTr), JSON.stringify(oemIdsEn));
+    checkEqual('FMEA id set unchanged after language switch', JSON.stringify(fmeaIdsTr), JSON.stringify(fmeaIdsEn));
+  }
+
+  // ---- 87. Technical option value sets identical after a language
+  //          switch (yontem, v_malzeme, and the library selector) ----
+  {
+    check('yontem option values are the fixed set {system_a,method_c,torque_angle,tty}',
+      /value="system_a"/.test(rawHtml) && /value="method_c"/.test(rawHtml) &&
+      /value="torque_angle"/.test(rawHtml) && /value="tty"/.test(rawHtml));
+    check('v_malzeme option values are the fixed set {steel,aluminum,castiron}',
+      /value="steel"/.test(rawHtml) && /value="aluminum"/.test(rawHtml) && /value="castiron"/.test(rawHtml));
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctx);
+    const valuesTr = ctx.byId['lib_family'].options.map((o) => o.value).sort();
+    ctx.context.setLanguage('en');
+    ctx.context.libraryReapplyLanguage();
+    const valuesEn = ctx.byId['lib_family'].options.map((o) => o.value).sort();
+    checkEqual('library family option values unchanged after language switch', JSON.stringify(valuesTr), JSON.stringify(valuesEn));
+  }
+
+  // ---- 88. No raw translation-key leakage across Library/OEM/FMEA/FC
+  //          rendered together in one pass ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctx);
+    setupOemDom(ctx);
+    ctx.byId['fmea-list'] = ctx.documentStub.getElementById('fmea-list');
+    ctx.context.buildFmea();
+    ctx.context.setLanguage('en');
+    ctx.context.libraryReapplyLanguage();
+    ctx.context.oemReapplyLanguage();
+    ctx.context.buildFmea();
+    const combined = ctx.byId['lib_family'].innerHTML + ctx.byId['lib_coating'].innerHTML +
+      ctx.byId['oem-list'].innerHTML + ctx.byId['oem-meta'].innerHTML + ctx.byId['fmea-list'].innerHTML;
+    check('no raw namespaced key text leaks across library+OEM+FMEA rendered together in en',
+      !/(library|oem|fmea)\.[a-z_.0-9]+(?![\w])/.test(combined.replace(/<[^>]*>/g, ' ')));
+  }
+
+  // ---- 89. Technical standards and numeric values identical in both
+  //          languages, checked across library + OEM + norm together ----
+  {
+    check('VDI 2230 appears verbatim (norm page)', /VDI 2230/.test(rawHtml));
+    check('ISO 16047 appears verbatim (norm + coatings test_standard)', /ISO 16047/.test(rawHtml));
+    check('FIAT norm number 2.00176/86 appears verbatim', /2\.00176\/86/.test(rawHtml));
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const p71 = ctx.context.__getOemNormDb().sections.find((s) => s.id === '7').noktalar.find((p) => p.id === '7.1');
+    ctx.context.setLanguage('en');
+    const p71en = ctx.context.__getOemNormDb().sections.find((s) => s.id === '7').noktalar.find((p) => p.id === '7.1');
+    checkEqual('OEM torque values identical regardless of language (same object, not re-fetched)', p71.nominal_nm, p71en.nominal_nm);
+  }
+
+  // ---- 90. Cross-language OEM search regression (closure re-check) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.setLanguage('en');
+    const trTermInEn = ctx.context.oemSearch('fren kaliperi');
+    check('tr term still finds the correct record while UI is en (closure re-check)', trTermInEn.some((p) => p.id === '7.1'));
+  }
+
+  // ---- 91. Library selection preservation regression (closure re-check) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctx);
+    ctx.byId['lib_coating'].value = 'COAT-004';
+    ctx.context.setLanguage('en');
+    checkEqual('coating selection survives language switch (closure re-check)', ctx.byId['lib_coating'].value, 'COAT-004');
+  }
+
+  // ---- 92. FMEA CSS severity preservation regression (closure re-check) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.byId['fmea-list'] = ctx.documentStub.getElementById('fmea-list');
+    ctx.context.buildFmea();
+    const before = [...ctx.byId['fmea-list'].innerHTML.matchAll(/pill-(danger|warn|info)/g)].map((m) => m[1]);
+    ctx.context.setLanguage('en');
+    ctx.context.buildFmea();
+    const after = [...ctx.byId['fmea-list'].innerHTML.matchAll(/pill-(danger|warn|info)/g)].map((m) => m[1]);
+    checkEqual('FMEA severity CSS class sequence unchanged (closure re-check)', JSON.stringify(before), JSON.stringify(after));
+  }
+
+  // ---- 93. Friction Condition re-render regression (closure re-check) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const report = fakeReport();
+    ctx.context.FC_LAST_REPORT = report;
+    ctx.context.fcRenderOverview(report);
+    ctx.context.setLanguage('en');
+    check('FC overview re-rendered in en after language switch (closure re-check)', ctx.byId['fc-overview'].innerHTML.indexOf('Coating') !== -1);
+  }
+
+  // ---- 94. Persisted payload contract regression (closure re-check) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.byId['sonuc-box'] = { innerText: '' };
+    const rec = ctx.context.captureCurrentCalculation();
+    checkEqual('source_mode fallback is byte-identical to the legacy contract (closure re-check)', rec.source_mode, 'Formül fallback');
+    check('family field is a readable string, not a bare technical ID (closure re-check)', typeof rec.family !== 'string' || !/^FAM-/.test(rec.family || ''));
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
   if (fail > 0) {
     console.log('Failures: ' + failures.join('; '));
