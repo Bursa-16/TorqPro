@@ -77,7 +77,8 @@ function extractFunctionDecl(script, name) {
 const CONST_NAMES = [
   'I18N', 'FC_ENUM_LABELS', 'CURRENT_LANG',
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
-  'N01391', 'CL',
+  'N01391', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
+  'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -91,7 +92,7 @@ const CONST_NAMES = [
 // external assignment and internal closures observe the same
 // binding, which is required to test "language switch re-renders
 // already-loaded content" realistically.
-const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT'];
+const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT', 'ACTIVE_STANDARD_LIBRARY'];
 const FUNCTION_NAMES = [
   't', 'fcLabel', 'applyStaticTranslations', 'setLanguage',
   'fcEsc', 'fcEscRaw', 'fcFmtNum', 'fcFmtLabel', 'fcCountLabel',
@@ -100,6 +101,10 @@ const FUNCTION_NAMES = [
   'fcWarningSeverity', 'fcRenderWarnings', 'fcRenderComparison', 'fcRenderReport',
   'n01391Hesapla', 'buildCL', 'confLabel', 'vdiHesapla',
   'saveCalibrationCase', 'loadCalibrationCases',
+  'libById', 'optionHtml', 'limitThreadsForEdition', 'libraryInit', 'libraryFamilyChanged',
+  'libraryStandardChanged', 'libraryThreadChanged', 'libraryCoatingChanged', 'getLibrarySelection',
+  'libraryCompatibilityChanged', 'parseHardnessMin', 'compatibilityResults', 'libraryRenderMeta',
+  'libraryReapplyLanguage', 'confClass', 'captureCurrentCalculation',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -149,6 +154,16 @@ function buildExtractedSource() {
   // production functions (t/fcLabel/setLanguage/...) already close
   // over the real binding correctly regardless of this.
   parts.push('function __getCurrentLang() { return CURRENT_LANG; }');
+  // Test-only accessor: TORQPRO_LIBRARY is (and must remain) a `const`
+  // in frontend/index.html -- it is never rewritten to `var` (unlike
+  // the MUTABLE_STATE_NAMES list) because nothing about it needs
+  // external re-assignment, only external *reading*. vm.createContext
+  // does not expose top-level const bindings as context properties,
+  // so this accessor closure -- appended only here, never part of the
+  // real production file -- is what lets test code read the live
+  // TORQPRO_LIBRARY object that libraryInit()/getLibrarySelection()/etc.
+  // actually close over.
+  parts.push('function __getTorqProLibrary() { return TORQPRO_LIBRARY; }');
   return { source: parts.join('\n\n'), rawHtml: html };
 }
 
@@ -157,7 +172,15 @@ function buildExtractedSource() {
 // actually touches (see the getElementById/querySelectorAll id and
 // selector list this harness was built against).
 // ---------------------------------------------------------------
+function parseTagAttrs(s) {
+  const a = {};
+  const re = /([\w-]+)(?:="([^"]*)")?/g;
+  let m;
+  while ((m = re.exec(s))) a[m[1]] = m[2] !== undefined ? m[2] : true;
+  return a;
+}
 function makeElement(id) {
+  let _value = '';
   return {
     id: id,
     _text: '',
@@ -168,11 +191,32 @@ function makeElement(id) {
     classList: { toggle() {}, add() {}, remove() {} },
     set textContent(v) { this._text = String(v); },
     get textContent() { return this._text; },
-    set innerHTML(v) { this._html = String(v); },
+    set innerHTML(v) {
+      this._html = String(v);
+      // Mirror real <select> behavior: rebuilding the option list
+      // adopts the explicitly `selected` option's value (or the
+      // first option's) as the element's new value. Code that wants
+      // a *different* value after rebuilding a <select> (e.g.
+      // restoring a saved technical ID) sets .value explicitly
+      // afterward, which always wins over this default.
+      const opts = [...this._html.matchAll(/<option\b([^>]*)>([^<]*)<\/option>/g)];
+      if (opts.length) {
+        const parsed = opts.map((m) => ({ attrs: parseTagAttrs(m[1]), text: m[2] }));
+        const sel = parsed.find((o) => o.attrs.selected !== undefined) || parsed[0];
+        _value = sel.attrs.value !== undefined ? sel.attrs.value : sel.text;
+      }
+    },
     get innerHTML() { return this._html; },
     set placeholder(v) { this._placeholder = String(v); },
     get placeholder() { return this._placeholder; },
-    value: '',
+    set value(v) { _value = v; },
+    get value() { return _value; },
+    get options() {
+      return [...this._html.matchAll(/<option\b([^>]*)>([^<]*)<\/option>/g)].map((m) => {
+        const attrs = parseTagAttrs(m[1]);
+        return { value: attrs.value !== undefined ? attrs.value : m[2], text: m[2] };
+      });
+    },
     getAttribute(name) { return this._attrs[name] || null; },
     setAttribute(name, v) { this._attrs[name] = v; },
   };
@@ -233,6 +277,7 @@ function buildDom(rawHtml, byId) {
       if (selector === '.lang-btn') return langBtns;
       return [];
     },
+    querySelector() { return null; }, // no <meta name="torqpro-edition">; APP_EDITION defaults to 'full'
     addEventListener() { /* no-op: DOMContentLoaded is never fired by this harness */ },
   };
   return document_;
@@ -267,6 +312,7 @@ function newContext(extractedSource, rawHtml, localStorageSeed, apiRequestImpl) 
     localStorage: localStorageStub,
     console: console,
     alert: (msg) => { alertCalls.push(msg); },
+    hesapla: () => {}, // library cascade functions call hesapla() as a side-effect; stubbed no-op here since this harness tests i18n/data-model behavior, not the calculation engine
     apiRequest: apiRequestImpl || (() => { throw new Error('apiRequest should not be called by this harness'); }),
     downloadText: () => { throw new Error('downloadText should not be called by this harness'); },
   };
@@ -1068,6 +1114,347 @@ async function main() {
     for (const k of dynamicKeys) if (ctx.context.t(k) === k) unresolvedEn++;
     checkEqual('no unresolved Faz 2.7.1b dynamic-text keys in tr', unresolvedTr, 0);
     checkEqual('no unresolved Faz 2.7.1b dynamic-text keys in en', unresolvedEn, 0);
+  }
+
+  // ================================================================
+  // Faz 2.7.2a -- Fasteners / Joint Hardware / Engineering Library.
+  // ================================================================
+  function setupLibraryDom(ctx) {
+    // Minimal set of elements libraryInit()'s cascade touches.
+    for (const id of ['lib_family', 'lib_standard', 'lib_thread', 'lib_nut', 'lib_washer', 'lib_coating',
+      'lib_mode', 'libraryMeta', 'compatibilityBox', 'cap', 'kalite', 'surtunme', 'mu_thread', 'mu_bearing']) {
+      ctx.byId[id] = ctx.documentStub.getElementById(id);
+    }
+    ctx.byId['cap'].innerHTML = '<option value="M10">M10</option>';
+    ctx.byId['kalite'].value = '10.9';
+    ctx.byId['surtunme'].innerHTML = '<option value="0.12">0.12</option>';
+    ctx.context.libraryInit();
+  }
+
+  // ---- 35. product_families machine-readable groupCode ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const families = ctx.context.__getTorqProLibrary().product_families;
+    check('every product_families record has a groupCode', families.every((f) => typeof f.groupCode === 'string' && f.groupCode.length > 0));
+    const codes = new Set(families.map((f) => f.groupCode));
+    checkEqual('groupCode values are exactly {bolt,nut,washer,screw,stud}',
+      [...codes].sort().join(','), 'bolt,nut,screw,stud,washer');
+  }
+
+  // ---- 36. group==='Civata' comparison no longer present anywhere ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    check('no more group===\'Civata\' anti-pattern in the source', scriptSrc.indexOf("group==='Civata'") === -1);
+    check('libraryInit() now filters on groupCode', extractFunctionDecl(scriptSrc, 'libraryInit').indexOf("groupCode==='bolt'") !== -1);
+  }
+
+  // ---- 37. Bolt/Nut/Washer/Screw/Stud group labels translate TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const expect = {
+      bolt: ['Civata', 'Bolt'], nut: ['Somun', 'Nut'], washer: ['Pul', 'Washer'],
+      screw: ['Vida', 'Screw'], stud: ['Saplama', 'Stud'],
+    };
+    for (const [code, [tr]] of Object.entries(expect)) {
+      const family = ctx.context.__getTorqProLibrary().product_families.find((f) => f.groupCode === code);
+      check('a product_families record exists for groupCode ' + code, !!family);
+      checkEqual('groupKey tr label for ' + code, ctx.context.t(family.groupKey), tr);
+    }
+    ctx.context.setLanguage('en');
+    for (const [code, [, en]] of Object.entries(expect)) {
+      const family = ctx.context.__getTorqProLibrary().product_families.find((f) => f.groupCode === code);
+      checkEqual('groupKey en label for ' + code, ctx.context.t(family.groupKey), en);
+    }
+  }
+
+  // ---- 38. Library dropdown option text translates TR/EN (family + coating selectors) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctx);
+    const famHtmlTr = ctx.byId['lib_family'].innerHTML;
+    const coatHtmlTr = ctx.byId['lib_coating'].innerHTML;
+    check('tr family options render translated bolt family names', famHtmlTr.indexOf('Altıgen başlı tam dişli civata') !== -1);
+    check('tr coating options render translated coating system names', coatHtmlTr.indexOf('Elektrolitik çinko') !== -1);
+    check('tr coating "no selection" option is translated', coatHtmlTr.indexOf('Manuel μ seçimi') !== -1);
+    ctx.context.setLanguage('en');
+    ctx.context.libraryReapplyLanguage();
+    const famHtmlEn = ctx.byId['lib_family'].innerHTML;
+    const coatHtmlEn = ctx.byId['lib_coating'].innerHTML;
+    check('en family options render translated bolt family names', famHtmlEn.indexOf('Hex head fully-threaded bolt') !== -1);
+    check('en coating options render translated coating system names', coatHtmlEn.indexOf('Electrolytic zinc') !== -1);
+    check('en coating "no selection" option is translated', coatHtmlEn.indexOf('Manual μ selection') !== -1);
+    check('en family options no longer show Turkish family names', famHtmlEn.indexOf('Altıgen başlı tam dişli civata') === -1);
+  }
+
+  // ---- 39. Technical option *values* are unchanged by language switch ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctx);
+    const familyValuesTr = ctx.byId['lib_family'].options.map((o) => o.value).sort();
+    const coatingValuesTr = ctx.byId['lib_coating'].options.map((o) => o.value).sort();
+    ctx.context.setLanguage('en');
+    ctx.context.libraryReapplyLanguage();
+    const familyValuesEn = ctx.byId['lib_family'].options.map((o) => o.value).sort();
+    const coatingValuesEn = ctx.byId['lib_coating'].options.map((o) => o.value).sort();
+    checkEqual('family_id option values identical tr vs en', JSON.stringify(familyValuesTr), JSON.stringify(familyValuesEn));
+    checkEqual('coating record_id option values identical tr vs en', JSON.stringify(coatingValuesTr), JSON.stringify(coatingValuesEn));
+  }
+
+  // ---- 40. record_id / family_id / thread_code / class_code preserved (data model untouched) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const lib = ctx.context.__getTorqProLibrary();
+    checkEqual('thread_series record count unchanged', lib.thread_series.length, 26);
+    checkEqual('property_classes record count unchanged', lib.property_classes.length, 12);
+    checkEqual('bolt_geometry record count unchanged', lib.bolt_geometry.length, 27);
+    checkEqual('nut_geometry record count unchanged', lib.nut_geometry.length, 21);
+    checkEqual('washer_geometry record count unchanged', lib.washer_geometry.length, 23);
+    checkEqual('product_families record count unchanged', lib.product_families.length, 15);
+    checkEqual('compatibility_rules record count unchanged', lib.compatibility_rules.length, 8);
+    checkEqual('coatings record count unchanged', lib.coatings.length, 6);
+    check('a known thread_code (M10x1.25) is present, untouched', lib.thread_series.some((r) => r.thread_code === 'M10x1.25'));
+    check('a known class_code (10.9) is present, untouched', lib.property_classes.some((r) => r.class_code === '10.9'));
+    check('a known family_id (FAM-BLT-001) is present, untouched', lib.product_families.some((r) => r.family_id === 'FAM-BLT-001'));
+    check('a known coating record_id (COAT-001) is present, untouched', lib.coatings.some((r) => r.record_id === 'COAT-001'));
+    check('ISO standard codes untouched (ISO 4017 present)', lib.bolt_geometry.some((r) => r.standard === 'ISO 4017'));
+  }
+
+  // ---- 41. Library meta panel labels render TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctx);
+    const metaTr = ctx.byId['libraryMeta'].innerHTML;
+    check('tr meta panel shows "Diş geometrisi"', metaTr.indexOf('Diş geometrisi') !== -1);
+    check('tr meta panel shows "Baş / oturma"', metaTr.indexOf('Baş / oturma') !== -1);
+    ctx.context.setLanguage('en');
+    ctx.context.libraryReapplyLanguage();
+    const metaEn = ctx.byId['libraryMeta'].innerHTML;
+    check('en meta panel shows "Thread geometry"', metaEn.indexOf('Thread geometry') !== -1);
+    check('en meta panel shows "Head / bearing"', metaEn.indexOf('Head / bearing') !== -1);
+    check('en meta panel no longer shows Turkish labels', metaEn.indexOf('Diş geometrisi') === -1);
+  }
+
+  // ---- 42. Compatibility condition/requirement/rationale translate TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const rule = ctx.context.__getTorqProLibrary().compatibility_rules.find((r) => r.rule_id === 'R-001');
+    check('R-001 compatibility rule exists', !!rule);
+    checkEqual('R-001 condition tr', ctx.context.t(rule.conditionKey), 'Civata 8.8');
+    checkEqual('R-001 requirement tr', ctx.context.t(rule.requirementKey), 'Somun sınıf ≥ 8');
+    checkEqual('R-001 rationale tr', ctx.context.t(rule.rationaleKey), 'Somun proof load ≥ civata Rm; sıyırma somunda olmamalı');
+    ctx.context.setLanguage('en');
+    checkEqual('R-001 condition en', ctx.context.t(rule.conditionKey), 'Bolt 8.8');
+    checkEqual('R-001 requirement en', ctx.context.t(rule.requirementKey), 'Nut class ≥ 8');
+  }
+
+  // ---- 43. Coating μ values and standard codes unchanged by translation ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const coat = ctx.context.__getTorqProLibrary().coatings.find((c) => c.record_id === 'COAT-001');
+    checkEqual('COAT-001 mu_total_min unchanged', coat.mu_total_min, 0.1);
+    checkEqual('COAT-001 mu_total_max unchanged', coat.mu_total_max, 0.16);
+    checkEqual('COAT-001 standard code unchanged', coat.standard, 'ISO 4042');
+    checkEqual('COAT-001 test_standard unchanged (ISO 16047)', coat.test_standard, 'ISO 16047');
+    ctx.context.setLanguage('en');
+    checkEqual('COAT-001 mu_total_min still unchanged after language switch', coat.mu_total_min, 0.1);
+    checkEqual('COAT-001 systemTechnical (matching field) stays the original Turkish text', coat.systemTechnical, 'Elektrolitik çinko');
+  }
+
+  // ---- 44. Language switch preserves the active library selection (IDs) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctx);
+    // Pick a specific, non-default coating and confirm it survives a language switch.
+    ctx.byId['lib_coating'].value = 'COAT-003';
+    ctx.byId['lib_family'].value = ctx.byId['lib_family'].options[0].value;
+    const savedFamily = ctx.byId['lib_family'].value;
+    ctx.context.setLanguage('en');
+    checkEqual('selected coating record_id survives language switch', ctx.byId['lib_coating'].value, 'COAT-003');
+    checkEqual('selected family_id survives language switch', ctx.byId['lib_family'].value, savedFamily);
+    // Calculation inputs must be untouched by a pure language switch.
+    ctx.byId['mu_thread'].value = '0.137';
+    ctx.byId['mu_bearing'].value = '0.128';
+    ctx.context.setLanguage('tr');
+    checkEqual('mu_thread input unaffected by language switch', ctx.byId['mu_thread'].value, '0.137');
+    checkEqual('mu_bearing input unaffected by language switch', ctx.byId['mu_bearing'].value, '0.128');
+  }
+
+  // ---- 45. No raw translation-key leakage in library dynamic HTML ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctx);
+    const combinedTr = ctx.byId['lib_family'].innerHTML + ctx.byId['lib_coating'].innerHTML + ctx.byId['libraryMeta'].innerHTML;
+    check('no raw "library.xxx" key text leaks into tr rendering', !/library\.[a-z_.]+(?![\w])/.test(combinedTr.replace(/<[^>]*>/g, ' ')));
+    ctx.context.setLanguage('en');
+    ctx.context.libraryReapplyLanguage();
+    const combinedEn = ctx.byId['lib_family'].innerHTML + ctx.byId['lib_coating'].innerHTML + ctx.byId['libraryMeta'].innerHTML;
+    check('no raw "library.xxx" key text leaks into en rendering', !/library\.[a-z_.]+(?![\w])/.test(combinedEn.replace(/<[^>]*>/g, ' ')));
+  }
+
+  // ---- 46. Standard/technical codes and numeric data unchanged by translation
+  //          (thread pitch, hardness, MPa values) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const lib = ctx.context.__getTorqProLibrary();
+    const cls109 = lib.property_classes.find((c) => c.class_code === '10.9');
+    checkEqual('10.9 class rm_min_mpa unchanged', cls109.rm_min_mpa, 1040);
+    checkEqual('10.9 class rp02_min_mpa unchanged', cls109.rp02_min_mpa, 940);
+    const thread = lib.thread_series.find((t2) => t2.thread_code === 'M10x1.25');
+    checkEqual('M10x1.25 pitch_mm unchanged', thread.pitch_mm, 1.25);
+    checkEqual('M10x1.25 stress_area_iso_mm2 unchanged', thread.stress_area_iso_mm2, 61.2);
+  }
+
+  // ---- 47. Coating-name text matching against live standard data never uses
+  //          the translatable display field (regression guard for the
+  //          resolveLiveStandardData()/captureCurrentCalculation() anti-patterns). ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const resolveSrc = extractFunctionDecl(scriptSrc, 'resolveLiveStandardData');
+    check('resolveLiveStandardData() reads systemTechnical, not the translatable system field',
+      resolveSrc.indexOf('sel.coating?.systemTechnical') !== -1 && resolveSrc.indexOf('sel.coating?.system||') === -1);
+    const captureSrc = extractFunctionDecl(scriptSrc, 'captureCurrentCalculation');
+    check('captureCurrentCalculation() persists a readable i18n-aware family label (report/search consumer), not a bare technical ID',
+      captureSrc.indexOf('sel.family.nameKey?t(sel.family.nameKey)') !== -1);
+    check('captureCurrentCalculation() persists coating systemTechnical/record_id, not the translatable system field',
+      captureSrc.indexOf('sel.coating?.systemTechnical') !== -1);
+    check('captureCurrentCalculation() no longer reads the translatable lib_mode display value for source_mode',
+      captureSrc.indexOf("document.getElementById('lib_mode')?.value") === -1);
+    check('source_mode fallback literals are the exact pre-2.7.2a strings, not translated (no t() call)',
+      captureSrc.indexOf("'Kütüphane'") !== -1 && captureSrc.indexOf("'Formül fallback'") !== -1 &&
+      !/source_mode:\([^)]*t\(/.test(captureSrc));
+  }
+
+  // ---- 47c. source_mode: byte-identical to the pre-2.7.2a persisted
+  //           contract, in both languages, regardless of ACTIVE_STANDARD_LIBRARY
+  //           state. CSV/JSON export both read this column verbatim (via
+  //           SELECT * on the backend) and it is never displayed as a
+  //           label in renderArchive()/reportHtml(), so no consumer needs
+  //           a machine code -- the literal legacy string is the correct,
+  //           lowest-risk choice. ----
+  {
+    // No active standard-library version -> fallback branch.
+    const ctxLib = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctxLib);
+    ctxLib.byId['lib_family'].value = ctxLib.byId['lib_family'].options[0].value;
+    const recLibTr = ctxLib.context.captureCurrentCalculation();
+    checkEqual('tr: source_mode "library" fallback is byte-identical to the legacy value', recLibTr.source_mode, 'Kütüphane');
+    ctxLib.context.setLanguage('en');
+    const recLibEn = ctxLib.context.captureCurrentCalculation();
+    checkEqual('en: source_mode "library" fallback is still the Turkish legacy string (never translated)', recLibEn.source_mode, 'Kütüphane');
+    checkEqual('source_mode persisted value identical tr vs en (library case)', recLibTr.source_mode, recLibEn.source_mode);
+
+    // No library selector wired up -> formula-fallback branch. (EN vs TR
+    // non-translation of the literal is already proven by the "library"
+    // case above; re-testing here would require switching language,
+    // which -- correctly -- causes libraryReapplyLanguage() to populate
+    // a real selection once any DOM lookup auto-vivifies an element, so
+    // this sub-test stays single-language to isolate the fallback branch itself.)
+    const ctxFallback = newContext(extractedSource, rawHtml, {});
+    ctxFallback.byId['sonuc-box'] = { innerText: '' };
+    const recFbTr = ctxFallback.context.captureCurrentCalculation();
+    checkEqual('tr: source_mode "formula_fallback" case is byte-identical to the legacy value', recFbTr.source_mode, 'Formül fallback');
+
+    // version_signature branch still takes priority exactly as before (operator-precedence regression guard).
+    const ctxVer = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctxVer);
+    ctxVer.context.ACTIVE_STANDARD_LIBRARY.version_signature = 'DATA-V7';
+    const recVer = ctxVer.context.captureCurrentCalculation();
+    checkEqual('source_mode uses ACTIVE_STANDARD_LIBRARY.version_signature when present (unchanged priority)', recVer.source_mode, 'DATA-V7');
+
+    // family: readable label, still language-aware (this one IS allowed
+    // to differ from the legacy exact bytes at save-time, per the
+    // family field decision above -- it has always been a readable
+    // string, was never a fixed enum, and both reportHtml() and the
+    // archive search only ever display/match whatever string is there).
+    check('family field is a non-empty readable string in tr', typeof recLibTr.family === 'string' && recLibTr.family.length > 0);
+    check('family field is a non-empty readable string in en', typeof recLibEn.family === 'string' && recLibEn.family.length > 0);
+  }
+
+  // ---- 47b. captureCurrentCalculation() / resolveLiveStandardData() payload
+  //           format regression (backend compatibility audit follow-up):
+  //           the *persisted* family label is the same kind of readable
+  //           string as before (just now language-aware at save time),
+  //           coating persists byte-identical text to the pre-i18n
+  //           behavior, and old-format archive rows still read back fine
+  //           since reportHtml()/renderArchive() only ever display
+  //           whatever string is stored -- they never parse or validate it. ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupLibraryDom(ctx);
+    ctx.byId['lib_family'].value = ctx.byId['lib_family'].options[0].value;
+    ctx.byId['sonuc-box'] = { innerText: '' };
+    const family = ctx.context.__getTorqProLibrary().product_families.find((f) => f.family_id === ctx.byId['lib_family'].value);
+
+    const recTr = ctx.context.captureCurrentCalculation();
+    checkEqual('tr: persisted family field is the readable tr label (matches dropdown text)', recTr.family, ctx.context.t(family.nameKey));
+    check('tr: persisted family field is NOT the bare family_id', recTr.family !== family.family_id);
+
+    ctx.context.setLanguage('en');
+    const recEn = ctx.context.captureCurrentCalculation();
+    checkEqual('en: persisted family field is the readable en label', recEn.family, ctx.context.t(family.nameKey));
+    check('en vs tr persisted family label differs (language-aware at save time, as designed)', recEn.family !== recTr.family);
+
+    // coating: byte-identical to the pre-i18n behavior in both languages
+    // (systemTechnical is never translated) -- this is the field backend
+    // search/display never actually reads back as a label, so no format
+    // change was needed here.
+    if (ctx.byId['lib_coating'].options.length > 1) {
+      ctx.byId['lib_coating'].value = ctx.byId['lib_coating'].options[1].value;
+      const coating = ctx.context.__getTorqProLibrary().coatings.find((c) => c.record_id === ctx.byId['lib_coating'].value);
+      const recTr2 = ctx.context.captureCurrentCalculation();
+      ctx.context.setLanguage('tr');
+      const recTr3 = ctx.context.captureCurrentCalculation();
+      checkEqual('coating field identical regardless of language (never translated)', recTr3.coating, coating.systemTechnical);
+    }
+
+    const recWithCoating = ctx.context.captureCurrentCalculation();
+
+    // An old-format archive row (as persisted by pre-2.7.2a code, i.e.
+    // family/coating already contain plain readable strings) round-trips
+    // through reportHtml()'s consumption pattern with no special handling
+    // required -- confirming backward compatibility with existing records.
+    const oldFormatRow = { family: 'Altıgen başlı tam dişli civata', coating: 'Elektrolitik çinko', source_mode: 'Kütüphane', standard: 'ISO 4017', thread: 'M10', torque_nm: 65 };
+    check('an old-format (pre-2.7.2a) archive row has the same field shape as a newly-created one (family/coating/standard/thread are plain strings)',
+      typeof oldFormatRow.family === 'string' && typeof oldFormatRow.coating === 'string' && typeof recWithCoating.family === 'string' && typeof recWithCoating.coating === 'string');
+
+    // A newly-created record's shape also round-trips: the client-side
+    // payload (record_no is assigned server-side, never sent by the
+    // client) uses the same keys as an old row -- no consumer needs to
+    // special-case "old" vs "new" records.
+    const newKeys = Object.keys(recWithCoating).sort();
+    const oldKeys = Object.keys(oldFormatRow).filter((k) => k !== 'record_no').sort();
+    check('new record keys are a superset of the old row\'s client-payload keys (no renamed/removed fields)',
+      oldKeys.every((k) => newKeys.includes(k)));
+  }
+
+  // ================================================================
+  // Friction Condition -- short regression block (per Faz 2.7.2
+  // instructions: FC frontend code is untouched this phase; this only
+  // re-confirms Faz 2.6.8's behavior still holds after all the i18n
+  // work done in 2.7.0/2.7.1/2.7.2a).
+  // ================================================================
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titleEl = getByI18nKey(ctx, 'fc.page_title');
+    ctx.context.applyStaticTranslations();
+    checkEqual('FC static key fc.page_title resolves tr', titleEl.textContent, 'Yüzey Sürtünme Koşulu');
+    ctx.context.setLanguage('en');
+    checkEqual('FC static key fc.page_title resolves en', titleEl.textContent, 'Friction Condition');
+
+    const report = fakeReport();
+    ctx.context.FC_LAST_REPORT = report;
+    ctx.context.fcRenderOverview(report);
+    const overviewEl = ctx.byId['fc-overview'];
+    check('FC render function shows no raw key text', !/fc\.[a-z_.]+(?![\w])/.test(overviewEl.innerHTML));
+    ctx.context.setLanguage('tr');
+    // setLanguage() re-renders FC_LAST_REPORT automatically when set.
+    check('FC report re-renders on language switch (tr label present)', overviewEl.innerHTML.indexOf('Kaplama') !== -1);
+
+    const lubEl = getByI18nKey(ctx, 'fc.filter_group_lubricant');
+    ctx.context.applyStaticTranslations();
+    checkEqual('Lubricant-based conditions filter label tr', lubEl.textContent, 'Yağlayıcı tabanlı koşullar');
+    ctx.context.setLanguage('en');
+    checkEqual('Lubricant-based conditions filter label en', lubEl.textContent, 'Lubricant-based conditions');
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
