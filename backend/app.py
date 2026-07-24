@@ -16,12 +16,33 @@ from pydantic import BaseModel, Field
 try:
     from backend.engineering_core.joint import evaluate_joint
     from backend.engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed
+    from backend.calculation_engine.friction_readiness import assess_friction_readiness
+    from backend.calculation_engine.friction_recommendations import (
+        assess_recommendation_readiness, generate_friction_warnings, compare_friction_conditions,
+    )
+    from backend.calculation_engine.friction_report import build_friction_condition_report_section
+    from backend.calculation_engine.exceptions import CalculationInputError
 except ImportError:  # pragma: no cover - direct import with backend/ on sys.path
     from engineering_core.joint import evaluate_joint  # type: ignore[no-redef]
     from engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed  # type: ignore[no-redef]
+    from calculation_engine.friction_readiness import assess_friction_readiness  # type: ignore[no-redef]
+    from calculation_engine.friction_recommendations import (  # type: ignore[no-redef]
+        assess_recommendation_readiness, generate_friction_warnings, compare_friction_conditions,
+    )
+    from calculation_engine.friction_report import build_friction_condition_report_section  # type: ignore[no-redef]
+    from calculation_engine.exceptions import CalculationInputError  # type: ignore[no-redef]
 
 BASE=Path(__file__).resolve().parent.parent
-APP_VERSION="4.4"
+def _read_app_version() -> str:
+    # Single centralized version source (VERSION file at repo root).
+    # Backend and frontend must report the same value -- the
+    # frontend fetches it from /api/health rather than hardcoding it.
+    # Release/tag versions must match this file's contents.
+    try:
+        return (BASE / "VERSION").read_text(encoding="utf-8").strip()
+    except OSError:
+        return "0.0.0-unknown"
+APP_VERSION=_read_app_version()
 DB=Path(os.getenv("TORQPRO_DB_PATH") or (BASE/"torqpro.db")); FRONT=BASE/"frontend"; SECRET_FILE=BASE/".torqpro_secret"
 ALGORITHM="HS256"; ACCESS_TOKEN_MINUTES=480; SCHEMA_VERSION=3
 LOGIN_ATTEMPTS: dict[str, deque] = defaultdict(deque)
@@ -402,11 +423,122 @@ class EngineeringCheck(BaseModel):
     internal_rm_mpa: float = Field(gt=0)
     bolt_rm_mpa: float = Field(gt=0)
     nut_proof_mpa: float = Field(gt=0)
+    # Faz 2.6.3: additive, optional. When supplied, the response gains
+    # a "friction_readiness" key reporting what (if anything) the
+    # referenced FrictionConditionRecord's data supports -- it never
+    # changes the deterministic mu_thread/mu_bearing-based result
+    # above, which is unaffected whether or not this field is set.
+    friction_condition_id: Optional[str] = None
 
 @app.post("/api/engineering/check")
 def engineering_check(x: EngineeringCheck, u=Depends(user)):
     # Orchestration only: input validated by Pydantic, calculation in engineering_core.
-    return evaluate_joint(**x.model_dump())
+    fields = x.model_dump()
+    friction_condition_id = fields.pop("friction_condition_id")
+    result = evaluate_joint(**fields)
+    if friction_condition_id:
+        try:
+            readiness = assess_friction_readiness(friction_condition_id)
+        except CalculationInputError as e:
+            raise HTTPException(422, str(e))
+        result["friction_readiness"] = readiness.to_dict()
+    return result
+
+
+@app.get("/api/friction-condition")
+def friction_condition_list(u=Depends(user)):
+    # Faz 2.6.6: additive, read-only, minimal-field list for the
+    # frontend condition selector. No new engineering data -- the 18
+    # live records are unchanged; only a slimmed-down projection of
+    # already-stored fields is returned (no source_reference/
+    # engineering_notes/checksum here -- use /api/friction-condition/
+    # report-preview for full traceability on a selected condition).
+    from backend.library import population as population_module
+    records = population_module.load_population_records("friction condition library")
+    return [
+        {
+            "id": r.get("id", ""),
+            "coating_reference": r.get("coating_id", "") or "",
+            "lubricant_reference": r.get("lubricant_id", "") or "",
+            "friction_model": r.get("friction_model", "") or "",
+            "overall_friction_coefficient_min": r.get("overall_friction_coefficient_min"),
+            "overall_friction_coefficient_max": r.get("overall_friction_coefficient_max"),
+            "verification_status": r.get("verification_status", "") or "",
+            "source_type": r.get("source_type", "") or "",
+            "status": r.get("status", "") or "",
+        }
+        for r in records
+    ]
+
+
+class FrictionConditionAssess(BaseModel):
+    # Faz 2.6.4: additive, new endpoint. Never touches
+    # /api/engineering/check's request/response contract.
+    friction_condition_id: str
+    compare_with_id: Optional[str] = None
+    # One of INTENDED_USE_MINIMUM_LEVEL's keys (reference_comparison /
+    # engineering_calculation / production_release), free-text
+    # otherwise -- never used to invent engineering data, only to
+    # annotate a readiness-level gap warning (see
+    # backend.calculation_engine.friction_recommendations).
+    intended_use: Optional[str] = None
+
+
+@app.post("/api/friction-condition/assess")
+def friction_condition_assess(x: FrictionConditionAssess, u=Depends(user)):
+    # Orchestration only: no engineering formula or judgement lives
+    # here -- see backend.calculation_engine.friction_recommendations
+    # and .friction_readiness for the deterministic logic.
+    try:
+        warnings = generate_friction_warnings(x.friction_condition_id)
+        readiness = assess_recommendation_readiness(
+            x.friction_condition_id, intended_use=x.intended_use,
+        )
+        torque_readiness = assess_friction_readiness(x.friction_condition_id)
+    except CalculationInputError as e:
+        raise HTTPException(422, str(e))
+    response = {
+        "friction_condition_id": x.friction_condition_id,
+        "warnings": warnings,
+        "recommendation_readiness": readiness.to_dict(),
+        "torque_readiness": torque_readiness.to_dict(),
+        "source_reference": readiness.source_reference,
+        "verification_status": readiness.verification_status,
+    }
+    if x.compare_with_id:
+        try:
+            comparison = compare_friction_conditions(x.friction_condition_id, x.compare_with_id)
+        except CalculationInputError as e:
+            raise HTTPException(422, str(e))
+        response["comparison"] = comparison.to_dict()
+    return response
+
+
+class FrictionConditionReportPreview(BaseModel):
+    # Faz 2.6.5: additive, new endpoint. Produces the JSON "Friction
+    # Condition Assessment" report section -- see
+    # backend.calculation_engine.friction_report. No PDF is generated
+    # here; this is the pre-PDF, independently verifiable JSON form.
+    friction_condition_id: str
+    compare_with_friction_condition_id: Optional[str] = None
+    friction_intended_use: Optional[str] = None
+
+
+@app.post("/api/friction-condition/report-preview")
+def friction_condition_report_preview(x: FrictionConditionReportPreview, u=Depends(user)):
+    # Orchestration only: formatting lives in
+    # backend.calculation_engine.friction_report, which itself only
+    # re-uses friction_readiness/friction_recommendations -- no new
+    # engineering logic here or there.
+    try:
+        section = build_friction_condition_report_section(
+            x.friction_condition_id,
+            compare_with_id=x.compare_with_friction_condition_id,
+            intended_use=x.friction_intended_use,
+        )
+    except CalculationInputError as e:
+        raise HTTPException(422, str(e))
+    return section.to_dict()
 
 
 DATA_DIR=BASE/"data"

@@ -19,8 +19,11 @@ from backend.library.registry import BaseLibrary, LibraryMetadata, get_library
 def test_population_sources_cover_nine_domains():
     # Faz 2.4.1C adds "joint hardware library" as a tenth mapped
     # source (currently empty -- shell only, see
-    # backend/library/joint_hardware_library.py). The original nine
-    # domains are unchanged.
+    # backend/library/joint_hardware_library.py). Faz 2.6.2A adds
+    # "friction condition library" as an eleventh (also currently
+    # empty -- shell only, see
+    # backend/library/friction_condition_library.py). The original
+    # nine domains are unchanged.
     expected = {
         "bolt library",
         "nut library",
@@ -32,6 +35,7 @@ def test_population_sources_cover_nine_domains():
         "strength class library",
         "compatibility library",
         "joint hardware library",
+        "friction condition library",
     }
     assert set(population.POPULATION_SOURCES.keys()) == expected
     # OEM stays adapter-only: never gets a population source mapping.
@@ -45,10 +49,14 @@ def test_total_population_record_count_exceeds_500():
 def test_record_distribution_covers_every_domain_with_real_records():
     # "joint hardware library" is an intentional exception (Faz
     # 2.4.1C shell, no verified data yet -- see
-    # backend/library/joint_hardware_library.py).
+    # backend/library/joint_hardware_library.py). "friction condition
+    # library" was the same kind of exception through Faz 2.6.2A;
+    # Faz 2.6.2B populated it with 18 deterministically-sourced
+    # records, so it is no longer exempt here.
+    empty_by_design = {"joint hardware library"}
     for key in population.POPULATION_SOURCES:
         records = population.load_population_records(key)
-        if key == "joint hardware library":
+        if key in empty_by_design:
             assert records == []
             continue
         assert len(records) > 0, f"{key} has no records"

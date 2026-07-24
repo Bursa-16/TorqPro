@@ -61,6 +61,7 @@ POPULATION_SOURCES: Dict[str, str] = {
     "strength class library": "strength_class_library.json",
     "compatibility library": "compatibility_library.json",
     "joint hardware library": "joint_hardware_library.json",
+    "friction condition library": "friction_condition_library.json",
 }
 
 OEM_SOURCE = "oem_library.json"
@@ -216,6 +217,26 @@ def validate_nut_library_records() -> List[str]:
     ``validate_all_population_sources``."""
     records = load_population_records("nut library")
     report = validator_module.validate_nut_library(records)
+    return [issue.message for issue in report.issues]
+
+
+def validate_lubrication_library_records() -> List[str]:
+    """Run the Faz 2.6.1 Friction Condition (Lubrication subsection)
+    checks (``validator.validate_lubrication_library``) over the live
+    lubrication library data file. Additional, lubrication-only entry
+    point -- does not replace ``validate_all_population_sources``."""
+    records = load_population_records("lubrication library")
+    report = validator_module.validate_lubrication_library(records)
+    return [issue.message for issue in report.issues]
+
+
+def validate_friction_condition_library_records() -> List[str]:
+    """Run the Faz 2.6.2A Friction Condition Library checks
+    (``validator.validate_friction_condition_library``) over the live
+    data file. Currently always returns an empty list -- the file has
+    no records yet (see ``friction_condition_library.py``, ADR-0010)."""
+    records = load_population_records("friction condition library")
+    report = validator_module.validate_friction_condition_library(records)
     return [issue.message for issue in report.issues]
 
 
@@ -419,6 +440,21 @@ def find_broken_compatibility_references() -> List[str]:
     return issues
 
 
+def find_broken_friction_condition_references() -> List[str]:
+    """Flag ``friction condition library`` records whose non-empty
+    ``coating_id``/``lubricant_id`` is not present in the live
+    Coating Library / Lubrication Library (Faz 2.6.2B, ADR-0010). An
+    empty reference is not a violation -- see
+    ``validator.find_dangling_coating_references`` /
+    ``find_dangling_lubricant_references`` docstrings."""
+    coating_ids = {r["id"] for r in load_population_records("coating library")}
+    lubricant_ids = {r["id"] for r in load_population_records("lubrication library")}
+    records = load_population_records("friction condition library")
+    issues = validator_module.find_dangling_coating_references(records, coating_ids)
+    issues += validator_module.find_dangling_lubricant_references(records, lubricant_ids)
+    return [issue.message for issue in issues]
+
+
 def run_all_integrity_checks() -> Dict[str, List[str]]:
     """Run every Faz 2.4.1 data-integrity check and return a
     ``{check_name: [issue, ...]}`` report. An empty list for a check
@@ -436,10 +472,13 @@ def run_all_integrity_checks() -> Dict[str, List[str]]:
         "pitch_series": find_pitch_series_violations(),
         "dangling_thread_references": find_dangling_thread_references(),
         "broken_compatibility_references": find_broken_compatibility_references(),
+        "broken_friction_condition_references": find_broken_friction_condition_references(),
         "invalid_status_values": find_invalid_status_values(),
         "checksum_mismatches": find_checksum_mismatches(),
         "bolt_library_faz2_4_1b": validate_bolt_library_records(),
         "nut_library_faz2_4_1b": validate_nut_library_records(),
+        "lubrication_library_faz2_6_1": validate_lubrication_library_records(),
+        "friction_condition_library_faz2_6_2a": validate_friction_condition_library_records(),
     }
 
 
@@ -868,6 +907,7 @@ __all__ = [
     "find_pitch_series_violations",
     "find_dangling_thread_references",
     "find_broken_compatibility_references",
+    "find_broken_friction_condition_references",
     "run_all_integrity_checks",
     "find_thread",
     "count_iso_metric_thread_records",
@@ -875,6 +915,8 @@ __all__ = [
     "validate_thread_library_records",
     "validate_bolt_library_records",
     "validate_nut_library_records",
+    "validate_lubrication_library_records",
+    "validate_friction_condition_library_records",
     "validate_washer_library_records",
     "validate_joint_hardware_library_records",
     "find_bolt",

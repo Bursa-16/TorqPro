@@ -28,6 +28,9 @@ Modules:
 - material_library:        material property sets (shell)
 - coating_library:         surface/coating specifications (shell)
 - lubrication_library:     lubricant specs and friction conditions (shell)
+- friction_condition_library: combination-dependent friction data
+                            (coating+lubricant+condition pairing;
+                            Faz 2.6.2A shell, no records yet)
 - strength_class_library:  bolt/nut property class reference (shell)
 - compatibility:           bolt/nut/washer compatibility rule set (shell)
 - oem_library:              adapter-only reference into backend.standards
@@ -63,6 +66,7 @@ from . import (
     bolt_library,
     coating_library,
     compatibility,
+    friction_condition_library,
     joint_hardware_library,
     lubrication_library,
     material_library,
@@ -133,6 +137,7 @@ __all__ = [
     "material_library",
     "coating_library",
     "lubrication_library",
+    "friction_condition_library",
     "strength_class_library",
     "compatibility",
     "oem_library",

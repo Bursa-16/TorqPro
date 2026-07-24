@@ -1349,3 +1349,337 @@ def validate_joint_hardware_library(
     issues.extend(find_missing_source(records))
     subject = "Joint Hardware Library (Faz 2.4.1C)"
     return ValidationReport(subject=subject, issues=issues)
+
+
+# ---------------------------------------------------------------------
+# Faz 2.6.1: Friction Condition module checks (Lubrication subsection).
+# See docs/adr/ADR-0009-friction-condition-module.md. These are
+# structural/data-quality checks over the Faz 2.6.0 additive fields on
+# ``LubricationRecord`` -- non-raising, opt-in, same convention as
+# every check above. They do not invent, derive or backfill any
+# engineering value; they only flag records whose *already-stored*
+# values are internally inconsistent or under-sourced.
+# ---------------------------------------------------------------------
+
+#: Pairs of (min_field, max_field) that must satisfy min <= max when
+#: both are present. Covers the pre-existing Faz 2.4.0 pair
+#: (``friction_coefficient_min/max``) as well as every Faz 2.6.0
+#: addition.
+_FRICTION_MIN_MAX_FIELD_PAIRS = (
+    ("friction_coefficient_min", "friction_coefficient_max"),
+    ("overall_friction_coefficient_min", "overall_friction_coefficient_max"),
+    ("mu_thread_min", "mu_thread_max"),
+    ("mu_bearing_min", "mu_bearing_max"),
+    ("k_factor_min", "k_factor_max"),
+)
+
+#: Engineering coefficient fields that require source traceability
+#: (Faz 2.6.0 ``source_reference``) when populated. Deliberately does
+#: NOT include the pre-existing ``friction_coefficient_min/max`` pair
+#: (Faz 2.4.0/2.4.2B records use the pre-existing ``source`` /
+#: ``source_standard`` / ``notes`` fields instead -- see ADR-0009).
+_SOURCE_REQUIRED_COEFFICIENT_FIELDS = (
+    "overall_friction_coefficient_min",
+    "overall_friction_coefficient_max",
+    "mu_thread_min",
+    "mu_thread_max",
+    "mu_bearing_min",
+    "mu_bearing_max",
+    "k_factor_min",
+    "k_factor_max",
+    "scatter_percent",
+    "max_temperature_c",
+)
+
+
+def find_friction_min_max_violations(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag any ``LubricationRecord`` min/max pair (see
+    ``_FRICTION_MIN_MAX_FIELD_PAIRS``) where ``min > max``. Field
+    absent or only one of the pair present is not flagged here (that
+    is a different, presence-based check -- see
+    ``find_friction_asymmetric_min_max``)."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        for min_field, max_field in _FRICTION_MIN_MAX_FIELD_PAIRS:
+            low, high = record.get(min_field), record.get(max_field)
+            if not isinstance(low, (int, float)) or not isinstance(high, (int, float)):
+                continue
+            if low > high:
+                issues.append(
+                    ValidationIssue(
+                        code="friction_min_max_violation",
+                        message=f"{min_field}={low} > {max_field}={high}",
+                        record_index=index,
+                        field=min_field,
+                    )
+                )
+    return issues
+
+
+def find_friction_negative_values(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag negative values on any friction/nut-factor/scatter field.
+    Defense-in-depth: ``LubricationRecord``'s Pydantic ``Field(ge=0)``
+    constraints already reject these at typed-parse time, but several
+    call sites (e.g. ``population.find_lubrication``) read the raw
+    JSON dict directly without going through the typed model."""
+    issues: List[ValidationIssue] = []
+    checked_fields = (
+        "friction_coefficient_min", "friction_coefficient_max",
+        "overall_friction_coefficient_min", "overall_friction_coefficient_max",
+        "mu_thread_min", "mu_thread_max",
+        "mu_bearing_min", "mu_bearing_max",
+        "k_factor_min", "k_factor_max",
+        "scatter_percent",
+    )
+    for index, record in enumerate(records):
+        for name in checked_fields:
+            value = record.get(name)
+            if isinstance(value, (int, float)) and value < 0:
+                issues.append(
+                    ValidationIssue(
+                        code="negative_friction_value",
+                        message=f"{name}={value} is negative",
+                        record_index=index,
+                        field=name,
+                    )
+                )
+    return issues
+
+
+def find_friction_asymmetric_min_max(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag a record that sets only one side of a min/max friction
+    pair (e.g. ``mu_thread_min`` without ``mu_thread_max``). A range
+    is only meaningful with both bounds present."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        for min_field, max_field in _FRICTION_MIN_MAX_FIELD_PAIRS:
+            low, high = record.get(min_field), record.get(max_field)
+            low_set, high_set = low is not None, high is not None
+            if low_set != high_set:
+                present, missing = (
+                    (min_field, max_field) if low_set else (max_field, min_field)
+                )
+                issues.append(
+                    ValidationIssue(
+                        code="friction_asymmetric_min_max",
+                        message=f"{present} is set but {missing} is not",
+                        record_index=index,
+                        field=present,
+                    )
+                )
+    return issues
+
+
+def find_friction_one_sided_thread_bearing(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag a record that populates ``mu_thread_min``/``mu_thread_max``
+    without also populating ``mu_bearing_min``/``mu_bearing_max``, or
+    vice-versa. The tightening-torque decomposition
+    (``backend.engineering_core.torque.tightening_torque_nm``)
+    requires both components together; a thread-only or bearing-only
+    value cannot drive that calculation and must not be mistaken for
+    a complete split-friction record."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        mu_thread_min, mu_thread_max = record.get("mu_thread_min"), record.get("mu_thread_max")
+        mu_bearing_min = record.get("mu_bearing_min")
+        mu_bearing_max = record.get("mu_bearing_max")
+        thread_set = mu_thread_min is not None or mu_thread_max is not None
+        bearing_set = mu_bearing_min is not None or mu_bearing_max is not None
+        if thread_set != bearing_set:
+            issues.append(
+                ValidationIssue(
+                    code="friction_one_sided_thread_bearing",
+                    message=(
+                        "mu_thread set without mu_bearing" if thread_set
+                        else "mu_bearing set without mu_thread"
+                    ),
+                    record_index=index,
+                    field="mu_thread_min" if thread_set else "mu_bearing_min",
+                )
+            )
+    return issues
+
+
+def find_friction_coefficient_missing_source(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag a record that sets any Faz 2.6.0 engineering coefficient
+    field (see ``_SOURCE_REQUIRED_COEFFICIENT_FIELDS``) without a
+    non-empty ``source_reference``. Enforces
+    docs/12_CLAUDE_CONTEXT.md SS4 ("do not invent coefficients") at the
+    data-quality layer: every populated engineering value must be
+    traceable to a cited source."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        has_coefficient = any(
+            record.get(name) is not None for name in _SOURCE_REQUIRED_COEFFICIENT_FIELDS
+        )
+        if has_coefficient and not record.get("source_reference"):
+            issues.append(
+                ValidationIssue(
+                    code="friction_coefficient_missing_source",
+                    message="engineering coefficient set without source_reference",
+                    record_index=index,
+                    field="source_reference",
+                )
+            )
+    return issues
+
+
+def find_restricted_legacy_missing_warning(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag a ``status = restricted_legacy`` record with an empty
+    ``regulatory_warning`` (see ``Status.RESTRICTED_LEGACY``
+    docstring, ``backend.library.models``)."""
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        if record.get("status") == "restricted_legacy" and not record.get("regulatory_warning"):
+            issues.append(
+                ValidationIssue(
+                    code="restricted_legacy_missing_warning",
+                    message="status=restricted_legacy but regulatory_warning is empty",
+                    record_index=index,
+                    field="regulatory_warning",
+                )
+            )
+    return issues
+
+
+# ---------------------------------------------------------------------
+# Faz 2.6.2B: FrictionConditionRecord-specific checks (ADR-0010).
+# ---------------------------------------------------------------------
+
+#: Fields whose combination must be unique across
+#: ``FrictionConditionRecord`` records (item 5 of the Faz 2.6.2B
+#: directive) -- prevents two records claiming the same
+#: coating+lubricant+condition+source as if they were different data.
+_FRICTION_CONDITION_UNIQUENESS_FIELDS = (
+    "coating_id", "lubricant_id", "surface_condition",
+    "thread_condition", "bearing_condition", "source_reference",
+)
+
+
+def find_duplicate_friction_condition_combination(
+    records: Sequence[Dict[str, Any]],
+) -> List[ValidationIssue]:
+    """Flag a ``FrictionConditionRecord`` whose
+    (coating_id, lubricant_id, surface_condition, thread_condition,
+    bearing_condition, source_reference) combination repeats an
+    earlier record's. The first occurrence of a combination is not
+    flagged; every subsequent one is."""
+    issues: List[ValidationIssue] = []
+    seen: Dict[tuple, int] = {}
+    for index, record in enumerate(records):
+        key = tuple(record.get(name, "") for name in _FRICTION_CONDITION_UNIQUENESS_FIELDS)
+        if key in seen:
+            issues.append(
+                ValidationIssue(
+                    code="duplicate_friction_condition_combination",
+                    message=(
+                        f"combination {key} duplicates record at index {seen[key]}"
+                    ),
+                    record_index=index,
+                    field="coating_id",
+                )
+            )
+        else:
+            seen[key] = index
+    return issues
+
+
+def find_dangling_coating_references(
+    records: Sequence[Dict[str, Any]], known_coating_ids: Sequence[str],
+) -> List[ValidationIssue]:
+    """Flag a ``FrictionConditionRecord`` whose non-empty
+    ``coating_id`` is not in ``known_coating_ids`` (the live
+    ``CoatingRecord`` id set). An empty ``coating_id`` is not flagged
+    -- it means "no coating referenced", a valid state (ADR-0010)."""
+    known = set(known_coating_ids)
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        coating_id = record.get("coating_id") or ""
+        if coating_id and coating_id not in known:
+            issues.append(
+                ValidationIssue(
+                    code="dangling_coating_reference",
+                    message=f"coating_id={coating_id!r} not found in coating library",
+                    record_index=index,
+                    field="coating_id",
+                )
+            )
+    return issues
+
+
+def find_dangling_lubricant_references(
+    records: Sequence[Dict[str, Any]], known_lubricant_ids: Sequence[str],
+) -> List[ValidationIssue]:
+    """Flag a ``FrictionConditionRecord`` whose non-empty
+    ``lubricant_id`` is not in ``known_lubricant_ids`` (the live
+    ``LubricationRecord`` id set). An empty ``lubricant_id`` is not
+    flagged -- it means "no lubricant referenced", a valid state
+    (ADR-0010)."""
+    known = set(known_lubricant_ids)
+    issues: List[ValidationIssue] = []
+    for index, record in enumerate(records):
+        lubricant_id = record.get("lubricant_id") or ""
+        if lubricant_id and lubricant_id not in known:
+            issues.append(
+                ValidationIssue(
+                    code="dangling_lubricant_reference",
+                    message=f"lubricant_id={lubricant_id!r} not found in lubrication library",
+                    record_index=index,
+                    field="lubricant_id",
+                )
+            )
+    return issues
+
+
+def validate_lubrication_library(records: Sequence[Dict[str, Any]]) -> ValidationReport:
+    """Run every Faz 2.6.1 Friction Condition (Lubrication subsection)
+    check over ``records`` in one pass, reusing the pre-existing
+    generic checks alongside the new friction-specific ones above."""
+    issues: List[ValidationIssue] = []
+    issues.extend(find_duplicate_ids(records))
+    issues.extend(find_friction_min_max_violations(records))
+    issues.extend(find_friction_negative_values(records))
+    issues.extend(find_friction_asymmetric_min_max(records))
+    issues.extend(find_friction_one_sided_thread_bearing(records))
+    issues.extend(find_friction_coefficient_missing_source(records))
+    issues.extend(find_restricted_legacy_missing_warning(records))
+    subject = "Friction Condition Module - Lubrication Subsection (Faz 2.6.1)"
+    return ValidationReport(subject=subject, issues=issues)
+
+
+def validate_friction_condition_library(
+    records: Sequence[Dict[str, Any]],
+) -> ValidationReport:
+    """Run the Faz 2.6.2A Friction Condition Library checks over
+    ``records`` in one pass. Deliberately reuses the exact same
+    friction-specific checks as ``validate_lubrication_library`` above
+    (they operate generically on field names present in a raw dict,
+    not on a specific Pydantic class -- ``FrictionConditionRecord``
+    and ``LubricationRecord`` share the same friction/nut-factor/
+    scatter field names by design, see ADR-0010). Currently always
+    returns an empty-issues report against the live data file -- it
+    has no records yet (Faz 2.6.2A is schema/decision only; see
+    ``friction_condition_library.py``)."""
+    issues: List[ValidationIssue] = []
+    issues.extend(find_duplicate_ids(records))
+    issues.extend(find_friction_min_max_violations(records))
+    issues.extend(find_friction_negative_values(records))
+    issues.extend(find_friction_asymmetric_min_max(records))
+    issues.extend(find_friction_one_sided_thread_bearing(records))
+    issues.extend(find_friction_coefficient_missing_source(records))
+    issues.extend(find_restricted_legacy_missing_warning(records))
+    issues.extend(find_duplicate_friction_condition_combination(records))
+    subject = "Friction Condition Library (Faz 2.6.2A/B)"
+    return ValidationReport(subject=subject, issues=issues)

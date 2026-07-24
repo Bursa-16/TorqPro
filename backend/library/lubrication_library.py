@@ -4,6 +4,15 @@ Metadata-only definition for lubricant specifications and validated
 friction conditions (thread/bearing distributions, counter-surface,
 speed, temperature and reuse context). No records are migrated in
 this phase.
+
+Naming note (Faz 2.6 rename, 2026-07-23): this file and the
+``LUBRICATION_LIBRARY`` name refer specifically to lubricant data, so
+they are kept unchanged per the Faz 2.6 rename's own exception for
+lubricant-specific references. At the product/architecture level this
+library is the Lubrication subsection of the broader Friction
+Condition module (surface condition, coatings, thread/bearing
+friction, engineering warnings) -- see ADR-0009 and
+docs/09_LIBRARY_SPECIFICATION.md.
 """
 
 from __future__ import annotations
