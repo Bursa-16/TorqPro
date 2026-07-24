@@ -38,6 +38,9 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .logo{font-size:18px;font-weight:700;color:var(--accent2);letter-spacing:-.5px}
 .logo span{color:var(--text3);font-weight:400;font-size:13px;margin-left:6px}
 .topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.lang-switch{display:flex;border:1px solid var(--border2);border-radius:20px;overflow:hidden}
+.lang-btn{border:none;background:transparent;color:var(--text2);font-size:11px;font-weight:600;padding:4px 10px;cursor:pointer;letter-spacing:.4px}
+.lang-btn.active{background:var(--accent);color:#fff}
 .main{display:flex;flex:1;overflow:hidden}
 .sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);padding:12px;flex-shrink:0;overflow-y:auto;display:flex;flex-direction:column}
 .content{flex:1;overflow-y:auto;padding:18px}
@@ -380,6 +383,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <button class="nav-btn" onclick="showNav('rapor',this)">📄 Rapor</button>
   </div>
   <div class="topbar-right" id="topbarRight">
+    <div class="lang-switch" role="group" aria-label="Language / Dil">
+      <button type="button" class="lang-btn" data-lang="tr" onclick="setLanguage('tr')">TR</button>
+      <button type="button" class="lang-btn" data-lang="en" onclick="setLanguage('en')">EN</button>
+    </div>
     <span class="pill pill-ok">● Sistem Aktif</span>
   </div>
 </div>
@@ -403,7 +410,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="sidebar-section">
     <div class="sidebar-label">Referans</div>
     <div class="sidebar-item" onclick="showPage('oem')"><span class="sidebar-icon">🔍</span> OEM Norm Sorgu</div>
-    <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> Friction Condition</div>
+    <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> <span data-i18n="sidebar.frictioncondition">Friction Condition</span></div>
     <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> Norm Rehberi</div>
     <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> FMEA Kataloğu</div>
   </div>
@@ -821,29 +828,29 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- FRICTION CONDITION -->
 <div id="page-frictioncondition" class="page">
   <div class="section-header"><span class="section-icon">🧪</span><div>
-    <div class="section-title">Friction Condition</div>
-    <div class="section-sub">Combination-dependent friction reference data · Lubrication is a subsection of this module</div>
+    <div class="section-title" data-i18n="fc.page_title">Friction Condition</div>
+    <div class="section-sub" data-i18n="fc.page_subtitle">Combination-dependent friction reference data · Lubrication is a subsection of this module</div>
   </div></div>
-  <div class="alert alert-info" id="fc-scope-note">
+  <div class="alert alert-info" id="fc-scope-note" data-i18n="fc.banner">
     This workspace shows already-verified reference friction data and the engineering limits of what can be
     calculated from it today. It does not recommend a lubricant, coating, or torque value.
   </div>
 
   <div class="card">
-    <div class="card-title">Condition Selection</div>
-    <div class="card-sub">Select a Friction Condition record to see its Overview, Friction Range, Readiness, Engineering Warnings, Source &amp; Traceability and Report Preview.</div>
+    <div class="card-title" data-i18n="fc.condition_selection_title">Condition Selection</div>
+    <div class="card-sub" data-i18n="fc.condition_selection_sub">Select a Friction Condition record to see its Overview, Friction Range, Readiness, Engineering Warnings, Source &amp; Traceability and Report Preview.</div>
     <div class="fc-toolbar">
-      <input class="form-input" id="fc-search" placeholder="Search by ID, coating or lubricant reference..." oninput="renderFrictionConditionList()">
+      <input class="form-input" id="fc-search" data-i18n-placeholder="fc.search_placeholder" placeholder="Search by ID, coating or lubricant reference..." oninput="renderFrictionConditionList()">
       <select class="form-select" id="fc-filter-group" onchange="renderFrictionConditionList()">
-        <option value="">All groups</option>
-        <option value="coating_based">Coating-based conditions</option>
-        <option value="lubricant_based">Lubricant-based conditions</option>
+        <option value="" data-i18n="fc.filter_group_all">All groups</option>
+        <option value="coating_based" data-i18n="fc.filter_group_coating">Coating-based conditions</option>
+        <option value="lubricant_based" data-i18n="fc.filter_group_lubricant">Lubricant-based conditions</option>
       </select>
       <select class="form-select" id="fc-filter-verification" onchange="renderFrictionConditionList()">
-        <option value="">Any verification status</option>
+        <option value="" data-i18n="fc.filter_verification_any">Any verification status</option>
       </select>
       <select class="form-select" id="fc-filter-source-type" onchange="renderFrictionConditionList()">
-        <option value="">Any source type</option>
+        <option value="" data-i18n="fc.filter_source_any">Any source type</option>
       </select>
     </div>
     <div id="fc-list-status" class="fc-muted"></div>
@@ -853,51 +860,51 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div id="fc-workspace" style="display:none">
     <div class="grid2">
       <div class="card">
-        <div class="card-title">Overview</div>
+        <div class="card-title" data-i18n="fc.overview_title">Overview</div>
         <div id="fc-overview"></div>
       </div>
       <div class="card">
-        <div class="card-title">Overall Friction Range</div>
+        <div class="card-title" data-i18n="fc.range_title">Overall Friction Range</div>
         <div id="fc-range-viz"></div>
       </div>
     </div>
 
     <div class="grid2">
       <div class="card">
-        <div class="card-title">Recommendation Readiness</div>
-        <div class="card-sub" style="margin-bottom:8px">Selecting an intended use does not change the data or unlock a capability -- it only adds a gap warning below if the requested use exceeds what the current data supports.</div>
+        <div class="card-title" data-i18n="fc.readiness_title">Recommendation Readiness</div>
+        <div class="card-sub" style="margin-bottom:8px" data-i18n="fc.intended_use_card_sub">Selecting an intended use does not change the data or unlock a capability -- it only adds a gap warning below if the requested use exceeds what the current data supports.</div>
         <select class="form-select" id="fc-intended-use" style="margin-bottom:10px" onchange="loadFrictionConditionSelection()">
-          <option value="">No intended use selected</option>
-          <option value="reference_comparison">Reference comparison</option>
-          <option value="engineering_calculation">Engineering calculation</option>
-          <option value="production_release">Production release</option>
+          <option value="" data-i18n="fc.intended_use_none">No intended use selected</option>
+          <option value="reference_comparison" data-i18n="fc.intended_use_reference_comparison">Reference comparison</option>
+          <option value="engineering_calculation" data-i18n="fc.intended_use_engineering_calculation">Engineering calculation</option>
+          <option value="production_release" data-i18n="fc.intended_use_production_release">Production release</option>
         </select>
         <div id="fc-readiness"></div>
 
       </div>
       <div class="card">
-        <div class="card-title">Engineering Warnings</div>
+        <div class="card-title" data-i18n="fc.warnings_title">Engineering Warnings</div>
         <div id="fc-warnings"></div>
       </div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <div><div class="card-title" style="margin-bottom:0">Comparison</div>
-          <div class="card-sub">Compare against a second Friction Condition. Comparisons are descriptive only.</div></div>
+        <div><div class="card-title" style="margin-bottom:0" data-i18n="fc.comparison_title">Comparison</div>
+          <div class="card-sub" data-i18n="fc.comparison_sub">Compare against a second Friction Condition. Comparisons are descriptive only.</div></div>
       </div>
       <div class="fc-toolbar">
-        <select class="form-select" id="fc-compare-select"><option value="">Select a condition to compare...</option></select>
-        <button class="btn btn-secondary btn-sm" onclick="clearFrictionComparison()">Clear</button>
+        <select class="form-select" id="fc-compare-select"><option value="" data-i18n="fc.compare_select_placeholder">Select a condition to compare...</option></select>
+        <button class="btn btn-secondary btn-sm" onclick="clearFrictionComparison()" data-i18n="fc.compare_clear">Clear</button>
       </div>
       <div id="fc-comparison"></div>
     </div>
 
     <div class="card">
       <div class="card-header">
-        <div><div class="card-title" style="margin-bottom:0">Source &amp; Traceability / Report Preview</div>
-          <div class="card-sub">JSON-verifiable report section (no PDF generated in this phase).</div></div>
-        <button class="btn btn-secondary btn-sm" onclick="downloadFrictionConditionReportJSON()">⬇ Download JSON</button>
+        <div><div class="card-title" style="margin-bottom:0" data-i18n="fc.source_title">Source &amp; Traceability / Report Preview</div>
+          <div class="card-sub" data-i18n="fc.source_sub">JSON-verifiable report section (no PDF generated in this phase).</div></div>
+        <button class="btn btn-secondary btn-sm" onclick="downloadFrictionConditionReportJSON()" data-i18n="fc.download_json">⬇ Download JSON</button>
       </div>
       <div id="fc-report"></div>
     </div>
@@ -1343,6 +1350,330 @@ let AUTH_TOKEN = sessionStorage.getItem('torqpro_token') || '';
 let CURRENT_USER = sessionStorage.getItem('torqpro_user') || '';
 let CURRENT_ROLE = sessionStorage.getItem('torqpro_role') || '';
 
+// ========== I18N FOUNDATION (Faz 2.6.8) ==========
+// Lightweight, dependency-free TR/EN dictionary layer for the
+// single-file frontend -- no framework, no build step. First
+// rollout: global language selector + Friction Condition module only
+// (the rest of TorqPro's UI is unaffected and stays as-is). Reusable
+// for future modules: add a namespace to I18N.en/I18N.tr and either
+// a data-i18n[-placeholder] attribute (static markup) or a t('key')
+// call at the render site (dynamically-built content).
+//
+// I18N holds structural UI copy (titles, labels, messages).
+// FC_ENUM_LABELS holds translations for the small set of known
+// backend vocabulary values (verification_status, source_type,
+// friction_model, recommendation levels, capabilities, comparison
+// relations, group classification). Backend enum *keys* (e.g.
+// "reference_only") are never changed -- only their displayed label.
+// Any value not present in FC_ENUM_LABELS falls back to fcFmtLabel()
+// (underscore-to-space), exactly as before this module existed, so
+// unanticipated/free-text backend values never render blank.
+const I18N = {
+  en: {
+    'sidebar.frictioncondition': 'Friction Condition',
+    'fc.page_title': 'Friction Condition',
+    'fc.page_subtitle': 'Combination-dependent friction reference data · Lubrication is a subsection of this module',
+    'fc.banner': 'This workspace shows already-verified reference friction data and the engineering limits of what can be calculated from it today. It does not recommend a lubricant, coating, or torque value.',
+    'fc.condition_selection_title': 'Condition Selection',
+    'fc.condition_selection_sub': 'Select a Friction Condition record to see its Overview, Friction Range, Readiness, Engineering Warnings, Source & Traceability and Report Preview.',
+    'fc.search_placeholder': 'Search by ID, coating or lubricant reference...',
+    'fc.filter_group_all': 'All groups',
+    'fc.filter_group_coating': 'Coating-based conditions',
+    'fc.filter_group_lubricant': 'Lubricant-based conditions',
+    'fc.filter_verification_any': 'Any verification status',
+    'fc.filter_source_any': 'Any source type',
+    'fc.list_loading': 'Loading friction conditions...',
+    'fc.list_empty_none': 'No friction conditions are available yet.',
+    'fc.list_empty_filtered': 'No friction conditions match the current filters.',
+    'fc.list_error_prefix': 'Could not load friction conditions: ',
+    'fc.range_unavailable': 'range unavailable',
+    'fc.card_range_prefix': 'Range: ',
+    'fc.card_coating_prefix': 'Coating: ',
+    'fc.card_lubricant_prefix': 'Lubricant: ',
+    'fc.card_unclassified': 'Unclassified',
+    'fc.card_unknown_status': 'unknown status',
+    'fc.overview_title': 'Overview',
+    'fc.range_title': 'Overall Friction Range',
+    'fc.readiness_title': 'Recommendation Readiness',
+    'fc.intended_use_card_sub': 'Selecting an intended use does not change the data or unlock a capability -- it only adds a gap warning below if the requested use exceeds what the current data supports.',
+    'fc.intended_use_none': 'No intended use selected',
+    'fc.intended_use_reference_comparison': 'Reference comparison',
+    'fc.intended_use_engineering_calculation': 'Engineering calculation',
+    'fc.intended_use_production_release': 'Production release',
+    'fc.warnings_title': 'Engineering Warnings',
+    'fc.comparison_title': 'Comparison',
+    'fc.comparison_sub': 'Compare against a second Friction Condition. Comparisons are descriptive only.',
+    'fc.compare_select_placeholder': 'Select a condition to compare...',
+    'fc.compare_clear': 'Clear',
+    'fc.source_title': 'Source & Traceability / Report Preview',
+    'fc.source_sub': 'JSON-verifiable report section (no PDF generated in this phase).',
+    'fc.download_json': '⬇ Download JSON',
+    'fc.loading': 'Loading...',
+    'fc.error_could_not_load_condition': 'Could not load this friction condition: ',
+    'fc.alert_no_report': 'No report loaded yet.',
+    'fc.field.id': 'Friction condition ID',
+    'fc.field.coating': 'Coating',
+    'fc.field.lubricant': 'Lubricant',
+    'fc.field.friction_model': 'Friction model',
+    'fc.field.overall_range': 'Overall friction range',
+    'fc.field.nominal_estimate': 'Nominal midpoint estimate',
+    'fc.field.verification_status': 'Verification status',
+    'fc.field.source_reference': 'Source reference',
+    'fc.field.applicability': 'Applicability',
+    'fc.overview_nominal_note': 'Arithmetic midpoint of reference range — not a measured nominal value.',
+    'fc.range_no_data': 'No overall friction coefficient range recorded.',
+    'fc.range_note': 'Descriptive reference range only — not a torque split, preload, or thread/bearing decomposition.',
+    'fc.field.calc_mode': 'Calculation mode',
+    'fc.field.readiness_level': 'Recommendation readiness level',
+    'fc.field.decomposition_available': 'Decomposition available',
+    'fc.yes': 'Yes',
+    'fc.no': 'No',
+    'fc.available_capabilities': 'Available capabilities',
+    'fc.blocked_capabilities': 'Blocked capabilities',
+    'fc.none': 'None',
+    'fc.blocking_reasons': 'Blocking reasons',
+    'fc.readiness_footer_note': 'Comparison available · Torque decomposition unavailable · Tightening recommendation unavailable · Production approval unavailable',
+    'fc.warnings_none': 'No warnings.',
+    'fc.field.condition_a': 'Condition A',
+    'fc.field.condition_b': 'Condition B',
+    'fc.field.range_relation': 'Range relation',
+    'fc.field.width_relation': 'Width relation',
+    'fc.field.source_classification': 'Source classification',
+    'fc.self_comparison': 'Self-comparison',
+    'fc.comparison_select_prompt': 'Select a second condition above to compare.',
+    'fc.field.source_type': 'Source type',
+    'fc.field.source_page': 'Source page/table',
+    'fc.field.engineering_notes': 'Engineering notes',
+    'fc.field.record_checksum': 'Record checksum',
+    'fc.field.data_version': 'Data version',
+    'fc.field.report_generated_at': 'Report generated at',
+    'fc.field.application_version': 'Application version',
+  },
+  tr: {
+    'sidebar.frictioncondition': 'Yüzey Sürtünme Koşulu',
+    'fc.page_title': 'Yüzey Sürtünme Koşulu',
+    'fc.page_subtitle': 'Kaplama, yağlama ve temas yüzeylerine bağlı sürtünme referans verileri',
+    'fc.banner': 'Bu çalışma alanı, halihazırda doğrulanmış referans sürtünme verilerini ve bugün bu verilerden hesaplanabilecek mühendislik sınırlarını gösterir. Yağlayıcı, kaplama veya tork değeri önermez.',
+    'fc.condition_selection_title': 'Koşul Seçimi',
+    'fc.condition_selection_sub': 'Genel Bakış, Sürtünme Aralığı, Hazırlık Durumu, Mühendislik Uyarıları, Kaynak ve İzlenebilirlik ile Rapor Önizlemesini görmek için bir Yüzey Sürtünme Koşulu kaydı seçin.',
+    'fc.search_placeholder': 'Kimlik, kaplama veya yağlayıcı referansına göre ara...',
+    'fc.filter_group_all': 'Tüm gruplar',
+    'fc.filter_group_coating': 'Kaplama tabanlı koşullar',
+    'fc.filter_group_lubricant': 'Yağlayıcı tabanlı koşullar',
+    'fc.filter_verification_any': 'Herhangi bir doğrulama durumu',
+    'fc.filter_source_any': 'Herhangi bir kaynak türü',
+    'fc.list_loading': 'Sürtünme koşulları yükleniyor...',
+    'fc.list_empty_none': 'Henüz kullanılabilir sürtünme koşulu yok.',
+    'fc.list_empty_filtered': 'Geçerli filtrelerle eşleşen sürtünme koşulu yok.',
+    'fc.list_error_prefix': 'Sürtünme koşulları yüklenemedi: ',
+    'fc.range_unavailable': 'aralık mevcut değil',
+    'fc.card_range_prefix': 'Aralık: ',
+    'fc.card_coating_prefix': 'Kaplama: ',
+    'fc.card_lubricant_prefix': 'Yağlayıcı: ',
+    'fc.card_unclassified': 'Sınıflandırılmamış',
+    'fc.card_unknown_status': 'bilinmeyen durum',
+    'fc.overview_title': 'Genel Bakış',
+    'fc.range_title': 'Genel Sürtünme Aralığı',
+    'fc.readiness_title': 'Öneri Hazırlık Durumu',
+    'fc.intended_use_card_sub': 'Kullanım amacı seçmek veriyi değiştirmez veya bir yetkinliği açmaz -- yalnızca istenen kullanım, mevcut verinin desteklediğinden fazlaysa aşağıda bir eksiklik uyarısı ekler.',
+    'fc.intended_use_none': 'Kullanım amacı seçilmedi',
+    'fc.intended_use_reference_comparison': 'Referans karşılaştırması',
+    'fc.intended_use_engineering_calculation': 'Mühendislik hesaplaması',
+    'fc.intended_use_production_release': 'Seri üretim onayı',
+    'fc.warnings_title': 'Mühendislik Uyarıları',
+    'fc.comparison_title': 'Karşılaştırma',
+    'fc.comparison_sub': 'İkinci bir Yüzey Sürtünme Koşulu ile karşılaştırın. Karşılaştırmalar yalnızca açıklayıcıdır.',
+    'fc.compare_select_placeholder': 'Karşılaştırmak için bir koşul seçin...',
+    'fc.compare_clear': 'Temizle',
+    'fc.source_title': 'Kaynak ve İzlenebilirlik / Rapor Önizleme',
+    'fc.source_sub': 'JSON ile doğrulanabilir rapor bölümü (bu aşamada PDF üretilmez).',
+    'fc.download_json': '⬇ JSON İndir',
+    'fc.loading': 'Yükleniyor...',
+    'fc.error_could_not_load_condition': 'Bu sürtünme koşulu yüklenemedi: ',
+    'fc.alert_no_report': 'Henüz yüklenmiş bir rapor yok.',
+    'fc.field.id': 'Sürtünme koşulu kimliği',
+    'fc.field.coating': 'Kaplama',
+    'fc.field.lubricant': 'Yağlayıcı',
+    'fc.field.friction_model': 'Sürtünme modeli',
+    'fc.field.overall_range': 'Genel sürtünme aralığı',
+    'fc.field.nominal_estimate': 'Nominal orta nokta tahmini',
+    'fc.field.verification_status': 'Doğrulama durumu',
+    'fc.field.source_reference': 'Kaynak referansı',
+    'fc.field.applicability': 'Uygulanabilirlik',
+    'fc.overview_nominal_note': 'Referans aralığının aritmetik orta noktasıdır — ölçülmüş bir nominal değer değildir.',
+    'fc.range_no_data': 'Kayıtlı genel sürtünme katsayısı aralığı yok.',
+    'fc.range_note': 'Yalnızca açıklayıcı referans aralığıdır — tork ayrımı, ön yük veya diş/yatak ayrıştırması değildir.',
+    'fc.field.calc_mode': 'Hesaplama modu',
+    'fc.field.readiness_level': 'Öneri hazırlık seviyesi',
+    'fc.field.decomposition_available': 'Ayrıştırma mevcut',
+    'fc.yes': 'Evet',
+    'fc.no': 'Hayır',
+    'fc.available_capabilities': 'Kullanılabilir yetkinlikler',
+    'fc.blocked_capabilities': 'Engellenen yetkinlikler',
+    'fc.none': 'Yok',
+    'fc.blocking_reasons': 'Engelleme nedenleri',
+    'fc.readiness_footer_note': 'Karşılaştırma mevcut · Tork ayrıştırması mevcut değil · Sıkma önerisi mevcut değil · Seri üretim onayı mevcut değil',
+    'fc.warnings_none': 'Uyarı yok.',
+    'fc.field.condition_a': 'Koşul A',
+    'fc.field.condition_b': 'Koşul B',
+    'fc.field.range_relation': 'Aralık ilişkisi',
+    'fc.field.width_relation': 'Genişlik ilişkisi',
+    'fc.field.source_classification': 'Kaynak sınıflandırması',
+    'fc.self_comparison': 'Kendisiyle karşılaştırma',
+    'fc.comparison_select_prompt': 'Karşılaştırmak için yukarıdan ikinci bir koşul seçin.',
+    'fc.field.source_type': 'Kaynak türü',
+    'fc.field.source_page': 'Kaynak sayfası/tablosu',
+    'fc.field.engineering_notes': 'Mühendislik notları',
+    'fc.field.record_checksum': 'Kayıt sağlama toplamı',
+    'fc.field.data_version': 'Veri sürümü',
+    'fc.field.report_generated_at': 'Rapor oluşturulma zamanı',
+    'fc.field.application_version': 'Uygulama sürümü',
+  },
+};
+
+// Known backend vocabulary -> display label. Backend field values
+// (the dictionary keys below) are never modified -- only how they
+// are shown. Unlisted values fall back to fcFmtLabel() in fcLabel().
+const FC_ENUM_LABELS = {
+  en: {
+    reference_only: 'Reference Only',
+    unverified: 'Unverified',
+    verified: 'Verified',
+    restricted_legacy: 'Restricted / Legacy',
+    standard: 'Standard',
+    combined_or_unspecified: 'Combined or unspecified',
+    mode_a_combined_estimate: 'Mode A — combined estimate',
+    mode_b_separated_model: 'Mode B — separated model',
+    blocked: 'Blocked',
+    textbook: 'Textbook',
+    warnings_only: 'Warnings only',
+    comparison_only: 'Comparison only',
+    engineering_recommendation_ready: 'Engineering recommendation ready',
+    production_recommendation_ready: 'Production recommendation ready',
+    reference_comparison: 'Reference comparison',
+    torque_sensitivity: 'Torque sensitivity',
+    torque_recommendation: 'Torque recommendation',
+    lubricant_recommendation: 'Lubricant recommendation',
+    coating_recommendation: 'Coating recommendation',
+    production_approval: 'Production approval',
+    coating_based: 'Coating-based',
+    lubricant_based: 'Lubricant-based',
+    coating_and_lubricant_based: 'Coating and lubricant-based',
+    unclassified: 'Unclassified',
+    not_comparable: 'Not comparable',
+    identical: 'Identical',
+    a_lower: 'A lower',
+    b_lower: 'B lower',
+    overlapping: 'Overlapping',
+    equal_width: 'Equal width',
+    a_narrower: 'A narrower',
+    b_narrower: 'B narrower',
+  },
+  tr: {
+    reference_only: 'Yalnızca Referans',
+    unverified: 'Doğrulanmamış',
+    verified: 'Doğrulanmış',
+    restricted_legacy: 'Kısıtlı / Eski',
+    standard: 'Standart',
+    combined_or_unspecified: 'Birleşik veya belirtilmemiş',
+    mode_a_combined_estimate: 'Mod A — birleşik tahmin',
+    mode_b_separated_model: 'Mod B — ayrıştırılmış model',
+    blocked: 'Engellendi',
+    textbook: 'Ders kitabı',
+    warnings_only: 'Yalnızca uyarılar',
+    comparison_only: 'Yalnızca karşılaştırma',
+    engineering_recommendation_ready: 'Mühendislik önerisine hazır',
+    production_recommendation_ready: 'Seri üretim önerisine hazır',
+    reference_comparison: 'Referans karşılaştırması',
+    torque_sensitivity: 'Tork duyarlılığı',
+    torque_recommendation: 'Tork önerisi',
+    lubricant_recommendation: 'Yağlayıcı önerisi',
+    coating_recommendation: 'Kaplama önerisi',
+    production_approval: 'Seri üretim onayı',
+    coating_based: 'Kaplama tabanlı',
+    lubricant_based: 'Yağlayıcı tabanlı',
+    coating_and_lubricant_based: 'Kaplama ve yağlayıcı tabanlı',
+    unclassified: 'Sınıflandırılmamış',
+    not_comparable: 'Karşılaştırılamaz',
+    identical: 'Aynı',
+    a_lower: 'A daha düşük',
+    b_lower: 'B daha düşük',
+    overlapping: 'Örtüşüyor',
+    equal_width: 'Eşit genişlik',
+    a_narrower: 'A daha dar',
+    b_narrower: 'B daha dar',
+  },
+};
+
+let CURRENT_LANG = localStorage.getItem('torqpro_lang') || 'tr';
+if (!I18N[CURRENT_LANG]) CURRENT_LANG = 'tr';
+
+function t(key) {
+  return (I18N[CURRENT_LANG] && I18N[CURRENT_LANG][key]) || I18N.en[key] || key;
+}
+
+// Translates a known backend enum/status value for display.
+// fcFmtLabel (defined later in the Friction Condition section) is
+// the pre-i18n fallback formatter (underscore -> space); referencing
+// it here is safe because both are plain function declarations
+// (hoisted) and fcLabel is only ever invoked after the full script
+// has run.
+function fcLabel(value) {
+  if (value === null || value === undefined || value === '') return '—';
+  const dict = FC_ENUM_LABELS[CURRENT_LANG] || {};
+  if (dict[value]) return dict[value];
+  if (FC_ENUM_LABELS.en[value]) return FC_ENUM_LABELS.en[value];
+  return fcFmtLabel(value);
+}
+
+function applyStaticTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {
+    el.placeholder = t(el.getAttribute('data-i18n-placeholder'));
+  });
+  document.querySelectorAll('.lang-btn').forEach(function (b) {
+    b.classList.toggle('active', b.getAttribute('data-lang') === CURRENT_LANG);
+  });
+}
+
+// Switches the active language at runtime -- no page reload, no
+// re-fetch. Static markup is retranslated via data-i18n attributes;
+// already-loaded Friction Condition dynamic content (list + selected
+// report, if any) is re-rendered in place from state already held in
+// memory (FC_LIST / FC_LAST_REPORT), not re-requested from the API.
+function setLanguage(lang) {
+  if (!I18N[lang]) return;
+  CURRENT_LANG = lang;
+  localStorage.setItem('torqpro_lang', lang);
+  applyStaticTranslations();
+  if (typeof fcRenderList === 'function' && Array.isArray(FC_LIST)) {
+    const verifSel = document.getElementById('fc-filter-verification');
+    const srcSel = document.getElementById('fc-filter-source-type');
+    if (verifSel && srcSel) {
+      const verifValue = verifSel.value;
+      const srcValue = srcSel.value;
+      fcPopulateFilters();
+      verifSel.value = verifValue;
+      srcSel.value = srcValue;
+    }
+    fcRenderList();
+    const statusEl = document.getElementById('fc-list-status');
+    if (statusEl && statusEl.textContent) statusEl.textContent = fcCountLabel(FC_LIST.length);
+  }
+  if (typeof FC_LAST_REPORT !== 'undefined' && FC_LAST_REPORT) {
+    fcRenderOverview(FC_LAST_REPORT);
+    fcRenderRangeViz(FC_LAST_REPORT);
+    fcRenderReadiness(FC_LAST_REPORT);
+    fcRenderWarnings(FC_LAST_REPORT);
+    fcRenderComparison(FC_LAST_REPORT);
+    fcRenderReport(FC_LAST_REPORT);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', applyStaticTranslations);
+
 async function apiRequest(path, options={}) {
   const headers = {'Content-Type':'application/json', ...(options.headers||{})};
   if (AUTH_TOKEN) headers['Authorization'] = 'Bearer ' + AUTH_TOKEN;
@@ -1515,20 +1846,29 @@ async function loadFrictionConditionWorkspace() {
   const statusEl = document.getElementById('fc-list-status');
   const listEl = document.getElementById('fc-list');
   document.getElementById('fc-workspace').style.display = 'none';
-  statusEl.textContent = 'Loading friction conditions...';
+  statusEl.textContent = t('fc.list_loading');
   listEl.innerHTML = '';
   try {
     FC_LIST = await apiRequest('/api/friction-condition');
     fcPopulateFilters();
     fcRenderList();
-    statusEl.textContent = FC_LIST.length + ' friction condition(s) available.';
+    statusEl.textContent = fcCountLabel(FC_LIST.length);
     if (!FC_LIST.length) {
-      listEl.innerHTML = '<div class="fc-empty">No friction conditions are available yet.</div>';
+      listEl.innerHTML = '<div class="fc-empty">' + t('fc.list_empty_none') + '</div>';
     }
   } catch (e) {
     statusEl.textContent = '';
-    listEl.innerHTML = '<div class="fc-empty">Could not load friction conditions: ' + fcEsc(e.message) + '</div>';
+    listEl.innerHTML = '<div class="fc-empty">' + t('fc.list_error_prefix') + fcEsc(e.message) + '</div>';
   }
+}
+
+// Small count sentence -- kept as a dedicated helper (rather than a
+// dictionary entry) because it interpolates a number; EN/TR word
+// order around the number differs.
+function fcCountLabel(n) {
+  return CURRENT_LANG === 'tr'
+    ? n + ' sürtünme koşulu mevcut.'
+    : n + ' friction condition(s) available.';
 }
 
 function fcPopulateFilters() {
@@ -1536,10 +1876,10 @@ function fcPopulateFilters() {
   const srcSel = document.getElementById('fc-filter-source-type');
   const verifValues = [...new Set(FC_LIST.map(r => r.verification_status).filter(Boolean))].sort();
   const srcValues = [...new Set(FC_LIST.map(r => r.source_type).filter(Boolean))].sort();
-  verifSel.innerHTML = '<option value="">Any verification status</option>' +
-    verifValues.map(v => '<option value="' + fcEscRaw(v) + '">' + fcEscRaw(v) + '</option>').join('');
-  srcSel.innerHTML = '<option value="">Any source type</option>' +
-    srcValues.map(v => '<option value="' + fcEscRaw(v) + '">' + fcEscRaw(v) + '</option>').join('');
+  verifSel.innerHTML = '<option value="">' + t('fc.filter_verification_any') + '</option>' +
+    verifValues.map(v => '<option value="' + fcEscRaw(v) + '">' + fcEscRaw(fcLabel(v)) + '</option>').join('');
+  srcSel.innerHTML = '<option value="">' + t('fc.filter_source_any') + '</option>' +
+    srcValues.map(v => '<option value="' + fcEscRaw(v) + '">' + fcEscRaw(fcLabel(v)) + '</option>').join('');
 }
 
 function fcGroupOf(r) {
@@ -1568,21 +1908,21 @@ function fcRenderList() {
 
   const listEl = document.getElementById('fc-list');
   if (!filtered.length) {
-    listEl.innerHTML = '<div class="fc-empty">No friction conditions match the current filters.</div>';
+    listEl.innerHTML = '<div class="fc-empty">' + t('fc.list_empty_filtered') + '</div>';
   } else {
     listEl.innerHTML = filtered.map(r => {
       const rangeText = (r.overall_friction_coefficient_min != null && r.overall_friction_coefficient_max != null)
         ? (Number(r.overall_friction_coefficient_min).toFixed(2) + ' – ' + Number(r.overall_friction_coefficient_max).toFixed(2))
-        : 'range unavailable';
-      const refLabel = r.coating_reference ? ('Coating: ' + fcEscRaw(r.coating_reference))
-        : (r.lubricant_reference ? ('Lubricant: ' + fcEscRaw(r.lubricant_reference)) : 'Unclassified');
+        : t('fc.range_unavailable');
+      const refLabel = r.coating_reference ? (t('fc.card_coating_prefix') + fcEscRaw(r.coating_reference))
+        : (r.lubricant_reference ? (t('fc.card_lubricant_prefix') + fcEscRaw(r.lubricant_reference)) : t('fc.card_unclassified'));
       const selectedCls = (r.id === FC_SELECTED_ID) ? ' selected' : '';
       const idAttr = fcEscRaw(r.id).replace(/'/g, "\\'");
       return '<div class="fc-condition-card' + selectedCls + '" tabindex="0" role="option" aria-selected="' + (r.id === FC_SELECTED_ID) + '"' +
         ' onclick="selectFrictionCondition(\'' + idAttr + '\')"' +
         ' onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();selectFrictionCondition(\'' + idAttr + '\');}">' +
         '<div class="fc-cc-id">' + fcEscRaw(r.id) + '</div>' +
-        '<div class="fc-cc-meta">' + refLabel + '<br>Range: ' + fcEscRaw(rangeText) + '<br>' + fcEscRaw(r.verification_status || 'unknown status') + '</div>' +
+        '<div class="fc-cc-meta">' + refLabel + '<br>' + t('fc.card_range_prefix') + fcEscRaw(rangeText) + '<br>' + fcEscRaw(r.verification_status ? fcLabel(r.verification_status) : t('fc.card_unknown_status')) + '</div>' +
       '</div>';
     }).join('');
   }
@@ -1593,10 +1933,10 @@ function fcRenderCompareOptions() {
   const sel = document.getElementById('fc-compare-select');
   if (!sel) return;
   const current = FC_COMPARE_ID || '';
-  sel.innerHTML = '<option value="">Select a condition to compare...</option>' +
+  sel.innerHTML = '<option value="">' + t('fc.compare_select_placeholder') + '</option>' +
     FC_LIST.filter(r => r.id !== FC_SELECTED_ID)
       .map(r => '<option value="' + fcEscRaw(r.id) + '">' + fcEscRaw(r.id) + '</option>').join('') +
-    (FC_SELECTED_ID ? '<option value="' + fcEscRaw(FC_SELECTED_ID) + '">' + fcEscRaw(FC_SELECTED_ID) + ' (self-comparison)</option>' : '');
+    (FC_SELECTED_ID ? '<option value="' + fcEscRaw(FC_SELECTED_ID) + '">' + fcEscRaw(FC_SELECTED_ID) + ' (' + t('fc.self_comparison') + ')</option>' : '');
   sel.value = current;
   sel.onchange = function () { FC_COMPARE_ID = sel.value || null; loadFrictionConditionSelection(); };
 }
@@ -1642,7 +1982,7 @@ async function loadFrictionConditionSelection() {
     fcRenderReport(report);
   } catch (e) {
     if (seq !== FC_REQUEST_SEQ) return;
-    const msg = '<div class="fc-empty">Could not load this friction condition: ' + fcEsc(e.message) + '</div>';
+    const msg = '<div class="fc-empty">' + t('fc.error_could_not_load_condition') + fcEsc(e.message) + '</div>';
     document.getElementById('fc-overview').innerHTML = msg;
     document.getElementById('fc-range-viz').innerHTML = '';
     document.getElementById('fc-readiness').innerHTML = '';
@@ -1653,23 +1993,23 @@ async function loadFrictionConditionSelection() {
 
 function fcRenderOverview(report, loading) {
   const el = document.getElementById('fc-overview');
-  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (loading) { el.innerHTML = '<div class="fc-muted">' + t('fc.loading') + '</div>'; return; }
   if (!report) { el.innerHTML = ''; return; }
   const rows = [
-    ['Friction condition ID', report.friction_condition_id],
-    ['Coating', report.coating_reference],
-    ['Lubricant', report.lubricant_reference],
-    ['Friction model', fcFmtLabel(report.friction_model)],
-    ['Overall friction range', fcFmtNum(report.overall_friction_coefficient_minimum) + ' – ' + fcFmtNum(report.overall_friction_coefficient_maximum)],
-    ['Nominal midpoint estimate', fcFmtNum(report.overall_friction_coefficient_nominal_estimate)],
-    ['Verification status', report.source.verification_status],
-    ['Source reference', report.source.source_reference],
-    ['Applicability', report.source.applicability],
+    [t('fc.field.id'), report.friction_condition_id],
+    [t('fc.field.coating'), report.coating_reference],
+    [t('fc.field.lubricant'), report.lubricant_reference],
+    [t('fc.field.friction_model'), fcLabel(report.friction_model)],
+    [t('fc.field.overall_range'), fcFmtNum(report.overall_friction_coefficient_minimum) + ' – ' + fcFmtNum(report.overall_friction_coefficient_maximum)],
+    [t('fc.field.nominal_estimate'), fcFmtNum(report.overall_friction_coefficient_nominal_estimate)],
+    [t('fc.field.verification_status'), fcLabel(report.source.verification_status)],
+    [t('fc.field.source_reference'), report.source.source_reference],
+    [t('fc.field.applicability'), report.source.applicability],
   ];
   el.innerHTML = rows.map(function (pair) {
     return '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(pair[0]) + '</span><span class="fc-field-value">' + fcEsc(pair[1]) + '</span></div>';
   }).join('') +
-    '<div class="fc-muted" style="margin-top:8px">Arithmetic midpoint of reference range — not a measured nominal value.</div>';
+    '<div class="fc-muted" style="margin-top:8px">' + t('fc.overview_nominal_note') + '</div>';
 }
 
 function fcRenderRangeViz(report) {
@@ -1678,14 +2018,14 @@ function fcRenderRangeViz(report) {
   const hi = report.overall_friction_coefficient_maximum;
   const mid = report.overall_friction_coefficient_nominal_estimate;
   if (lo === null || lo === undefined || hi === null || hi === undefined) {
-    el.innerHTML = '<div class="fc-empty">No overall friction coefficient range recorded.</div>';
+    el.innerHTML = '<div class="fc-empty">' + t('fc.range_no_data') + '</div>';
     return;
   }
   const axisMax = 1.0; // friction coefficients are stored bounded [0,1)
   const pct = function (v) { return Math.max(0, Math.min(100, (v / axisMax) * 100)); };
   const x = function (v) { return (10 + pct(v) * 3).toFixed(1); };
   const refBadge = (report.source.verification_status === 'reference_only')
-    ? '<span class="fc-badge fc-badge-caution">Reference Only</span>' : '';
+    ? '<span class="fc-badge fc-badge-caution">' + fcEscRaw(fcLabel('reference_only')) + '</span>' : '';
   el.innerHTML =
     '<div class="fc-range-svg-wrap"><svg viewBox="0 0 320 60" width="100%" height="60" role="img" ' +
     'aria-label="Overall friction coefficient range from ' + fcFmtNum(lo) + ' to ' + fcFmtNum(hi) + ', midpoint ' + fcFmtNum(mid) + '">' +
@@ -1697,30 +2037,30 @@ function fcRenderRangeViz(report) {
     '<text x="' + x(mid) + '" y="12" font-size="9" fill="var(--text2)" text-anchor="middle">' + fcFmtNum(mid) + '</text>' +
     '<text x="' + x(hi) + '" y="54" font-size="9" fill="var(--text3)" text-anchor="middle">' + fcFmtNum(hi) + '</text>' +
     '</svg></div>' + refBadge +
-    '<div class="fc-muted" style="margin-top:6px">Descriptive reference range only — not a torque split, preload, or thread/bearing decomposition.</div>';
+    '<div class="fc-muted" style="margin-top:6px">' + t('fc.range_note') + '</div>';
 }
 
 function fcRenderReadiness(report, loading) {
   const el = document.getElementById('fc-readiness');
-  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (loading) { el.innerHTML = '<div class="fc-muted">' + t('fc.loading') + '</div>'; return; }
   if (!report) { el.innerHTML = ''; return; }
   const r = report.readiness;
   const decompositionAvailable = r.torque_calculation_mode === 'mode_b_separated_model';
   const caps = function (list, cls) {
-    return (list && list.length) ? list.map(function (c) { return '<span class="fc-badge ' + cls + '">' + fcFmtLabel(c) + '</span>'; }).join('')
-      : '<span class="fc-muted">None</span>';
+    return (list && list.length) ? list.map(function (c) { return '<span class="fc-badge ' + cls + '">' + fcLabel(c) + '</span>'; }).join('')
+      : '<span class="fc-muted">' + t('fc.none') + '</span>';
   };
   const reasons = (r.blocking_reasons || []).map(function (b) {
     return '<div class="fc-warning-item fc-w-blocked">' + fcEscRaw(b) + '</div>';
   }).join('');
   el.innerHTML =
-    '<div class="fc-field-row"><span class="fc-field-label">Calculation mode</span><span class="fc-field-value">' + fcFmtLabel(r.torque_calculation_mode) + '</span></div>' +
-    '<div class="fc-field-row"><span class="fc-field-label">Recommendation readiness level</span><span class="fc-field-value">' + fcFmtLabel(r.recommendation_level) + '</span></div>' +
-    '<div class="fc-field-row"><span class="fc-field-label">Decomposition available</span><span class="fc-field-value">' + (decompositionAvailable ? 'Yes' : 'No') + '</span></div>' +
-    '<div style="margin-top:10px"><div class="fc-field-label" style="margin-bottom:4px">Available capabilities</div><div class="fc-cap-list">' + caps(r.available_capabilities, 'fc-badge-info') + '</div></div>' +
-    '<div style="margin-top:10px"><div class="fc-field-label" style="margin-bottom:4px">Blocked capabilities</div><div class="fc-cap-list">' + caps(r.blocked_capabilities, 'fc-badge-blocked') + '</div></div>' +
-    (reasons ? '<div style="margin-top:10px"><div class="fc-field-label" style="margin-bottom:4px">Blocking reasons</div>' + reasons + '</div>' : '') +
-    '<div class="fc-muted" style="margin-top:10px">Comparison available · Torque decomposition unavailable · Tightening recommendation unavailable · Production approval unavailable</div>';
+    '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(t('fc.field.calc_mode')) + '</span><span class="fc-field-value">' + fcLabel(r.torque_calculation_mode) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(t('fc.field.readiness_level')) + '</span><span class="fc-field-value">' + fcLabel(r.recommendation_level) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(t('fc.field.decomposition_available')) + '</span><span class="fc-field-value">' + (decompositionAvailable ? t('fc.yes') : t('fc.no')) + '</span></div>' +
+    '<div style="margin-top:10px"><div class="fc-field-label" style="margin-bottom:4px">' + fcEscRaw(t('fc.available_capabilities')) + '</div><div class="fc-cap-list">' + caps(r.available_capabilities, 'fc-badge-info') + '</div></div>' +
+    '<div style="margin-top:10px"><div class="fc-field-label" style="margin-bottom:4px">' + fcEscRaw(t('fc.blocked_capabilities')) + '</div><div class="fc-cap-list">' + caps(r.blocked_capabilities, 'fc-badge-blocked') + '</div></div>' +
+    (reasons ? '<div style="margin-top:10px"><div class="fc-field-label" style="margin-bottom:4px">' + fcEscRaw(t('fc.blocking_reasons')) + '</div>' + reasons + '</div>' : '') +
+    '<div class="fc-muted" style="margin-top:10px">' + t('fc.readiness_footer_note') + '</div>';
 }
 
 function fcWarningSeverity(text) {
@@ -1732,55 +2072,68 @@ function fcWarningSeverity(text) {
   return 'information';
 }
 
+// KNOWN LIMITATION (deliberate, Faz 2.6.8 scope decision): the
+// strings inside report.safety_labels and report.engineering_warnings
+// are free-text sentences generated server-side (see
+// backend/calculation_engine/friction_report.py and
+// friction_recommendations.py) -- they are not enum keys, so there is
+// no closed vocabulary to look up in FC_ENUM_LABELS. Translating them
+// here would require brittle client-side string-matching against
+// backend prose that can change independently of this file, so they
+// are deliberately left as-is (English) regardless of CURRENT_LANG.
+// Only the section chrome around them (title "Engineering Warnings" /
+// "Mühendislik Uyarıları", the "No warnings." fallback, badge styling)
+// is localized. A proper fix would give the backend warnings stable
+// keys the frontend can translate; out of scope for this commit.
 function fcRenderWarnings(report, loading) {
   const el = document.getElementById('fc-warnings');
-  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (loading) { el.innerHTML = '<div class="fc-muted">' + t('fc.loading') + '</div>'; return; }
   if (!report) { el.innerHTML = ''; return; }
   const labels = (report.safety_labels || []).map(function (l) {
     return '<span class="fc-badge fc-badge-caution">' + fcEscRaw(l) + '</span>';
   }).join('');
   const warnings = (report.engineering_warnings || []).map(function (w) {
     return '<div class="fc-warning-item fc-w-' + fcWarningSeverity(w) + '">' + fcEscRaw(w) + '</div>';
-  }).join('') || '<div class="fc-muted">No warnings.</div>';
+  }).join('') || '<div class="fc-muted">' + t('fc.warnings_none') + '</div>';
   el.innerHTML = (labels ? '<div style="margin-bottom:10px">' + labels + '</div>' : '') + warnings;
 }
 
 function fcRenderComparison(report, loading) {
   const el = document.getElementById('fc-comparison');
-  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (loading) { el.innerHTML = '<div class="fc-muted">' + t('fc.loading') + '</div>'; return; }
   if (!report) { el.innerHTML = ''; return; }
   const c = report.comparison;
-  if (!c) { el.innerHTML = '<div class="fc-muted">Select a second condition above to compare.</div>'; return; }
-  const selfBadge = c.is_self_comparison ? '<span class="fc-badge fc-badge-caution">Self-comparison</span>' : '';
+  if (!c) { el.innerHTML = '<div class="fc-muted">' + t('fc.comparison_select_prompt') + '</div>'; return; }
+  const selfBadge = c.is_self_comparison ? '<span class="fc-badge fc-badge-caution">' + fcEscRaw(t('fc.self_comparison')) + '</span>' : '';
   const statements = (c.descriptive_statements || []).map(function (s) {
     return '<div class="fc-warning-item fc-w-information">' + fcEscRaw(s) + '</div>';
   }).join('');
   el.innerHTML =
-    '<div class="fc-field-row"><span class="fc-field-label">Condition A</span><span class="fc-field-value">' + fcEscRaw(c.friction_condition_id_a) + '</span></div>' +
-    '<div class="fc-field-row"><span class="fc-field-label">Condition B</span><span class="fc-field-value">' + fcEscRaw(c.friction_condition_id_b) + ' ' + selfBadge + '</span></div>' +
-    '<div class="fc-field-row"><span class="fc-field-label">Range relation</span><span class="fc-field-value">' + fcFmtLabel(c.range_relation) + '</span></div>' +
-    '<div class="fc-field-row"><span class="fc-field-label">Width relation</span><span class="fc-field-value">' + fcFmtLabel(c.width_relation) + '</span></div>' +
-    '<div class="fc-field-row"><span class="fc-field-label">Source classification</span><span class="fc-field-value">' + fcFmtLabel(c.source_classification_a) + ' vs ' + fcFmtLabel(c.source_classification_b) + '</span></div>' +
-    '<div class="fc-field-row"><span class="fc-field-label">Verification status</span><span class="fc-field-value">' + fcEsc(c.verification_status_a) + ' vs ' + fcEsc(c.verification_status_b) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(t('fc.field.condition_a')) + '</span><span class="fc-field-value">' + fcEscRaw(c.friction_condition_id_a) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(t('fc.field.condition_b')) + '</span><span class="fc-field-value">' + fcEscRaw(c.friction_condition_id_b) + ' ' + selfBadge + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(t('fc.field.range_relation')) + '</span><span class="fc-field-value">' + fcLabel(c.range_relation) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(t('fc.field.width_relation')) + '</span><span class="fc-field-value">' + fcLabel(c.width_relation) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(t('fc.field.source_classification')) + '</span><span class="fc-field-value">' + fcLabel(c.source_classification_a) + ' vs ' + fcLabel(c.source_classification_b) + '</span></div>' +
+    '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(t('fc.field.verification_status')) + '</span><span class="fc-field-value">' + fcEsc(fcLabel(c.verification_status_a)) + ' vs ' + fcEsc(fcLabel(c.verification_status_b)) + '</span></div>' +
     (statements ? '<div style="margin-top:10px">' + statements + '</div>' : '');
 }
 
 function fcRenderReport(report, loading) {
   const el = document.getElementById('fc-report');
-  if (loading) { el.innerHTML = '<div class="fc-muted">Loading...</div>'; return; }
+  if (loading) { el.innerHTML = '<div class="fc-muted">' + t('fc.loading') + '</div>'; return; }
   if (!report) { el.innerHTML = ''; return; }
   const s = report.source;
   const rows = [
-    ['Source reference', s.source_reference],
-    ['Source type', s.source_type],
-    ['Source page/table', s.source_page_or_table],
-    ['Verification status', s.verification_status],
-    ['Applicability', s.applicability],
-    ['Engineering notes', s.engineering_notes],
-    ['Record checksum', s.record_checksum],
-    ['Data version', s.data_version],
-    ['Report generated at', report.report_generated_at],
-    ['Application version', report.application_version],
+    [t('fc.field.source_reference'), s.source_reference],
+    [t('fc.field.source_type'), fcLabel(s.source_type)],
+    [t('fc.field.source_page'), s.source_page_or_table],
+    [t('fc.field.verification_status'), fcLabel(s.verification_status)],
+    [t('fc.field.applicability'), s.applicability],
+    [t('fc.field.engineering_notes'), s.engineering_notes],
+    [t('fc.field.record_checksum'), s.record_checksum],
+    [t('fc.field.data_version'), s.data_version],
+    [t('fc.field.report_generated_at'), report.report_generated_at],
+    [t('fc.field.application_version'), report.application_version],
   ];
   el.innerHTML = rows.map(function (pair) {
     return '<div class="fc-field-row"><span class="fc-field-label">' + fcEscRaw(pair[0]) + '</span><span class="fc-field-value">' + fcEsc(pair[1]) + '</span></div>';
@@ -1788,7 +2141,7 @@ function fcRenderReport(report, loading) {
 }
 
 function downloadFrictionConditionReportJSON() {
-  if (!FC_LAST_REPORT) { alert('No report loaded yet.'); return; }
+  if (!FC_LAST_REPORT) { alert(t('fc.alert_no_report')); return; }
   downloadText('FrictionCondition_' + FC_LAST_REPORT.friction_condition_id + '.json', JSON.stringify(FC_LAST_REPORT, null, 2), 'application/json');
 }
 

@@ -252,7 +252,10 @@ def test_frontend_intended_use_selector_matches_backend_enum(frontend_html):
     start = frontend_html.index('id="fc-intended-use"')
     end = frontend_html.index("</select>", start)
     section = frontend_html[start:end]
-    option_values = set(re.findall(r'<option value="([a-z_]+)">', section))
+    # Attribute-order-agnostic: Faz 2.6.8 added a data-i18n attribute
+    # between value="..." and the closing ">" for i18n wiring; only
+    # the value itself (what's actually sent to the API) matters here.
+    option_values = set(re.findall(r'<option value="([a-z_]+)"[^>]*>', section))
     assert option_values == set(INTENDED_USE_MINIMUM_LEVEL.keys())
 
 
