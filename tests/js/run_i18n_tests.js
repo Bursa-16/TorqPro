@@ -78,7 +78,7 @@ const CONST_NAMES = [
   'I18N', 'FC_ENUM_LABELS', 'CURRENT_LANG',
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
   'N01391', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
-  'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY',
+  'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -105,6 +105,8 @@ const FUNCTION_NAMES = [
   'libraryStandardChanged', 'libraryThreadChanged', 'libraryCoatingChanged', 'getLibrarySelection',
   'libraryCompatibilityChanged', 'parseHardnessMin', 'compatibilityResults', 'libraryRenderMeta',
   'libraryReapplyLanguage', 'confClass', 'captureCurrentCalculation',
+  'translationValue', 'oemGetAll', 'oemSearch', 'oemRenderCard', 'oemFilter',
+  'oemSecFilter', 'oemRenderList', 'oemInit', 'oemReapplyLanguage',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -164,6 +166,8 @@ function buildExtractedSource() {
   // TORQPRO_LIBRARY object that libraryInit()/getLibrarySelection()/etc.
   // actually close over.
   parts.push('function __getTorqProLibrary() { return TORQPRO_LIBRARY; }');
+  parts.push('function __getOemNormDb() { return OEM_NORM_DB; }');
+  parts.push('function __getI18N() { return I18N; }');
   return { source: parts.join('\n\n'), rawHtml: html };
 }
 
@@ -1455,6 +1459,379 @@ async function main() {
     checkEqual('Lubricant-based conditions filter label tr', lubEl.textContent, 'Yağlayıcı tabanlı koşullar');
     ctx.context.setLanguage('en');
     checkEqual('Lubricant-based conditions filter label en', lubEl.textContent, 'Lubricant-based conditions');
+  }
+
+  // ================================================================
+  // Faz 2.7.2b -- OEM Norm Query + Norm Guide.
+  // ================================================================
+  function setupOemDom(ctx) {
+    for (const id of ['oem-meta', 'oem-section-tabs', 'oem-count', 'oem-list', 'oem-search']) {
+      ctx.byId[id] = ctx.documentStub.getElementById(id);
+    }
+    ctx.context.oemInit();
+  }
+
+  // ---- 48. OEM_NORM_DB record count preserved: 6 sections, 19 points ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const db = ctx.context.__getOemNormDb();
+    checkEqual('OEM_NORM_DB has 6 sections', db.sections.length, 6);
+    const total = db.sections.reduce((n, s) => n + s.noktalar.length, 0);
+    checkEqual('OEM_NORM_DB has 19 tightening points total', total, 19);
+  }
+
+  // ---- 49. Technical field preservation: id/section_id/thread/sinif/tip/
+  //          nominal_nm/t_min/t_max/aci_deg/norm references untouched ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const db = ctx.context.__getOemNormDb();
+    const sec7 = db.sections.find((s) => s.id === '7');
+    check('section 7 exists untouched', !!sec7);
+    const p71 = sec7.noktalar.find((p) => p.id === '7.1');
+    check('point 7.1 exists', !!p71);
+    checkEqual('7.1 thread unchanged', p71.thread, 'M12x1.25');
+    checkEqual('7.1 sinif unchanged', p71.sinif, 'A');
+    checkEqual('7.1 tip unchanged', p71.tip, 'torque_only');
+    checkEqual('7.1 nominal_nm unchanged', p71.nominal_nm, 105);
+    checkEqual('7.1 t_min unchanged', p71.t_min, 100);
+    checkEqual('7.1 t_max unchanged', p71.t_max, 110);
+    checkEqual('7.1 sourceReference (norm article) unchanged', p71.sourceReference, '2.00176/86 Madde 7.1');
+    const p1015 = db.sections.find((s) => s.id === '10').noktalar.find((p) => p.id === '10.15');
+    checkEqual('10.15 aci_deg unchanged', p1015.aci_deg, 45);
+    checkEqual('10.15 ilk_tork unchanged', p1015.ilk_tork, 90);
+    checkEqual('meta.norm_no unchanged', db.meta.norm_no, '2.00176/86');
+  }
+
+  // ---- 50. OEM static UI TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titleEl = getByI18nKey(ctx, 'oem.title');
+    const searchPh = getPlaceholderByKey(ctx, 'oem.search_placeholder');
+    ctx.context.applyStaticTranslations();
+    checkEqual('oem title tr', titleEl.textContent, 'OEM Norm Sorgulama');
+    checkEqual('oem search placeholder tr', searchPh.placeholder, 'Madde no, sistem, diş ölçüsü, sınıf...');
+    ctx.context.setLanguage('en');
+    checkEqual('oem title en', titleEl.textContent, 'OEM Norm Query');
+    checkEqual('oem search placeholder en', searchPh.placeholder, 'Item no., system, thread size, class...');
+  }
+
+  // ---- 51. Section (baslik) titles TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const sections = { 7: ['FRENLER', 'BRAKES'], 10: ['MOTOR ASKISI', 'ENGINE MOUNT'], 6: ['DİREKSİYON', 'STEERING'] };
+    for (const [id, [tr]] of Object.entries(sections)) {
+      const sec = ctx.context.__getOemNormDb().sections.find((s) => s.id === id);
+      checkEqual('section ' + id + ' baslik tr', ctx.context.t(sec.baslikKey), tr);
+    }
+    ctx.context.setLanguage('en');
+    for (const [id, [, en]] of Object.entries(sections)) {
+      const sec = ctx.context.__getOemNormDb().sections.find((s) => s.id === id);
+      checkEqual('section ' + id + ' baslik en', ctx.context.t(sec.baslikKey), en);
+    }
+  }
+
+  // ---- 52. All 19 tanim keys resolve in both languages ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const db = ctx.context.__getOemNormDb();
+    let allPointsTr = true, allPointsEn = true;
+    db.sections.forEach((s) => s.noktalar.forEach((p) => {
+      if (ctx.context.t(p.tanimKey) === p.tanimKey) allPointsTr = false;
+    }));
+    ctx.context.setLanguage('en');
+    db.sections.forEach((s) => s.noktalar.forEach((p) => {
+      if (ctx.context.t(p.tanimKey) === p.tanimKey) allPointsEn = false;
+    }));
+    check('all 19 points have a resolved tanimKey in tr', allPointsTr);
+    check('all 19 points have a resolved tanimKey in en', allPointsEn);
+    checkEqual('sample tanim (11.13) en', ctx.context.t(db.sections.find((s) => s.id === '11').noktalar.find((p) => p.id === '11.13').tanimKey), 'Aluminum wheel mounting bolt');
+  }
+
+  // ---- 53. Variant text TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const p101 = ctx.context.__getOemNormDb().sections.find((s) => s.id === '10').noktalar.find((p) => p.id === '10.1');
+    check('10.1 has a variantKey', !!p101.variantKey);
+    checkEqual('10.1 variant tr', ctx.context.t(p101.variantKey), 'Yalnızca 1.3 JTD');
+    ctx.context.setLanguage('en');
+    checkEqual('10.1 variant en', ctx.context.t(p101.variantKey), 'Only 1.3 JTD');
+  }
+
+  // ---- 54. Tork/Tork+Açı/Kontrol Yok type labels TR/EN (card render) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const db = ctx.context.__getOemNormDb();
+    const pOnly = db.sections.find((s) => s.id === '7').noktalar.find((p) => p.id === '7.1');
+    const pAngle = db.sections.find((s) => s.id === '10').noktalar.find((p) => p.id === '10.15');
+    const pNoControl = db.sections.find((s) => s.id === '11').noktalar.find((p) => p.id === '11.13');
+    const cardOnlyTr = ctx.context.oemRenderCard({ ...pOnly, section_id: '7', section_baslikKey: db.sections.find((s) => s.id === '7').baslikKey });
+    const cardAngleTr = ctx.context.oemRenderCard({ ...pAngle, section_id: '10', section_baslikKey: db.sections.find((s) => s.id === '10').baslikKey });
+    const cardNcTr = ctx.context.oemRenderCard({ ...pNoControl, section_id: '11', section_baslikKey: db.sections.find((s) => s.id === '11').baslikKey });
+    check('tr: torque-only card shows "Yalnız Tork"', cardOnlyTr.indexOf('Yalnız Tork') !== -1);
+    check('tr: torque+angle card shows "Tork+Açı"', cardAngleTr.indexOf('Tork+Açı') !== -1);
+    check('tr: no-control card shows "Kontrol Yok"', cardNcTr.indexOf('Kontrol Yok') !== -1);
+    ctx.context.setLanguage('en');
+    const cardOnlyEn = ctx.context.oemRenderCard({ ...pOnly, section_id: '7', section_baslikKey: db.sections.find((s) => s.id === '7').baslikKey });
+    const cardAngleEn = ctx.context.oemRenderCard({ ...pAngle, section_id: '10', section_baslikKey: db.sections.find((s) => s.id === '10').baslikKey });
+    const cardNcEn = ctx.context.oemRenderCard({ ...pNoControl, section_id: '11', section_baslikKey: db.sections.find((s) => s.id === '11').baslikKey });
+    check('en: torque-only card shows "Torque Only"', cardOnlyEn.indexOf('Torque Only') !== -1);
+    check('en: torque+angle card shows "Torque+Angle"', cardAngleEn.indexOf('Torque+Angle') !== -1);
+    check('en: no-control card shows "No Control"', cardNcEn.indexOf('No Control') !== -1);
+  }
+
+  // ---- 55. Active/Silindi/Deneysel badges TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const db = ctx.context.__getOemNormDb();
+    const active = db.sections.find((s) => s.id === '7').noktalar.find((p) => p.id === '7.1'); // experimental:true
+    const deleted = db.sections.find((s) => s.id === '10').noktalar.find((p) => p.id === '10.14');
+    const cardActiveTr = ctx.context.oemRenderCard({ ...active, section_id: '7', section_baslikKey: db.sections.find((s) => s.id === '7').baslikKey });
+    const cardDeletedTr = ctx.context.oemRenderCard({ ...deleted, section_id: '10', section_baslikKey: db.sections.find((s) => s.id === '10').baslikKey });
+    check('tr: active badge "AKTİF"', cardActiveTr.indexOf('AKTİF') !== -1);
+    check('tr: experimental badge "DENEYSEL"', cardActiveTr.indexOf('DENEYSEL') !== -1);
+    check('tr: deleted badge "SİLİNDİ"', cardDeletedTr.indexOf('SİLİNDİ') !== -1);
+    ctx.context.setLanguage('en');
+    const cardActiveEn = ctx.context.oemRenderCard({ ...active, section_id: '7', section_baslikKey: db.sections.find((s) => s.id === '7').baslikKey });
+    const cardDeletedEn = ctx.context.oemRenderCard({ ...deleted, section_id: '10', section_baslikKey: db.sections.find((s) => s.id === '10').baslikKey });
+    check('en: active badge "ACTIVE"', cardActiveEn.indexOf('ACTIVE') !== -1);
+    check('en: experimental badge "EXPERIMENTAL"', cardActiveEn.indexOf('EXPERIMENTAL') !== -1);
+    check('en: deleted badge "DELETED"', cardDeletedEn.indexOf('DELETED') !== -1);
+    checkEqual('experimental flag itself (boolean) unaffected by language', active.experimental, true);
+  }
+
+  // ---- 56. Class A/B filter labels TR/EN; technical filter codes unchanged ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    check('oemFilter still branches on literal \'sinif:A\'/\'sinif:B\' codes', scriptSrc.indexOf("_oF==='sinif:A'") !== -1 && scriptSrc.indexOf("_oF==='sinif:B'") !== -1);
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const btnA = getByI18nKey(ctx, 'oem.filter_class_a');
+    ctx.context.applyStaticTranslations();
+    checkEqual('Sınıf A filter button tr', btnA.textContent, 'Sınıf A');
+    ctx.context.setLanguage('en');
+    checkEqual('Class A filter button en', btnA.textContent, 'Class A');
+  }
+
+  // ---- 57. OEM search: TR/EN cross-language, technical-code search ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    // tr term in tr mode
+    let results = ctx.context.oemSearch('direksiyon simidi');
+    check('tr term matches in tr mode', results.some((p) => p.id === '6.1'));
+    // en term in en mode
+    ctx.context.setLanguage('en');
+    results = ctx.context.oemSearch('steering wheel');
+    check('en term matches in en mode', results.some((p) => p.id === '6.1'));
+    // tr term in en mode (cross-language)
+    results = ctx.context.oemSearch('direksiyon simidi');
+    check('tr term still matches while UI is in en mode (dual-language search)', results.some((p) => p.id === '6.1'));
+    // en term in tr mode (cross-language)
+    ctx.context.setLanguage('tr');
+    results = ctx.context.oemSearch('steering wheel');
+    check('en term matches while UI is in tr mode (dual-language search)', results.some((p) => p.id === '6.1'));
+    // thread search
+    results = ctx.context.oemSearch('m22x1.5');
+    check('thread search (M22x1.5) matches 12.12', results.some((p) => p.id === '12.12'));
+    // malzeme (material code) search
+    results = ctx.context.oemSearch('10r riv/dac');
+    check('material code search matches 7.1', results.some((p) => p.id === '7.1'));
+    // class + technical type search
+    results = ctx.context.oemSearch('torque_angle');
+    check('technical tip enum search matches torque_angle points', results.every((p) => p.tip === 'torque_angle') && results.length > 0);
+  }
+
+  // ---- 58. Language switch: search query, filters, and result record IDs
+  //          are preserved; only displayed text changes ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupOemDom(ctx);
+    ctx.byId['oem-search'].value = 'fren';
+    ctx.context.oemFilter('sinif:A', null);
+    const idsTrBefore = (ctx.context.oemSearch('fren')).filter((p) => p.sinif === 'A').map((p) => p.id).sort();
+    ctx.context.setLanguage('en');
+    checkEqual('search query preserved after language switch', ctx.byId['oem-search'].value, 'fren');
+    const idsEnAfter = (ctx.context.oemSearch('fren')).filter((p) => p.sinif === 'A').map((p) => p.id).sort();
+    // "fren" is a tr-only term (Turkish for "brake") -- oemSearch is
+    // dual-language, so it must still match section 7 (translated to
+    // "BRAKES" in en) via the tr side of the section-title comparison.
+    checkEqual('matched record IDs identical across language switch', JSON.stringify(idsTrBefore), JSON.stringify(idsEnAfter));
+    check('at least one record matched (sanity check)', idsEnAfter.length > 0);
+  }
+
+  // ---- 59. No raw translation-key leakage in OEM dynamic HTML ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupOemDom(ctx);
+    const html1 = ctx.byId['oem-list'].innerHTML + ctx.byId['oem-meta'].innerHTML + ctx.byId['oem-section-tabs'].innerHTML;
+    check('no raw "oem.xxx" key text leaks into tr rendering', !/oem\.[a-z_.0-9]+(?![\w])/.test(html1.replace(/<[^>]*>/g, ' ')));
+    ctx.context.setLanguage('en');
+    ctx.context.oemReapplyLanguage();
+    const html2 = ctx.byId['oem-list'].innerHTML + ctx.byId['oem-meta'].innerHTML + ctx.byId['oem-section-tabs'].innerHTML;
+    check('no raw "oem.xxx" key text leaks into en rendering', !/oem\.[a-z_.0-9]+(?![\w])/.test(html2.replace(/<[^>]*>/g, ' ')));
+  }
+
+  // ---- 60. Norm Guide: all static keys resolve TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titleEl = getByI18nKey(ctx, 'norm.title');
+    const critEl = getByI18nKey(ctx, 'norm.capability_critical');
+    ctx.context.applyStaticTranslations();
+    checkEqual('norm title tr', titleEl.textContent, 'Norm ve Standart Rehberi');
+    checkEqual('norm capability_critical tr', critEl.textContent, 'Kritik (Report)');
+    ctx.context.setLanguage('en');
+    checkEqual('norm title en', titleEl.textContent, 'Norm and Standards Guide');
+    checkEqual('norm capability_critical en', critEl.textContent, 'Critical (Report)');
+  }
+
+  // ---- 61. Norm Guide technical codes/thresholds unchanged in both languages ----
+  {
+    check('Cm/Cmk >= 2.00 threshold text is present verbatim in markup (not a translation key)',
+      /Cm\/Cmk ≥ 2\.00/.test(rawHtml));
+    check('Cm/Cmk >= 1.67 threshold text is present verbatim', /Cm\/Cmk ≥ 1\.67/.test(rawHtml));
+    check('VDI 2230 appears verbatim in norm page subtitle key (both languages)',
+      /'norm\.subtitle': 'VDI 2230/.test(rawHtml));
+    check('ISO 16047 appears verbatim in norm page subtitle key', /ISO 16047/.test(rawHtml));
+  }
+
+  // ---- 62. Hard-coded user text scan across all Faz 2.7.2b functions ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const turkishCharRe = /[şğüöçİĞÜŞÖÇı]/;
+    const funcs = ['oemGetAll', 'oemSearch', 'oemRenderCard', 'oemFilter', 'oemSecFilter', 'oemRenderList', 'oemInit', 'oemReapplyLanguage'];
+    let anyLeftover = false;
+    for (const fn of funcs) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      const strs = [...src.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]).filter((s) => turkishCharRe.test(s));
+      if (strs.length) { anyLeftover = true; }
+    }
+    check('no hard-coded Turkish string literals remain in OEM functions', !anyLeftover);
+  }
+
+  // ---- 63. Language-dependent decision anti-pattern scan (OEM scope) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const oemSrc = scriptSrc.slice(scriptSrc.indexOf('function oemGetAll'), scriptSrc.indexOf('function oemInit') + 2000);
+    check('no .includes(\'Civata\')-style translated-text filtering in OEM code', !/includes\('[A-ZÇĞİÖŞÜ][a-zçğıöşüA-ZÇĞİÖŞÜ ]+'\)/.test(oemSrc));
+    check('OEM decision branches (.tip/.status/.sinif ===) use only technical enum literals',
+      [...oemSrc.matchAll(/\.(tip|status|sinif)\s*===\s*'([^']*)'/g)].every((m) => !looksLikeTranslatedText(m[2])));
+    // Heuristic: technical enum values here are short snake_case codes
+    // (torque_only, deleted, ...) or single-letter class codes (A, B).
+    // Translated display text would contain a Turkish-specific
+    // character or a space between words -- neither ever appears in
+    // a legitimate technical enum literal.
+    function looksLikeTranslatedText(s) { return /[şğüöçİĞÜŞÖÇı ]/.test(s); }
+  }
+
+  // ================================================================
+  // Faz 2.7.2b (cont.) -- translationValue() fallback / console.warn
+  // behavior verification. All via spying on the real console.warn
+  // for the duration of each check -- no production code touched,
+  // no cache or global state added to translationValue() itself.
+  // ================================================================
+  function withWarnSpy(fn) {
+    const calls = [];
+    const orig = console.warn;
+    console.warn = (...args) => { calls.push(args.join(' ')); };
+    try { fn(calls); } finally { console.warn = orig; }
+    return calls;
+  }
+
+  // ---- 64. Valid key: no console.warn ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    let result;
+    const calls = withWarnSpy(() => { result = ctx.context.translationValue('oem.title', 'tr'); });
+    checkEqual('translationValue returns the tr value for a valid key', result, 'OEM Norm Sorgulama');
+    checkEqual('no console.warn for a valid key', calls.length, 0);
+  }
+
+  // ---- 65. Normal OEM search: zero console.warn across a full search
+  //          (all 19 records' tanim/section/variant keys are valid) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const calls = withWarnSpy(() => { ctx.context.oemSearch('fren'); });
+    checkEqual('no console.warn during a normal oemSearch() call', calls.length, 0);
+    // Simulate several keystrokes' worth of searches (progressive query).
+    const calls2 = withWarnSpy(() => {
+      ['f', 'fr', 'fre', 'fren', 'fren '].forEach((q) => ctx.context.oemSearch(q));
+    });
+    checkEqual('no console.warn across 5 progressive keystroke-style searches', calls2.length, 0);
+  }
+
+  // ---- 66. A missing key produces exactly one warning per
+  //          translationValue() call -- linear, not exploding
+  //          per-record or per-keystroke (translationValue() has no
+  //          internal loop, so this also serves as a source-level
+  //          regression guard against a future refactor adding one). ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const tvSrc = extractFunctionDecl(scriptSrc, 'translationValue');
+    check('translationValue() contains no loop construct (for/while/forEach) that could multiply warnings',
+      !/\b(for|while)\s*\(/.test(tvSrc) && !/\.(forEach|map)\(/.test(tvSrc));
+    const calls = withWarnSpy(() => {
+      for (let i = 0; i < 5; i++) ctx.context.translationValue('this.key.does.not.exist', 'tr');
+    });
+    checkEqual('exactly 5 warnings for 5 explicit calls with a missing key (1:1, no multiplication)', calls.length, 5);
+  }
+
+  // ---- 67. translationValue() does not call t() (no double-warning path) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const tvSrc = extractFunctionDecl(scriptSrc, 'translationValue');
+    check('translationValue() body does not call t(...) internally (would double-warn via two independent fallback chains)',
+      !/(?<![\w.])t\(/.test(tvSrc));
+  }
+
+  // ---- 68. tr missing / en present -> controlled en fallback + 1 warning ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const tvSrc = extractFunctionDecl(scriptSrc, 'translationValue');
+    check('translationValue() has a distinct "lang missing, other-lang present" warning branch', tvSrc.indexOf("' fallback'") !== -1 && tvSrc.indexOf('fallbackLang') !== -1);
+    check('translationValue() has a distinct "missing everywhere" warning branch', tvSrc.indexOf('no translation found in any language') !== -1);
+    // Construct a genuine single-key gap (tr missing, en present) via
+    // the test-only I18N accessor -- the real I18N.en/I18N.tr tables
+    // ship with full 768/768 parity, so no such gap exists naturally;
+    // this temporarily adds one key to the *same* I18N.en object the
+    // real functions close over, purely for this test.
+    const i18n = ctx.context.__getI18N();
+    i18n.en['faz2_7_2b_test.only_en_key'] = 'English only value';
+    let result;
+    const calls = withWarnSpy(() => { result = ctx.context.translationValue('faz2_7_2b_test.only_en_key', 'tr'); });
+    checkEqual('tr-missing/en-present key falls back to the en value', result, 'English only value');
+    checkEqual('exactly one controlled warning for the tr-missing/en-present path', calls.length, 1);
+    check('warning message mentions the en fallback', calls[0].indexOf('en fallback') !== -1);
+  }
+
+  // ---- 68b. en missing / tr present -> controlled tr fallback + 1 warning ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const i18n = ctx.context.__getI18N();
+    i18n.tr['faz2_7_2b_test.only_tr_key'] = 'Yalnızca Türkçe değer';
+    let result;
+    const calls = withWarnSpy(() => { result = ctx.context.translationValue('faz2_7_2b_test.only_tr_key', 'en'); });
+    checkEqual('en-missing/tr-present key falls back to the tr value', result, 'Yalnızca Türkçe değer');
+    checkEqual('exactly one controlled warning for the en-missing/tr-present path', calls.length, 1);
+    check('warning message mentions the tr fallback', calls[0].indexOf('tr fallback') !== -1);
+  }
+
+  // ---- 69. Both languages missing -> raw key returned + 1 controlled warning ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    let result;
+    const calls = withWarnSpy(() => { result = ctx.context.translationValue('totally.unknown.key', 'tr'); });
+    checkEqual('raw key returned when missing in both languages', result, 'totally.unknown.key');
+    checkEqual('exactly one controlled warning when missing everywhere', calls.length, 1);
+    check('warning message indicates no translation found in any language', calls[0].indexOf('no translation found in any language') !== -1);
+  }
+
+  // ---- 70. Original t() fallback console.warn call sites are untouched ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const tSrc = extractFunctionDecl(scriptSrc, 't');
+    checkEqual('t() still has exactly 2 console.warn call sites', (tSrc.match(/console\.warn\(/g) || []).length, 2);
+    check('t() en-fallback warning text unchanged', tSrc.indexOf('using en fallback') !== -1);
+    check('t() total-miss warning text unchanged', tSrc.indexOf('no translation found in any language') !== -1);
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');

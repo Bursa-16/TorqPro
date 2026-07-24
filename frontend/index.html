@@ -801,22 +801,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- OEM NORM SORGU -->
 <div id="page-oem" class="page">
   <div class="section-header"><span class="section-icon">🔍</span><div>
-    <div class="section-title">OEM Norm Sorgulama</div>
-    <div class="section-sub">Araç Tipi 263 · Issue A · 19.11.2008 · Kontrol Metodu: NP 0.00010/01 Metod A</div>
+    <div class="section-title" data-i18n="oem.title">OEM Norm Sorgulama</div>
+    <div class="section-sub" data-i18n="oem.subtitle">Araç Tipi 263 · Issue A · 19.11.2008 · Kontrol Metodu: NP 0.00010/01 Metod A</div>
   </div></div>
-  <div class="alert alert-info"><strong>⚠️</strong> Bu modüldeki T' min / T' max değerleri normdan birebir okunmaktadır — teorik hesap uygulanmaz. Teknik resim değeri norm değerinden farklıysa teknik resim önceliklidir. Normda bulunmayan bağlantılar için örnek OEM genel öngörü tablosuna yalnız ön değerlendirme amacıyla başvurunuz.</div>
+  <div class="alert alert-info"><strong>⚠️</strong> <span data-i18n="oem.scope_note">Bu modüldeki T' min / T' max değerleri normdan birebir okunmaktadır — teorik hesap uygulanmaz. Teknik resim değeri norm değerinden farklıysa teknik resim önceliklidir. Normda bulunmayan bağlantılar için örnek OEM genel öngörü tablosuna yalnız ön değerlendirme amacıyla başvurunuz.</span></div>
   <div class="grid2" style="margin-bottom:16px">
-    <div class="card" style="padding:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Norm Bilgisi</div><div id="oem-meta"></div></div>
+    <div class="card" style="padding:14px"><div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px" data-i18n="oem.norm_info_title">Norm Bilgisi</div><div id="oem-meta"></div></div>
     <div class="card" style="padding:14px">
-      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Ara</div>
-      <input class="form-input" id="oem-search" placeholder="Madde no, sistem, diş ölçüsü, sınıf..." oninput="oemRenderList()" style="margin-bottom:8px">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px" data-i18n="oem.search_title">Ara</div>
+      <input class="form-input" id="oem-search" data-i18n-placeholder="oem.search_placeholder" placeholder="Madde no, sistem, diş ölçüsü, sınıf..." oninput="oemRenderList()" style="margin-bottom:8px">
       <div style="display:flex;gap:6px;flex-wrap:wrap" id="oem-filter-btns">
-        <button class="oem-filter-btn active" onclick="oemFilter('',this)">Tümü</button>
-        <button class="oem-filter-btn" onclick="oemFilter('sinif:A',this)">Sınıf A</button>
-        <button class="oem-filter-btn" onclick="oemFilter('sinif:B',this)">Sınıf B</button>
-        <button class="oem-filter-btn" onclick="oemFilter('tip:torque_angle',this)">Tork+Açı</button>
-        <button class="oem-filter-btn" onclick="oemFilter('experimental',this)">★ Deneysel</button>
-        <button class="oem-filter-btn" onclick="oemFilter('deleted',this)">Silindi</button>
+        <button class="oem-filter-btn active" onclick="oemFilter('',this)" data-i18n="oem.filter_all">Tümü</button>
+        <button class="oem-filter-btn" onclick="oemFilter('sinif:A',this)" data-i18n="oem.filter_class_a">Sınıf A</button>
+        <button class="oem-filter-btn" onclick="oemFilter('sinif:B',this)" data-i18n="oem.filter_class_b">Sınıf B</button>
+        <button class="oem-filter-btn" onclick="oemFilter('tip:torque_angle',this)" data-i18n="oem.type_torque_angle">Tork+Açı</button>
+        <button class="oem-filter-btn" onclick="oemFilter('experimental',this)">★ <span data-i18n="oem.status_experimental">Deneysel</span></button>
+        <button class="oem-filter-btn" onclick="oemFilter('deleted',this)" data-i18n="oem.status_deleted">Silindi</button>
       </div>
     </div>
   </div>
@@ -913,12 +913,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <!-- NORM REHBERİ -->
 <div id="page-norm" class="page">
-  <div class="section-header"><span class="section-icon">📋</span><div><div class="section-title">Norm ve Standart Rehberi</div><div class="section-sub">VDI 2230 · ISO 16047 · Genel otomotiv standartları</div></div></div>
+  <div class="section-header"><span class="section-icon">📋</span><div><div class="section-title" data-i18n="norm.title">Norm ve Standart Rehberi</div><div class="section-sub" data-i18n="norm.subtitle">VDI 2230 · ISO 16047 · Genel otomotiv standartları</div></div></div>
   <div class="grid2">
-    <div class="card"><div class="card-title">Tork Kontrol Yöntemleri</div><div class="result-box"><div class="result-row"><span class="result-key">Dinamik Tork (Sistem A)</span><span class="result-val">Sıkma anında ölçüm</span></div><div class="result-row"><span class="result-key">Statik Tork (C Metodu)</span><span class="result-val">İlk harekete geçme torku</span></div><div class="result-row"><span class="result-key">Tork + Açı</span><span class="result-val">Başlangıç torku + açı</span></div><div class="result-row"><span class="result-key">Ultrasonik</span><span class="result-val">Cıvata uzaması ile ölçüm</span></div></div></div>
-    <div class="card"><div class="card-title">Yetenek Hedef Değerleri <span class="norm-badge">Örnek norma göre</span></div><div class="result-box"><div class="result-row"><span class="result-key">Kritik (Report)</span><span class="result-val ok">Cm/Cmk ≥ 2.00</span></div><div class="result-row"><span class="result-key">Standart</span><span class="result-val ok">Cm/Cmk ≥ 1.67</span></div><div class="result-row"><span class="result-key">Ön sıkma</span><span class="result-val warn">Cm/Cmk ≥ 1.33</span></div><div class="result-row"><span class="result-key">Yetersiz</span><span class="result-val nok">Cm/Cmk &lt; 1.33</span></div></div></div>
-    <div class="card"><div class="card-title">Standart Oturma Referans Aralığı <span class="norm-badge">Örnek norma göre</span></div><div class="card-sub">Sıkma sınıfına göre beklenen oturma kayıpları — kontrol limiti değil, referans bilgisidir</div><div class="result-box"><div class="result-row"><span class="result-key">Sınıf A</span><span class="result-val">−%8 / +%5</span></div><div class="result-row"><span class="result-key">Sınıf B</span><span class="result-val">−%15 / +%10</span></div><div class="result-row"><span class="result-key">Sınıf C</span><span class="result-val">−%35 / +%16</span></div><div class="result-row"><span class="result-key">Sınıf D</span><span class="result-val">−%50 / +%20</span></div></div></div>
-    <div class="card"><div class="card-title">Örnek Tork Çalışması <span class="norm-badge">Demo veri seti</span></div><div class="card-sub">Teknik resim veya özel norm değeri yoksa kullanılabilecek örnek referans tablosudur (Tofaş/FIAT/Stellantis veya başka bir OEM'e ait değildir). Ek yağlayıcı uygulanmamış, üretimden çıktığı haliyle geçerlidir.</div><div class="result-box"><div class="result-row"><span class="result-key">M10×1.25 Flanşlı 10.9</span><span class="result-val">65 Nm / 34.700 N</span></div><div class="result-row"><span class="result-key">M12×1.25 Flanşlı 10.9</span><span class="result-val">120 Nm / 53.700 N</span></div><div class="result-row"><span class="result-key">M14×1.5 Flanşlı 10.9</span><span class="result-val">180 Nm / 69.100 N</span></div></div></div>
+    <div class="card"><div class="card-title" data-i18n="norm.control_methods_title">Tork Kontrol Yöntemleri</div><div class="result-box"><div class="result-row"><span class="result-key" data-i18n="norm.method_dynamic">Dinamik Tork (Sistem A)</span><span class="result-val" data-i18n="norm.method_dynamic_desc">Sıkma anında ölçüm</span></div><div class="result-row"><span class="result-key" data-i18n="norm.method_static">Statik Tork (C Metodu)</span><span class="result-val" data-i18n="norm.method_static_desc">İlk harekete geçme torku</span></div><div class="result-row"><span class="result-key" data-i18n="norm.method_torque_angle">Tork + Açı</span><span class="result-val" data-i18n="norm.method_torque_angle_desc">Başlangıç torku + açı</span></div><div class="result-row"><span class="result-key" data-i18n="norm.method_ultrasonic">Ultrasonik</span><span class="result-val" data-i18n="norm.method_ultrasonic_desc">Cıvata uzaması ile ölçüm</span></div></div></div>
+    <div class="card"><div class="card-title" data-i18n="norm.capability_targets_title">Yetenek Hedef Değerleri</div> <span class="norm-badge" data-i18n="norm.per_sample_norm">Örnek norma göre</span><div class="result-box"><div class="result-row"><span class="result-key" data-i18n="norm.capability_critical">Kritik (Report)</span><span class="result-val ok">Cm/Cmk ≥ 2.00</span></div><div class="result-row"><span class="result-key" data-i18n="norm.capability_standard">Standart</span><span class="result-val ok">Cm/Cmk ≥ 1.67</span></div><div class="result-row"><span class="result-key" data-i18n="norm.capability_preliminary">Ön sıkma</span><span class="result-val warn">Cm/Cmk ≥ 1.33</span></div><div class="result-row"><span class="result-key" data-i18n="norm.capability_insufficient">Yetersiz</span><span class="result-val nok">Cm/Cmk &lt; 1.33</span></div></div></div>
+    <div class="card"><div class="card-title" data-i18n="norm.settling_range_title">Standart Oturma Referans Aralığı</div> <span class="norm-badge" data-i18n="norm.per_sample_norm">Örnek norma göre</span><div class="card-sub" data-i18n="norm.settling_range_sub">Sıkma sınıfına göre beklenen oturma kayıpları — kontrol limiti değil, referans bilgisidir</div><div class="result-box"><div class="result-row"><span class="result-key" data-i18n="norm.class_a">Sınıf A</span><span class="result-val">−%8 / +%5</span></div><div class="result-row"><span class="result-key" data-i18n="norm.class_b">Sınıf B</span><span class="result-val">−%15 / +%10</span></div><div class="result-row"><span class="result-key" data-i18n="norm.class_c">Sınıf C</span><span class="result-val">−%35 / +%16</span></div><div class="result-row"><span class="result-key" data-i18n="norm.class_d">Sınıf D</span><span class="result-val">−%50 / +%20</span></div></div></div>
+    <div class="card"><div class="card-title" data-i18n="norm.sample_study_title">Örnek Tork Çalışması</div> <span class="norm-badge" data-i18n="norm.demo_dataset">Demo veri seti</span><div class="card-sub" data-i18n="norm.sample_study_sub">Teknik resim veya özel norm değeri yoksa kullanılabilecek örnek referans tablosudur (Tofaş/FIAT/Stellantis veya başka bir OEM'e ait değildir). Ek yağlayıcı uygulanmamış, üretimden çıktığı haliyle geçerlidir.</div><div class="result-box"><div class="result-row"><span class="result-key">M10×1.25 <span data-i18n="norm.flanged">Flanşlı</span> 10.9</span><span class="result-val">65 Nm / 34.700 N</span></div><div class="result-row"><span class="result-key">M12×1.25 <span data-i18n="norm.flanged">Flanşlı</span> 10.9</span><span class="result-val">120 Nm / 53.700 N</span></div><div class="result-row"><span class="result-key">M14×1.5 <span data-i18n="norm.flanged">Flanşlı</span> 10.9</span><span class="result-val">180 Nm / 69.100 N</span></div></div></div>
   </div>
 </div>
 
@@ -2080,6 +2080,108 @@ const I18N = {
     'library.coatings.system_coat_006': 'Stainless, natural finish',
     'library.coatings.topcoat_montaj_pastas_ops': 'Assembly paste optional',
     'library.coatings.note_yenme_galling_riski_pasta_neri': 'Risk of galling -- assembly paste recommended',
+
+    // ---- Faz 2.7.2b: OEM Norm Query + Norm Guide ----
+    'oem.title': 'OEM Norm Query',
+    'oem.subtitle': 'Vehicle Type 263 · Issue A · 19.11.2008 · Control Method: NP 0.00010/01 Method A',
+    'oem.scope_note': "The T' min / T' max values in this module are read directly from the norm -- no theoretical calculation is applied. If the technical drawing value differs from the norm value, the technical drawing takes priority. For joints not covered by the norm, refer to the sample OEM general-estimate table for preliminary assessment only.",
+    'oem.norm_info_title': 'Norm Information',
+    'oem.search_title': 'Search',
+    'oem.search_placeholder': 'Item no., system, thread size, class...',
+    'oem.filter_all': 'All',
+    'oem.filter_class_a': 'Class A',
+    'oem.filter_class_b': 'Class B',
+    'oem.all_systems': 'All Systems',
+    'oem.norm_no_label': 'Norm No.',
+    'oem.vehicle_label': 'Vehicle',
+    'oem.revision_label': 'Revision',
+    'oem.control_label': 'Control',
+    'oem.results_suffix': 'results',
+    'oem.no_results': 'No results found.',
+    'oem.status_deleted': 'DELETED',
+    'oem.status_active': 'ACTIVE',
+    'oem.status_experimental': 'EXPERIMENTAL',
+    'oem.applicability_label': 'Applicability',
+    'oem.deleted_point_note': 'This tightening point has been removed from the norm.',
+    'oem.nominal_torque': 'Nominal Torque',
+    'oem.not_defined': 'not defined',
+    'oem.initial_torque': 'Initial Torque',
+    'oem.angle_label': 'Angle',
+    'oem.recipe_apply_torque': 'apply torque',
+    'oem.recipe_apply_angle': 'apply angle',
+    'oem.recipe_check': 'Check',
+    'oem.control_limit_not_defined': 'Control limit not defined',
+    'oem.no_control_limit_for_point': 'No control limit is defined for this point',
+    'oem.deviation_from_nominal': "Deviation from nominal",
+    'oem.lower': 'Lower',
+    'oem.upper': 'Upper',
+    'oem.norm_derived_not_calculated': 'These values are taken from the norm; they are not calculation-derived.',
+    'oem.type_torque_angle': 'Torque+Angle',
+    'oem.type_no_control': 'No Control',
+    'oem.type_torque_only': 'Torque Only',
+    'oem.class_label': 'Class',
+
+    'oem.section.7': 'BRAKES',
+    'oem.section.10': 'ENGINE MOUNT',
+    'oem.section.11': 'FRONT SUSPENSION',
+    'oem.section.12': 'REAR SUSPENSION',
+    'oem.section.6': 'STEERING',
+    'oem.section.19': 'AIRBAG & SAFETY',
+
+    'oem.tanim.7_1': 'Front brake caliper and front upright mounting bolt',
+    'oem.tanim.7_4': "10'' drum brake shoe support mounting bolt",
+    'oem.tanim.7_5': "9'' drum brake shoe support mounting bolt",
+    'oem.tanim.10_1': 'Engine-side mount bracket-to-engine mounting nut',
+    'oem.tanim.10_7': 'Gearbox-side mount bolt',
+    'oem.tanim.10_14_deleted': 'DELETED -- this item has been cancelled',
+    'oem.tanim.10_15': 'Gearbox-side mount bolt (C635)',
+    'oem.tanim.10_19': 'Differential-side link rod bolt',
+    'oem.tanim.11_1': 'Arm and upright mounting nut',
+    'oem.tanim.11_2': 'Front arm to front crossmember connection bolt',
+    'oem.tanim.11_4': 'Shock absorber mount mounting nut',
+    'oem.tanim.11_7': 'Rear crossmember-to-body connection bolt',
+    'oem.tanim.11_12': 'Steel wheel mounting bolt',
+    'oem.tanim.11_13': 'Aluminum wheel mounting bolt',
+    'oem.tanim.12_10': 'Rear steel wheel mounting bolt',
+    'oem.tanim.12_12': 'Rear wheel hub mounting nut',
+    'oem.tanim.6_4': 'Hydraulic steering gear to mechanical crossmember mounting nut',
+    'oem.tanim.6_1': 'Steering wheel mounting nut',
+    'oem.tanim.19_1': 'Front seatbelt retractor arm mounting bolt',
+
+    'oem.variant.only_13jtd': 'Only 1.3 JTD',
+    'oem.variant.jtd_16_20_c635': '1.6 JTD, 2.0 JTD -- C635',
+    'oem.variant.cargo_version': 'Cargo version',
+
+    'oem.source_note.deleted_issue_a': 'Removed with Issue A',
+    'oem.source_note.no_control_limit': 'No control limit defined',
+
+    'norm.title': 'Norm and Standards Guide',
+    'norm.subtitle': 'VDI 2230 · ISO 16047 · General automotive standards',
+    'norm.control_methods_title': 'Torque Control Methods',
+    'norm.method_dynamic': 'Dynamic Torque (System A)',
+    'norm.method_dynamic_desc': 'Measured at the moment of tightening',
+    'norm.method_static': 'Static Torque (Method C)',
+    'norm.method_static_desc': 'Torque at first movement',
+    'norm.method_torque_angle': 'Torque + Angle',
+    'norm.method_torque_angle_desc': 'Initial torque + angle',
+    'norm.method_ultrasonic': 'Ultrasonic',
+    'norm.method_ultrasonic_desc': 'Measured via bolt elongation',
+    'norm.capability_targets_title': 'Capability Target Values',
+    'norm.per_sample_norm': 'Per sample norm',
+    'norm.capability_critical': 'Critical (Report)',
+    'norm.capability_standard': 'Standard',
+    'norm.capability_preliminary': 'Preliminary tightening',
+    'norm.capability_insufficient': 'Insufficient',
+    'norm.settling_range_title': 'Standard Settling Reference Range',
+    'norm.settling_range_sub': 'Expected settling losses by tightening class -- reference information, not a control limit',
+    'norm.class_a': 'Class A',
+    'norm.class_b': 'Class B',
+    'norm.class_c': 'Class C',
+    'norm.class_d': 'Class D',
+    'norm.sample_study_title': 'Sample Torque Study',
+    'norm.demo_dataset': 'Demo dataset',
+    'norm.sample_study_sub': "A sample reference table for use when no technical drawing or specific norm value exists (not affiliated with Tofas/FIAT/Stellantis or any other OEM). Valid as supplied from production, with no additional lubricant applied.",
+    'norm.flanged': 'Flanged',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -2595,6 +2697,108 @@ const I18N = {
     'library.coatings.topcoat_montaj_pastas_ops': 'Montaj pastası ops.',
     'library.coatings.note_yenme_galling_riski_pasta_neri': 'Yenme (galling) riski — pasta önerilir',
 
+    // ---- Faz 2.7.2b: OEM Norm Sorgu + Norm Rehberi ----
+    'oem.title': 'OEM Norm Sorgulama',
+    'oem.subtitle': 'Araç Tipi 263 · Issue A · 19.11.2008 · Kontrol Metodu: NP 0.00010/01 Metod A',
+    'oem.scope_note': "Bu modüldeki T' min / T' max değerleri normdan birebir okunmaktadır — teorik hesap uygulanmaz. Teknik resim değeri norm değerinden farklıysa teknik resim önceliklidir. Normda bulunmayan bağlantılar için örnek OEM genel öngörü tablosuna yalnız ön değerlendirme amacıyla başvurunuz.",
+    'oem.norm_info_title': 'Norm Bilgisi',
+    'oem.search_title': 'Ara',
+    'oem.search_placeholder': 'Madde no, sistem, diş ölçüsü, sınıf...',
+    'oem.filter_all': 'Tümü',
+    'oem.filter_class_a': 'Sınıf A',
+    'oem.filter_class_b': 'Sınıf B',
+    'oem.all_systems': 'Tüm Sistemler',
+    'oem.norm_no_label': 'Norm No',
+    'oem.vehicle_label': 'Araç',
+    'oem.revision_label': 'Revizyon',
+    'oem.control_label': 'Kontrol',
+    'oem.results_suffix': 'sonuç',
+    'oem.no_results': 'Sonuç bulunamadı.',
+    'oem.status_deleted': 'SİLİNDİ',
+    'oem.status_active': 'AKTİF',
+    'oem.status_experimental': 'DENEYSEL',
+    'oem.applicability_label': 'Geçerlilik',
+    'oem.deleted_point_note': 'Bu sıkma noktası normdan silinmiştir.',
+    'oem.nominal_torque': 'Nominal Tork',
+    'oem.not_defined': 'tanımlı değil',
+    'oem.initial_torque': 'Başlangıç Torku',
+    'oem.angle_label': 'Açı',
+    'oem.recipe_apply_torque': 'tork uygula',
+    'oem.recipe_apply_angle': 'açı uygula',
+    'oem.recipe_check': 'Kontrol',
+    'oem.control_limit_not_defined': 'Kontrol limiti tanımlı değil',
+    'oem.no_control_limit_for_point': 'Bu nokta için kontrol limiti tanımlı değildir',
+    'oem.deviation_from_nominal': "Nominal'den sapma",
+    'oem.lower': 'Alt',
+    'oem.upper': 'Üst',
+    'oem.norm_derived_not_calculated': 'Bu değerler normdan alınmıştır, hesap ile üretilmemiştir.',
+    'oem.type_torque_angle': 'Tork+Açı',
+    'oem.type_no_control': 'Kontrol Yok',
+    'oem.type_torque_only': 'Yalnız Tork',
+    'oem.class_label': 'Sınıf',
+
+    'oem.section.7': 'FRENLER',
+    'oem.section.10': 'MOTOR ASKISI',
+    'oem.section.11': 'ÖN SÜSPANSIYON',
+    'oem.section.12': 'ARKA SÜSPANSIYON',
+    'oem.section.6': 'DİREKSİYON',
+    'oem.section.19': 'HAVA YASTIGI VE GÜVENLİK',
+
+    'oem.tanim.7_1': 'Ön fren kaliperi ve ön direk sabitleme vidası',
+    'oem.tanim.7_4': "10'' pabuclu arka fren desteği sabitleme vidası",
+    'oem.tanim.7_5': "9'' pabuclu arka fren desteği sabitleme vidası",
+    'oem.tanim.10_1': 'Motor tarafı destekten motora sabitleme somunu',
+    'oem.tanim.10_7': 'Şanzıman tarafı destek vidası',
+    'oem.tanim.10_14_deleted': 'SİLİNDİ — Bu madde iptal edilmiştir',
+    'oem.tanim.10_15': 'Şanzıman tarafı destek vidası (C635)',
+    'oem.tanim.10_19': 'Diferansiyel tarafı bağlantı çubuğu vidası',
+    'oem.tanim.11_1': 'Kol ve direk sabitleme somunu',
+    'oem.tanim.11_2': 'Ön kolun ön travers bağlantı vidası',
+    'oem.tanim.11_4': 'Amortisör yatağı sabitleme somunu',
+    'oem.tanim.11_7': 'Arka travers gövde bağlantı vidası',
+    'oem.tanim.11_12': 'Sac jant sabitleme vidası',
+    'oem.tanim.11_13': 'Alüminyum jant sabitleme vidası',
+    'oem.tanim.12_10': 'Arka sac jant sabitleme vidası',
+    'oem.tanim.12_12': 'Arka tekerlek göbeği sabitleme somunu',
+    'oem.tanim.6_4': 'Hidrolik direksiyon kutusu mekanik travere sabitleme somunu',
+    'oem.tanim.6_1': 'Direksiyon simidi sabitleme somunu',
+    'oem.tanim.19_1': 'Ön emniyet kemeri makarası kol sabitleme vidası',
+
+    'oem.variant.only_13jtd': 'Yalnızca 1.3 JTD',
+    'oem.variant.jtd_16_20_c635': '1.6 JTD, 2.0 JTD — C635',
+    'oem.variant.cargo_version': 'Kargo versiyonu',
+
+    'oem.source_note.deleted_issue_a': 'Issue A ile silindi',
+    'oem.source_note.no_control_limit': 'Kontrol limiti tanımlı değil',
+
+    'norm.title': 'Norm ve Standart Rehberi',
+    'norm.subtitle': 'VDI 2230 · ISO 16047 · Genel otomotiv standartları',
+    'norm.control_methods_title': 'Tork Kontrol Yöntemleri',
+    'norm.method_dynamic': 'Dinamik Tork (Sistem A)',
+    'norm.method_dynamic_desc': 'Sıkma anında ölçüm',
+    'norm.method_static': 'Statik Tork (C Metodu)',
+    'norm.method_static_desc': 'İlk harekete geçme torku',
+    'norm.method_torque_angle': 'Tork + Açı',
+    'norm.method_torque_angle_desc': 'Başlangıç torku + açı',
+    'norm.method_ultrasonic': 'Ultrasonik',
+    'norm.method_ultrasonic_desc': 'Cıvata uzaması ile ölçüm',
+    'norm.capability_targets_title': 'Yetenek Hedef Değerleri',
+    'norm.per_sample_norm': 'Örnek norma göre',
+    'norm.capability_critical': 'Kritik (Report)',
+    'norm.capability_standard': 'Standart',
+    'norm.capability_preliminary': 'Ön sıkma',
+    'norm.capability_insufficient': 'Yetersiz',
+    'norm.settling_range_title': 'Standart Oturma Referans Aralığı',
+    'norm.settling_range_sub': 'Sıkma sınıfına göre beklenen oturma kayıpları — kontrol limiti değil, referans bilgisidir',
+    'norm.class_a': 'Sınıf A',
+    'norm.class_b': 'Sınıf B',
+    'norm.class_c': 'Sınıf C',
+    'norm.class_d': 'Sınıf D',
+    'norm.sample_study_title': 'Örnek Tork Çalışması',
+    'norm.demo_dataset': 'Demo veri seti',
+    'norm.sample_study_sub': "Teknik resim veya özel norm değeri yoksa kullanılabilecek örnek referans tablosudur (Tofaş/FIAT/Stellantis veya başka bir OEM'e ait değildir). Ek yağlayıcı uygulanmamış, üretimden çıktığı haliyle geçerlidir.",
+    'norm.flanged': 'Flanşlı',
+
     'sidebar.frictioncondition': 'Yüzey Sürtünme Koşulu',
     'fc.page_title': 'Yüzey Sürtünme Koşulu',
     'fc.page_subtitle': 'Kaplama, yağlama ve temas yüzeylerine bağlı sürtünme referans verileri',
@@ -2877,6 +3081,27 @@ function t(key) {
   return key;
 }
 
+// Controlled dual-language accessor: returns the translation for a
+// SPECIFIC language, not necessarily the active one. Used only where
+// a feature must search/compare against both TR and EN text at once
+// (currently: oemSearch()) -- it never changes what is *displayed*,
+// only what search matching considers. Falls back exactly like t():
+// requested lang -> en -> raw key, with the same console.warn on miss.
+function translationValue(key, lang) {
+  const dict = I18N[lang] || I18N.en;
+  const active = dict[key];
+  if (active !== undefined) return active;
+  const fallbackLang = lang === 'en' ? 'tr' : 'en';
+  const fallbackDict = I18N[fallbackLang] || I18N.en;
+  const fallbackValue = fallbackDict[key];
+  if (fallbackValue !== undefined) {
+    console.warn('[i18n] missing key "' + key + '" for lang "' + lang + '" -- using ' + fallbackLang + ' fallback');
+    return fallbackValue;
+  }
+  console.warn('[i18n] missing key "' + key + '" -- no translation found in any language, showing raw key');
+  return key;
+}
+
 // Translates a known backend enum/status value for display.
 // fcFmtLabel (defined later in the Friction Condition section) is
 // the pre-i18n fallback formatter (underscore -> space); referencing
@@ -2936,6 +3161,7 @@ function setLanguage(lang) {
     fcRenderReport(FC_LAST_REPORT);
   }
   if (typeof libraryReapplyLanguage === 'function') libraryReapplyLanguage();
+  if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
 }
 
 document.addEventListener('DOMContentLoaded', applyStaticTranslations);
@@ -3961,23 +4187,45 @@ const FMEA=[{hata:'Tork limit dışı',neden:'Sıkıcı parametresi yüksek / d�
 function buildFmea(){const rc={KRİTİK:'danger',YÜKSEK:'warn',ORTA:'info'};document.getElementById('fmea-list').innerHTML=FMEA.map(f=>`<div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="pill pill-${rc[f.p]||'info'}">${f.p}</span><span style="font-size:14px;font-weight:600">${f.hata}</span></div><div style="font-size:12px;color:var(--text3);margin-bottom:4px">⚡ Neden: ${f.neden}</div><div style="font-size:12px;color:var(--text3);margin-bottom:8px">💥 Etki: ${f.etki}</div><div style="font-size:12px;background:rgba(79,126,248,.1);padding:8px;border-radius:6px;color:var(--accent2)">✅ Öneri: ${f.oneri}</div></div>`).join('');}
 
 // ========== OEM NORM ==========
-const OEM_NORM_DB={meta:{norm_no:'2.00176/86',arac:'Araç Tipi 263 (Yeni Doblò)',revizyon:'Issue A',tarih:'19.11.2008',kontrol_metodu:'NP 0.00010/01 Metod A'},sections:[{id:'7',baslik:'FRENLER',noktalar:[{id:'7.1',tanim:'Ön fren kaliperi ve ön direk sabitleme vidası',thread:'M12x1.25',malzeme:'10R RIV/DAC',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:105,t_min:100,t_max:110,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 7.1'},{id:'7.4',tanim:'10\'\' pabuclu arka fren desteği sabitleme vidası',thread:'M12x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:105,t_min:95,t_max:115,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 7.4'},{id:'7.5',tanim:'9\'\' pabuclu arka fren desteği sabitleme vidası',thread:'M10x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:70,t_min:63,t_max:77,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 7.5'}]},{id:'10',baslik:'MOTOR ASKISI',noktalar:[{id:'10.1',tanim:'Motor tarafı destekten motora sabitleme somunu',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:60,t_min:57,t_max:63,aci_deg:null,ilk_tork:null,status:'active',variant:'Yalnızca 1.3 JTD',kaynak:'2.00176/86 Madde 10.1'},{id:'10.7',tanim:'Şanzıman tarafı destek vidası',thread:'M12x1.25x45',malzeme:'8.8 RIV/EC 5',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:80,t_min:77,t_max:104,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 10.7'},{id:'10.14',tanim:'SİLİNDİ — Bu madde iptal edilmiştir',thread:'-',malzeme:'-',sinif:'-',experimental:false,tip:'deleted',nominal_nm:null,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'deleted',variant:null,kaynak:'Issue A ile silindi'},{id:'10.15',tanim:'Şanzıman tarafı destek vidası (C635)',thread:'M10x1.25x75',malzeme:'8.8 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:90,t_min:null,t_max:null,aci_deg:45,ilk_tork:90,status:'active',variant:'1.6 JTD, 2.0 JTD — C635',kaynak:'2.00176/86 Madde 10.15'},{id:'10.19',tanim:'Diferansiyel tarafı bağlantı çubuğu vidası',thread:'M12x1.25x105',malzeme:'R10 RIV/DAC',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:80,t_min:null,t_max:null,aci_deg:45,ilk_tork:80,status:'active',variant:null,kaynak:'2.00176/86 Madde 10.19'}]},{id:'11',baslik:'ÖN SÜSPANSIYON',noktalar:[{id:'11.1',tanim:'Kol ve direk sabitleme somunu',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:40,t_min:66,t_max:74,aci_deg:45,ilk_tork:40,status:'active',variant:null,kaynak:'2.00176/86 Madde 11.1'},{id:'11.2',tanim:'Ön kolun ön travers bağlantı vidası',thread:'M12x1.25x105',malzeme:'8.8 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:45,t_min:76,t_max:97,aci_deg:90,ilk_tork:45,status:'active',variant:null,kaynak:'2.00176/86 Madde 11.2'},{id:'11.4',tanim:'Amortisör yatağı sabitleme somunu',thread:'M12x1.25',malzeme:'8 Fe/Zn 7 IV',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:70,t_min:64,t_max:93,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 11.4'},{id:'11.7',tanim:'Arka travers gövde bağlantı vidası',thread:'M12x1.25x65',malzeme:'R10 RIV/DAC 5 PL',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:125,t_min:121,t_max:162,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 11.7'},{id:'11.12',tanim:'Sac jant sabitleme vidası',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:106,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 11.12'},{id:'11.13',tanim:'Alüminyum jant sabitleme vidası',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:false,tip:'no_control',nominal_nm:120,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 11.13 — Kontrol limiti tanımlı değil'}]},{id:'12',baslik:'ARKA SÜSPANSIYON',noktalar:[{id:'12.10',tanim:'Arka sac jant sabitleme vidası',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:109,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 12.10'},{id:'12.12',tanim:'Arka tekerlek göbeği sabitleme somunu',thread:'M22x1.5',malzeme:'R10',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:280,t_min:271,t_max:364,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 12.12'}]},{id:'6',baslik:'DİREKSİYON',noktalar:[{id:'6.4',tanim:'Hidrolik direksiyon kutusu mekanik travere sabitleme somunu',thread:'M12x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_only',nominal_nm:88,t_min:81,t_max:117,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 6.4'},{id:'6.1',tanim:'Direksiyon simidi sabitleme somunu',thread:'M16',malzeme:'C70',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:50,t_min:40,t_max:66,aci_deg:null,ilk_tork:null,status:'active',variant:null,kaynak:'2.00176/86 Madde 6.1'}]},{id:'19',baslik:'HAVA YASTIGI VE GÜVENLİK',noktalar:[{id:'19.1',tanim:'Ön emniyet kemeri makarası kol sabitleme vidası',thread:'7/16',malzeme:'-',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:40,t_min:30,t_max:60,aci_deg:null,ilk_tork:null,status:'active',variant:'Kargo versiyonu',kaynak:'2.00176/86 Madde 19.1'}]}]};
+const OEM_NORM_DB={meta:{norm_no:'2.00176/86',arac:'Araç Tipi 263 (Yeni Doblò)',revizyon:'Issue A',tarih:'19.11.2008',kontrol_metodu:'NP 0.00010/01 Metod A'},sections:[{id:'7',baslikKey:'oem.section.7',noktalar:[{id:'7.1',tanimKey:'oem.tanim.7_1',thread:'M12x1.25',malzeme:'10R RIV/DAC',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:105,t_min:100,t_max:110,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 7.1',sourceNoteKey:null},{id:'7.4',tanimKey:'oem.tanim.7_4',thread:'M12x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:105,t_min:95,t_max:115,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 7.4',sourceNoteKey:null},{id:'7.5',tanimKey:'oem.tanim.7_5',thread:'M10x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:70,t_min:63,t_max:77,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 7.5',sourceNoteKey:null}]},{id:'10',baslikKey:'oem.section.10',noktalar:[{id:'10.1',tanimKey:'oem.tanim.10_1',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:60,t_min:57,t_max:63,aci_deg:null,ilk_tork:null,status:'active',variantKey:'oem.variant.only_13jtd',sourceReference:'2.00176/86 Madde 10.1',sourceNoteKey:null},{id:'10.7',tanimKey:'oem.tanim.10_7',thread:'M12x1.25x45',malzeme:'8.8 RIV/EC 5',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:80,t_min:77,t_max:104,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 10.7',sourceNoteKey:null},{id:'10.14',tanimKey:'oem.tanim.10_14_deleted',thread:'-',malzeme:'-',sinif:'-',experimental:false,tip:'deleted',nominal_nm:null,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'deleted',variantKey:null,sourceReference:null,sourceNoteKey:'oem.source_note.deleted_issue_a'},{id:'10.15',tanimKey:'oem.tanim.10_15',thread:'M10x1.25x75',malzeme:'8.8 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:90,t_min:null,t_max:null,aci_deg:45,ilk_tork:90,status:'active',variantKey:'oem.variant.jtd_16_20_c635',sourceReference:'2.00176/86 Madde 10.15',sourceNoteKey:null},{id:'10.19',tanimKey:'oem.tanim.10_19',thread:'M12x1.25x105',malzeme:'R10 RIV/DAC',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:80,t_min:null,t_max:null,aci_deg:45,ilk_tork:80,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 10.19',sourceNoteKey:null}]},{id:'11',baslikKey:'oem.section.11',noktalar:[{id:'11.1',tanimKey:'oem.tanim.11_1',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:40,t_min:66,t_max:74,aci_deg:45,ilk_tork:40,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.1',sourceNoteKey:null},{id:'11.2',tanimKey:'oem.tanim.11_2',thread:'M12x1.25x105',malzeme:'8.8 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:45,t_min:76,t_max:97,aci_deg:90,ilk_tork:45,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.2',sourceNoteKey:null},{id:'11.4',tanimKey:'oem.tanim.11_4',thread:'M12x1.25',malzeme:'8 Fe/Zn 7 IV',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:70,t_min:64,t_max:93,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.4',sourceNoteKey:null},{id:'11.7',tanimKey:'oem.tanim.11_7',thread:'M12x1.25x65',malzeme:'R10 RIV/DAC 5 PL',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:125,t_min:121,t_max:162,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.7',sourceNoteKey:null},{id:'11.12',tanimKey:'oem.tanim.11_12',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:106,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.12',sourceNoteKey:null},{id:'11.13',tanimKey:'oem.tanim.11_13',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:false,tip:'no_control',nominal_nm:120,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.13',sourceNoteKey:'oem.source_note.no_control_limit'}]},{id:'12',baslikKey:'oem.section.12',noktalar:[{id:'12.10',tanimKey:'oem.tanim.12_10',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:109,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 12.10',sourceNoteKey:null},{id:'12.12',tanimKey:'oem.tanim.12_12',thread:'M22x1.5',malzeme:'R10',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:280,t_min:271,t_max:364,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 12.12',sourceNoteKey:null}]},{id:'6',baslikKey:'oem.section.6',noktalar:[{id:'6.4',tanimKey:'oem.tanim.6_4',thread:'M12x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_only',nominal_nm:88,t_min:81,t_max:117,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 6.4',sourceNoteKey:null},{id:'6.1',tanimKey:'oem.tanim.6_1',thread:'M16',malzeme:'C70',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:50,t_min:40,t_max:66,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 6.1',sourceNoteKey:null}]},{id:'19',baslikKey:'oem.section.19',noktalar:[{id:'19.1',tanimKey:'oem.tanim.19_1',thread:'7/16',malzeme:'-',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:40,t_min:30,t_max:60,aci_deg:null,ilk_tork:null,status:'active',variantKey:'oem.variant.cargo_version',sourceReference:'2.00176/86 Madde 19.1',sourceNoteKey:null}]}]};
 
-function oemGetAll(){const pts=[];OEM_NORM_DB.sections.forEach(s=>{s.noktalar.forEach(n=>{pts.push({...n,section_id:s.id,section_baslik:s.baslik});});});return pts;}
-function oemSearch(q){if(!q)return oemGetAll();const ql=q.toLowerCase();return oemGetAll().filter(p=>p.id.toLowerCase().includes(ql)||p.tanim.toLowerCase().includes(ql)||p.section_baslik.toLowerCase().includes(ql)||(p.thread&&p.thread.toLowerCase().includes(ql))||(p.sinif&&p.sinif.toLowerCase()===ql));}
+function oemGetAll(){const pts=[];OEM_NORM_DB.sections.forEach(s=>{s.noktalar.forEach(n=>{pts.push({...n,section_id:s.id,section_baslikKey:s.baslikKey});});});return pts;}
+function oemSearch(q){
+  if(!q)return oemGetAll();
+  const ql=q.toLowerCase();
+  return oemGetAll().filter(p=>{
+    // Technical fields: match as-is, identical in both languages.
+    if(p.id.toLowerCase().includes(ql))return true;
+    if(p.thread&&p.thread.toLowerCase().includes(ql))return true;
+    if(p.malzeme&&p.malzeme.toLowerCase().includes(ql))return true;
+    if(p.sinif&&p.sinif.toLowerCase()===ql)return true;
+    if(p.tip&&p.tip.toLowerCase().includes(ql))return true;
+    if(p.sourceReference&&p.sourceReference.toLowerCase().includes(ql))return true;
+    // Translatable fields: match against BOTH tr and en text so a TR
+    // interface can be searched with an English term and vice versa.
+    for(const lang of ['tr','en']){
+      if(translationValue(p.tanimKey,lang).toLowerCase().includes(ql))return true;
+      if(translationValue(p.section_baslikKey,lang).toLowerCase().includes(ql))return true;
+      if(p.variantKey&&translationValue(p.variantKey,lang).toLowerCase().includes(ql))return true;
+    }
+    return false;
+  });
+}
 
 function oemRenderCard(p){
-  const sb=p.status==='deleted'?'<span class="pill pill-nok">SİLİNDİ</span>':'<span class="pill pill-ok">AKTİF</span>';
-  const eb=p.experimental?'<span class="pill pill-warn">★ DENEYSEL</span>':'';
-  const vb=p.variant?`<div class="oem-variant">🔧 Geçerlilik: ${p.variant}</div>`:'';
+  const sb=p.status==='deleted'?`<span class="pill pill-nok">${t('oem.status_deleted')}</span>`:`<span class="pill pill-ok">${t('oem.status_active')}</span>`;
+  const eb=p.experimental?`<span class="pill pill-warn">★ ${t('oem.status_experimental')}</span>`:'';
+  const vb=p.variantKey?`<div class="oem-variant">🔧 ${t('oem.applicability_label')}: ${t(p.variantKey)}</div>`:'';
   let tk='';
-  if(p.status==='deleted'){tk=`<div class="oem-deleted-box">Bu sıkma noktası normdan silinmiştir.</div>`;}
-  else if(p.tip==='torque_only'){tk=`<div class="oem-tork-grid"><div class="oem-tork-cell main"><div class="oem-tork-label">Nominal Tork</div><div class="oem-tork-val blue">${p.nominal_nm} Nm</div></div><div class="oem-tork-cell ${p.t_min?'':'empty'}"><div class="oem-tork-label">T' min</div><div class="oem-tork-val ok">${p.t_min?p.t_min+' Nm':'— tanımlı değil'}</div></div><div class="oem-tork-cell ${p.t_max?'':'empty'}"><div class="oem-tork-label">T' max</div><div class="oem-tork-val ok">${p.t_max?p.t_max+' Nm':'— tanımlı değil'}</div></div></div>`;}
-  else if(p.tip==='torque_angle'){tk=`<div class="oem-tork-grid"><div class="oem-tork-cell main"><div class="oem-tork-label">Başlangıç Torku</div><div class="oem-tork-val blue">${p.ilk_tork} Nm</div></div><div class="oem-tork-cell main"><div class="oem-tork-label">+ Açı</div><div class="oem-tork-val blue">${p.aci_deg}°</div></div><div class="oem-tork-cell ${p.t_min?'':'empty'}"><div class="oem-tork-label">T' min</div><div class="oem-tork-val ok">${p.t_min?p.t_min+' Nm':'— tanımlı değil'}</div></div><div class="oem-tork-cell ${p.t_max?'':'empty'}"><div class="oem-tork-label">T' max</div><div class="oem-tork-val ok">${p.t_max?p.t_max+' Nm':'— tanımlı değil'}</div></div></div><div class="oem-recipe"><strong>1.</strong> ${p.ilk_tork} Nm tork uygula <strong>2.</strong> ${p.aci_deg}° açı uygula ${p.t_min?`<strong>3.</strong> Kontrol: ${p.t_min}–${p.t_max} Nm`:'<strong>3.</strong> Kontrol limiti tanımlı değil'}</div>`;}
-  else if(p.tip==='no_control'){tk=`<div class="oem-tork-grid"><div class="oem-tork-cell main"><div class="oem-tork-label">Nominal Tork</div><div class="oem-tork-val blue">${p.nominal_nm} Nm</div></div><div class="oem-tork-cell empty"><div class="oem-tork-label">T' min / T' max</div><div class="oem-tork-val" style="color:var(--text3);font-size:14px">Bu nokta için kontrol limiti tanımlı değildir</div></div></div>`;}
+  if(p.status==='deleted'){tk=`<div class="oem-deleted-box">${t('oem.deleted_point_note')}</div>`;}
+  else if(p.tip==='torque_only'){tk=`<div class="oem-tork-grid"><div class="oem-tork-cell main"><div class="oem-tork-label">${t('oem.nominal_torque')}</div><div class="oem-tork-val blue">${p.nominal_nm} Nm</div></div><div class="oem-tork-cell ${p.t_min?'':'empty'}"><div class="oem-tork-label">T' min</div><div class="oem-tork-val ok">${p.t_min?p.t_min+' Nm':'— '+t('oem.not_defined')}</div></div><div class="oem-tork-cell ${p.t_max?'':'empty'}"><div class="oem-tork-label">T' max</div><div class="oem-tork-val ok">${p.t_max?p.t_max+' Nm':'— '+t('oem.not_defined')}</div></div></div>`;}
+  else if(p.tip==='torque_angle'){tk=`<div class="oem-tork-grid"><div class="oem-tork-cell main"><div class="oem-tork-label">${t('oem.initial_torque')}</div><div class="oem-tork-val blue">${p.ilk_tork} Nm</div></div><div class="oem-tork-cell main"><div class="oem-tork-label">+ ${t('oem.angle_label')}</div><div class="oem-tork-val blue">${p.aci_deg}°</div></div><div class="oem-tork-cell ${p.t_min?'':'empty'}"><div class="oem-tork-label">T' min</div><div class="oem-tork-val ok">${p.t_min?p.t_min+' Nm':'— '+t('oem.not_defined')}</div></div><div class="oem-tork-cell ${p.t_max?'':'empty'}"><div class="oem-tork-label">T' max</div><div class="oem-tork-val ok">${p.t_max?p.t_max+' Nm':'— '+t('oem.not_defined')}</div></div></div><div class="oem-recipe"><strong>1.</strong> ${p.ilk_tork} Nm ${t('oem.recipe_apply_torque')} <strong>2.</strong> ${p.aci_deg}° ${t('oem.recipe_apply_angle')} ${p.t_min?`<strong>3.</strong> ${t('oem.recipe_check')}: ${p.t_min}–${p.t_max} Nm`:`<strong>3.</strong> ${t('oem.control_limit_not_defined')}`}</div>`;}
+  else if(p.tip==='no_control'){tk=`<div class="oem-tork-grid"><div class="oem-tork-cell main"><div class="oem-tork-label">${t('oem.nominal_torque')}</div><div class="oem-tork-val blue">${p.nominal_nm} Nm</div></div><div class="oem-tork-cell empty"><div class="oem-tork-label">T' min / T' max</div><div class="oem-tork-val" style="color:var(--text3);font-size:14px">${t('oem.no_control_limit_for_point')}</div></div></div>`;}
   let sap='';
-  if(p.t_min&&p.t_max&&p.nominal_nm){const a=(((p.t_min-p.nominal_nm)/p.nominal_nm)*100).toFixed(1),u=(((p.t_max-p.nominal_nm)/p.nominal_nm)*100).toFixed(1);sap=`<div class="oem-info-row">ℹ️ Nominal'den sapma: Alt ${a}% / Üst +${u}% — Bu değerler normdan alınmıştır, hesap ile üretilmemiştir.</div>`;}
-  return `<div class="oem-card ${p.status==='deleted'?'oem-deleted':''}"><div class="oem-card-header"><div class="oem-card-id">${p.section_id}/${p.id}</div><div class="oem-card-badges">${sb}${eb}<span class="pill pill-info">Sınıf ${p.sinif}</span><span class="pill pill-info">${p.tip==='torque_angle'?'Tork+Açı':p.tip==='no_control'?'Kontrol Yok':p.status==='deleted'?'Silindi':'Yalnız Tork'}</span></div></div><div class="oem-card-section">${p.section_baslik}</div><div class="oem-card-tanim">${p.tanim}</div><div class="oem-specs"><span>🔩 ${p.thread}</span><span>🧪 ${p.malzeme}</span><span>📋 ${p.kaynak}</span></div>${vb}${tk}${sap}</div>`;
+  if(p.t_min&&p.t_max&&p.nominal_nm){const a=(((p.t_min-p.nominal_nm)/p.nominal_nm)*100).toFixed(1),u=(((p.t_max-p.nominal_nm)/p.nominal_nm)*100).toFixed(1);sap=`<div class="oem-info-row">ℹ️ ${t('oem.deviation_from_nominal')}: ${t('oem.lower')} ${a}% / ${t('oem.upper')} +${u}% — ${t('oem.norm_derived_not_calculated')}</div>`;}
+  const sourceText=(p.sourceReference?p.sourceReference:'')+(p.sourceNoteKey?(p.sourceReference?' — ':'')+t(p.sourceNoteKey):'');
+  const tipLabel=p.tip==='torque_angle'?t('oem.type_torque_angle'):p.tip==='no_control'?t('oem.type_no_control'):p.status==='deleted'?t('oem.status_deleted'):t('oem.type_torque_only');
+  return `<div class="oem-card ${p.status==='deleted'?'oem-deleted':''}"><div class="oem-card-header"><div class="oem-card-id">${p.section_id}/${p.id}</div><div class="oem-card-badges">${sb}${eb}<span class="pill pill-info">${t('oem.class_label')} ${p.sinif}</span><span class="pill pill-info">${tipLabel}</span></div></div><div class="oem-card-section">${t(p.section_baslikKey)}</div><div class="oem-card-tanim">${t(p.tanimKey)}</div><div class="oem-specs"><span>🔩 ${p.thread}</span><span>🧪 ${p.malzeme}</span><span>📋 ${sourceText}</span></div>${vb}${tk}${sap}</div>`;
 }
 
 let _oF='',_oS='';
@@ -3992,18 +4240,37 @@ function oemRenderList(){
   else if(_oF==='tip:torque_angle')pts=pts.filter(p=>p.tip==='torque_angle');
   else if(_oF==='experimental')pts=pts.filter(p=>p.experimental);
   else if(_oF==='deleted')pts=pts.filter(p=>p.status==='deleted');
-  const cnt=document.getElementById('oem-count');if(cnt)cnt.textContent=pts.length+' sonuç';
+  const cnt=document.getElementById('oem-count');if(cnt)cnt.textContent=pts.length+' '+t('oem.results_suffix');
   const list=document.getElementById('oem-list');if(!list)return;
-  list.innerHTML=pts.length?pts.map(p=>oemRenderCard(p)).join(''):'<div style="text-align:center;padding:40px;color:var(--text3)">Sonuç bulunamadı.</div>';
+  list.innerHTML=pts.length?pts.map(p=>oemRenderCard(p)).join(''):`<div style="text-align:center;padding:40px;color:var(--text3)">${t('oem.no_results')}</div>`;
 }
 function oemInit(){
   const meta=document.getElementById('oem-meta');
-  if(meta){const m=OEM_NORM_DB.meta;meta.innerHTML=`<div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;gap:8px"><span style="font-size:12px;color:var(--text3);min-width:80px">Norm No</span><span style="font-size:12px;font-weight:600;color:var(--accent2)">${m.norm_no}</span></div><div style="display:flex;gap:8px"><span style="font-size:12px;color:var(--text3);min-width:80px">Araç</span><span style="font-size:12px;color:var(--text)">${m.arac}</span></div><div style="display:flex;gap:8px"><span style="font-size:12px;color:var(--text3);min-width:80px">Revizyon</span><span style="font-size:12px;color:var(--text)">${m.revizyon} — ${m.tarih}</span></div><div style="display:flex;gap:8px"><span style="font-size:12px;color:var(--text3);min-width:80px">Kontrol</span><span style="font-size:12px;color:var(--text)">${m.kontrol_metodu}</span></div></div>`;}
+  if(meta){const m=OEM_NORM_DB.meta;meta.innerHTML=`<div style="display:flex;flex-direction:column;gap:4px"><div style="display:flex;gap:8px"><span style="font-size:12px;color:var(--text3);min-width:80px">${t('oem.norm_no_label')}</span><span style="font-size:12px;font-weight:600;color:var(--accent2)">${m.norm_no}</span></div><div style="display:flex;gap:8px"><span style="font-size:12px;color:var(--text3);min-width:80px">${t('oem.vehicle_label')}</span><span style="font-size:12px;color:var(--text)">${m.arac}</span></div><div style="display:flex;gap:8px"><span style="font-size:12px;color:var(--text3);min-width:80px">${t('oem.revision_label')}</span><span style="font-size:12px;color:var(--text)">${m.revizyon} — ${m.tarih}</span></div><div style="display:flex;gap:8px"><span style="font-size:12px;color:var(--text3);min-width:80px">${t('oem.control_label')}</span><span style="font-size:12px;color:var(--text)">${m.kontrol_metodu}</span></div></div>`;}
   const tabs=document.getElementById('oem-section-tabs');
   if(tabs){
-    let html=`<button class="oem-sec-tab active" onclick="oemSecFilter('all',this)">Tüm Sistemler</button>`;
-    OEM_NORM_DB.sections.forEach(s=>{html+=`<button class="oem-sec-tab" onclick="oemSecFilter('${s.id}',this)">${s.id}. ${s.baslik}</button>`;});
+    let html=`<button class="oem-sec-tab active" onclick="oemSecFilter('all',this)">${t('oem.all_systems')}</button>`;
+    OEM_NORM_DB.sections.forEach(s=>{html+=`<button class="oem-sec-tab" onclick="oemSecFilter('${s.id}',this)">${s.id}. ${t(s.baslikKey)}</button>`;});
     tabs.innerHTML=html;
+  }
+  oemRenderList();
+}
+
+// Called from setLanguage() only, and only if the OEM page's DOM is
+// present. Re-renders meta/section-tab/card TEXT in the new language
+// while preserving the current search query (read live from the
+// #oem-search input, never touched here), the active section filter
+// (_oS) and class/type filter (_oF) module-level state, and therefore
+// the same matched record set. No new event listeners are attached
+// (oemInit()/oemRenderList() only ever replace innerHTML).
+function oemReapplyLanguage(){
+  if(!document.getElementById('oem-list'))return;
+  const activeSec=_oS, activeFilter=_oF;
+  oemInit(); // rebuilds meta + section tabs (text only; onclick handlers re-bound identically) and calls oemRenderList()
+  _oS=activeSec; _oF=activeFilter;
+  if(_oS||_oF){
+    document.querySelectorAll('.oem-sec-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.oem-filter-btn').forEach(b=>b.classList.remove('active'));
   }
   oemRenderList();
 }
