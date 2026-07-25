@@ -1,49 +1,192 @@
-# TorqPro_24
+# TorqPro v2.6.9
 
-Cıvatalı bağlantı mühendisliği ve sıkma güvencesi platformu (FastAPI + SQLite + tek sayfa PWA).
-Mevcut hesap kabiliyeti bir **mühendislik ön değerlendirmesidir**; onaylı VDI 2230 çözücüsü değildir.
-****
-## Current Development Status
+Professional Fastening Engineering Platform for Automotive, Defense and Industrial Manufacturing
 
-- ✅ Phase 2.4.1A — Thread Engineering Database
-- ✅ Phase 2.4.1B — Bolt & Nut Engineering Database
-- ✅ Phase 2.4.1C — Washer & Joint Hardware Engineering Database
-- ✅ Phase 2.4.2 — Library Runtime Reliability / Schema Completion
-- ✅ Phase 2.5A — Production Validation Foundation (joint prerequisite +
-  measurement data model; process capability math not yet implemented)
-  
-## Kurulum ve çalıştırma
+TorqPro is an engineering platform developed for bolt, nut and threaded joint analysis. It combines engineering calculations, OEM standards, friction condition management, capability analysis and manufacturing quality tools in a single application.
+
+**Current Stable Release:** v2.6.9
+
+---
+
+# Features
+
+## Fastening Engineering
+
+- OEM Torque Estimation
+- Torque Calculator
+- Advanced Joint Analysis
+- Fastener Engineering Database
+- Bolt & Nut Library
+- Washer & Joint Hardware Library
+
+## Manufacturing Quality
+
+- Cp / Cpk Capability Analysis
+- Tool Tracking
+- Problem Management
+- FMEA Failure Catalog
+- System Health Dashboard
+
+## Engineering Reference
+
+- OEM Norm Query
+- Friction Condition Workspace
+- Norm Guide
+- Engineering Recommendations
+
+## Localization
+
+- Turkish / English Interface
+- Runtime Language Switching
+- Centralized Version Management
+
+---
+
+# Current Development Status
+
+| Phase | Status |
+|-------|--------|
+| Phase 2.4 Engineering Database | ✅ Completed |
+| Phase 2.5 Production Validation Foundation | ✅ Completed |
+| Phase 2.6 Friction Condition Workspace | ✅ Completed |
+| Phase 2.6.9 Global TR/EN Localization | ✅ Current Stable Release |
+| Phase 2.7 Report Engine | 🚧 In Progress |
+| Phase 2.8 Demo Mode | Planned |
+
+---
+
+# Installation
+
+Clone the repository
 
 ```bash
-python -m venv .venv && source .venv/bin/activate   # Windows: .venv\Scripts\activate
+git clone https://github.com/Bursa-16/TorqPro.git
+cd TorqPro
+```
+
+Create virtual environment
+
+```bash
+python -m venv .venv
+```
+
+Activate
+
+Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+Install requirements
+
+```bash
 pip install -r requirements.txt
-export TORQPRO_SECRET_KEY="<en az 32 karakter rastgele anahtar>"
-uvicorn backend.app:app --host 0.0.0.0 --port 8000
 ```
 
-Windows hızlı başlatma: `TorqPro_24_Baslat.bat` · Varsayılan giriş: `Protype Lab / A1234` (ilk girişten sonra değiştirin).
+---
 
-## Test
+# Run
+
+Windows
+
+Double-click
+
+```
+TorqPro_24_Baslat.bat
+```
+
+or run manually
 
 ```bash
-pip install -r requirements-dev.txt
-pytest
+python -m uvicorn backend.app:app --host 0.0.0.0 --port 8000
 ```
 
-Testler `TORQPRO_DB_PATH` üzerinden geçici, izole bir veritabanı kullanır (`tests/conftest.py`).
+Application URL
 
-## Ortam değişkenleri
+```
+http://127.0.0.1:8000
+```
 
-| Değişken | Amaç |
-|---|---|
-| `TORQPRO_SECRET_KEY` | JWT imzalama anahtarı (üretimde zorunlu, ≥32 karakter) |
-| `TORQPRO_DB_PATH` | SQLite dosya yolu (varsayılan: depo kökünde `torqpro.db`) |
+---
 
-## Dokümantasyon
+# Technologies
 
-Kaynak-of-truth `docs/` klasörüdür. Okuma sırası: `docs/README.md` → `docs/12_CLAUDE_CONTEXT.md` → SDS dokümanları (00–15) → ADR'ler.
-Kod ile dokümantasyon çeliştiğinde uygulama durdurulur ve ADR/değişiklik talebi açılır.
+- Python
+- FastAPI
+- SQLite
+- HTML5
+- CSS3
+- JavaScript
+- GitHub Actions
+- GitHub Pages
 
-## Sürüm
+---
 
-Uygulama sürümü tek kaynaktan yönetilir: `backend/app.py` içindeki `APP_VERSION`.
+# Main Modules
+
+- Dashboard
+- OEM Torque Estimate
+- Torque Calculator
+- Check List
+- Capability Analysis
+- Problem Management
+- OEM Norm Query
+- Friction Condition
+- Norm Guide
+- FMEA Catalog
+
+---
+
+# Version
+
+Current Release
+
+**v2.6.9**
+
+Release Date
+
+**25 July 2026**
+
+---
+
+# Roadmap
+
+Completed
+
+- ✅ Phase 2.4 Engineering Database
+- ✅ Phase 2.5 Production Validation Foundation
+- ✅ Phase 2.6 Friction Condition Workspace
+- ✅ Phase 2.6.9 Global TR/EN Localization
+
+Next
+
+- Phase 2.7 Report Engine
+- Phase 2.8 Demo Mode
+- PDF Report Generator
+- Digital Twin Support
+- Advanced Engineering Simulation
+
+---
+
+# Project
+
+TorqPro is developed as an engineering platform for professional fastening analysis and manufacturing quality applications.
+
+Target industries include:
+
+- Automotive
+- Defense
+- Heavy Equipment
+- Aerospace
+- Industrial Manufacturing
+
+---
+
+# Repository
+
+https://github.com/Bursa-16/TorqPro
+
+---
+
+© 2026 TorqPro Project
