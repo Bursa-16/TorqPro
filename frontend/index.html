@@ -952,44 +952,44 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 
 <div id="page-golivewizard" class="page">
-  <div class="section-header"><span class="section-icon">🧭</span><div><div class="section-title">İlk Yayın Kurulum Sihirbazı</div><div class="section-sub">Sunucu · domain · DNS · HTTPS · yayın</div></div></div>
-  <div class="wizard-steps" id="wizardSteps"><div class="wizard-step active">1. Sunucu</div><div class="wizard-step">2. Domain</div><div class="wizard-step">3. DNS</div><div class="wizard-step">4. HTTPS</div><div class="wizard-step">5. Yayın</div></div>
-  <div class="card"><div class="form-row3"><div class="form-group"><label class="form-label">Sunucu IP</label><input class="form-input" id="gw_server_ip" placeholder="185.100.20.50"></div><div class="form-group"><label class="form-label">Alan Adı</label><input class="form-input" id="gw_domain" placeholder="app.torqpro.com"></div><div class="form-group"><label class="form-label">HTTPS</label><select class="form-select" id="gw_https"><option value="planned">Planlanıyor</option><option value="ready">Hazır</option></select></div></div><button class="btn btn-primary" onclick="saveGoLiveProfile()">Profili Kaydet</button></div>
-  <div class="card"><div class="card-title">Kurulum Kontrol Listesi</div><div id="goLiveChecklist"></div></div>
+  <div class="section-header"><span class="section-icon">🧭</span><div><div class="section-title" data-i18n="golive.title">İlk Yayın Kurulum Sihirbazı</div><div class="section-sub" data-i18n="golive.subtitle">Sunucu · domain · DNS · HTTPS · yayın</div></div></div>
+  <div class="wizard-steps" id="wizardSteps"><div class="wizard-step active"><span data-i18n="golive.step_server">1. Sunucu</span></div><div class="wizard-step"><span data-i18n="golive.step_domain">2. Domain</span></div><div class="wizard-step"><span data-i18n="golive.step_dns">3. DNS</span></div><div class="wizard-step"><span data-i18n="golive.step_https">4. HTTPS</span></div><div class="wizard-step"><span data-i18n="golive.step_publish">5. Yayın</span></div></div>
+  <div class="card"><div class="form-row3"><div class="form-group"><label class="form-label" data-i18n="golive.server_ip_label">Sunucu IP</label><input class="form-input" id="gw_server_ip" placeholder="185.100.20.50"></div><div class="form-group"><label class="form-label" data-i18n="golive.domain_label">Alan Adı</label><input class="form-input" id="gw_domain" placeholder="app.torqpro.com"></div><div class="form-group"><label class="form-label">HTTPS</label><select class="form-select" id="gw_https"><option value="planned" data-i18n="golive.https_planned">Planlanıyor</option><option value="ready" data-i18n="golive.https_ready">Hazır</option></select></div></div><button class="btn btn-primary" onclick="saveGoLiveProfile()" data-i18n="golive.save_profile_btn">Profili Kaydet</button></div>
+  <div class="card"><div class="card-title" data-i18n="golive.checklist_title">Kurulum Kontrol Listesi</div><div id="goLiveChecklist"></div></div>
 </div>
 
 <div id="page-dnscheck" class="page">
-  <div class="section-header"><span class="section-icon">🌐</span><div><div class="section-title">Domain ve DNS Kontrolü</div><div class="section-sub">A kaydı · beklenen IP · HTTPS hazırlığı</div></div></div>
-  <div class="card"><div class="form-row"><div class="form-group"><label class="form-label">Alan Adı</label><input class="form-input" id="dns_domain" placeholder="app.torqpro.com"></div><div class="form-group"><label class="form-label">Beklenen Sunucu IP</label><input class="form-input" id="dns_expected_ip" placeholder="185.100.20.50"></div></div><button class="btn btn-primary" onclick="runDnsCheck()">Kontrol Et</button><div id="dnsResult"></div></div>
+  <div class="section-header"><span class="section-icon">🌐</span><div><div class="section-title" data-i18n="dns.title">Domain ve DNS Kontrolü</div><div class="section-sub" data-i18n="dns.subtitle">A kaydı · beklenen IP · HTTPS hazırlığı</div></div></div>
+  <div class="card"><div class="form-row"><div class="form-group"><label class="form-label" data-i18n="dns.domain_label">Alan Adı</label><input class="form-input" id="dns_domain" placeholder="app.torqpro.com"></div><div class="form-group"><label class="form-label" data-i18n="dns.expected_ip_label">Beklenen Sunucu IP</label><input class="form-input" id="dns_expected_ip" placeholder="185.100.20.50"></div></div><button class="btn btn-primary" onclick="runDnsCheck()" data-i18n="dns.check_btn">Kontrol Et</button><div id="dnsResult"></div></div>
 </div>
 
 <div id="page-clouddeploy" class="page">
-  <div class="section-header"><span class="section-icon">☁️</span><div><div class="section-title">Güvenli İnternet Yayını</div><div class="section-sub">Docker · HTTPS · reverse proxy · ortam değişkenleri</div></div></div>
+  <div class="section-header"><span class="section-icon">☁️</span><div><div class="section-title" data-i18n="cloud.title">Güvenli İnternet Yayını</div><div class="section-sub" data-i18n="cloud.subtitle">Docker · HTTPS · reverse proxy · ortam değişkenleri</div></div></div>
   <div class="cloud-grid">
-    <div class="cloud-card"><div class="card-title">Docker Dağıtımı</div><div class="code-box">docker compose up -d --build</div><p>Uygulama, veritabanı ve reverse proxy ayrı servisler olarak hazırlanır.</p></div>
-    <div class="cloud-card"><div class="card-title">HTTPS Yayını</div><div class="code-box">https://torqpro.sirketiniz.com</div><p>Alan adı ve TLS sertifikası sunucu tarafında yapılandırılmalıdır.</p></div>
+    <div class="cloud-card"><div class="card-title" data-i18n="cloud.docker_title">Docker Dağıtımı</div><div class="code-box">docker compose up -d --build</div><p data-i18n="cloud.docker_note">Uygulama, veritabanı ve reverse proxy ayrı servisler olarak hazırlanır.</p></div>
+    <div class="cloud-card"><div class="card-title" data-i18n="cloud.https_title">HTTPS Yayını</div><div class="code-box">https://torqpro.sirketiniz.com</div><p data-i18n="cloud.https_note">Alan adı ve TLS sertifikası sunucu tarafında yapılandırılmalıdır.</p></div>
   </div>
   <div class="card">
-    <div class="card-title">Dağıtım Kontrol Listesi</div>
+    <div class="card-title" data-i18n="cloud.checklist_title">Dağıtım Kontrol Listesi</div>
     <div id="cloudChecklist"></div>
-    <button class="btn btn-primary" onclick="loadCloudReadiness()">Kontrol Et</button>
+    <button class="btn btn-primary" onclick="loadCloudReadiness()" data-i18n="cloud.check_btn">Kontrol Et</button>
   </div>
-  <div class="alert alert-warn">Bu paket sunucu kurulum dosyalarını içerir; gerçek alan adı, DNS ve TLS sertifikası müşteri sunucusunda ayrıca yapılandırılmalıdır.</div>
+  <div class="alert alert-warn" data-i18n="cloud.disclaimer">Bu paket sunucu kurulum dosyalarını içerir; gerçek alan adı, DNS ve TLS sertifikası müşteri sunucusunda ayrıca yapılandırılmalıdır.</div>
 </div>
 
 <div id="page-runtimehealth" class="page">
-  <div class="section-header"><span class="section-icon">❤️</span><div><div class="section-title">Canlılık ve Hazırlık Durumu</div><div class="section-sub">Liveness · readiness · veritabanı · lisans · aktif veri</div></div></div>
-  <div class="card"><button class="btn btn-primary" onclick="loadRuntimeHealth()">Durumu Yenile</button><div id="runtimeHealth" style="margin-top:12px"></div></div>
+  <div class="section-header"><span class="section-icon">❤️</span><div><div class="section-title" data-i18n="runtime.title">Canlılık ve Hazırlık Durumu</div><div class="section-sub" data-i18n="runtime.subtitle">Liveness · readiness · veritabanı · lisans · aktif veri</div></div></div>
+  <div class="card"><button class="btn btn-primary" onclick="loadRuntimeHealth()" data-i18n="runtime.refresh_btn">Durumu Yenile</button><div id="runtimeHealth" style="margin-top:12px"></div></div>
 </div>
 
 <div id="page-mobileaccess" class="page">
-  <div class="section-header"><span class="section-icon">📱</span><div><div class="section-title">Mobil Erişim</div><div class="section-sub">Telefon bağlantısı · PWA kurulumu · ağ testi</div></div></div>
+  <div class="section-header"><span class="section-icon">📱</span><div><div class="section-title" data-i18n="mobile.title">Mobil Erişim</div><div class="section-sub" data-i18n="mobile.subtitle">Telefon bağlantısı · PWA kurulumu · ağ testi</div></div></div>
   <div class="deploy-grid">
-    <div class="mobile-card"><div class="card-title">Bu Cihazdan Erişim</div><div id="mobileAccessStatus">Bilgiler yükleniyor.</div><button class="btn btn-primary" onclick="loadMobileAccess()">Yenile</button></div>
-    <div class="mobile-card"><div class="card-title">Uygulama Olarak Kur</div><p>Android Chrome veya desteklenen tarayıcıda TorqPro ana ekrana eklenebilir.</p><button class="btn btn-secondary" id="installPwaBtn" onclick="installPwa()" disabled>Uygulamayı Kur</button></div>
+    <div class="mobile-card"><div class="card-title" data-i18n="mobile.access_from_device_title">Bu Cihazdan Erişim</div><div id="mobileAccessStatus" data-i18n="mobile.loading_info">Bilgiler yükleniyor.</div><button class="btn btn-primary" onclick="loadMobileAccess()" data-i18n="mobile.refresh_btn">Yenile</button></div>
+    <div class="mobile-card"><div class="card-title" data-i18n="mobile.install_as_app_title">Uygulama Olarak Kur</div><p data-i18n="mobile.install_as_app_note">Android Chrome veya desteklenen tarayıcıda TorqPro ana ekrana eklenebilir.</p><button class="btn btn-secondary" id="installPwaBtn" onclick="installPwa()" disabled data-i18n="mobile.install_app_btn">Uygulamayı Kur</button></div>
   </div>
-  <div class="card"><div class="card-title">Ağ Bağlantı Kontrolü</div><div id="networkCheck"></div></div>
-  <div class="alert alert-warn">Telefon ve bilgisayar aynı Wi‑Fi ağında olmalıdır. İnternet üzerinden kullanım için HTTPS ve sunucu kurulumu gerekir.</div>
+  <div class="card"><div class="card-title" data-i18n="mobile.network_check_title">Ağ Bağlantı Kontrolü</div><div id="networkCheck"></div></div>
+  <div class="alert alert-warn" data-i18n="mobile.wifi_disclaimer">Telefon ve bilgisayar aynı Wi‑Fi ağında olmalıdır. İnternet üzerinden kullanım için HTTPS ve sunucu kurulumu gerekir.</div>
 </div>
 
 <div id="page-deployment" class="page">
@@ -2319,6 +2319,90 @@ const I18N = {
     'cert.production_readiness_label': 'Production Readiness',
     'cert.decision_label': 'Decision',
 
+    // ---- Faz 2.7.4b-1: Go-Live / DNS / Cloud / Runtime / Mobile ----
+    'golive.title': 'First Publish Setup Wizard',
+    'golive.subtitle': 'Server · domain · DNS · HTTPS · publish',
+    'golive.step_server': '1. Server',
+    'golive.step_domain': '2. Domain',
+    'golive.step_dns': '3. DNS',
+    'golive.step_https': '4. HTTPS',
+    'golive.step_publish': '5. Publish',
+    'golive.server_ip_label': 'Server IP',
+    'golive.domain_label': 'Domain Name',
+    'golive.https_planned': 'Planned',
+    'golive.https_ready': 'Ready',
+    'golive.save_profile_btn': 'Save Profile',
+    'golive.checklist_title': 'Setup Checklist',
+    'golive.item_server_ip_set': 'Server IP defined',
+    'golive.item_domain_set': 'Domain name defined',
+    'golive.item_dns_planned': 'DNS A record planned',
+    'golive.item_https_ready': 'HTTPS certificate ready',
+    'golive.item_docker_ready': 'Docker deployment ready',
+    'golive.item_health_check_passed': 'Liveness check passed',
+    'golive.completed': 'Completed',
+    'golive.pending': 'Pending',
+    'golive.profile_saved_alert': 'First-publish profile saved.',
+
+    'dns.title': 'Domain and DNS Check',
+    'dns.subtitle': 'A record · expected IP · HTTPS readiness',
+    'dns.domain_label': 'Domain Name',
+    'dns.expected_ip_label': 'Expected Server IP',
+    'dns.check_btn': 'Check',
+    'dns.resolved_ip_label': 'Resolved IP',
+    'dns.none': 'None',
+    'dns.ip_match_label': 'IP Match',
+    'dns.yes': 'Yes',
+    'dns.no': 'No',
+    'dns.https_ready': 'Ready',
+    'dns.https_not_ready': 'Not ready',
+    'dns.status_label': 'Status',
+
+    'cloud.title': 'Secure Internet Publishing',
+    'cloud.subtitle': 'Docker · HTTPS · reverse proxy · environment variables',
+    'cloud.docker_title': 'Docker Deployment',
+    'cloud.docker_note': 'The application, database, and reverse proxy are prepared as separate services.',
+    'cloud.https_title': 'HTTPS Publishing',
+    'cloud.https_note': 'The domain name and TLS certificate must be configured on the server side.',
+    'cloud.checklist_title': 'Deployment Checklist',
+    'cloud.check_btn': 'Check',
+    'cloud.disclaimer': 'This package contains server setup files; the actual domain name, DNS, and TLS certificate must be configured separately on the customer server.',
+    'cloud.ready': 'Ready',
+    'cloud.missing': 'Missing',
+    'cloud.overall_label': 'Overall',
+    'cloud.ready_for_deployment': 'Ready for deployment',
+    'cloud.gaps_must_be_completed': 'Gaps must be completed',
+
+    'runtime.title': 'Liveness and Readiness Status',
+    'runtime.subtitle': 'Liveness · readiness · database · license · active data',
+    'runtime.refresh_btn': 'Refresh Status',
+    'runtime.app_label': 'Application',
+    'runtime.version_label': 'Version',
+    'runtime.liveness_label': 'Liveness',
+    'runtime.error': 'ERROR',
+    'runtime.readiness_label': 'Readiness',
+    'runtime.ready': 'READY',
+    'runtime.not_ready': 'NOT READY',
+    'runtime.database_label': 'Database',
+    'runtime.license_label': 'License',
+    'runtime.active_dataset_label': 'Active Dataset',
+
+    'mobile.title': 'Mobile Access',
+    'mobile.subtitle': 'Phone connection · PWA install · network test',
+    'mobile.access_from_device_title': 'Access from This Device',
+    'mobile.loading_info': 'Loading information.',
+    'mobile.refresh_btn': 'Refresh',
+    'mobile.install_as_app_title': 'Install as App',
+    'mobile.install_as_app_note': 'TorqPro can be added to the home screen in Android Chrome or a supported browser.',
+    'mobile.install_app_btn': 'Install App',
+    'mobile.network_check_title': 'Network Connection Check',
+    'mobile.wifi_disclaimer': 'The phone and computer must be on the same Wi-Fi network. HTTPS and server setup are required for use over the internet.',
+    'mobile.install_not_ready_alert': 'Install option is not ready yet. Use "Add to Home Screen" from the browser menu.',
+    'mobile.local_network_address': 'Local Network Address',
+    'mobile.server_label': 'Server',
+    'mobile.ready': 'Ready',
+    'mobile.not_ready': 'Not ready',
+    'mobile.check_needed': 'Check',
+
     'fmea.title': 'FMEA Failure Catalog',
     'fmea.subtitle': 'Failures and solutions compiled from serial production experience',
     'fmea.cause_label': 'Cause',
@@ -3120,6 +3204,90 @@ const I18N = {
     'cert.production_readiness_label': 'Üretim Hazırlığı',
     'cert.decision_label': 'Karar',
 
+    // ---- Faz 2.7.4b-1: Go-Live / DNS / Cloud / Runtime / Mobile ----
+    'golive.title': 'İlk Yayın Kurulum Sihirbazı',
+    'golive.subtitle': 'Sunucu · domain · DNS · HTTPS · yayın',
+    'golive.step_server': '1. Sunucu',
+    'golive.step_domain': '2. Domain',
+    'golive.step_dns': '3. DNS',
+    'golive.step_https': '4. HTTPS',
+    'golive.step_publish': '5. Yayın',
+    'golive.server_ip_label': 'Sunucu IP',
+    'golive.domain_label': 'Alan Adı',
+    'golive.https_planned': 'Planlanıyor',
+    'golive.https_ready': 'Hazır',
+    'golive.save_profile_btn': 'Profili Kaydet',
+    'golive.checklist_title': 'Kurulum Kontrol Listesi',
+    'golive.item_server_ip_set': 'Sunucu IP belirlendi',
+    'golive.item_domain_set': 'Alan adı belirlendi',
+    'golive.item_dns_planned': 'DNS A kaydı planlandı',
+    'golive.item_https_ready': 'HTTPS sertifikası hazır',
+    'golive.item_docker_ready': 'Docker dağıtımı hazır',
+    'golive.item_health_check_passed': 'Canlılık testi geçti',
+    'golive.completed': 'Tamamlandı',
+    'golive.pending': 'Bekliyor',
+    'golive.profile_saved_alert': 'İlk yayın profili kaydedildi.',
+
+    'dns.title': 'Domain ve DNS Kontrolü',
+    'dns.subtitle': 'A kaydı · beklenen IP · HTTPS hazırlığı',
+    'dns.domain_label': 'Alan Adı',
+    'dns.expected_ip_label': 'Beklenen Sunucu IP',
+    'dns.check_btn': 'Kontrol Et',
+    'dns.resolved_ip_label': 'Çözümlenen IP',
+    'dns.none': 'Yok',
+    'dns.ip_match_label': 'IP eşleşmesi',
+    'dns.yes': 'Evet',
+    'dns.no': 'Hayır',
+    'dns.https_ready': 'Hazır',
+    'dns.https_not_ready': 'Hazır değil',
+    'dns.status_label': 'Durum',
+
+    'cloud.title': 'Güvenli İnternet Yayını',
+    'cloud.subtitle': 'Docker · HTTPS · reverse proxy · ortam değişkenleri',
+    'cloud.docker_title': 'Docker Dağıtımı',
+    'cloud.docker_note': 'Uygulama, veritabanı ve reverse proxy ayrı servisler olarak hazırlanır.',
+    'cloud.https_title': 'HTTPS Yayını',
+    'cloud.https_note': 'Alan adı ve TLS sertifikası sunucu tarafında yapılandırılmalıdır.',
+    'cloud.checklist_title': 'Dağıtım Kontrol Listesi',
+    'cloud.check_btn': 'Kontrol Et',
+    'cloud.disclaimer': 'Bu paket sunucu kurulum dosyalarını içerir; gerçek alan adı, DNS ve TLS sertifikası müşteri sunucusunda ayrıca yapılandırılmalıdır.',
+    'cloud.ready': 'Hazır',
+    'cloud.missing': 'Eksik',
+    'cloud.overall_label': 'Genel',
+    'cloud.ready_for_deployment': 'Dağıtıma hazır',
+    'cloud.gaps_must_be_completed': 'Eksikler tamamlanmalı',
+
+    'runtime.title': 'Canlılık ve Hazırlık Durumu',
+    'runtime.subtitle': 'Liveness · readiness · veritabanı · lisans · aktif veri',
+    'runtime.refresh_btn': 'Durumu Yenile',
+    'runtime.app_label': 'Uygulama',
+    'runtime.version_label': 'Sürüm',
+    'runtime.liveness_label': 'Canlılık',
+    'runtime.error': 'HATA',
+    'runtime.readiness_label': 'Hazırlık',
+    'runtime.ready': 'HAZIR',
+    'runtime.not_ready': 'HAZIR DEĞİL',
+    'runtime.database_label': 'Veritabanı',
+    'runtime.license_label': 'Lisans',
+    'runtime.active_dataset_label': 'Aktif Veri Seti',
+
+    'mobile.title': 'Mobil Erişim',
+    'mobile.subtitle': 'Telefon bağlantısı · PWA kurulumu · ağ testi',
+    'mobile.access_from_device_title': 'Bu Cihazdan Erişim',
+    'mobile.loading_info': 'Bilgiler yükleniyor.',
+    'mobile.refresh_btn': 'Yenile',
+    'mobile.install_as_app_title': 'Uygulama Olarak Kur',
+    'mobile.install_as_app_note': 'Android Chrome veya desteklenen tarayıcıda TorqPro ana ekrana eklenebilir.',
+    'mobile.install_app_btn': 'Uygulamayı Kur',
+    'mobile.network_check_title': 'Ağ Bağlantı Kontrolü',
+    'mobile.wifi_disclaimer': 'Telefon ve bilgisayar aynı Wi‑Fi ağında olmalıdır. İnternet üzerinden kullanım için HTTPS ve sunucu kurulumu gerekir.',
+    'mobile.install_not_ready_alert': 'Kurulum seçeneği şu anda hazır değil. Tarayıcı menüsünden Ana ekrana ekle seçeneğini kullanın.',
+    'mobile.local_network_address': 'Yerel Ağ Adresi',
+    'mobile.server_label': 'Sunucu',
+    'mobile.ready': 'Hazır',
+    'mobile.not_ready': 'Hazır değil',
+    'mobile.check_needed': 'Kontrol',
+
     'fmea.title': 'FMEA Hata Kataloğu',
     'fmea.subtitle': 'Seri üretim deneyiminden derlenen hatalar ve çözümler',
     'fmea.cause_label': 'Neden',
@@ -3535,6 +3703,20 @@ function setLanguage(lang) {
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
   if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();
   if (typeof loadGoldenCases === 'function' && document.getElementById('goldenCaseRows')) loadGoldenCases();
+  // Faz 2.7.4b-1: these are lightweight, idempotent GET-only status
+  // refreshes (no POST/save/install is ever triggered here). Each is
+  // guarded by its page actually being the active one -- golive-
+  // profile and cloud-readiness are admin-only endpoints, so an
+  // unconditional "does the container exist" guard would fire a 403
+  // on every language switch for non-admin users regardless of which
+  // page they're viewing. Form inputs (gw_server_ip, gw_domain,
+  // dns_domain, dns_expected_ip, ...) are never touched by these
+  // calls since each function only rewrites its own read-only status/
+  // result container.
+  if (typeof loadGoLiveProfile === 'function' && document.getElementById('page-golivewizard')?.classList.contains('active')) loadGoLiveProfile();
+  if (typeof loadCloudReadiness === 'function' && document.getElementById('page-clouddeploy')?.classList.contains('active')) loadCloudReadiness();
+  if (typeof loadRuntimeHealth === 'function' && document.getElementById('page-runtimehealth')?.classList.contains('active')) loadRuntimeHealth();
+  if (typeof loadMobileAccess === 'function' && document.getElementById('page-mobileaccess')?.classList.contains('active')) loadMobileAccess();
 }
 
 document.addEventListener('DOMContentLoaded', applyStaticTranslations);
@@ -5178,12 +5360,12 @@ async function downloadDiagnostics(){if(!LAST_DIAGNOSTICS)await runDiagnostics()
 let deferredPrompt=null;
 function toggleMobileMenu(){document.querySelector('.sidebar')?.classList.toggle('mobile-open');}
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;const b=document.getElementById('installPwaBtn');if(b)b.disabled=false;});
-async function installPwa(){if(!deferredPrompt){alert('Kurulum seçeneği şu anda hazır değil. Tarayıcı menüsünden Ana ekrana ekle seçeneğini kullanın.');return;}deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('installPwaBtn').disabled=true;}
+async function installPwa(){if(!deferredPrompt){alert(t('mobile.install_not_ready_alert'));return;}deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null;document.getElementById('installPwaBtn').disabled=true;}
 async function loadMobileAccess(){
   try{
     const d=await apiRequest('/api/mobile/access-info');
-    document.getElementById('mobileAccessStatus').innerHTML=`<div><strong>Yerel Ağ Adresi</strong></div><div class="mobile-url">${d.local_url}</div><div style="margin-top:8px"><strong>Sunucu:</strong> ${d.host}:${d.port}</div><div><strong>PWA:</strong> ${d.pwa_ready?'Hazır':'Hazır değil'}</div>`;
-    document.getElementById('networkCheck').innerHTML=d.checks.map(c=>`<div class="diag-row"><div>${c.name}</div><div>${c.value}</div><div class="${c.ok?'qg-pass':'qg-fail'}">${c.ok?'OK':'Kontrol'}</div></div>`).join('');
+    document.getElementById('mobileAccessStatus').innerHTML=`<div><strong>${t('mobile.local_network_address')}</strong></div><div class="mobile-url">${d.local_url}</div><div style="margin-top:8px"><strong>${t('mobile.server_label')}:</strong> ${d.host}:${d.port}</div><div><strong>PWA:</strong> ${d.pwa_ready?t('mobile.ready'):t('mobile.not_ready')}</div>`;
+    document.getElementById('networkCheck').innerHTML=d.checks.map(c=>`<div class="diag-row"><div>${c.name}</div><div>${c.value}</div><div class="${c.ok?'qg-pass':'qg-fail'}">${c.ok?'OK':t('mobile.check_needed')}</div></div>`).join('');
   }catch(e){document.getElementById('mobileAccessStatus').textContent=e.message;}
 }
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/service-worker.js').catch(()=>{}));}
@@ -5191,11 +5373,11 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
 
 async function loadCloudReadiness(){
   const d=await apiRequest('/api/admin/cloud-readiness');
-  document.getElementById('cloudChecklist').innerHTML=d.checks.map(c=>`<div class="diag-row"><div>${c.name}</div><div>${c.value??'—'}</div><div><span class="health-dot ${c.ok?'health-ok':'health-bad'}"></span>${c.ok?'Hazır':'Eksik'}</div></div>`).join('')+`<div class="alert ${d.ready?'alert-success':'alert-warn'}"><strong>Genel:</strong> ${d.ready?'Dağıtıma hazır':'Eksikler tamamlanmalı'}</div>`;
+  document.getElementById('cloudChecklist').innerHTML=d.checks.map(c=>`<div class="diag-row"><div>${c.name}</div><div>${c.value??'—'}</div><div><span class="health-dot ${c.ok?'health-ok':'health-bad'}"></span>${c.ok?t('cloud.ready'):t('cloud.missing')}</div></div>`).join('')+`<div class="alert ${d.ready?'alert-success':'alert-warn'}"><strong>${t('cloud.overall_label')}:</strong> ${d.ready?t('cloud.ready_for_deployment'):t('cloud.gaps_must_be_completed')}</div>`;
 }
 async function loadRuntimeHealth(){
   const d=await apiRequest('/api/runtime/status');
-  document.getElementById('runtimeHealth').innerHTML=`<table class="source-table"><tr><th>Uygulama</th><td>${d.app}</td></tr><tr><th>Sürüm</th><td>${d.version}</td></tr><tr><th>Canlılık</th><td>${d.liveness?'OK':'HATA'}</td></tr><tr><th>Hazırlık</th><td>${d.readiness?'HAZIR':'HAZIR DEĞİL'}</td></tr><tr><th>Veritabanı</th><td>${d.database}</td></tr><tr><th>Lisans</th><td>${d.license}</td></tr><tr><th>Aktif Veri Seti</th><td>${d.active_datasets}</td></tr></table>`;
+  document.getElementById('runtimeHealth').innerHTML=`<table class="source-table"><tr><th>${t('runtime.app_label')}</th><td>${d.app}</td></tr><tr><th>${t('runtime.version_label')}</th><td>${d.version}</td></tr><tr><th>${t('runtime.liveness_label')}</th><td>${d.liveness?'OK':t('runtime.error')}</td></tr><tr><th>${t('runtime.readiness_label')}</th><td>${d.readiness?t('runtime.ready'):t('runtime.not_ready')}</td></tr><tr><th>${t('runtime.database_label')}</th><td>${d.database}</td></tr><tr><th>${t('runtime.license_label')}</th><td>${d.license}</td></tr><tr><th>${t('runtime.active_dataset_label')}</th><td>${d.active_datasets}</td></tr></table>`;
 }
 
 
@@ -5207,21 +5389,21 @@ async function loadGoLiveProfile(){
   renderGoLiveChecklist(d);
 }
 function renderGoLiveChecklist(d){
-  const items=[['Sunucu IP belirlendi',!!d.server_ip],['Alan adı belirlendi',!!d.domain],['DNS A kaydı planlandı',!!d.dns_planned],['HTTPS sertifikası hazır',d.https_status==='ready'],['Docker dağıtımı hazır',!!d.docker_ready],['Canlılık testi geçti',!!d.health_ready]];
-  document.getElementById('goLiveChecklist').innerHTML=items.map(x=>`<div class="checklist-item"><input type="checkbox" ${x[1]?'checked':''} disabled><div><strong>${x[0]}</strong><div style="color:var(--text3)">${x[1]?'Tamamlandı':'Bekliyor'}</div></div></div>`).join('');
+  const items=[[t('golive.item_server_ip_set'),!!d.server_ip],[t('golive.item_domain_set'),!!d.domain],[t('golive.item_dns_planned'),!!d.dns_planned],[t('golive.item_https_ready'),d.https_status==='ready'],[t('golive.item_docker_ready'),!!d.docker_ready],[t('golive.item_health_check_passed'),!!d.health_ready]];
+  document.getElementById('goLiveChecklist').innerHTML=items.map(x=>`<div class="checklist-item"><input type="checkbox" ${x[1]?'checked':''} disabled><div><strong>${x[0]}</strong><div style="color:var(--text3)">${x[1]?t('golive.completed'):t('golive.pending')}</div></div></div>`).join('');
   const steps=[!!d.server_ip,!!d.domain,!!d.dns_planned,d.https_status==='ready',!!d.health_ready];
   document.querySelectorAll('#wizardSteps .wizard-step').forEach((el,i)=>{el.classList.toggle('done',steps[i]);el.classList.toggle('active',!steps[i]&&steps.slice(0,i).every(Boolean));});
 }
 async function saveGoLiveProfile(){
   const p={server_ip:document.getElementById('gw_server_ip').value.trim(),domain:document.getElementById('gw_domain').value.trim(),https_status:document.getElementById('gw_https').value};
   const r=await apiRequest('/api/admin/golive-profile',{method:'PUT',body:JSON.stringify(p)});
-  renderGoLiveChecklist(r);alert('İlk yayın profili kaydedildi.');
+  renderGoLiveChecklist(r);alert(t('golive.profile_saved_alert'));
 }
 async function runDnsCheck(){
   const d=document.getElementById('dns_domain').value.trim(),ip=document.getElementById('dns_expected_ip').value.trim();
   try{
     const r=await apiRequest('/api/admin/dns-check?domain='+encodeURIComponent(d)+'&expected_ip='+encodeURIComponent(ip));
-    document.getElementById('dnsResult').innerHTML=`<div class="dns-result"><div><strong>Çözümlenen IP:</strong> ${r.resolved_ips.join(', ')||'Yok'}</div><div><strong>IP eşleşmesi:</strong> ${r.matches_expected?'Evet':'Hayır'}</div><div><strong>HTTPS:</strong> ${r.https_ready?'Hazır':'Hazır değil'}</div><div><strong>Durum:</strong> ${r.status}</div></div>`;
+    document.getElementById('dnsResult').innerHTML=`<div class="dns-result"><div><strong>${t('dns.resolved_ip_label')}:</strong> ${r.resolved_ips.join(', ')||t('dns.none')}</div><div><strong>${t('dns.ip_match_label')}:</strong> ${r.matches_expected?t('dns.yes'):t('dns.no')}</div><div><strong>HTTPS:</strong> ${r.https_ready?t('dns.https_ready'):t('dns.https_not_ready')}</div><div><strong>${t('dns.status_label')}:</strong> ${r.status}</div></div>`;
   }catch(e){document.getElementById('dnsResult').innerHTML=`<div class="dns-result qg-fail">${e.message}</div>`;}
 }
 

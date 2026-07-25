@@ -79,7 +79,7 @@ const CONST_NAMES = [
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
   'N01391', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
   'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS', 'ISH', 'CURRENT_ROLE',
-  'CURRENT_USER', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS',
+  'CURRENT_USER', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS', 'deferredPrompt',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -93,7 +93,7 @@ const CONST_NAMES = [
 // external assignment and internal closures observe the same
 // binding, which is required to test "language switch re-renders
 // already-loaded content" realistically.
-const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT', 'ACTIVE_STANDARD_LIBRARY', 'CURRENT_ROLE', 'LAST_CALCULATION', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS'];
+const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT', 'ACTIVE_STANDARD_LIBRARY', 'CURRENT_ROLE', 'LAST_CALCULATION', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS', 'deferredPrompt'];
 const FUNCTION_NAMES = [
   't', 'fcLabel', 'applyStaticTranslations', 'setLanguage',
   'fcEsc', 'fcEscRaw', 'fcFmtNum', 'fcFmtLabel', 'fcCountLabel',
@@ -112,6 +112,8 @@ const FUNCTION_NAMES = [
   'saveGoldenCase', 'loadGoldenCases',
   'reportLocale', 'reportHtml', 'printCurrentReport', 'printRecord',
   'generateProjectRelease', 'printProjectRelease', 'generateReleaseCertificate', 'printReleaseCertificate',
+  'installPwa', 'loadMobileAccess', 'loadCloudReadiness', 'loadRuntimeHealth',
+  'loadGoLiveProfile', 'renderGoLiveChecklist', 'saveGoLiveProfile', 'runDnsCheck',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -199,7 +201,7 @@ function makeElement(id) {
     _html: '',
     _attrs: {},
     style: {},
-    classList: { toggle() {}, add() {}, remove() {} },
+    classList: { _set: new Set(), toggle(c, on) { if (on === false || (on === undefined && this._set.has(c))) this._set.delete(c); else this._set.add(c); }, add(c) { this._set.add(c); }, remove(c) { this._set.delete(c); }, contains(c) { return this._set.has(c); } },
     set textContent(v) { this._text = String(v); },
     get textContent() { return this._text; },
     set innerHTML(v) {
@@ -2947,6 +2949,277 @@ async function main() {
       const src = extractFunctionDecl(scriptSrc, fn);
       check("no hardcoded 'tr-TR' remains in " + fn + '()', src.indexOf("'tr-TR'") === -1);
     }
+  }
+
+  // ================================================================
+  // Faz 2.7.4b-1 -- Go-Live Wizard / DNS Check / Cloud Deployment /
+  // Runtime Health / Mobile Access.
+  // ================================================================
+
+  // ---- 149. Five pages' static UI TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const checks = [
+      ['golive.title', 'İlk Yayın Kurulum Sihirbazı', 'First Publish Setup Wizard'],
+      ['dns.title', 'Domain ve DNS Kontrolü', 'Domain and DNS Check'],
+      ['cloud.title', 'Güvenli İnternet Yayını', 'Secure Internet Publishing'],
+      ['runtime.title', 'Canlılık ve Hazırlık Durumu', 'Liveness and Readiness Status'],
+      ['mobile.title', 'Mobil Erişim', 'Mobile Access'],
+    ];
+    for (const [key, tr] of checks) {
+      const el = getByI18nKey(ctx, key);
+      check('page title element exists for ' + key, !!el);
+    }
+    ctx.context.applyStaticTranslations();
+    for (const [key, tr] of checks) checkEqual('tr title for ' + key, getByI18nKey(ctx, key).textContent, tr);
+    ctx.context.setLanguage('en');
+    for (const [key, , en] of checks) checkEqual('en title for ' + key, getByI18nKey(ctx, key).textContent, en);
+  }
+
+  // ---- 150. Form labels and placeholders TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const serverIpLabel = getByI18nKey(ctx, 'golive.server_ip_label');
+    const domainPh = ctx.byId ? null : null;
+    ctx.context.applyStaticTranslations();
+    checkEqual('golive server ip label tr', serverIpLabel.textContent, 'Sunucu IP');
+    ctx.context.setLanguage('en');
+    checkEqual('golive server ip label en', serverIpLabel.textContent, 'Server IP');
+    const dnsDomainLabel = getByI18nKey(ctx, 'dns.domain_label');
+    checkEqual('dns domain label en', dnsDomainLabel.textContent, 'Domain Name');
+  }
+
+  // ---- 151. Technical option values preserved (planned/ready) ----
+  {
+    check('gw_https option values are the fixed set {planned,ready}',
+      /<option value="planned" data-i18n="golive\.https_planned">/.test(rawHtml) &&
+      /<option value="ready" data-i18n="golive\.https_ready">/.test(rawHtml));
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const el = getByI18nKey(ctx, 'golive.https_planned');
+    ctx.context.applyStaticTranslations();
+    checkEqual('https_planned label tr', el.textContent, 'Planlanıyor');
+    ctx.context.setLanguage('en');
+    checkEqual('https_planned label en', el.textContent, 'Planned');
+    // option value attribute itself is static markup, never touched by applyStaticTranslations/setLanguage
+    check('option value="planned" attribute unchanged in markup', /value="planned"/.test(rawHtml));
+  }
+
+  // ---- 152. saveGoLiveProfile(): payload identical across languages;
+  //           success/fallback alert TR/EN ----
+  {
+    async function runSaveGoLive(lang) {
+      let captured = null;
+      const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+        if (opts && opts.method === 'PUT') { captured = JSON.parse(opts.body); return { server_ip: captured.server_ip, domain: captured.domain, https_status: captured.https_status }; }
+        return {};
+      });
+      ctx.byId['gw_server_ip'] = { value: '10.0.0.5' };
+      ctx.byId['gw_domain'] = { value: 'app.example.com' };
+      ctx.byId['gw_https'] = { value: 'ready' };
+      ctx.byId['goLiveChecklist'] = { innerHTML: '' };
+      ctx.byId['wizardSteps'] = ctx.documentStub.getElementById('wizardSteps');
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.saveGoLiveProfile();
+      return { captured, alert: ctx.alertCalls[ctx.alertCalls.length - 1] };
+    }
+    const trResult = await runSaveGoLive('tr');
+    const enResult = await runSaveGoLive('en');
+    checkEqual('payload identical across languages (server_ip)', trResult.captured.server_ip, enResult.captured.server_ip);
+    checkEqual('payload identical across languages (domain)', trResult.captured.domain, enResult.captured.domain);
+    checkEqual('payload identical across languages (https_status)', trResult.captured.https_status, enResult.captured.https_status);
+    checkEqual('https_status technical value untranslated', trResult.captured.https_status, 'ready');
+    checkEqual('tr success alert', trResult.alert, 'İlk yayın profili kaydedildi.');
+    checkEqual('en success alert', enResult.alert, 'First-publish profile saved.');
+  }
+
+  // ---- 153. runDnsCheck(): same backend technical result shown
+  //           TR/EN; domain value and technical status code unchanged ----
+  {
+    async function runDns(lang) {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => ({
+        resolved_ips: ['185.100.20.50'], matches_expected: true, https_ready: true, status: 'verified',
+      }));
+      ctx.byId['dns_domain'] = { value: 'app.torqpro.com' };
+      ctx.byId['dns_expected_ip'] = { value: '185.100.20.50' };
+      ctx.byId['dnsResult'] = { innerHTML: '' };
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.runDnsCheck();
+      return ctx.byId['dnsResult'].innerHTML;
+    }
+    const htmlTr = await runDns('tr');
+    const htmlEn = await runDns('en');
+    check('tr dns result shows resolved IP', htmlTr.indexOf('185.100.20.50') !== -1);
+    check('en dns result shows the same resolved IP (domain/technical value unchanged)', htmlEn.indexOf('185.100.20.50') !== -1);
+    check('tr shows "Evet" for match', htmlTr.indexOf('Evet') !== -1);
+    check('en shows "Yes" for match', htmlEn.indexOf('Yes') !== -1);
+    check('backend status code "verified" rendered verbatim in both languages', htmlTr.indexOf('verified') !== -1 && htmlEn.indexOf('verified') !== -1);
+  }
+
+  // ---- 154. loadCloudReadiness(): backend boolean/technical values
+  //           identical; displayed descriptions TR/EN ----
+  {
+    async function runCloud(lang) {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => ({
+        ready: false,
+        checks: [{ name: 'Dockerfile', value: 'Mevcut', ok: true }, { name: 'Secret Key', value: 'Eksik', ok: false }],
+      }));
+      ctx.byId['cloudChecklist'] = { innerHTML: '' };
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.loadCloudReadiness();
+      return ctx.byId['cloudChecklist'].innerHTML;
+    }
+    const htmlTr = await runCloud('tr');
+    const htmlEn = await runCloud('en');
+    check('tr shows "Hazır" for the ok check', htmlTr.indexOf('Hazır') !== -1);
+    check('en shows "Ready" for the ok check', htmlEn.indexOf('Ready') !== -1);
+    check('tr shows "Eksikler tamamlanmalı" (ready:false)', htmlTr.indexOf('Eksikler tamamlanmalı') !== -1);
+    check('en shows "Gaps must be completed" (ready:false)', htmlEn.indexOf('Gaps must be completed') !== -1);
+    check('backend check names (free text from backend) rendered verbatim in both', htmlTr.indexOf('Dockerfile') !== -1 && htmlEn.indexOf('Dockerfile') !== -1);
+  }
+
+  // ---- 155. loadRuntimeHealth(): API/db boolean decisions unaffected;
+  //           OK/NOK-equivalent logic identical; server-time locale
+  //           TR/EN; raw timestamp unchanged ----
+  {
+    // Note: loadRuntimeHealth() itself contains no toLocaleString('tr-TR')
+    // call in this codebase -- the "Sunucu zamanı" / server-time
+    // formatting the phase instructions referenced actually lives in
+    // loadSystemHealth() (Admin Panel, page-admin), a different
+    // function outside this sub-phase's explicit scope. This is
+    // called out explicitly in the phase report; runtime.* labels are
+    // still fully translated here.
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const rhSrc = extractFunctionDecl(scriptSrc, 'loadRuntimeHealth');
+    check("loadRuntimeHealth() contains no hardcoded 'tr-TR' (none existed to begin with)", rhSrc.indexOf("'tr-TR'") === -1);
+    async function runRuntime(lang) {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => ({
+        app: 'TorqPro', version: '3.1', liveness: true, readiness: false, database: 'sqlite', license: 'Pro', active_datasets: 4,
+      }));
+      ctx.byId['runtimeHealth'] = { innerHTML: '' };
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.loadRuntimeHealth();
+      return ctx.byId['runtimeHealth'].innerHTML;
+    }
+    const htmlTr = await runRuntime('tr');
+    const htmlEn = await runRuntime('en');
+    check('tr: liveness true shows OK (technical code unchanged)', htmlTr.indexOf('>OK<') !== -1);
+    check('en: liveness true still shows OK', htmlEn.indexOf('>OK<') !== -1);
+    check('tr: readiness false shows "HAZIR DEĞİL"', htmlTr.indexOf('HAZIR DEĞİL') !== -1);
+    check('en: readiness false shows "NOT READY"', htmlEn.indexOf('NOT READY') !== -1);
+    check('raw active_datasets value (4) identical in both languages', htmlTr.indexOf('>4<') !== -1 && htmlEn.indexOf('>4<') !== -1);
+  }
+
+  // ---- 156. loadMobileAccess(): technical readiness result unchanged;
+  //           displayed message TR/EN ----
+  {
+    async function runMobile(lang) {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => ({
+        local_url: 'http://192.168.1.10:8000', host: '192.168.1.10', port: 8000, pwa_ready: true,
+        checks: [{ name: 'Local IP', value: '192.168.1.10', ok: true }],
+      }));
+      ctx.byId['mobileAccessStatus'] = { innerHTML: '' };
+      ctx.byId['networkCheck'] = { innerHTML: '' };
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.loadMobileAccess();
+      return { status: ctx.byId['mobileAccessStatus'].innerHTML, network: ctx.byId['networkCheck'].innerHTML };
+    }
+    const trResult = await runMobile('tr');
+    const enResult = await runMobile('en');
+    check('tr pwa_ready shows "Hazır"', trResult.status.indexOf('Hazır') !== -1);
+    check('en pwa_ready shows "Ready"', enResult.status.indexOf('Ready') !== -1);
+    check('local_url (technical value) identical in both languages', trResult.status.indexOf('192.168.1.10:8000') !== -1 && enResult.status.indexOf('192.168.1.10:8000') !== -1);
+    check('network check "ok" still shows OK in both', trResult.network.indexOf('OK') !== -1 && enResult.network.indexOf('OK') !== -1);
+  }
+
+  // ---- 157. installPwa(): accept/reject technical outcome unaffected;
+  //           alert text TR/EN; language switch never fires the
+  //           install prompt itself ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.deferredPrompt = null;
+    ctx.byId['installPwaBtn'] = { disabled: false };
+    await ctx.context.installPwa();
+    checkEqual('tr "not ready" alert', ctx.alertCalls[ctx.alertCalls.length - 1], 'Kurulum seçeneği şu anda hazır değil. Tarayıcı menüsünden Ana ekrana ekle seçeneğini kullanın.');
+    ctx.context.setLanguage('en');
+    await ctx.context.installPwa();
+    checkEqual('en "not ready" alert', ctx.alertCalls[ctx.alertCalls.length - 1], 'Install option is not ready yet. Use "Add to Home Screen" from the browser menu.');
+    // A real prompt: accepting/rejecting is entirely up to the browser
+    // event (deferredPrompt.userChoice) -- installPwa() never inspects
+    // language, and setLanguage() itself never touches deferredPrompt
+    // or calls installPwa().
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const setLangSrc = extractFunctionDecl(scriptSrc, 'setLanguage');
+    check('setLanguage() never references deferredPrompt or installPwa', setLangSrc.indexOf('deferredPrompt') === -1 && setLangSrc.indexOf('installPwa()') === -1);
+  }
+
+  // ---- 158. Language switch: form inputs and technical state
+  //           preserved; only GET (no POST/save/install) is issued;
+  //           re-render only happens for the currently active page ----
+  {
+    let putCalled = false, getCalls = 0;
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+      if (opts && opts.method === 'PUT') putCalled = true; else getCalls++;
+      if (url.indexOf('golive-profile') !== -1) return { server_ip: '', domain: '', https_status: 'planned' };
+      if (url.indexOf('cloud-readiness') !== -1) return { ready: true, checks: [] };
+      return {};
+    });
+    ctx.byId['gw_server_ip'] = { value: '172.16.0.1' };
+    ctx.byId['gw_domain'] = { value: 'preserved.example.com' };
+    ctx.byId['goLiveChecklist'] = { innerHTML: '' };
+    ctx.byId['wizardSteps'] = ctx.documentStub.getElementById('wizardSteps');
+    // Only the golivewizard page is "active"; clouddeploy/runtimehealth/
+    // mobileaccess are not, so their admin/other GETs must NOT fire.
+    ctx.documentStub.getElementById('page-golivewizard').classList.add('active');
+    ctx.context.setLanguage('en');
+    checkEqual('gw_server_ip input preserved across language switch', ctx.byId['gw_server_ip'].value, '172.16.0.1');
+    checkEqual('gw_domain input preserved across language switch', ctx.byId['gw_domain'].value, 'preserved.example.com');
+    checkEqual('no PUT/save call was triggered by the language switch', putCalled, false);
+    check('at least one safe GET call was made for the active go-live page', getCalls >= 1);
+  }
+
+  // ---- 159. No raw translation-key leakage across the 5 pages'
+  //           dynamic HTML ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => ({
+      resolved_ips: [], matches_expected: false, https_ready: false, status: 'pending',
+    }));
+    ctx.byId['dns_domain'] = { value: 'x' };
+    ctx.byId['dns_expected_ip'] = { value: 'y' };
+    ctx.byId['dnsResult'] = { innerHTML: '' };
+    ctx.context.setLanguage('en');
+    await ctx.context.runDnsCheck();
+    check('no raw namespaced key text leaks into en dns result', !/(dns|golive|cloud|runtime|mobile)\.[a-z_.0-9]+(?![\w])/.test(ctx.byId['dnsResult'].innerHTML));
+  }
+
+  // ---- 160. Hard-coded user text scan (this sub-phase's scope) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const turkishCharRe = /[şğüöçİĞÜŞÖÇı]/;
+    for (const fn of ['installPwa', 'loadMobileAccess', 'loadCloudReadiness', 'loadRuntimeHealth', 'loadGoLiveProfile', 'renderGoLiveChecklist', 'saveGoLiveProfile', 'runDnsCheck']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      const strs = [...src.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]).filter((s) => turkishCharRe.test(s));
+      check('no hard-coded Turkish string literals remain in ' + fn + '()', strs.length === 0);
+    }
+  }
+
+  // ---- 161. In-scope hardcoded 'tr-TR' scan: 0 in these 8 functions ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    for (const fn of ['installPwa', 'loadMobileAccess', 'loadCloudReadiness', 'loadRuntimeHealth', 'loadGoLiveProfile', 'renderGoLiveChecklist', 'saveGoLiveProfile', 'runDnsCheck']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      check("no hardcoded 'tr-TR' remains in " + fn + '()', src.indexOf("'tr-TR'") === -1);
+    }
+  }
+
+  // ---- 162. Language-dependent decision anti-pattern scan (closure) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    for (const fn of ['loadCloudReadiness', 'loadRuntimeHealth', 'runDnsCheck', 'renderGoLiveChecklist']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      check('no translated-text-driven decision in ' + fn + '()', !/\.includes\('[şğüöçİĞÜŞÖÇıA-ZÇĞİÖŞÜ][^']*'\)/.test(src));
+    }
+    check("https_status==='ready' branches on the stable technical value, not a label",
+      scriptSrc.indexOf("https_status==='ready'") !== -1);
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
