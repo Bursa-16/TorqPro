@@ -1,0 +1,3813 @@
+{
+  "phase": "2.8.2",
+  "phase_name": "Thread Geometry Data Verification & Confidence Upgrade",
+  "summary": {
+    "target_records": 72,
+    "fine_records": 35,
+    "extra_fine_records": 29,
+    "coarse_records": 8,
+    "geometry_verified": 72,
+    "geometry_value_changes": 0,
+    "confidence_upgraded": 5,
+    "remaining_g4": 67,
+    "primary_source_verified": 0,
+    "secondary_source_verified": 5,
+    "unresolved_records": 67
+  },
+  "reviewed_record_count": 72,
+  "target_by_series_counts": {
+    "Coarse": 8,
+    "Fine": 35,
+    "Extra Fine": 29
+  },
+  "diameters_by_series": {
+    "Coarse": [
+      68,
+      72,
+      76,
+      80,
+      85,
+      90,
+      95,
+      100
+    ],
+    "Fine": [
+      3,
+      3.5,
+      4,
+      5,
+      6,
+      7,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      22,
+      24,
+      27,
+      30,
+      33,
+      36,
+      39,
+      42,
+      45,
+      48,
+      52,
+      56,
+      60,
+      64,
+      68,
+      72,
+      76,
+      80,
+      85,
+      90,
+      95,
+      100
+    ],
+    "Extra Fine": [
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      22,
+      24,
+      27,
+      30,
+      33,
+      36,
+      39,
+      42,
+      45,
+      48,
+      52,
+      56,
+      60,
+      64,
+      68,
+      72,
+      76,
+      80,
+      85,
+      90,
+      95,
+      100
+    ]
+  },
+  "duplicate_diameter_pitch_combos": {
+    "Coarse": [],
+    "Fine": [],
+    "Extra Fine": []
+  },
+  "schema_violation_count": 0,
+  "schema_violations": [],
+  "totals": {
+    "reviewed": 72,
+    "unchanged": 67,
+    "upgraded": 5,
+    "remaining_g4": 67
+  },
+  "important_caveats": [
+    "72/72 kayıt ISO 724/68-1 formülleriyle geometrik olarak doğrulandı; bu, kayıtların BİRİNCİL standart kaynağıyla (ISO 261/262 metin/tablosu) doğrulandığı anlamına GELMEZ -- yalnızca 'verilen pitch doğruysa geometri doğru hesaplanmış' önermesini kanıtlar.",
+    "Fine + Extra Fine (64 kayıt) ISO 261/262 birincil tablo erişimi olmadığı için G4/provisional seviyesinde bırakıldı.",
+    "Coarse M68/M72/M80/M90/M100 (5 kayıt) yalnızca İKİ bağımsız İKİNCİL kaynakla (Aspen Fasteners, mfindllc.com) doğrulandığı için G3/reference_only seviyesine yükseltildi -- G1/G2 (birincil standart) DEĞİL.",
+    "Coarse M76/M85/M95 (3 kayıt) hiçbir bağımsız kaynakta bulunamadığı için G4/provisional olarak kaldı.",
+    "Hiçbir geometrik değer (nominal_diameter_mm, pitch_mm, major/pitch/minor_diameter_mm, stress_area_mm2) değiştirilmedi; yalnızca provenance/confidence metadata alanları güncellendi.",
+    "Stress-area kontrolü backend.vdi2230_core.stress_area.tensile_stress_area_mm2() kullanır; bu fonksiyonun kendi docstring'i 'PROVISIONAL: requires independent source sign-off before production use' der. Bu kontrol üretim tutarlılığını doğrular, formülün kendisini birincil standart olarak onaylamaz.",
+    "ISO 68-1 için ayrı, yapılandırılmış bir izlenebilirlik alanı mevcut şemada yok; bu Faz 2.8.10 teknik borcu olarak kaydedildi (bkz. rapor Bölüm 9/11)."
+  ],
+  "per_record": [
+    {
+      "id": "THR-M68-COARSE",
+      "designation": "M68",
+      "series": "Coarse",
+      "nominal_diameter_mm": 68,
+      "pitch_mm": 6.0,
+      "source": "ISO 724 formula over ISO 261 diameter/pitch table; pitch cross-verified against independent secondary technical references (Faz 2.8.2)",
+      "source_standard": "ISO 724 / ISO 261",
+      "confidence_before": 3,
+      "validation_status_before": "reference_only",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 68,
+            "stored": 68
+          },
+          "pitch_diameter_mm": {
+            "calculated": 64.1029,
+            "stored": 64.103
+          },
+          "minor_diameter_mm": {
+            "calculated": 61.5048,
+            "stored": 61.505
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 61.5048,
+            "stored": 61.505
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 60.6388,
+            "stored": 60.6388
+          },
+          "stress_area_mm2": {
+            "calculated": 3055.291,
+            "stored": 3055.298
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": true,
+        "evidence": [
+          "Aspen Fasteners metric/inch thread pitch reference (aspenfasteners.com/content/pdf/thread_pitch.pdf): M68 coarse pitch = 6 mm",
+          "mfindllc.com METRIC PITCH THREAD CHART: M68 coarse pitch = 6 mm"
+        ]
+      },
+      "upgrade_eligible": true,
+      "action_needed": false,
+      "confidence_after": 3,
+      "validation_status_after": "reference_only"
+    },
+    {
+      "id": "THR-M72-COARSE",
+      "designation": "M72",
+      "series": "Coarse",
+      "nominal_diameter_mm": 72,
+      "pitch_mm": 6.0,
+      "source": "ISO 724 formula over ISO 261 diameter/pitch table; pitch cross-verified against independent secondary technical references (Faz 2.8.2)",
+      "source_standard": "ISO 724 / ISO 261",
+      "confidence_before": 3,
+      "validation_status_before": "reference_only",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 72,
+            "stored": 72
+          },
+          "pitch_diameter_mm": {
+            "calculated": 68.1029,
+            "stored": 68.103
+          },
+          "minor_diameter_mm": {
+            "calculated": 65.5048,
+            "stored": 65.505
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 65.5048,
+            "stored": 65.505
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 64.6388,
+            "stored": 64.6388
+          },
+          "stress_area_mm2": {
+            "calculated": 3459.744,
+            "stored": 3459.752
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": true,
+        "evidence": [
+          "Aspen Fasteners thread pitch reference: M72 coarse pitch = 6 mm",
+          "mfindllc.com METRIC PITCH THREAD CHART: M72 coarse pitch = 6 mm"
+        ]
+      },
+      "upgrade_eligible": true,
+      "action_needed": false,
+      "confidence_after": 3,
+      "validation_status_after": "reference_only"
+    },
+    {
+      "id": "THR-M76-COARSE",
+      "designation": "M76",
+      "series": "Coarse",
+      "nominal_diameter_mm": 76,
+      "pitch_mm": 6.0,
+      "source": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_standard": "ISO 724 / ISO 261",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 76,
+            "stored": 76
+          },
+          "pitch_diameter_mm": {
+            "calculated": 72.1029,
+            "stored": 72.103
+          },
+          "minor_diameter_mm": {
+            "calculated": 69.5048,
+            "stored": 69.505
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 69.5048,
+            "stored": 69.505
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 68.6388,
+            "stored": 68.6388
+          },
+          "stress_area_mm2": {
+            "calculated": 3889.331,
+            "stored": 3889.34
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "M76 does not appear in either independent secondary reference consulted this session (both list ...M72, M80... with no M76 entry). Cannot confirm whether this is a genuine ISO 261 diameter/pitch combination or a non-preferred/interpolated entry without primary-standard access."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M80-COARSE",
+      "designation": "M80",
+      "series": "Coarse",
+      "nominal_diameter_mm": 80,
+      "pitch_mm": 6.0,
+      "source": "ISO 724 formula over ISO 261 diameter/pitch table; pitch cross-verified against independent secondary technical references (Faz 2.8.2)",
+      "source_standard": "ISO 724 / ISO 261",
+      "confidence_before": 3,
+      "validation_status_before": "reference_only",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 80,
+            "stored": 80
+          },
+          "pitch_diameter_mm": {
+            "calculated": 76.1029,
+            "stored": 76.103
+          },
+          "minor_diameter_mm": {
+            "calculated": 73.5048,
+            "stored": 73.505
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 73.5048,
+            "stored": 73.505
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 72.6388,
+            "stored": 72.6388
+          },
+          "stress_area_mm2": {
+            "calculated": 4344.05,
+            "stored": 4344.06
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": true,
+        "evidence": [
+          "Aspen Fasteners thread pitch reference: M80 coarse pitch = 6 mm",
+          "mfindllc.com METRIC PITCH THREAD CHART: M80 coarse pitch = 6 mm"
+        ]
+      },
+      "upgrade_eligible": true,
+      "action_needed": false,
+      "confidence_after": 3,
+      "validation_status_after": "reference_only"
+    },
+    {
+      "id": "THR-M85-COARSE",
+      "designation": "M85",
+      "series": "Coarse",
+      "nominal_diameter_mm": 85,
+      "pitch_mm": 6.0,
+      "source": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_standard": "ISO 724 / ISO 261",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 85,
+            "stored": 85
+          },
+          "pitch_diameter_mm": {
+            "calculated": 81.1029,
+            "stored": 81.103
+          },
+          "minor_diameter_mm": {
+            "calculated": 78.5048,
+            "stored": 78.505
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 78.5048,
+            "stored": 78.505
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 77.6388,
+            "stored": 77.6388
+          },
+          "stress_area_mm2": {
+            "calculated": 4947.792,
+            "stored": 4947.803
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "M85 does not appear in either independent secondary reference consulted this session. Same limitation as M76 -- see above."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M90-COARSE",
+      "designation": "M90",
+      "series": "Coarse",
+      "nominal_diameter_mm": 90,
+      "pitch_mm": 6.0,
+      "source": "ISO 724 formula over ISO 261 diameter/pitch table; pitch cross-verified against independent secondary technical references (Faz 2.8.2)",
+      "source_standard": "ISO 724 / ISO 261",
+      "confidence_before": 3,
+      "validation_status_before": "reference_only",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 90,
+            "stored": 90
+          },
+          "pitch_diameter_mm": {
+            "calculated": 86.1029,
+            "stored": 86.103
+          },
+          "minor_diameter_mm": {
+            "calculated": 83.5048,
+            "stored": 83.505
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 83.5048,
+            "stored": 83.505
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 82.6388,
+            "stored": 82.6388
+          },
+          "stress_area_mm2": {
+            "calculated": 5590.803,
+            "stored": 5590.816
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": true,
+        "evidence": [
+          "Aspen Fasteners thread pitch reference: M90 coarse pitch = 6 mm",
+          "mfindllc.com METRIC PITCH THREAD CHART: M90 coarse pitch = 6 mm"
+        ]
+      },
+      "upgrade_eligible": true,
+      "action_needed": false,
+      "confidence_after": 3,
+      "validation_status_after": "reference_only"
+    },
+    {
+      "id": "THR-M95-COARSE",
+      "designation": "M95",
+      "series": "Coarse",
+      "nominal_diameter_mm": 95,
+      "pitch_mm": 6.0,
+      "source": "ISO 724 formula over ISO 261 diameter/pitch table",
+      "source_standard": "ISO 724 / ISO 261",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 95,
+            "stored": 95
+          },
+          "pitch_diameter_mm": {
+            "calculated": 91.1029,
+            "stored": 91.103
+          },
+          "minor_diameter_mm": {
+            "calculated": 88.5048,
+            "stored": 88.505
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 88.5048,
+            "stored": 88.505
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 87.6388,
+            "stored": 87.6388
+          },
+          "stress_area_mm2": {
+            "calculated": 6273.085,
+            "stored": 6273.1
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "M95 does not appear in either independent secondary reference consulted this session. Same limitation as M76 -- see above."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M100-COARSE",
+      "designation": "M100",
+      "series": "Coarse",
+      "nominal_diameter_mm": 100,
+      "pitch_mm": 6.0,
+      "source": "ISO 724 formula over ISO 261 diameter/pitch table; pitch cross-verified against independent secondary technical references (Faz 2.8.2)",
+      "source_standard": "ISO 724 / ISO 261",
+      "confidence_before": 3,
+      "validation_status_before": "reference_only",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 100,
+            "stored": 100
+          },
+          "pitch_diameter_mm": {
+            "calculated": 96.1029,
+            "stored": 96.103
+          },
+          "minor_diameter_mm": {
+            "calculated": 93.5048,
+            "stored": 93.505
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 93.5048,
+            "stored": 93.505
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 92.6388,
+            "stored": 92.6388
+          },
+          "stress_area_mm2": {
+            "calculated": 6994.637,
+            "stored": 6994.653
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": true,
+        "evidence": [
+          "Aspen Fasteners thread pitch reference: M100 coarse pitch = 6 mm",
+          "mfindllc.com METRIC PITCH THREAD CHART: M100 coarse pitch = 6 mm"
+        ]
+      },
+      "upgrade_eligible": true,
+      "action_needed": false,
+      "confidence_after": 3,
+      "validation_status_after": "reference_only"
+    },
+    {
+      "id": "THR-M8x0.8-XFINE",
+      "designation": "M8x0.8",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 8,
+      "pitch_mm": 0.8,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 8,
+            "stored": 8
+          },
+          "pitch_diameter_mm": {
+            "calculated": 7.4804,
+            "stored": 7.4804
+          },
+          "minor_diameter_mm": {
+            "calculated": 7.134,
+            "stored": 7.134
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 7.134,
+            "stored": 7.134
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 7.0185,
+            "stored": 7.0185
+          },
+          "stress_area_mm2": {
+            "calculated": 41.276,
+            "stored": 41.276
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M10x1-XFINE",
+      "designation": "M10x1",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 10,
+      "pitch_mm": 1.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 10,
+            "stored": 10
+          },
+          "pitch_diameter_mm": {
+            "calculated": 9.3505,
+            "stored": 9.3505
+          },
+          "minor_diameter_mm": {
+            "calculated": 8.9175,
+            "stored": 8.9175
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 8.9175,
+            "stored": 8.9175
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 8.7731,
+            "stored": 8.7731
+          },
+          "stress_area_mm2": {
+            "calculated": 64.494,
+            "stored": 64.494
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M12x1.25-XFINE",
+      "designation": "M12x1.25",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 12,
+      "pitch_mm": 1.25,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 12,
+            "stored": 12
+          },
+          "pitch_diameter_mm": {
+            "calculated": 11.1881,
+            "stored": 11.1881
+          },
+          "minor_diameter_mm": {
+            "calculated": 10.6468,
+            "stored": 10.6469
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 10.6468,
+            "stored": 10.6469
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 10.4664,
+            "stored": 10.4664
+          },
+          "stress_area_mm2": {
+            "calculated": 92.072,
+            "stored": 92.072
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M14x1.5-XFINE",
+      "designation": "M14x1.5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 14,
+      "pitch_mm": 1.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 14,
+            "stored": 14
+          },
+          "pitch_diameter_mm": {
+            "calculated": 13.0257,
+            "stored": 13.0258
+          },
+          "minor_diameter_mm": {
+            "calculated": 12.3762,
+            "stored": 12.3763
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 12.3762,
+            "stored": 12.3763
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 12.1597,
+            "stored": 12.1597
+          },
+          "stress_area_mm2": {
+            "calculated": 124.545,
+            "stored": 124.546
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M16x1.5-XFINE",
+      "designation": "M16x1.5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 16,
+      "pitch_mm": 1.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 16,
+            "stored": 16
+          },
+          "pitch_diameter_mm": {
+            "calculated": 15.0257,
+            "stored": 15.0258
+          },
+          "minor_diameter_mm": {
+            "calculated": 14.3762,
+            "stored": 14.3763
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 14.3762,
+            "stored": 14.3763
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 14.1597,
+            "stored": 14.1597
+          },
+          "stress_area_mm2": {
+            "calculated": 167.248,
+            "stored": 167.248
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M18x1.75-XFINE",
+      "designation": "M18x1.75",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 18,
+      "pitch_mm": 1.75,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 18,
+            "stored": 18
+          },
+          "pitch_diameter_mm": {
+            "calculated": 16.8633,
+            "stored": 16.8634
+          },
+          "minor_diameter_mm": {
+            "calculated": 16.1056,
+            "stored": 16.1056
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 16.1056,
+            "stored": 16.1056
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 15.853,
+            "stored": 15.853
+          },
+          "stress_area_mm2": {
+            "calculated": 210.164,
+            "stored": 210.164
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M20x1.75-XFINE",
+      "designation": "M20x1.75",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 20,
+      "pitch_mm": 1.75,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 20,
+            "stored": 20
+          },
+          "pitch_diameter_mm": {
+            "calculated": 18.8633,
+            "stored": 18.8634
+          },
+          "minor_diameter_mm": {
+            "calculated": 18.1056,
+            "stored": 18.1056
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 18.1056,
+            "stored": 18.1056
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 17.853,
+            "stored": 17.853
+          },
+          "stress_area_mm2": {
+            "calculated": 264.696,
+            "stored": 264.697
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M22x1.75-XFINE",
+      "designation": "M22x1.75",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 22,
+      "pitch_mm": 1.75,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 22,
+            "stored": 22
+          },
+          "pitch_diameter_mm": {
+            "calculated": 20.8633,
+            "stored": 20.8634
+          },
+          "minor_diameter_mm": {
+            "calculated": 20.1056,
+            "stored": 20.1056
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 20.1056,
+            "stored": 20.1056
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 19.853,
+            "stored": 19.853
+          },
+          "stress_area_mm2": {
+            "calculated": 325.512,
+            "stored": 325.512
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M24x2-XFINE",
+      "designation": "M24x2",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 24,
+      "pitch_mm": 2.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 24,
+            "stored": 24
+          },
+          "pitch_diameter_mm": {
+            "calculated": 22.701,
+            "stored": 22.701
+          },
+          "minor_diameter_mm": {
+            "calculated": 21.8349,
+            "stored": 21.835
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 21.8349,
+            "stored": 21.835
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 21.5463,
+            "stored": 21.5463
+          },
+          "stress_area_mm2": {
+            "calculated": 384.416,
+            "stored": 384.417
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M27x2-XFINE",
+      "designation": "M27x2",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 27,
+      "pitch_mm": 2.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 27,
+            "stored": 27
+          },
+          "pitch_diameter_mm": {
+            "calculated": 25.701,
+            "stored": 25.701
+          },
+          "minor_diameter_mm": {
+            "calculated": 24.8349,
+            "stored": 24.835
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 24.8349,
+            "stored": 24.835
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 24.5463,
+            "stored": 24.5463
+          },
+          "stress_area_mm2": {
+            "calculated": 495.74,
+            "stored": 495.741
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M30x2.5-XFINE",
+      "designation": "M30x2.5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 30,
+      "pitch_mm": 2.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 30,
+            "stored": 30
+          },
+          "pitch_diameter_mm": {
+            "calculated": 28.3762,
+            "stored": 28.3762
+          },
+          "minor_diameter_mm": {
+            "calculated": 27.2937,
+            "stored": 27.2937
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 27.2937,
+            "stored": 27.2937
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 26.9328,
+            "stored": 26.9328
+          },
+          "stress_area_mm2": {
+            "calculated": 600.65,
+            "stored": 600.651
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M33x2.5-XFINE",
+      "designation": "M33x2.5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 33,
+      "pitch_mm": 2.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 33,
+            "stored": 33
+          },
+          "pitch_diameter_mm": {
+            "calculated": 31.3762,
+            "stored": 31.3762
+          },
+          "minor_diameter_mm": {
+            "calculated": 30.2937,
+            "stored": 30.2937
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 30.2937,
+            "stored": 30.2937
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 29.9328,
+            "stored": 29.9328
+          },
+          "stress_area_mm2": {
+            "calculated": 738.037,
+            "stored": 738.039
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M36x3-XFINE",
+      "designation": "M36x3",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 36,
+      "pitch_mm": 3.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 36,
+            "stored": 36
+          },
+          "pitch_diameter_mm": {
+            "calculated": 34.0514,
+            "stored": 34.0515
+          },
+          "minor_diameter_mm": {
+            "calculated": 32.7524,
+            "stored": 32.7525
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 32.7524,
+            "stored": 32.7525
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 32.3194,
+            "stored": 32.3194
+          },
+          "stress_area_mm2": {
+            "calculated": 864.936,
+            "stored": 864.938
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M39x3-XFINE",
+      "designation": "M39x3",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 39,
+      "pitch_mm": 3.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 39,
+            "stored": 39
+          },
+          "pitch_diameter_mm": {
+            "calculated": 37.0514,
+            "stored": 37.0515
+          },
+          "minor_diameter_mm": {
+            "calculated": 35.7524,
+            "stored": 35.7525
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 35.7524,
+            "stored": 35.7525
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 35.3194,
+            "stored": 35.3194
+          },
+          "stress_area_mm2": {
+            "calculated": 1028.387,
+            "stored": 1028.39
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M42x3.5-XFINE",
+      "designation": "M42x3.5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 42,
+      "pitch_mm": 3.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 42,
+            "stored": 42
+          },
+          "pitch_diameter_mm": {
+            "calculated": 39.7267,
+            "stored": 39.7268
+          },
+          "minor_diameter_mm": {
+            "calculated": 38.2111,
+            "stored": 38.2112
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 38.2111,
+            "stored": 38.2112
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 37.706,
+            "stored": 37.706
+          },
+          "stress_area_mm2": {
+            "calculated": 1177.274,
+            "stored": 1177.277
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M45x3.5-XFINE",
+      "designation": "M45x3.5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 45,
+      "pitch_mm": 3.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 45,
+            "stored": 45
+          },
+          "pitch_diameter_mm": {
+            "calculated": 42.7267,
+            "stored": 42.7268
+          },
+          "minor_diameter_mm": {
+            "calculated": 41.2111,
+            "stored": 41.2112
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 41.2111,
+            "stored": 41.2112
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 40.706,
+            "stored": 40.706
+          },
+          "stress_area_mm2": {
+            "calculated": 1366.789,
+            "stored": 1366.792
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M48x4-XFINE",
+      "designation": "M48x4",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 48,
+      "pitch_mm": 4.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 48,
+            "stored": 48
+          },
+          "pitch_diameter_mm": {
+            "calculated": 45.4019,
+            "stored": 45.402
+          },
+          "minor_diameter_mm": {
+            "calculated": 43.6699,
+            "stored": 43.67
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 43.6699,
+            "stored": 43.67
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 43.0925,
+            "stored": 43.0925
+          },
+          "stress_area_mm2": {
+            "calculated": 1537.664,
+            "stored": 1537.668
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M52x4-XFINE",
+      "designation": "M52x4",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 52,
+      "pitch_mm": 4.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 52,
+            "stored": 52
+          },
+          "pitch_diameter_mm": {
+            "calculated": 49.4019,
+            "stored": 49.402
+          },
+          "minor_diameter_mm": {
+            "calculated": 47.6699,
+            "stored": 47.67
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 47.6699,
+            "stored": 47.67
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 47.0925,
+            "stored": 47.0925
+          },
+          "stress_area_mm2": {
+            "calculated": 1828.244,
+            "stored": 1828.248
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M56x4.5-XFINE",
+      "designation": "M56x4.5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 56,
+      "pitch_mm": 4.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 56,
+            "stored": 56
+          },
+          "pitch_diameter_mm": {
+            "calculated": 53.0772,
+            "stored": 53.0772
+          },
+          "minor_diameter_mm": {
+            "calculated": 51.1286,
+            "stored": 51.1287
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 51.1286,
+            "stored": 51.1287
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 50.4791,
+            "stored": 50.4791
+          },
+          "stress_area_mm2": {
+            "calculated": 2105.63,
+            "stored": 2105.635
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M60x4.5-XFINE",
+      "designation": "M60x4.5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 60,
+      "pitch_mm": 4.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 60,
+            "stored": 60
+          },
+          "pitch_diameter_mm": {
+            "calculated": 57.0772,
+            "stored": 57.0772
+          },
+          "minor_diameter_mm": {
+            "calculated": 55.1286,
+            "stored": 55.1287
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 55.1286,
+            "stored": 55.1287
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 54.4791,
+            "stored": 54.4791
+          },
+          "stress_area_mm2": {
+            "calculated": 2443.528,
+            "stored": 2443.534
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M64x5-XFINE",
+      "designation": "M64x5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 64,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 64,
+            "stored": 64
+          },
+          "pitch_diameter_mm": {
+            "calculated": 60.7524,
+            "stored": 60.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 58.5873,
+            "stored": 58.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 58.5873,
+            "stored": 58.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 57.8657,
+            "stored": 57.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 2762.683,
+            "stored": 2762.69
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M68x5-XFINE",
+      "designation": "M68x5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 68,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 68,
+            "stored": 68
+          },
+          "pitch_diameter_mm": {
+            "calculated": 64.7524,
+            "stored": 64.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 62.5873,
+            "stored": 62.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 62.5873,
+            "stored": 62.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 61.8657,
+            "stored": 61.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 3147.899,
+            "stored": 3147.906
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M72x5-XFINE",
+      "designation": "M72x5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 72,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 72,
+            "stored": 72
+          },
+          "pitch_diameter_mm": {
+            "calculated": 68.7524,
+            "stored": 68.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 66.5873,
+            "stored": 66.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 66.5873,
+            "stored": 66.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 65.8657,
+            "stored": 65.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 3558.248,
+            "stored": 3558.256
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M76x5-XFINE",
+      "designation": "M76x5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 76,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 76,
+            "stored": 76
+          },
+          "pitch_diameter_mm": {
+            "calculated": 72.7524,
+            "stored": 72.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 70.5873,
+            "stored": 70.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 70.5873,
+            "stored": 70.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 69.8657,
+            "stored": 69.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 3993.729,
+            "stored": 3993.738
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M80x5-XFINE",
+      "designation": "M80x5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 80,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 80,
+            "stored": 80
+          },
+          "pitch_diameter_mm": {
+            "calculated": 76.7524,
+            "stored": 76.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 74.5873,
+            "stored": 74.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 74.5873,
+            "stored": 74.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 73.8657,
+            "stored": 73.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 4454.343,
+            "stored": 4454.353
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M85x5-XFINE",
+      "designation": "M85x5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 85,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 85,
+            "stored": 85
+          },
+          "pitch_diameter_mm": {
+            "calculated": 81.7524,
+            "stored": 81.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 79.5873,
+            "stored": 79.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 79.5873,
+            "stored": 79.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 78.8657,
+            "stored": 78.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 5065.453,
+            "stored": 5065.465
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M90x5-XFINE",
+      "designation": "M90x5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 90,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 90,
+            "stored": 90
+          },
+          "pitch_diameter_mm": {
+            "calculated": 86.7524,
+            "stored": 86.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 84.5873,
+            "stored": 84.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 84.5873,
+            "stored": 84.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 83.8657,
+            "stored": 83.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 5715.834,
+            "stored": 5715.847
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M95x5-XFINE",
+      "designation": "M95x5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 95,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 95,
+            "stored": 95
+          },
+          "pitch_diameter_mm": {
+            "calculated": 91.7524,
+            "stored": 91.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 89.5873,
+            "stored": 89.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 89.5873,
+            "stored": 89.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 88.8657,
+            "stored": 88.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 6405.484,
+            "stored": 6405.499
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M100x5-XFINE",
+      "designation": "M100x5",
+      "series": "Extra Fine",
+      "nominal_diameter_mm": 100,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 100,
+            "stored": 100
+          },
+          "pitch_diameter_mm": {
+            "calculated": 96.7524,
+            "stored": 96.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 94.5873,
+            "stored": 94.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 94.5873,
+            "stored": 94.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 93.8657,
+            "stored": 93.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 7134.404,
+            "stored": 7134.421
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M3x0.45-FINE",
+      "designation": "M3x0.45",
+      "series": "Fine",
+      "nominal_diameter_mm": 3,
+      "pitch_mm": 0.45,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 3,
+            "stored": 3
+          },
+          "pitch_diameter_mm": {
+            "calculated": 2.7077,
+            "stored": 2.7077
+          },
+          "minor_diameter_mm": {
+            "calculated": 2.5129,
+            "stored": 2.5129
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 2.5129,
+            "stored": 2.5129
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 2.4479,
+            "stored": 2.4479
+          },
+          "stress_area_mm2": {
+            "calculated": 5.219,
+            "stored": 5.219
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M3.5x0.5-FINE",
+      "designation": "M3.5x0.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 3.5,
+      "pitch_mm": 0.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 3.5,
+            "stored": 3.5
+          },
+          "pitch_diameter_mm": {
+            "calculated": 3.1752,
+            "stored": 3.1753
+          },
+          "minor_diameter_mm": {
+            "calculated": 2.9587,
+            "stored": 2.9588
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 2.9587,
+            "stored": 2.9588
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 2.8866,
+            "stored": 2.8866
+          },
+          "stress_area_mm2": {
+            "calculated": 7.215,
+            "stored": 7.215
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M4x0.6-FINE",
+      "designation": "M4x0.6",
+      "series": "Fine",
+      "nominal_diameter_mm": 4,
+      "pitch_mm": 0.6,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 4,
+            "stored": 4
+          },
+          "pitch_diameter_mm": {
+            "calculated": 3.6103,
+            "stored": 3.6103
+          },
+          "minor_diameter_mm": {
+            "calculated": 3.3505,
+            "stored": 3.3505
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 3.3505,
+            "stored": 3.3505
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 3.2639,
+            "stored": 3.2639
+          },
+          "stress_area_mm2": {
+            "calculated": 9.278,
+            "stored": 9.278
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M5x0.75-FINE",
+      "designation": "M5x0.75",
+      "series": "Fine",
+      "nominal_diameter_mm": 5,
+      "pitch_mm": 0.75,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 5,
+            "stored": 5
+          },
+          "pitch_diameter_mm": {
+            "calculated": 4.5129,
+            "stored": 4.5129
+          },
+          "minor_diameter_mm": {
+            "calculated": 4.1881,
+            "stored": 4.1881
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 4.1881,
+            "stored": 4.1881
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 4.0798,
+            "stored": 4.0798
+          },
+          "stress_area_mm2": {
+            "calculated": 14.497,
+            "stored": 14.497
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M6x0.8-FINE",
+      "designation": "M6x0.8",
+      "series": "Fine",
+      "nominal_diameter_mm": 6,
+      "pitch_mm": 0.8,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 6,
+            "stored": 6
+          },
+          "pitch_diameter_mm": {
+            "calculated": 5.4804,
+            "stored": 5.4804
+          },
+          "minor_diameter_mm": {
+            "calculated": 5.134,
+            "stored": 5.134
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 5.134,
+            "stored": 5.134
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 5.0185,
+            "stored": 5.0185
+          },
+          "stress_area_mm2": {
+            "calculated": 21.643,
+            "stored": 21.643
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M7x0.8-FINE",
+      "designation": "M7x0.8",
+      "series": "Fine",
+      "nominal_diameter_mm": 7,
+      "pitch_mm": 0.8,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 7,
+            "stored": 7
+          },
+          "pitch_diameter_mm": {
+            "calculated": 6.4804,
+            "stored": 6.4804
+          },
+          "minor_diameter_mm": {
+            "calculated": 6.134,
+            "stored": 6.134
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 6.134,
+            "stored": 6.134
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 6.0185,
+            "stored": 6.0185
+          },
+          "stress_area_mm2": {
+            "calculated": 30.674,
+            "stored": 30.674
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M8x1-FINE",
+      "designation": "M8x1",
+      "series": "Fine",
+      "nominal_diameter_mm": 8,
+      "pitch_mm": 1.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 8,
+            "stored": 8
+          },
+          "pitch_diameter_mm": {
+            "calculated": 7.3505,
+            "stored": 7.3505
+          },
+          "minor_diameter_mm": {
+            "calculated": 6.9175,
+            "stored": 6.9175
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 6.9175,
+            "stored": 6.9175
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 6.7731,
+            "stored": 6.7731
+          },
+          "stress_area_mm2": {
+            "calculated": 39.167,
+            "stored": 39.167
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M10x1.25-FINE",
+      "designation": "M10x1.25",
+      "series": "Fine",
+      "nominal_diameter_mm": 10,
+      "pitch_mm": 1.25,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 10,
+            "stored": 10
+          },
+          "pitch_diameter_mm": {
+            "calculated": 9.1881,
+            "stored": 9.1881
+          },
+          "minor_diameter_mm": {
+            "calculated": 8.6468,
+            "stored": 8.6469
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 8.6468,
+            "stored": 8.6469
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 8.4664,
+            "stored": 8.4664
+          },
+          "stress_area_mm2": {
+            "calculated": 61.198,
+            "stored": 61.199
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M12x1.5-FINE",
+      "designation": "M12x1.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 12,
+      "pitch_mm": 1.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 12,
+            "stored": 12
+          },
+          "pitch_diameter_mm": {
+            "calculated": 11.0257,
+            "stored": 11.0258
+          },
+          "minor_diameter_mm": {
+            "calculated": 10.3762,
+            "stored": 10.3763
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 10.3762,
+            "stored": 10.3763
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 10.1597,
+            "stored": 10.1597
+          },
+          "stress_area_mm2": {
+            "calculated": 88.126,
+            "stored": 88.126
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M14x1.75-FINE",
+      "designation": "M14x1.75",
+      "series": "Fine",
+      "nominal_diameter_mm": 14,
+      "pitch_mm": 1.75,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 14,
+            "stored": 14
+          },
+          "pitch_diameter_mm": {
+            "calculated": 12.8633,
+            "stored": 12.8634
+          },
+          "minor_diameter_mm": {
+            "calculated": 12.1056,
+            "stored": 12.1056
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 12.1056,
+            "stored": 12.1056
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 11.853,
+            "stored": 11.853
+          },
+          "stress_area_mm2": {
+            "calculated": 119.949,
+            "stored": 119.949
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M16x1.75-FINE",
+      "designation": "M16x1.75",
+      "series": "Fine",
+      "nominal_diameter_mm": 16,
+      "pitch_mm": 1.75,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 16,
+            "stored": 16
+          },
+          "pitch_diameter_mm": {
+            "calculated": 14.8633,
+            "stored": 14.8634
+          },
+          "minor_diameter_mm": {
+            "calculated": 14.1056,
+            "stored": 14.1056
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 14.1056,
+            "stored": 14.1056
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 13.853,
+            "stored": 13.853
+          },
+          "stress_area_mm2": {
+            "calculated": 161.915,
+            "stored": 161.915
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M18x2-FINE",
+      "designation": "M18x2",
+      "series": "Fine",
+      "nominal_diameter_mm": 18,
+      "pitch_mm": 2.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 18,
+            "stored": 18
+          },
+          "pitch_diameter_mm": {
+            "calculated": 16.701,
+            "stored": 16.701
+          },
+          "minor_diameter_mm": {
+            "calculated": 15.8349,
+            "stored": 15.835
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 15.8349,
+            "stored": 15.835
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 15.5463,
+            "stored": 15.5463
+          },
+          "stress_area_mm2": {
+            "calculated": 204.18,
+            "stored": 204.181
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M20x2-FINE",
+      "designation": "M20x2",
+      "series": "Fine",
+      "nominal_diameter_mm": 20,
+      "pitch_mm": 2.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 20,
+            "stored": 20
+          },
+          "pitch_diameter_mm": {
+            "calculated": 18.701,
+            "stored": 18.701
+          },
+          "minor_diameter_mm": {
+            "calculated": 17.8349,
+            "stored": 17.835
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 17.8349,
+            "stored": 17.835
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 17.5463,
+            "stored": 17.5463
+          },
+          "stress_area_mm2": {
+            "calculated": 257.976,
+            "stored": 257.976
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M22x2-FINE",
+      "designation": "M22x2",
+      "series": "Fine",
+      "nominal_diameter_mm": 22,
+      "pitch_mm": 2.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 22,
+            "stored": 22
+          },
+          "pitch_diameter_mm": {
+            "calculated": 20.701,
+            "stored": 20.701
+          },
+          "minor_diameter_mm": {
+            "calculated": 19.8349,
+            "stored": 19.835
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 19.8349,
+            "stored": 19.835
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 19.5463,
+            "stored": 19.5463
+          },
+          "stress_area_mm2": {
+            "calculated": 318.054,
+            "stored": 318.055
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M24x2.5-FINE",
+      "designation": "M24x2.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 24,
+      "pitch_mm": 2.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 24,
+            "stored": 24
+          },
+          "pitch_diameter_mm": {
+            "calculated": 22.3762,
+            "stored": 22.3762
+          },
+          "minor_diameter_mm": {
+            "calculated": 21.2937,
+            "stored": 21.2937
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 21.2937,
+            "stored": 21.2937
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 20.9328,
+            "stored": 20.9328
+          },
+          "stress_area_mm2": {
+            "calculated": 368.287,
+            "stored": 368.288
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M27x2.5-FINE",
+      "designation": "M27x2.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 27,
+      "pitch_mm": 2.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 27,
+            "stored": 27
+          },
+          "pitch_diameter_mm": {
+            "calculated": 25.3762,
+            "stored": 25.3762
+          },
+          "minor_diameter_mm": {
+            "calculated": 24.2937,
+            "stored": 24.2937
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 24.2937,
+            "stored": 24.2937
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 23.9328,
+            "stored": 23.9328
+          },
+          "stress_area_mm2": {
+            "calculated": 477.4,
+            "stored": 477.401
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M30x3-FINE",
+      "designation": "M30x3",
+      "series": "Fine",
+      "nominal_diameter_mm": 30,
+      "pitch_mm": 3.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 30,
+            "stored": 30
+          },
+          "pitch_diameter_mm": {
+            "calculated": 28.0514,
+            "stored": 28.0515
+          },
+          "minor_diameter_mm": {
+            "calculated": 26.7524,
+            "stored": 26.7525
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 26.7524,
+            "stored": 26.7525
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 26.3194,
+            "stored": 26.3194
+          },
+          "stress_area_mm2": {
+            "calculated": 580.445,
+            "stored": 580.447
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M33x3-FINE",
+      "designation": "M33x3",
+      "series": "Fine",
+      "nominal_diameter_mm": 33,
+      "pitch_mm": 3.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 33,
+            "stored": 33
+          },
+          "pitch_diameter_mm": {
+            "calculated": 31.0514,
+            "stored": 31.0515
+          },
+          "minor_diameter_mm": {
+            "calculated": 29.7524,
+            "stored": 29.7525
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 29.7524,
+            "stored": 29.7525
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 29.3194,
+            "stored": 29.3194
+          },
+          "stress_area_mm2": {
+            "calculated": 715.622,
+            "stored": 715.624
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M36x3.5-FINE",
+      "designation": "M36x3.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 36,
+      "pitch_mm": 3.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 36,
+            "stored": 36
+          },
+          "pitch_diameter_mm": {
+            "calculated": 33.7267,
+            "stored": 33.7268
+          },
+          "minor_diameter_mm": {
+            "calculated": 32.2111,
+            "stored": 32.2112
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 32.2111,
+            "stored": 32.2112
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 31.706,
+            "stored": 31.706
+          },
+          "stress_area_mm2": {
+            "calculated": 840.656,
+            "stored": 840.658
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M39x3.5-FINE",
+      "designation": "M39x3.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 39,
+      "pitch_mm": 3.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 39,
+            "stored": 39
+          },
+          "pitch_diameter_mm": {
+            "calculated": 36.7267,
+            "stored": 36.7268
+          },
+          "minor_diameter_mm": {
+            "calculated": 35.2111,
+            "stored": 35.2112
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 35.2111,
+            "stored": 35.2112
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 34.706,
+            "stored": 34.706
+          },
+          "stress_area_mm2": {
+            "calculated": 1001.896,
+            "stored": 1001.899
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M42x4-FINE",
+      "designation": "M42x4",
+      "series": "Fine",
+      "nominal_diameter_mm": 42,
+      "pitch_mm": 4.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 42,
+            "stored": 42
+          },
+          "pitch_diameter_mm": {
+            "calculated": 39.4019,
+            "stored": 39.402
+          },
+          "minor_diameter_mm": {
+            "calculated": 37.6699,
+            "stored": 37.67
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 37.6699,
+            "stored": 37.67
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 37.0925,
+            "stored": 37.0925
+          },
+          "stress_area_mm2": {
+            "calculated": 1148.918,
+            "stored": 1148.921
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M45x4-FINE",
+      "designation": "M45x4",
+      "series": "Fine",
+      "nominal_diameter_mm": 45,
+      "pitch_mm": 4.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 45,
+            "stored": 45
+          },
+          "pitch_diameter_mm": {
+            "calculated": 42.4019,
+            "stored": 42.402
+          },
+          "minor_diameter_mm": {
+            "calculated": 40.6699,
+            "stored": 40.67
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 40.6699,
+            "stored": 40.67
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 40.0925,
+            "stored": 40.0925
+          },
+          "stress_area_mm2": {
+            "calculated": 1336.223,
+            "stored": 1336.226
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M48x4.5-FINE",
+      "designation": "M48x4.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 48,
+      "pitch_mm": 4.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 48,
+            "stored": 48
+          },
+          "pitch_diameter_mm": {
+            "calculated": 45.0772,
+            "stored": 45.0772
+          },
+          "minor_diameter_mm": {
+            "calculated": 43.1286,
+            "stored": 43.1287
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 43.1286,
+            "stored": 43.1287
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 42.4791,
+            "stored": 42.4791
+          },
+          "stress_area_mm2": {
+            "calculated": 1505.233,
+            "stored": 1505.236
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M52x4.5-FINE",
+      "designation": "M52x4.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 52,
+      "pitch_mm": 4.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 52,
+            "stored": 52
+          },
+          "pitch_diameter_mm": {
+            "calculated": 49.0772,
+            "stored": 49.0772
+          },
+          "minor_diameter_mm": {
+            "calculated": 47.1286,
+            "stored": 47.1287
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 47.1286,
+            "stored": 47.1287
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 46.4791,
+            "stored": 46.4791
+          },
+          "stress_area_mm2": {
+            "calculated": 1792.865,
+            "stored": 1792.869
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M56x5-FINE",
+      "designation": "M56x5",
+      "series": "Fine",
+      "nominal_diameter_mm": 56,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 56,
+            "stored": 56
+          },
+          "pitch_diameter_mm": {
+            "calculated": 52.7524,
+            "stored": 52.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 50.5873,
+            "stored": 50.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 50.5873,
+            "stored": 50.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 49.8657,
+            "stored": 49.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 2067.65,
+            "stored": 2067.655
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M60x5-FINE",
+      "designation": "M60x5",
+      "series": "Fine",
+      "nominal_diameter_mm": 60,
+      "pitch_mm": 5.0,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 60,
+            "stored": 60
+          },
+          "pitch_diameter_mm": {
+            "calculated": 56.7524,
+            "stored": 56.7525
+          },
+          "minor_diameter_mm": {
+            "calculated": 54.5873,
+            "stored": 54.5875
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 54.5873,
+            "stored": 54.5875
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 53.8657,
+            "stored": 53.8657
+          },
+          "stress_area_mm2": {
+            "calculated": 2402.6,
+            "stored": 2402.606
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M64x5.5-FINE",
+      "designation": "M64x5.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 64,
+      "pitch_mm": 5.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 64,
+            "stored": 64
+          },
+          "pitch_diameter_mm": {
+            "calculated": 60.4276,
+            "stored": 60.4278
+          },
+          "minor_diameter_mm": {
+            "calculated": 58.0461,
+            "stored": 58.0463
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 58.0461,
+            "stored": 58.0463
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 57.2522,
+            "stored": 57.2522
+          },
+          "stress_area_mm2": {
+            "calculated": 2719.154,
+            "stored": 2719.16
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M68x5.5-FINE",
+      "designation": "M68x5.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 68,
+      "pitch_mm": 5.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 68,
+            "stored": 68
+          },
+          "pitch_diameter_mm": {
+            "calculated": 64.4276,
+            "stored": 64.4278
+          },
+          "minor_diameter_mm": {
+            "calculated": 62.0461,
+            "stored": 62.0463
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 62.0461,
+            "stored": 62.0463
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 61.2522,
+            "stored": 61.2522
+          },
+          "stress_area_mm2": {
+            "calculated": 3101.422,
+            "stored": 3101.429
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M72x5.5-FINE",
+      "designation": "M72x5.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 72,
+      "pitch_mm": 5.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 72,
+            "stored": 72
+          },
+          "pitch_diameter_mm": {
+            "calculated": 68.4276,
+            "stored": 68.4278
+          },
+          "minor_diameter_mm": {
+            "calculated": 66.0461,
+            "stored": 66.0463
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 66.0461,
+            "stored": 66.0463
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 65.2522,
+            "stored": 65.2522
+          },
+          "stress_area_mm2": {
+            "calculated": 3508.823,
+            "stored": 3508.831
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M76x5.5-FINE",
+      "designation": "M76x5.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 76,
+      "pitch_mm": 5.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 76,
+            "stored": 76
+          },
+          "pitch_diameter_mm": {
+            "calculated": 72.4276,
+            "stored": 72.4278
+          },
+          "minor_diameter_mm": {
+            "calculated": 70.0461,
+            "stored": 70.0463
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 70.0461,
+            "stored": 70.0463
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 69.2522,
+            "stored": 69.2522
+          },
+          "stress_area_mm2": {
+            "calculated": 3941.357,
+            "stored": 3941.366
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M80x5.5-FINE",
+      "designation": "M80x5.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 80,
+      "pitch_mm": 5.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 80,
+            "stored": 80
+          },
+          "pitch_diameter_mm": {
+            "calculated": 76.4276,
+            "stored": 76.4278
+          },
+          "minor_diameter_mm": {
+            "calculated": 74.0461,
+            "stored": 74.0463
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 74.0461,
+            "stored": 74.0463
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 73.2522,
+            "stored": 73.2522
+          },
+          "stress_area_mm2": {
+            "calculated": 4399.023,
+            "stored": 4399.034
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M85x5.5-FINE",
+      "designation": "M85x5.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 85,
+      "pitch_mm": 5.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 85,
+            "stored": 85
+          },
+          "pitch_diameter_mm": {
+            "calculated": 81.4276,
+            "stored": 81.4278
+          },
+          "minor_diameter_mm": {
+            "calculated": 79.0461,
+            "stored": 79.0463
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 79.0461,
+            "stored": 79.0463
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 78.2522,
+            "stored": 78.2522
+          },
+          "stress_area_mm2": {
+            "calculated": 5006.45,
+            "stored": 5006.461
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M90x5.5-FINE",
+      "designation": "M90x5.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 90,
+      "pitch_mm": 5.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 90,
+            "stored": 90
+          },
+          "pitch_diameter_mm": {
+            "calculated": 86.4276,
+            "stored": 86.4278
+          },
+          "minor_diameter_mm": {
+            "calculated": 84.0461,
+            "stored": 84.0463
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 84.0461,
+            "stored": 84.0463
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 83.2522,
+            "stored": 83.2522
+          },
+          "stress_area_mm2": {
+            "calculated": 5653.146,
+            "stored": 5653.159
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M95x5.5-FINE",
+      "designation": "M95x5.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 95,
+      "pitch_mm": 5.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 95,
+            "stored": 95
+          },
+          "pitch_diameter_mm": {
+            "calculated": 91.4276,
+            "stored": 91.4278
+          },
+          "minor_diameter_mm": {
+            "calculated": 89.0461,
+            "stored": 89.0463
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 89.0461,
+            "stored": 89.0463
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 88.2522,
+            "stored": 88.2522
+          },
+          "stress_area_mm2": {
+            "calculated": 6339.112,
+            "stored": 6339.126
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    },
+    {
+      "id": "THR-M100x5.5-FINE",
+      "designation": "M100x5.5",
+      "series": "Fine",
+      "nominal_diameter_mm": 100,
+      "pitch_mm": 5.5,
+      "source": "ISO 724 formula; pitch selected programmatically (unverified)",
+      "source_standard": "ISO 724 / ISO 261 (pitch selection unverified)",
+      "confidence_before": 4,
+      "validation_status_before": "provisional",
+      "geometry": {
+        "field_checks": {
+          "major_diameter_mm": {
+            "calculated": 100,
+            "stored": 100
+          },
+          "pitch_diameter_mm": {
+            "calculated": 96.4276,
+            "stored": 96.4278
+          },
+          "minor_diameter_mm": {
+            "calculated": 94.0461,
+            "stored": 94.0463
+          },
+          "minor_diameter_internal_mm": {
+            "calculated": 94.0461,
+            "stored": 94.0463
+          },
+          "minor_diameter_external_mm": {
+            "calculated": 93.2522,
+            "stored": 93.2522
+          },
+          "stress_area_mm2": {
+            "calculated": 7064.348,
+            "stored": 7064.364
+          }
+        },
+        "mismatches": [],
+        "geometry_verified": true
+      },
+      "invariant_issues": [],
+      "corroboration": {
+        "corroborated": false,
+        "evidence": [],
+        "reason": "Secondary-source cross-check found the pitch-selection method itself unconfirmed against the primary ISO 261/262 multi-choice pitch table (paywalled; not accessible in this session). Available secondary summaries disagree with several stored values, but ISO 261/262 fine series are multi-choice per diameter, so disagreement with a single-choice secondary summary does not prove the stored value is wrong either. Left at G4/provisional per the 'no unverifiable upgrade' rule; recommended for Faz 2.8.10 (primary-standard-table acquisition)."
+      },
+      "upgrade_eligible": false,
+      "action_needed": false,
+      "confidence_after": 4,
+      "validation_status_after": "provisional"
+    }
+  ],
+  "apply_result": {
+    "dry_run": true,
+    "changed_records": []
+  }
+}
