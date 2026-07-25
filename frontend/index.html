@@ -1260,63 +1260,63 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <div id="page-admin" class="page">
   <div class="section-header"><span class="section-icon">🛡️</span><div>
-    <div class="section-title">Yönetici Paneli</div>
-    <div class="section-sub">Kullanıcılar · Roller · Denetim kaydı · Yedekleme</div>
+    <div class="section-title" data-i18n="admin.title">Yönetici Paneli</div>
+    <div class="section-sub" data-i18n="admin.subtitle">Kullanıcılar · Roller · Denetim kaydı · Yedekleme</div>
   </div></div>
 
   <div class="admin-grid">
     <div class="card">
-      <div class="card-title">Yeni Kullanıcı</div>
+      <div class="card-title" data-i18n="admin.new_user_title">Yeni Kullanıcı</div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Kullanıcı Adı</label><input class="form-input" id="adm_username"></div>
-        <div class="form-group"><label class="form-label">Görünen Ad</label><input class="form-input" id="adm_display"></div>
+        <div class="form-group"><label class="form-label" data-i18n="admin.username_label">Kullanıcı Adı</label><input class="form-input" id="adm_username"></div>
+        <div class="form-group"><label class="form-label" data-i18n="admin.display_name_label">Görünen Ad</label><input class="form-input" id="adm_display"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Şifre</label><input type="password" class="form-input" id="adm_password"></div>
-        <div class="form-group"><label class="form-label">Rol</label><select class="form-select" id="adm_role"><option value="engineer">Engineer</option><option value="viewer">Viewer</option><option value="admin">Admin</option></select></div>
+        <div class="form-group"><label class="form-label" data-i18n="admin.password_label">Şifre</label><input type="password" class="form-input" id="adm_password"></div>
+        <div class="form-group"><label class="form-label" data-i18n="admin.role_label">Rol</label><select class="form-select" id="adm_role"><option value="engineer" data-i18n="admin.role_engineer">Engineer</option><option value="viewer" data-i18n="admin.role_viewer">Viewer</option><option value="admin" data-i18n="admin.role_admin">Admin</option></select></div>
       </div>
-      <button class="btn btn-primary" onclick="adminCreateUser()">Kullanıcı Ekle</button>
+      <button class="btn btn-primary" onclick="adminCreateUser()" data-i18n="admin.add_user_btn">Kullanıcı Ekle</button>
     </div>
 
     <div class="card">
-      <div class="card-title">Parola Değiştir</div>
+      <div class="card-title" data-i18n="admin.change_password_title">Parola Değiştir</div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Mevcut Şifre</label><input type="password" class="form-input" id="pwd_current"></div>
-        <div class="form-group"><label class="form-label">Yeni Şifre</label><input type="password" class="form-input" id="pwd_new"></div>
+        <div class="form-group"><label class="form-label" data-i18n="admin.current_password_label">Mevcut Şifre</label><input type="password" class="form-input" id="pwd_current"></div>
+        <div class="form-group"><label class="form-label" data-i18n="admin.new_password_label">Yeni Şifre</label><input type="password" class="form-input" id="pwd_new"></div>
       </div>
-      <button class="btn btn-secondary" onclick="changeOwnPassword()">Parolayı Güncelle</button>
+      <button class="btn btn-secondary" onclick="changeOwnPassword()" data-i18n="admin.update_password_btn">Parolayı Güncelle</button>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-header"><div class="card-title">Kullanıcılar</div><button class="btn btn-secondary btn-sm" onclick="loadAdminUsers()">Yenile</button></div>
+    <div class="card-header"><div class="card-title" data-i18n="admin.users_title">Kullanıcılar</div><button class="btn btn-secondary btn-sm" onclick="loadAdminUsers()" data-i18n="admin.refresh_btn">Yenile</button></div>
     <div class="admin-list" id="adminUsers"></div>
   </div>
 
   <div class="admin-grid">
     <div class="card">
-      <div class="card-header"><div class="card-title">Denetim Kayıtları</div><button class="btn btn-secondary btn-sm" onclick="loadAudit()">Yenile</button></div>
+      <div class="card-header"><div class="card-title" data-i18n="admin.audit_records_title">Denetim Kayıtları</div><button class="btn btn-secondary btn-sm" onclick="loadAudit()" data-i18n="admin.refresh_btn">Yenile</button></div>
       <div id="auditList" style="max-height:360px;overflow:auto"></div>
     </div>
     <div class="card">
-      <div class="card-title">Veritabanı Yedekleme</div>
-      <div class="card-sub">SQLite veritabanının indirilebilir kopyasını oluşturur.</div>
-      <button class="btn btn-primary" onclick="downloadBackup()">Veritabanı Yedeğini İndir</button>
-      <div class="alert alert-info" style="margin-top:12px">Yedek dosyası kullanıcılar, hesaplar ve denetim kayıtlarını içerir.</div>
+      <div class="card-title" data-i18n="admin.db_backup_title">Veritabanı Yedekleme</div>
+      <div class="card-sub" data-i18n="admin.db_backup_sub">SQLite veritabanının indirilebilir kopyasını oluşturur.</div>
+      <button class="btn btn-primary" onclick="downloadBackup()" data-i18n="admin.download_backup_btn">Veritabanı Yedeğini İndir</button>
+      <div class="alert alert-info" style="margin-top:12px" data-i18n="admin.backup_contents_note">Yedek dosyası kullanıcılar, hesaplar ve denetim kayıtlarını içerir.</div>
     </div>
   </div>
 </div>
 
 
   <div class="card">
-    <div class="card-header"><div><div class="card-title">Sistem Sağlığı</div>
-    <div class="card-sub">API, veritabanı, kullanıcı ve kayıt durumu</div></div>
-    <button class="btn btn-secondary btn-sm" onclick="loadSystemHealth()">Yenile</button></div>
+    <div class="card-header"><div><div class="card-title" data-i18n="admin.system_health_title">Sistem Sağlığı</div>
+    <div class="card-sub" data-i18n="admin.system_health_sub">API, veritabanı, kullanıcı ve kayıt durumu</div></div>
+    <button class="btn btn-secondary btn-sm" onclick="loadSystemHealth()" data-i18n="admin.refresh_btn">Yenile</button></div>
     <div class="grid4" id="systemHealthCards">
       <div class="stat"><div class="stat-label">API</div><div class="stat-val blue">—</div></div>
-      <div class="stat"><div class="stat-label">Veritabanı</div><div class="stat-val blue">—</div></div>
-      <div class="stat"><div class="stat-label">Kullanıcı</div><div class="stat-val blue">—</div></div>
-      <div class="stat"><div class="stat-label">Kayıt</div><div class="stat-val blue">—</div></div>
+      <div class="stat"><div class="stat-label" data-i18n="admin.database_label">Veritabanı</div><div class="stat-val blue">—</div></div>
+      <div class="stat"><div class="stat-label" data-i18n="admin.user_label">Kullanıcı</div><div class="stat-val blue">—</div></div>
+      <div class="stat"><div class="stat-label" data-i18n="admin.record_label">Kayıt</div><div class="stat-val blue">—</div></div>
     </div>
     <div id="systemHealthDetail" style="font-size:12px;color:var(--text3);margin-top:10px"></div>
   </div>
@@ -2403,6 +2403,78 @@ const I18N = {
     'mobile.not_ready': 'Not ready',
     'mobile.check_needed': 'Check',
 
+    // ---- Faz 2.7.4b-3: Admin Panel ----
+    'admin.title': 'Admin Panel',
+    'admin.subtitle': 'Users · Roles · Audit log · Backup',
+    'admin.new_user_title': 'New User',
+    'admin.username_label': 'Username',
+    'admin.display_name_label': 'Display Name',
+    'admin.password_label': 'Password',
+    'admin.role_label': 'Role',
+    'admin.role_engineer': 'Engineer',
+    'admin.role_viewer': 'Viewer',
+    'admin.role_admin': 'Admin',
+    'admin.add_user_btn': 'Add User',
+    'admin.change_password_title': 'Change Password',
+    'admin.current_password_label': 'Current Password',
+    'admin.new_password_label': 'New Password',
+    'admin.update_password_btn': 'Update Password',
+    'admin.users_title': 'Users',
+    'admin.refresh_btn': 'Refresh',
+    'admin.audit_records_title': 'Audit Records',
+    'admin.db_backup_title': 'Database Backup',
+    'admin.db_backup_sub': 'Creates a downloadable copy of the SQLite database.',
+    'admin.download_backup_btn': 'Download Database Backup',
+    'admin.backup_contents_note': 'The backup file contains users, calculations, and audit records.',
+    'admin.system_health_title': 'System Health',
+    'admin.system_health_sub': 'API, database, user, and record status',
+    'admin.database_label': 'Database',
+    'admin.user_label': 'User',
+    'admin.record_label': 'Record',
+
+    'admin.enter_current_and_new_password': 'Enter your current and new password.',
+    'admin.password_updated': 'Password updated.',
+    'admin.fill_all_fields': 'Fill in all fields.',
+    'admin.user_created': 'User created.',
+    'admin.status_active': 'Active',
+    'admin.status_inactive': 'Inactive',
+    'admin.deactivate_btn': 'Deactivate',
+    'admin.activate_btn': 'Activate',
+    'admin.reset_password_btn': 'Reset Password',
+    'admin.no_users_found': 'No users found.',
+    'admin.new_temp_password_prompt': 'New temporary password:',
+    'admin.system_label': 'system',
+    'admin.no_audit_records': 'No audit records found.',
+    'admin.backup_failed': 'Backup could not be retrieved.',
+
+    'admin.active_users_label': 'Active Users',
+    'admin.total_label': 'Total',
+    'admin.calculation_record_label': 'Calculation Record',
+    'admin.audit_label': 'Audit',
+    'admin.server_time_label': 'Server time',
+    'admin.schema_label': 'Schema',
+    'admin.system_info_unavailable': 'System information could not be retrieved',
+
+    'admin.health_api_title': 'API',
+    'admin.health_api_reason': 'If the server is unreachable, no calculation or record operation will work.',
+    'admin.health_api_green': 'The API is responding normally to requests (status=ok).',
+    'admin.health_api_red': 'The API is not responding, or status is not ok. Do not perform calculations; contact the system administrator.',
+    'admin.health_db_title': 'Database',
+    'admin.health_db_reason': 'If the database is corrupted, records may be lost or calculation results may be displayed incorrectly.',
+    'admin.health_db_green': 'The database connection and size are normal (database_ok=true).',
+    'admin.health_db_red': 'The database has an error (database_ok=false). Do not perform calculations; the administrator should reload the data source.',
+    'admin.health_users_title': 'Active Users',
+    'admin.health_users_reason': 'An unexpected user count may indicate unauthorized access or a session issue.',
+    'admin.health_records_title': 'Calculation Records',
+    'admin.health_records_reason': 'Calculation and audit record counts are a basic indicator of data integrity.',
+    'admin.threshold_tbd': 'A threshold value is not explicitly defined in the current system configuration.',
+    'admin.no_threshold_defined_prefix': 'A green/red threshold distinction is not defined in the backend for this item; the value is for information only.',
+    'admin.why_monitored_label': 'Why is this monitored?',
+    'admin.yellow_meaning_label': 'What does yellow mean?',
+    'admin.red_meaning_label': 'What does red mean?',
+    'admin.what_should_i_do_label': 'What should I do?',
+    'admin.detailed_info_label': 'Detailed information',
+
     // ---- Faz 2.7.4b-2: Deployment / Migration / Diagnostics ----
     'deploy.title': 'Deployment Profile',
     'deploy.subtitle': 'On-premise · network · backup · environment settings',
@@ -3338,6 +3410,78 @@ const I18N = {
     'mobile.not_ready': 'Hazır değil',
     'mobile.check_needed': 'Kontrol',
 
+    // ---- Faz 2.7.4b-3: Yönetici Paneli ----
+    'admin.title': 'Yönetici Paneli',
+    'admin.subtitle': 'Kullanıcılar · Roller · Denetim kaydı · Yedekleme',
+    'admin.new_user_title': 'Yeni Kullanıcı',
+    'admin.username_label': 'Kullanıcı Adı',
+    'admin.display_name_label': 'Görünen Ad',
+    'admin.password_label': 'Şifre',
+    'admin.role_label': 'Rol',
+    'admin.role_engineer': 'Engineer',
+    'admin.role_viewer': 'Viewer',
+    'admin.role_admin': 'Admin',
+    'admin.add_user_btn': 'Kullanıcı Ekle',
+    'admin.change_password_title': 'Parola Değiştir',
+    'admin.current_password_label': 'Mevcut Şifre',
+    'admin.new_password_label': 'Yeni Şifre',
+    'admin.update_password_btn': 'Parolayı Güncelle',
+    'admin.users_title': 'Kullanıcılar',
+    'admin.refresh_btn': 'Yenile',
+    'admin.audit_records_title': 'Denetim Kayıtları',
+    'admin.db_backup_title': 'Veritabanı Yedekleme',
+    'admin.db_backup_sub': 'SQLite veritabanının indirilebilir kopyasını oluşturur.',
+    'admin.download_backup_btn': 'Veritabanı Yedeğini İndir',
+    'admin.backup_contents_note': 'Yedek dosyası kullanıcılar, hesaplar ve denetim kayıtlarını içerir.',
+    'admin.system_health_title': 'Sistem Sağlığı',
+    'admin.system_health_sub': 'API, veritabanı, kullanıcı ve kayıt durumu',
+    'admin.database_label': 'Veritabanı',
+    'admin.user_label': 'Kullanıcı',
+    'admin.record_label': 'Kayıt',
+
+    'admin.enter_current_and_new_password': 'Mevcut ve yeni şifreyi girin.',
+    'admin.password_updated': 'Parola güncellendi.',
+    'admin.fill_all_fields': 'Tüm alanları doldurun.',
+    'admin.user_created': 'Kullanıcı oluşturuldu.',
+    'admin.status_active': 'Aktif',
+    'admin.status_inactive': 'Pasif',
+    'admin.deactivate_btn': 'Pasifleştir',
+    'admin.activate_btn': 'Aktifleştir',
+    'admin.reset_password_btn': 'Şifre Sıfırla',
+    'admin.no_users_found': 'Kullanıcı bulunamadı.',
+    'admin.new_temp_password_prompt': 'Yeni geçici şifre:',
+    'admin.system_label': 'sistem',
+    'admin.no_audit_records': 'Denetim kaydı bulunamadı.',
+    'admin.backup_failed': 'Yedek alınamadı.',
+
+    'admin.active_users_label': 'Aktif Kullanıcı',
+    'admin.total_label': 'Toplam',
+    'admin.calculation_record_label': 'Hesap Kaydı',
+    'admin.audit_label': 'Audit',
+    'admin.server_time_label': 'Sunucu zamanı',
+    'admin.schema_label': 'Şema',
+    'admin.system_info_unavailable': 'Sistem bilgisi alınamadı',
+
+    'admin.health_api_title': 'API',
+    'admin.health_api_reason': 'Sunucu erişilebilir değilse hiçbir hesaplama veya kayıt işlemi çalışmaz.',
+    'admin.health_api_green': 'API isteklere normal yanıt veriyor (status=ok).',
+    'admin.health_api_red': 'API yanıt vermiyor veya status≠ok. Hesaplama yapmayın; sistem yöneticisiyle iletişime geçin.',
+    'admin.health_db_title': 'Veritabanı',
+    'admin.health_db_reason': 'Veritabanı bozuksa kayıtlar kaybolabilir veya hesap sonuçları yanlış görüntülenebilir.',
+    'admin.health_db_green': 'Veritabanı bağlantısı ve boyutu normal (database_ok=true).',
+    'admin.health_db_red': 'Veritabanı hatalı (database_ok=false). Hesaplama yapılmamalı; yönetici veri kaynağını yeniden yüklemeli.',
+    'admin.health_users_title': 'Aktif Kullanıcı',
+    'admin.health_users_reason': 'Beklenmeyen kullanıcı sayısı yetkisiz erişim veya oturum sorununa işaret edebilir.',
+    'admin.health_records_title': 'Hesap Kaydı',
+    'admin.health_records_reason': 'Hesap ve denetim kayıt sayıları veri bütünlüğünün temel göstergesidir.',
+    'admin.threshold_tbd': 'Eşik değeri mevcut sistem yapılandırmasında açıkça tanımlanmamıştır.',
+    'admin.no_threshold_defined_prefix': "Bu madde için backend'de yeşil/kırmızı eşik ayrımı tanımlanmamıştır; değer yalnızca bilgi amaçlıdır.",
+    'admin.why_monitored_label': 'Neden kontrol ediliyor?',
+    'admin.yellow_meaning_label': 'Sarı durumda ne anlama gelir?',
+    'admin.red_meaning_label': 'Kırmızı durumda ne anlama gelir?',
+    'admin.what_should_i_do_label': 'Ne yapmalıyım?',
+    'admin.detailed_info_label': 'Ayrıntılı bilgi',
+
     // ---- Faz 2.7.4b-2: Kurulum Profili / Veri Taşıma / Sistem Tanılama ----
     'deploy.title': 'Kurulum Profili',
     'deploy.subtitle': 'On-premise · ağ · yedekleme · ortam ayarları',
@@ -3829,6 +3973,17 @@ function setLanguage(lang) {
   if (typeof loadDeploymentProfile === 'function' && document.getElementById('page-deployment')?.classList.contains('active')) loadDeploymentProfile();
   if (typeof loadMigrationHistory === 'function' && document.getElementById('page-migration')?.classList.contains('active')) loadMigrationHistory();
   if (typeof renderDiagnostics === 'function' && typeof LAST_DIAGNOSTICS !== 'undefined' && LAST_DIAGNOSTICS && document.getElementById('page-diagnostics')?.classList.contains('active')) renderDiagnostics(LAST_DIAGNOSTICS);
+  // Faz 2.7.4b-3: loadAdminUsers()/loadAudit()/loadSystemHealth() already
+  // no-op internally when CURRENT_ROLE !== 'admin', so the extra
+  // page-active guard here only avoids a handful of unnecessary
+  // (harmless, but pointless) GET calls for a non-admin user who
+  // happens to have page-admin marked active. No POST/PATCH/prompt/
+  // download is ever triggered by these three calls.
+  if (typeof CURRENT_ROLE !== 'undefined' && CURRENT_ROLE === 'admin' && document.getElementById('page-admin')?.classList.contains('active')) {
+    if (typeof loadAdminUsers === 'function') loadAdminUsers();
+    if (typeof loadAudit === 'function') loadAudit();
+    if (typeof loadSystemHealth === 'function') loadSystemHealth();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', applyStaticTranslations);
@@ -3886,7 +4041,7 @@ function doLogout(){
 // Kullanım: infoIconHtml({title:'...', body:'...', warn:true/false})
 let INFO_ICON_SEQ = 0;
 function infoIconHtml(opts){
-  const o = Object.assign({title:'', body:'', warn:false, label:'Ayrıntılı bilgi'}, opts||{});
+  const o = Object.assign({title:'', body:'', warn:false, label:t('admin.detailed_info_label')}, opts||{});
   const id = 'info-pop-' + (++INFO_ICON_SEQ);
   const safeBody = o.body || '';
   const iconCls = o.warn ? 'info-icon-btn warn' : 'info-icon-btn';
@@ -5075,35 +5230,35 @@ function printRecord(id){const r=ARCHIVE_CACHE.find(x=>x.id===id);if(!r)return;c
 async function changeOwnPassword(){
   const current=document.getElementById('pwd_current').value;
   const next=document.getElementById('pwd_new').value;
-  if(!current||!next){alert('Mevcut ve yeni şifreyi girin.');return;}
-  try{await apiRequest('/api/change-password',{method:'POST',body:JSON.stringify({current_password:current,new_password:next})});alert('Parola güncellendi.');document.getElementById('pwd_current').value='';document.getElementById('pwd_new').value='';}
+  if(!current||!next){alert(t('admin.enter_current_and_new_password'));return;}
+  try{await apiRequest('/api/change-password',{method:'POST',body:JSON.stringify({current_password:current,new_password:next})});alert(t('admin.password_updated'));document.getElementById('pwd_current').value='';document.getElementById('pwd_new').value='';}
   catch(e){alert(e.message);}
 }
 async function adminCreateUser(){
   const payload={username:document.getElementById('adm_username').value.trim(),display_name:document.getElementById('adm_display').value.trim(),password:document.getElementById('adm_password').value,role:document.getElementById('adm_role').value};
-  if(!payload.username||!payload.display_name||!payload.password){alert('Tüm alanları doldurun.');return;}
-  try{await apiRequest('/api/admin/users',{method:'POST',body:JSON.stringify(payload)});alert('Kullanıcı oluşturuldu.');await loadAdminUsers();}
+  if(!payload.username||!payload.display_name||!payload.password){alert(t('admin.fill_all_fields'));return;}
+  try{await apiRequest('/api/admin/users',{method:'POST',body:JSON.stringify(payload)});alert(t('admin.user_created'));await loadAdminUsers();}
   catch(e){alert(e.message);}
 }
 async function loadAdminUsers(){
   if(CURRENT_ROLE!=='admin')return;
   const rows=await apiRequest('/api/admin/users');
-  document.getElementById('adminUsers').innerHTML=rows.map(u=>`<div class="admin-row"><div><strong>${u.display_name}</strong><div style="font-size:11px;color:var(--text3)">${u.username}</div></div><select class="form-select" onchange="adminUpdateUser(${u.id},{role:this.value})"><option ${u.role==='viewer'?'selected':''} value="viewer">Viewer</option><option ${u.role==='engineer'?'selected':''} value="engineer">Engineer</option><option ${u.role==='admin'?'selected':''} value="admin">Admin</option></select><span class="pill ${u.is_active?'pill-ok':'pill-nok'}">${u.is_active?'Aktif':'Pasif'}</span><button class="btn btn-secondary btn-sm" onclick="adminUpdateUser(${u.id},{is_active:${u.is_active?0:1}})">${u.is_active?'Pasifleştir':'Aktifleştir'}</button><button class="btn btn-danger btn-sm" onclick="adminResetPassword(${u.id})">Şifre Sıfırla</button></div>`).join('');
+  document.getElementById('adminUsers').innerHTML=rows.length?rows.map(u=>`<div class="admin-row"><div><strong>${u.display_name}</strong><div style="font-size:11px;color:var(--text3)">${u.username}</div></div><select class="form-select" onchange="adminUpdateUser(${u.id},{role:this.value})"><option ${u.role==='viewer'?'selected':''} value="viewer">${t('admin.role_viewer')}</option><option ${u.role==='engineer'?'selected':''} value="engineer">${t('admin.role_engineer')}</option><option ${u.role==='admin'?'selected':''} value="admin">${t('admin.role_admin')}</option></select><span class="pill ${u.is_active?'pill-ok':'pill-nok'}">${u.is_active?t('admin.status_active'):t('admin.status_inactive')}</span><button class="btn btn-secondary btn-sm" onclick="adminUpdateUser(${u.id},{is_active:${u.is_active?0:1}})">${u.is_active?t('admin.deactivate_btn'):t('admin.activate_btn')}</button><button class="btn btn-danger btn-sm" onclick="adminResetPassword(${u.id})">${t('admin.reset_password_btn')}</button></div>`).join(''):t('admin.no_users_found');
 }
 async function adminUpdateUser(id,patch){try{await apiRequest('/api/admin/users/'+id,{method:'PATCH',body:JSON.stringify(patch)});await loadAdminUsers();}catch(e){alert(e.message);}}
 async function adminResetPassword(id){
-  const p=prompt('Yeni geçici şifre:');if(!p)return;
-  try{await apiRequest('/api/admin/users/'+id+'/reset-password',{method:'POST',body:JSON.stringify({new_password:p})});alert('Şifre güncellendi.');}
+  const p=prompt(t('admin.new_temp_password_prompt'));if(!p)return;
+  try{await apiRequest('/api/admin/users/'+id+'/reset-password',{method:'POST',body:JSON.stringify({new_password:p})});alert(t('admin.password_updated'));}
   catch(e){alert(e.message);}
 }
 async function loadAudit(){
   if(CURRENT_ROLE!=='admin')return;
   const rows=await apiRequest('/api/admin/audit');
-  document.getElementById('auditList').innerHTML=rows.map(a=>`<div class="audit-row"><strong>${a.action}</strong> · ${a.username||'sistem'}<div style="color:var(--text3)">${new Date(a.created_at).toLocaleString('tr-TR')} · ${a.detail||''}</div></div>`).join('');
+  document.getElementById('auditList').innerHTML=rows.length?rows.map(a=>`<div class="audit-row"><strong>${a.action}</strong> · ${a.username||t('admin.system_label')}<div style="color:var(--text3)">${new Date(a.created_at).toLocaleString(reportLocale())} · ${a.detail||''}</div></div>`).join(''):t('admin.no_audit_records');
 }
 async function downloadBackup(){
   const res=await fetch('/api/admin/backup',{headers:{Authorization:'Bearer '+AUTH_TOKEN}});
-  if(!res.ok){alert('Yedek alınamadı.');return;}
+  if(!res.ok){alert(t('admin.backup_failed'));return;}
   const b=await res.blob(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='TorqPro_Backup.db';a.click();URL.revokeObjectURL(a.href);
 }
 
@@ -5112,50 +5267,50 @@ async function downloadBackup(){
 // Not: backend/app.py::system() yalnızca ok/not-ok (status, database_ok) döner; ara (sarı)
 // eşik değeri backend'de tanımlı DEĞİLDİR. Bu nedenle "sarı" durumlar için gerçek bir eşik
 // uydurulmadı; aşağıdaki metin bunu açıkça belirtir (TBD).
-const THRESHOLD_TBD = 'Eşik değeri mevcut sistem yapılandırmasında açıkça tanımlanmamıştır.';
+const THRESHOLD_TBD_KEY = 'admin.threshold_tbd';
 const SYSTEM_HEALTH_HELP = {
   api: {
-    title: 'API',
-    reason: 'Sunucu erişilebilir değilse hiçbir hesaplama veya kayıt işlemi çalışmaz.',
-    yellow: THRESHOLD_TBD,
-    green: 'API isteklere normal yanıt veriyor (status=ok).',
-    red: 'API yanıt vermiyor veya status≠ok. Hesaplama yapmayın; sistem yöneticisiyle iletişime geçin.'
+    titleKey: 'admin.health_api_title',
+    reasonKey: 'admin.health_api_reason',
+    yellowKey: THRESHOLD_TBD_KEY,
+    greenKey: 'admin.health_api_green',
+    redKey: 'admin.health_api_red'
   },
   db: {
-    title: 'Veritabanı',
-    reason: 'Veritabanı bozuksa kayıtlar kaybolabilir veya hesap sonuçları yanlış görüntülenebilir.',
-    yellow: THRESHOLD_TBD,
-    green: 'Veritabanı bağlantısı ve boyutu normal (database_ok=true).',
-    red: 'Veritabanı hatalı (database_ok=false). Hesaplama yapılmamalı; yönetici veri kaynağını yeniden yüklemeli.'
+    titleKey: 'admin.health_db_title',
+    reasonKey: 'admin.health_db_reason',
+    yellowKey: THRESHOLD_TBD_KEY,
+    greenKey: 'admin.health_db_green',
+    redKey: 'admin.health_db_red'
   },
   users: {
-    title: 'Aktif Kullanıcı',
-    reason: 'Beklenmeyen kullanıcı sayısı yetkisiz erişim veya oturum sorununa işaret edebilir.',
-    yellow: THRESHOLD_TBD,
-    green: null,
-    red: null
+    titleKey: 'admin.health_users_title',
+    reasonKey: 'admin.health_users_reason',
+    yellowKey: THRESHOLD_TBD_KEY,
+    greenKey: null,
+    redKey: null
   },
   records: {
-    title: 'Hesap Kaydı',
-    reason: 'Hesap ve denetim kayıt sayıları veri bütünlüğünün temel göstergesidir.',
-    yellow: THRESHOLD_TBD,
-    green: null,
-    red: null
+    titleKey: 'admin.health_records_title',
+    reasonKey: 'admin.health_records_reason',
+    yellowKey: THRESHOLD_TBD_KEY,
+    greenKey: null,
+    redKey: null
   }
 };
 function shInfo(key, state){
-  // state: 'green' | 'red' | 'unmonitored' (backend'de kırmızı/yeşil ayrımı tanımlı değilse)
+  // state: 'green' | 'red' | 'unmonitored' (backend tarafında kırmızı/yeşil ayrımı tanımlı değilse)
   const d = SYSTEM_HEALTH_HELP[key];
-  const actionText = state === 'green' ? d.green
-    : state === 'red' ? d.red
-    : 'Bu madde için backend\'de yeşil/kırmızı eşik ayrımı tanımlanmamıştır; değer yalnızca bilgi amaçlıdır. ' + THRESHOLD_TBD;
+  const actionText = state === 'green' ? t(d.greenKey)
+    : state === 'red' ? t(d.redKey)
+    : t('admin.no_threshold_defined_prefix') + ' ' + t(THRESHOLD_TBD_KEY);
   return infoIconHtml({
-    title: d.title,
+    title: t(d.titleKey),
     warn: state === 'red',
-    body: `<strong>Neden kontrol ediliyor?</strong> ${d.reason}<br><br>`
-        + `<strong>Sarı durumda ne anlama gelir?</strong> ${d.yellow}<br><br>`
-        + `<strong>Kırmızı durumda ne anlama gelir?</strong> ${d.red || THRESHOLD_TBD}<br><br>`
-        + `<strong>Ne yapmalıyım?</strong> ${actionText}`
+    body: `<strong>${t('admin.why_monitored_label')}</strong> ${t(d.reasonKey)}<br><br>`
+        + `<strong>${t('admin.yellow_meaning_label')}</strong> ${t(d.yellowKey)}<br><br>`
+        + `<strong>${t('admin.red_meaning_label')}</strong> ${d.redKey ? t(d.redKey) : t(THRESHOLD_TBD_KEY)}<br><br>`
+        + `<strong>${t('admin.what_should_i_do_label')}</strong> ${actionText}`
   });
 }
 async function loadSystemHealth(){
@@ -5165,11 +5320,11 @@ async function loadSystemHealth(){
     const apiOk = h.status==='ok', dbOk = !!h.database_ok;
     document.getElementById('systemHealthCards').innerHTML=`
       <div class="stat"><div class="stat-label">API ${shInfo('api',apiOk?'green':'red')}</div><div class="stat-val green">${apiOk?'OK':'NOK'}</div><div class="stat-sub">v${h.version}</div></div>
-      <div class="stat"><div class="stat-label">Veritabanı ${shInfo('db',dbOk?'green':'red')}</div><div class="stat-val ${dbOk?'green':'red'}">${dbOk?'OK':'NOK'}</div><div class="stat-sub">${h.database_size_kb} KB</div></div>
-      <div class="stat"><div class="stat-label">Aktif Kullanıcı ${shInfo('users','unmonitored')}</div><div class="stat-val blue">${h.active_users}</div><div class="stat-sub">Toplam ${h.total_users}</div></div>
-      <div class="stat"><div class="stat-label">Hesap Kaydı ${shInfo('records','unmonitored')}</div><div class="stat-val blue">${h.calculation_count}</div><div class="stat-sub">Audit ${h.audit_count}</div></div>`;
-    document.getElementById('systemHealthDetail').textContent='Sunucu zamanı: '+new Date(h.server_time).toLocaleString('tr-TR')+' · Şema: '+h.schema_version;
-  }catch(e){document.getElementById('systemHealthDetail').textContent='Sistem bilgisi alınamadı: '+e.message;}
+      <div class="stat"><div class="stat-label">${t('admin.database_label')} ${shInfo('db',dbOk?'green':'red')}</div><div class="stat-val ${dbOk?'green':'red'}">${dbOk?'OK':'NOK'}</div><div class="stat-sub">${h.database_size_kb} KB</div></div>
+      <div class="stat"><div class="stat-label">${t('admin.active_users_label')} ${shInfo('users','unmonitored')}</div><div class="stat-val blue">${h.active_users}</div><div class="stat-sub">${t('admin.total_label')} ${h.total_users}</div></div>
+      <div class="stat"><div class="stat-label">${t('admin.calculation_record_label')} ${shInfo('records','unmonitored')}</div><div class="stat-val blue">${h.calculation_count}</div><div class="stat-sub">${t('admin.audit_label')} ${h.audit_count}</div></div>`;
+    document.getElementById('systemHealthDetail').textContent=t('admin.server_time_label')+': '+new Date(h.server_time).toLocaleString(reportLocale())+' · '+t('admin.schema_label')+': '+h.schema_version;
+  }catch(e){document.getElementById('systemHealthDetail').textContent=t('admin.system_info_unavailable')+': '+e.message;}
 }
 
 

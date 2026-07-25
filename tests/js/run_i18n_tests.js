@@ -81,6 +81,7 @@ const CONST_NAMES = [
   'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS', 'ISH', 'CURRENT_ROLE',
   'CURRENT_USER', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS', 'deferredPrompt',
   'DEPLOY_TYPE_LABEL_KEY', 'DEPLOY_BACKUP_LABEL_KEY', 'DEPLOY_CHANNEL_LABEL_KEY', 'LAST_DIAGNOSTICS',
+  'THRESHOLD_TBD_KEY', 'SYSTEM_HEALTH_HELP', 'INFO_ICON_SEQ', 'AUTH_TOKEN',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -118,6 +119,8 @@ const FUNCTION_NAMES = [
   'loadDeploymentProfile', 'renderDeployment', 'saveDeploymentProfile',
   'exportSystemPackage', 'importSystemPackage', 'loadMigrationHistory',
   'runDiagnostics', 'renderDiagnostics', 'downloadDiagnostics',
+  'changeOwnPassword', 'adminCreateUser', 'loadAdminUsers', 'adminUpdateUser', 'adminResetPassword',
+  'loadAudit', 'downloadBackup', 'loadSystemHealth', 'shInfo', 'infoIconHtml',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -180,6 +183,7 @@ function buildExtractedSource() {
   parts.push('function __getOemNormDb() { return OEM_NORM_DB; }');
   parts.push('function __getI18N() { return I18N; }');
   parts.push('function __getFmea() { return FMEA; }');
+  parts.push('function __getSystemHealthHelp() { return SYSTEM_HEALTH_HELP; }');
   parts.push('function __getIsh() { return ISH; }');
   return { source: parts.join('\n\n'), rawHtml: html };
 }
@@ -349,12 +353,15 @@ function newContext(extractedSource, rawHtml, localStorageSeed, apiRequestImpl) 
   const documentStub = buildDom(rawHtml, byId);
   const alertCalls = [];
   const windowCalls = [];
+  const promptCalls = [];
+  let promptReturnValue = null;
   const sandbox = {
     document: documentStub,
     localStorage: localStorageStub,
     sessionStorage: makeLocalStorage({}),
     console: console,
     alert: (msg) => { alertCalls.push(msg); },
+    prompt: (msg) => { promptCalls.push(msg); return promptReturnValue; },
     setTimeout: (fn) => { fn(); },
     window: {
       print: () => { windowCalls.push('print'); },
@@ -366,7 +373,10 @@ function newContext(extractedSource, rawHtml, localStorageSeed, apiRequestImpl) 
   };
   const context = vm.createContext(sandbox);
   vm.runInContext(extractedSource, context, { filename: 'fc_i18n_extracted.js' });
-  return { context, byId, localStorageStub, documentStub, alertCalls, windowCalls };
+  return {
+    context, byId, localStorageStub, documentStub, alertCalls, windowCalls, promptCalls,
+    setPromptReturn(v) { promptReturnValue = v; },
+  };
 }
 
 function getByI18nKey(ctx, key) {
@@ -3536,6 +3546,390 @@ async function main() {
       check('no translated-text-driven decision in ' + fn + '()', !/\.includes\('[şğüöçİĞÜŞÖÇıA-ZÇĞİÖŞÜ][^']*'\)/.test(src));
     }
     check('c.ok drives qg-pass/qg-fail directly (stable boolean), not a translated label', scriptSrc.indexOf("c.ok?'qg-pass':'qg-fail'") !== -1);
+  }
+
+  // ================================================================
+  // Faz 2.7.4b-3 -- Admin Panel.
+  // ================================================================
+
+  // ---- 184. page-admin static UI TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const checks = [
+      ['admin.title', 'Yönetici Paneli', 'Admin Panel'],
+      ['admin.new_user_title', 'Yeni Kullanıcı', 'New User'],
+      ['admin.system_health_title', 'Sistem Sağlığı', 'System Health'],
+    ];
+    ctx.context.applyStaticTranslations();
+    for (const [key, tr] of checks) checkEqual('tr title for ' + key, getByI18nKey(ctx, key).textContent, tr);
+    ctx.context.setLanguage('en');
+    for (const [key, , en] of checks) checkEqual('en title for ' + key, getByI18nKey(ctx, key).textContent, en);
+  }
+
+  // ---- 185. Form label and placeholder TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const el = getByI18nKey(ctx, 'admin.display_name_label');
+    ctx.context.applyStaticTranslations();
+    checkEqual('display name label tr', el.textContent, 'Görünen Ad');
+    ctx.context.setLanguage('en');
+    checkEqual('display name label en', el.textContent, 'Display Name');
+  }
+
+  // ---- 186. Role technical value preservation (viewer/engineer/admin) ----
+  {
+    check('adm_role option values are the fixed set {engineer,viewer,admin}',
+      /<option value="engineer" data-i18n="admin\.role_engineer">/.test(rawHtml) &&
+      /<option value="viewer" data-i18n="admin\.role_viewer">/.test(rawHtml) &&
+      /<option value="admin" data-i18n="admin\.role_admin">/.test(rawHtml));
+  }
+
+  // ---- 187. adminCreateUser() payload identical across languages;
+  //           validation/success messages TR/EN ----
+  {
+    async function runCreateUser(lang) {
+      let captured = null;
+      const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+        if (opts && opts.method === 'POST' && url.indexOf('/api/admin/users') !== -1) { captured = JSON.parse(opts.body); return {}; }
+        return [];
+      });
+      ctx.byId['adm_username'] = { value: 'jdoe' };
+      ctx.byId['adm_display'] = { value: 'John Doe' };
+      ctx.byId['adm_password'] = { value: 'secret123' };
+      ctx.byId['adm_role'] = { value: 'engineer' };
+      ctx.byId['adminUsers'] = { innerHTML: '' };
+      ctx.context.CURRENT_ROLE = 'admin';
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.adminCreateUser();
+      return { captured, alert: ctx.alertCalls[ctx.alertCalls.length - 1] };
+    }
+    const trResult = await runCreateUser('tr');
+    const enResult = await runCreateUser('en');
+    checkEqual('payload username identical tr/en', trResult.captured.username, enResult.captured.username);
+    checkEqual('payload role identical tr/en (technical value)', trResult.captured.role, 'engineer');
+    checkEqual('tr success alert', trResult.alert, 'Kullanıcı oluşturuldu.');
+    checkEqual('en success alert', enResult.alert, 'User created.');
+    // validation message
+    const ctx2 = newContext(extractedSource, rawHtml, {});
+    ctx2.byId['adm_username'] = { value: '' };
+    ctx2.byId['adm_display'] = { value: '' };
+    ctx2.byId['adm_password'] = { value: '' };
+    ctx2.byId['adm_role'] = { value: 'engineer' };
+    await ctx2.context.adminCreateUser();
+    checkEqual('tr validation alert', ctx2.alertCalls[ctx2.alertCalls.length - 1], 'Tüm alanları doldurun.');
+    ctx2.context.setLanguage('en');
+    await ctx2.context.adminCreateUser();
+    checkEqual('en validation alert', ctx2.alertCalls[ctx2.alertCalls.length - 1], 'Fill in all fields.');
+  }
+
+  // ---- 188. changeOwnPassword() payload identical across languages;
+  //           validation/success messages TR/EN ----
+  {
+    async function runChangePassword(lang) {
+      let captured = null;
+      const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+        captured = JSON.parse(opts.body); return {};
+      });
+      ctx.byId['pwd_current'] = { value: 'oldpass' };
+      ctx.byId['pwd_new'] = { value: 'newpass' };
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.changeOwnPassword();
+      return { captured, alert: ctx.alertCalls[ctx.alertCalls.length - 1] };
+    }
+    const trResult = await runChangePassword('tr');
+    const enResult = await runChangePassword('en');
+    checkEqual('payload current_password identical tr/en', trResult.captured.current_password, enResult.captured.current_password);
+    checkEqual('payload new_password identical tr/en', trResult.captured.new_password, enResult.captured.new_password);
+    checkEqual('tr success alert', trResult.alert, 'Parola güncellendi.');
+    checkEqual('en success alert', enResult.alert, 'Password updated.');
+    const ctx2 = newContext(extractedSource, rawHtml, {});
+    ctx2.byId['pwd_current'] = { value: '' };
+    ctx2.byId['pwd_new'] = { value: '' };
+    await ctx2.context.changeOwnPassword();
+    checkEqual('tr validation alert', ctx2.alertCalls[ctx2.alertCalls.length - 1], 'Mevcut ve yeni şifreyi girin.');
+    ctx2.context.setLanguage('en');
+    await ctx2.context.changeOwnPassword();
+    checkEqual('en validation alert', ctx2.alertCalls[ctx2.alertCalls.length - 1], 'Enter your current and new password.');
+  }
+
+  // ---- 189. adminUpdateUser(): role/is_active payload preserved;
+  //           displayed active/inactive + button labels TR/EN ----
+  {
+    async function runUpdateUser(lang) {
+      let captured = null;
+      const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+        if (opts && opts.method === 'PATCH') { captured = JSON.parse(opts.body); return {}; }
+        return [{ id: 1, username: 'jdoe', display_name: 'John Doe', role: 'engineer', is_active: 1 }];
+      });
+      ctx.byId['adminUsers'] = { innerHTML: '' };
+      ctx.context.CURRENT_ROLE = 'admin';
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.adminUpdateUser(1, { role: 'viewer' });
+      const html = await (async () => { await ctx.context.loadAdminUsers(); return ctx.byId['adminUsers'].innerHTML; })();
+      return { captured, html };
+    }
+    const trResult = await runUpdateUser('tr');
+    const enResult = await runUpdateUser('en');
+    checkEqual('role payload identical tr/en', trResult.captured.role, enResult.captured.role);
+    checkEqual('role payload technical value untranslated', trResult.captured.role, 'viewer');
+    check('tr rendered row shows "Aktif"', trResult.html.indexOf('Aktif') !== -1);
+    check('en rendered row shows "Active"', enResult.html.indexOf('Active') !== -1);
+    check('tr rendered row shows "Pasifleştir" button', trResult.html.indexOf('Pasifleştir') !== -1);
+    check('en rendered row shows "Deactivate" button', enResult.html.indexOf('Deactivate') !== -1);
+  }
+
+  // ---- 190. adminResetPassword(): prompt text TR/EN; prompt result
+  //           passed through unchanged; cancel (null) issues no POST;
+  //           language switch never triggers prompt() ----
+  {
+    let postCalled = false;
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+      if (opts && opts.method === 'POST') postCalled = true;
+      return {};
+    });
+    ctx.setPromptReturn('Temp!Pass123');
+    await ctx.context.adminResetPassword(5);
+    checkEqual('tr prompt message', ctx.promptCalls[ctx.promptCalls.length - 1], 'Yeni geçici şifre:');
+    checkEqual('POST fired with a real prompt value', postCalled, true);
+    checkEqual('success alert tr', ctx.alertCalls[ctx.alertCalls.length - 1], 'Parola güncellendi.');
+
+    ctx.context.setLanguage('en');
+    await ctx.context.adminResetPassword(5);
+    checkEqual('en prompt message', ctx.promptCalls[ctx.promptCalls.length - 1], 'New temporary password:');
+    checkEqual('success alert en', ctx.alertCalls[ctx.alertCalls.length - 1], 'Password updated.');
+
+    // Cancel (prompt returns null) -> no POST
+    postCalled = false;
+    ctx.setPromptReturn(null);
+    await ctx.context.adminResetPassword(5);
+    checkEqual('cancelled prompt (null) triggers no POST', postCalled, false);
+
+    // Language switch itself never calls prompt()
+    const promptCountBefore = ctx.promptCalls.length;
+    ctx.context.setLanguage('tr');
+    checkEqual('setLanguage() never calls prompt()', ctx.promptCalls.length, promptCountBefore);
+  }
+
+  // ---- 191. loadAdminUsers(): user ID/order preserved; is_active
+  //           boolean and role value unchanged; displayed text TR/EN;
+  //           CSS pill class unchanged ----
+  {
+    const rows = [
+      { id: 3, username: 'c', display_name: 'C', role: 'admin', is_active: 1 },
+      { id: 1, username: 'a', display_name: 'A', role: 'viewer', is_active: 0 },
+    ];
+    async function runLoadUsers(lang) {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => rows);
+      ctx.byId['adminUsers'] = { innerHTML: '' };
+      ctx.context.CURRENT_ROLE = 'admin';
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.loadAdminUsers();
+      return ctx.byId['adminUsers'].innerHTML;
+    }
+    const htmlTr = await runLoadUsers('tr');
+    const htmlEn = await runLoadUsers('en');
+    const idsTr = [...htmlTr.matchAll(/adminUpdateUser\((\d+)/g)].map((m) => m[1]);
+    const idsEn = [...htmlEn.matchAll(/adminUpdateUser\((\d+)/g)].map((m) => m[1]);
+    checkEqual('user id/order preserved across language switch', JSON.stringify(idsEn.slice(0, 2)), JSON.stringify(idsTr.slice(0, 2)));
+    check('tr shows "Pasif" for inactive user', htmlTr.indexOf('Pasif') !== -1);
+    check('en shows "Inactive" for inactive user', htmlEn.indexOf('Inactive') !== -1);
+    check('pill-ok CSS class present for active user in both', htmlTr.indexOf('pill-ok') !== -1 && htmlEn.indexOf('pill-ok') !== -1);
+    check('pill-nok CSS class present for inactive user in both', htmlTr.indexOf('pill-nok') !== -1 && htmlEn.indexOf('pill-nok') !== -1);
+    check('role option value="viewer" (technical) present in both', htmlTr.indexOf('value="viewer"') !== -1 && htmlEn.indexOf('value="viewer"') !== -1);
+  }
+
+  // ---- 192. loadAudit(): record order/ID preserved; raw created_at
+  //           unchanged; tr-TR vs en-US date display; action/resource/
+  //           detail free text not auto-translated ----
+  {
+    const rows = [
+      { id: 2, action: 'user.login', username: 'jdoe', created_at: '2026-02-10T09:15:00Z', detail: 'Giriş başarılı' },
+      { id: 1, action: 'user.create', username: 'admin', created_at: '2026-02-09T08:00:00Z', detail: null },
+    ];
+    async function runAudit(lang) {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => rows);
+      ctx.byId['auditList'] = { innerHTML: '' };
+      ctx.context.CURRENT_ROLE = 'admin';
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.loadAudit();
+      return ctx.byId['auditList'].innerHTML;
+    }
+    const htmlTr = await runAudit('tr');
+    const htmlEn = await runAudit('en');
+    check('audit action free text (user.login) rendered verbatim in tr', htmlTr.indexOf('user.login') !== -1);
+    check('audit action free text (user.login) rendered verbatim in en (not auto-translated)', htmlEn.indexOf('user.login') !== -1);
+    check('audit detail free text (Giriş başarılı) not auto-translated in en', htmlEn.indexOf('Giriş başarılı') !== -1);
+    const dateTr = new Date(rows[0].created_at).toLocaleString('tr-TR');
+    const dateEn = new Date(rows[0].created_at).toLocaleString('en-US');
+    check('tr audit date uses tr-TR formatting', htmlTr.indexOf(dateTr) !== -1);
+    check('en audit date uses en-US formatting', htmlEn.indexOf(dateEn) !== -1);
+    check('tr-TR and en-US audit date strings differ (locale genuinely applied)', dateTr !== dateEn);
+  }
+
+  // ---- 193. loadSystemHealth(): apiOk/dbOk booleans and OK/NOK codes
+  //           unchanged; green/yellow/red state unchanged; server-time
+  //           tr-TR/en-US locale; raw server_time unchanged; numeric
+  //           values unchanged ----
+  {
+    const healthResponse = {
+      status: 'ok', database_ok: true, version: '3.1', database_size_kb: 512,
+      active_users: 4, total_users: 9, calculation_count: 120, audit_count: 340,
+      server_time: '2026-03-01T12:00:00Z', schema_version: 7,
+    };
+    async function runHealth(lang) {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => healthResponse);
+      ctx.byId['systemHealthCards'] = { innerHTML: '' };
+      ctx.byId['systemHealthDetail'] = { textContent: '' };
+      ctx.context.CURRENT_ROLE = 'admin';
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.loadSystemHealth();
+      return { cards: ctx.byId['systemHealthCards'].innerHTML, detail: ctx.byId['systemHealthDetail'].textContent };
+    }
+    const trResult = await runHealth('tr');
+    const enResult = await runHealth('en');
+    check('tr: apiOk shows OK (technical code unchanged)', trResult.cards.indexOf('>OK<') !== -1);
+    check('en: apiOk still shows OK', enResult.cards.indexOf('>OK<') !== -1);
+    check('raw numeric active_users (4) identical in both languages', trResult.cards.indexOf('>4<') !== -1 && enResult.cards.indexOf('>4<') !== -1);
+    const dateTr = new Date(healthResponse.server_time).toLocaleString('tr-TR');
+    const dateEn = new Date(healthResponse.server_time).toLocaleString('en-US');
+    check('tr server time uses tr-TR formatting', trResult.detail.indexOf(dateTr) !== -1);
+    check('en server time uses en-US formatting', enResult.detail.indexOf(dateEn) !== -1);
+    check('raw schema_version (7) identical in both languages', trResult.detail.indexOf('7') !== -1 && enResult.detail.indexOf('7') !== -1);
+  }
+
+  // ---- 194. SYSTEM_HEALTH_HELP: all keys resolve TR/EN; 4 health
+  //           cards fully covered; green/yellow/red technical codes
+  //           unchanged; no raw key leakage ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const help = ctx.context.__getSystemHealthHelp ? ctx.context.__getSystemHealthHelp() : ctx.context.SYSTEM_HEALTH_HELP;
+    const cardKeys = Object.keys(help);
+    checkEqual('4 health cards defined', cardKeys.length, 4);
+    let allResolvedTr = true, allResolvedEn = true;
+    cardKeys.forEach((k) => {
+      const d = help[k];
+      [d.titleKey, d.reasonKey, d.yellowKey, d.greenKey, d.redKey].filter(Boolean).forEach((key) => {
+        if (ctx.context.t(key) === key) allResolvedTr = false;
+      });
+    });
+    ctx.context.setLanguage('en');
+    cardKeys.forEach((k) => {
+      const d = help[k];
+      [d.titleKey, d.reasonKey, d.yellowKey, d.greenKey, d.redKey].filter(Boolean).forEach((key) => {
+        if (ctx.context.t(key) === key) allResolvedEn = false;
+      });
+    });
+    check('all SYSTEM_HEALTH_HELP keys resolve in tr', allResolvedTr);
+    check('all SYSTEM_HEALTH_HELP keys resolve in en', allResolvedEn);
+  }
+
+  // ---- 195. shInfo()/infoIconHtml(): tooltip title/body TR/EN;
+  //           technical state decision (warn=true for red) unchanged;
+  //           no raw key leakage ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const htmlTrGreen = ctx.context.shInfo('api', 'green');
+    const htmlTrRed = ctx.context.shInfo('api', 'red');
+    check('tr green-state tooltip shows the tr green explanation', htmlTrGreen.indexOf('API isteklere normal yanıt veriyor') !== -1);
+    check('tr red-state tooltip is marked warn (info-icon-btn warn class)', htmlTrRed.indexOf('info-icon-btn warn') !== -1);
+    check('tr green-state tooltip is NOT marked warn', htmlTrGreen.indexOf('info-icon-btn warn') === -1);
+    ctx.context.setLanguage('en');
+    const htmlEnGreen = ctx.context.shInfo('api', 'green');
+    check('en green-state tooltip shows the en explanation', htmlEnGreen.indexOf('The API is responding normally') !== -1);
+    check('no raw "admin.xxx" key leaks into en tooltip', !/admin\.[a-z_.0-9]+(?![\w])/.test(htmlEnGreen));
+    // unmonitored state (users/records) uses the fallback explanation
+    const htmlUnmonitored = ctx.context.shInfo('users', 'unmonitored');
+    check('unmonitored-state tooltip uses the fallback explanation (en)', htmlUnmonitored.indexOf('not defined in the backend for this item') !== -1);
+  }
+
+  // ---- 196. downloadBackup(): language switch triggers no download;
+  //           fallback message TR/EN; backend content untouched ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    // downloadBackup() uses global fetch, not apiRequest -- stub it directly.
+    let fetchCalled = 0;
+    ctx.context.fetch = async () => { fetchCalled++; return { ok: false }; };
+    await ctx.context.downloadBackup();
+    checkEqual('tr backup-failed alert', ctx.alertCalls[ctx.alertCalls.length - 1], 'Yedek alınamadı.');
+    ctx.context.setLanguage('en');
+    await ctx.context.downloadBackup();
+    checkEqual('en backup-failed alert', ctx.alertCalls[ctx.alertCalls.length - 1], 'Backup could not be retrieved.');
+    checkEqual('language switch itself never calls fetch (only explicit downloadBackup() calls did)', fetchCalled, 2);
+  }
+
+  // ---- 197. Language switch: admin form inputs preserved; only safe
+  //           GET/render calls happen; no PUT/PATCH/POST/prompt/
+  //           download is triggered; CURRENT_ROLE guard respected ----
+  {
+    let mutatingCallMade = false, getCalls = 0;
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+      if (opts && ['POST', 'PUT', 'PATCH'].includes(opts.method)) mutatingCallMade = true;
+      else getCalls++;
+      if (url.indexOf('/api/admin/users') !== -1 && url.indexOf('reset-password') === -1) return [];
+      if (url.indexOf('/api/admin/audit') !== -1) return [];
+      if (url.indexOf('/api/admin/system') !== -1) return { status: 'ok', database_ok: true, server_time: '2026-01-01T00:00:00Z' };
+      return {};
+    });
+    ctx.byId['adm_username'] = { value: 'preserved-user' };
+    ctx.byId['adm_display'] = { value: 'Preserved Name' };
+    ctx.byId['pwd_current'] = { value: 'kept1' };
+    ctx.byId['pwd_new'] = { value: 'kept2' };
+    ctx.byId['adminUsers'] = { innerHTML: '' };
+    ctx.byId['auditList'] = { innerHTML: '' };
+    ctx.byId['systemHealthCards'] = { innerHTML: '' };
+    ctx.byId['systemHealthDetail'] = { textContent: '' };
+    ctx.context.CURRENT_ROLE = 'admin';
+    ctx.documentStub.getElementById('page-admin').classList.add('active');
+    ctx.context.setLanguage('en');
+    checkEqual('adm_username preserved across language switch', ctx.byId['adm_username'].value, 'preserved-user');
+    checkEqual('adm_display preserved across language switch', ctx.byId['adm_display'].value, 'Preserved Name');
+    checkEqual('pwd_current preserved across language switch', ctx.byId['pwd_current'].value, 'kept1');
+    checkEqual('pwd_new preserved across language switch', ctx.byId['pwd_new'].value, 'kept2');
+    checkEqual('no mutating (POST/PUT/PATCH) call triggered by the language switch', mutatingCallMade, false);
+    checkEqual('no prompt() call triggered by the language switch', ctx.promptCalls.length, 0);
+    check('at least one safe GET call was made for the active admin page', getCalls >= 1);
+
+    // Non-admin role: the guard must remain a no-op (no admin-only
+    // calls at all, not even a GET).
+    let anyCallMadeForNonAdmin = false;
+    const ctx2 = newContext(extractedSource, rawHtml, {}, async () => { anyCallMadeForNonAdmin = true; return []; });
+    ctx2.context.CURRENT_ROLE = 'viewer';
+    ctx2.documentStub.getElementById('page-admin').classList.add('active');
+    ctx2.context.setLanguage('en');
+    checkEqual('non-admin CURRENT_ROLE: no admin-only network calls at all on language switch', anyCallMadeForNonAdmin, false);
+  }
+
+  // ---- 198. In-scope hardcoded 'tr-TR' scan: 0 (both loadAudit() and
+  //           loadSystemHealth() now use reportLocale()) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    for (const fn of ['loadAudit', 'loadSystemHealth']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      check("no hardcoded 'tr-TR' remains in " + fn + '()', src.indexOf("'tr-TR'") === -1);
+      check(fn + '() uses reportLocale()', src.indexOf('reportLocale()') !== -1);
+    }
+  }
+
+  // ---- 199. Hard-coded user text scan (admin scope) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const turkishCharRe = /[şğüöçİĞÜŞÖÇı]/;
+    for (const fn of ['changeOwnPassword', 'adminCreateUser', 'loadAdminUsers', 'adminUpdateUser', 'adminResetPassword', 'loadAudit', 'downloadBackup', 'loadSystemHealth', 'shInfo', 'infoIconHtml']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      const strs = [...src.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]).filter((s) => turkishCharRe.test(s));
+      check('no hard-coded Turkish string literals remain in ' + fn + '()', strs.length === 0);
+    }
+  }
+
+  // ---- 200. Language-dependent decision anti-pattern scan (admin) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    for (const fn of ['loadAdminUsers', 'loadSystemHealth', 'shInfo']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      check('no translated-text-driven decision in ' + fn + '()', !/\.includes\('[şğüöçİĞÜŞÖÇıA-ZÇĞİÖŞÜ][^']*'\)/.test(src));
+    }
+    check("role decisions branch on u.role==='viewer'/'engineer'/'admin' (stable technical value)",
+      scriptSrc.indexOf("u.role==='viewer'") !== -1);
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
