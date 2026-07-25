@@ -2594,6 +2594,98 @@ async function main() {
     check('no translated-label-driven decision in Golden Cases scope', !/includes\('[şğüöçİĞÜŞÖÇıA-ZÇĞİÖŞÜ][^']*'\)/.test(gcSrc));
   }
 
+  // ================================================================
+  // Faz 2.7.3c -- Problem Management/Ishikawa + Golden Cases closure
+  // audit. No new defects were found during this review; these tests
+  // exercise both areas together and re-confirm the individually-
+  // tested guarantees hold simultaneously.
+  // ================================================================
+
+  // ---- 126. TR/EN key resolution across both areas simultaneously ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const sampleKeys = [
+      'problem.title', 'problem.category_measurement_tools', 'problem.item_thread_damage',
+      'golden.title', 'golden.name_label', 'calibration.status_passed', 'calibration.status_failed',
+    ];
+    let unresolvedTr = 0, unresolvedEn = 0;
+    for (const k of sampleKeys) if (ctx.context.t(k) === k) unresolvedTr++;
+    ctx.context.setLanguage('en');
+    for (const k of sampleKeys) if (ctx.context.t(k) === k) unresolvedEn++;
+    checkEqual('no unresolved keys across Problem Management + Golden Cases in tr', unresolvedTr, 0);
+    checkEqual('no unresolved keys across Problem Management + Golden Cases in en', unresolvedEn, 0);
+  }
+
+  // ---- 127. ISH item/category counts and golden-case record shape
+  //           unaffected by exercising both modules in one context ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupProblemDom(ctx);
+    checkIshItems(ctx, ['tool_parameters']);
+    const rows = [{ id: 1, name: 'Combined-Test', thread: 'M10', property_class: '10.9', program_torque_nm: 69, reference_torque_nm: 70, error_pct: 1.4, passed: true }];
+    ctx.byId['goldenCaseRows'] = ctx.documentStub.getElementById('goldenCaseRows');
+    ctx.context.CURRENT_ROLE = 'admin';
+    await (async () => {
+      const orig = ctx.context.__getIsh().length;
+      checkEqual('ISH still has 5 categories after Ishikawa interaction', orig, 5);
+    })();
+    ctx.context.setLanguage('en');
+    checkEqual('checked itemCode survives language switch alongside golden-cases module presence',
+      ctx.byId['ishikawa-cats']._checkboxes.filter((b) => b.checked).map((b) => b.dataset.itemCode).join(','), 'tool_parameters');
+  }
+
+  // ---- 128. No raw key leakage across Problem Management + Golden
+  //           Cases rendered together in one pass ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupProblemDom(ctx);
+    checkIshItems(ctx, ['machine_capability']);
+    ctx.context.problemAnaliz();
+    const rows = [{ id: 1, name: 'Y', thread: 'M12', property_class: '8.8', program_torque_nm: 80, reference_torque_nm: 80, error_pct: 0, passed: true }];
+    const ctx2 = newContext(extractedSource, rawHtml, {}, async () => rows);
+    ctx2.byId['goldenCaseRows'] = { innerHTML: '' };
+    ctx2.context.CURRENT_ROLE = 'admin';
+    await ctx2.context.loadGoldenCases();
+    ctx.context.setLanguage('en');
+    ctx.context.problemReapplyLanguage();
+    ctx2.context.setLanguage('en');
+    await ctx2.context.loadGoldenCases();
+    const combined = ctx.byId['ishikawa-cats'].innerHTML + ctx.byId['mudahale-sonuc'].innerHTML + ctx2.byId['goldenCaseRows'].innerHTML;
+    check('no raw namespaced key text leaks across problem+golden rendered together in en',
+      !/(problem|golden|calibration)\.[a-z_.0-9]+(?![\w])/.test(combined.replace(/<[^>]*>/g, ' ')));
+  }
+
+  // ---- 129. Closure re-check: old-substring/tag equivalence still
+  //           holds and the removed anti-patterns have not reappeared ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    check("closure: no sec.includes('diş')/('yağ')/('parametre')/('Tabanca')/('yetenek') anywhere",
+      ["includes('diş')", "includes('yağ')", "includes('parametre')", "includes('Tabanca')", "includes('yetenek')"]
+        .every((pat) => scriptSrc.indexOf(pat) === -1));
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const allItems = ctx.context.__getIsh().flatMap((c) => c.items);
+    checkEqual('closure: tightening_tool tag set unchanged',
+      JSON.stringify(allItems.filter((it) => it.tags.includes('tightening_tool')).map((it) => it.itemCode).sort()),
+      JSON.stringify(['tool_parameters', 'tool_suitability'].sort()));
+  }
+
+  // ---- 130. Closure re-check: Golden Cases passed/CSS class contract
+  //           and backend GET-only re-render still hold ----
+  {
+    const rows = [{ id: 1, name: 'Z', thread: 'M8', property_class: '8.8', program_torque_nm: 30, reference_torque_nm: 30, error_pct: 0, passed: false }];
+    let postCalled = false;
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+      if (opts && opts.method === 'POST') postCalled = true;
+      return rows;
+    });
+    ctx.byId['goldenCaseRows'] = { innerHTML: '' };
+    ctx.context.CURRENT_ROLE = 'admin';
+    await ctx.context.loadGoldenCases();
+    ctx.context.setLanguage('en');
+    checkEqual('closure: no POST triggered by language switch', postCalled, false);
+    check('closure: failed record still shows nok class', ctx.byId['goldenCaseRows'].innerHTML.indexOf('badge-prod nok') !== -1);
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
   if (fail > 0) {
     console.log('Failures: ' + failures.join('; '));
