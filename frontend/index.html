@@ -1102,24 +1102,24 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <div id="page-goldencases" class="page">
   <div class="section-header"><span class="section-icon">🏆</span><div>
-    <div class="section-title">Altın Referans Senaryoları</div>
-    <div class="section-sub">Referans tork · program sonucu · hata · geçme-kalma</div>
+    <div class="section-title" data-i18n="golden.title">Altın Referans Senaryoları</div>
+    <div class="section-sub" data-i18n="golden.subtitle">Referans tork · program sonucu · hata · geçme-kalma</div>
   </div></div>
   <div class="card">
     <div class="form-row3">
-      <div class="form-group"><label class="form-label">Senaryo Adı</label><input class="form-input" id="gc_name" value="M10-10.9-Referans"></div>
-      <div class="form-group"><label class="form-label">Diş</label><input class="form-input" id="gc_thread" value="M10"></div>
-      <div class="form-group"><label class="form-label">Sınıf</label><input class="form-input" id="gc_class" value="10.9"></div>
+      <div class="form-group"><label class="form-label" data-i18n="golden.name_label">Senaryo Adı</label><input class="form-input" id="gc_name" value="M10-10.9-Referans"></div>
+      <div class="form-group"><label class="form-label" data-i18n="golden.thread_label">Diş</label><input class="form-input" id="gc_thread" value="M10"></div>
+      <div class="form-group"><label class="form-label" data-i18n="golden.class_label">Sınıf</label><input class="form-input" id="gc_class" value="10.9"></div>
     </div>
     <div class="form-row3">
-      <div class="form-group"><label class="form-label">Referans Tork</label><input class="form-input" type="number" id="gc_reference" value="70" step="0.1"></div>
-      <div class="form-group"><label class="form-label">Program Torku</label><input class="form-input" type="number" id="gc_program" value="69.3" step="0.1"></div>
-      <div class="form-group"><label class="form-label">Tolerans (%)</label><input class="form-input" type="number" id="gc_tolerance" value="5" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="golden.reference_torque_label">Referans Tork</label><input class="form-input" type="number" id="gc_reference" value="70" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="golden.program_torque_label">Program Torku</label><input class="form-input" type="number" id="gc_program" value="69.3" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="golden.tolerance_label">Tolerans (%)</label><input class="form-input" type="number" id="gc_tolerance" value="5" step="0.1"></div>
     </div>
-    <button class="btn btn-primary" onclick="saveGoldenCase()">Altın Senaryoyu Kaydet</button>
+    <button class="btn btn-primary" onclick="saveGoldenCase()" data-i18n="golden.save_btn">Altın Senaryoyu Kaydet</button>
   </div>
   <div class="card">
-    <div class="card-header"><div class="card-title">Altın Senaryolar</div><button class="btn btn-secondary btn-sm" onclick="loadGoldenCases()">Yenile</button></div>
+    <div class="card-header"><div class="card-title" data-i18n="golden.records_title">Altın Senaryolar</div><button class="btn btn-secondary btn-sm" onclick="loadGoldenCases()" data-i18n="golden.refresh_btn">Yenile</button></div>
     <div id="goldenCaseRows"></div>
   </div>
 </div>
@@ -2242,6 +2242,20 @@ const I18N = {
     'problem.btn_corrective_action': 'Corrective Action',
     'problem.btn_save': 'Save',
 
+    // ---- Faz 2.7.3b: Golden Cases ----
+    'golden.title': 'Golden Reference Scenarios',
+    'golden.subtitle': 'Reference torque · program result · error · pass-fail',
+    'golden.name_label': 'Scenario Name',
+    'golden.thread_label': 'Thread',
+    'golden.class_label': 'Class',
+    'golden.reference_torque_label': 'Reference Torque',
+    'golden.program_torque_label': 'Program Torque',
+    'golden.tolerance_label': 'Tolerance (%)',
+    'golden.save_btn': 'Save Golden Scenario',
+    'golden.records_title': 'Golden Scenarios',
+    'golden.refresh_btn': 'Refresh',
+    'golden.no_records_yet': 'No golden scenarios yet.',
+
     'fmea.title': 'FMEA Failure Catalog',
     'fmea.subtitle': 'Failures and solutions compiled from serial production experience',
     'fmea.cause_label': 'Cause',
@@ -2966,6 +2980,20 @@ const I18N = {
     'problem.btn_corrective_action': 'Düzeltici Faaliyet',
     'problem.btn_save': 'Kaydet',
 
+    // ---- Faz 2.7.3b: Golden Cases ----
+    'golden.title': 'Altın Referans Senaryoları',
+    'golden.subtitle': 'Referans tork · program sonucu · hata · geçme-kalma',
+    'golden.name_label': 'Senaryo Adı',
+    'golden.thread_label': 'Diş',
+    'golden.class_label': 'Sınıf',
+    'golden.reference_torque_label': 'Referans Tork',
+    'golden.program_torque_label': 'Program Torku',
+    'golden.tolerance_label': 'Tolerans (%)',
+    'golden.save_btn': 'Altın Senaryoyu Kaydet',
+    'golden.records_title': 'Altın Senaryolar',
+    'golden.refresh_btn': 'Yenile',
+    'golden.no_records_yet': 'Henüz altın senaryo yok.',
+
     'fmea.title': 'FMEA Hata Kataloğu',
     'fmea.subtitle': 'Seri üretim deneyiminden derlenen hatalar ve çözümler',
     'fmea.cause_label': 'Neden',
@@ -3380,6 +3408,7 @@ function setLanguage(lang) {
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
   if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();
+  if (typeof loadGoldenCases === 'function' && document.getElementById('goldenCaseRows')) loadGoldenCases();
 }
 
 document.addEventListener('DOMContentLoaded', applyStaticTranslations);
@@ -4888,8 +4917,8 @@ async function loadGoldenCases(){
       <div>${Number(r.program_torque_nm).toFixed(2)} Nm</div>
       <div>${Number(r.reference_torque_nm).toFixed(2)} Nm</div>
       <div class="${r.passed?'qg-pass':'qg-fail'}">${Number(r.error_pct).toFixed(2)}%</div>
-      <div><span class="badge-prod ${r.passed?'ok':'nok'}">${r.passed?'GEÇTİ':'KALDI'}</span></div>
-    </div>`).join(''):'Henüz altın senaryo yok.';
+      <div><span class="badge-prod ${r.passed?'ok':'nok'}">${r.passed?t('calibration.status_passed'):t('calibration.status_failed')}</span></div>
+    </div>`).join(''):t('golden.no_records_yet');
 }
 async function generateReleaseCertificate(){
   try{

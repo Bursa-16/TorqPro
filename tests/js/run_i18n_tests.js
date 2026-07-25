@@ -78,7 +78,7 @@ const CONST_NAMES = [
   'I18N', 'FC_ENUM_LABELS', 'CURRENT_LANG',
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
   'N01391', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
-  'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS', 'ISH',
+  'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS', 'ISH', 'CURRENT_ROLE',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -92,7 +92,7 @@ const CONST_NAMES = [
 // external assignment and internal closures observe the same
 // binding, which is required to test "language switch re-renders
 // already-loaded content" realistically.
-const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT', 'ACTIVE_STANDARD_LIBRARY'];
+const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT', 'ACTIVE_STANDARD_LIBRARY', 'CURRENT_ROLE'];
 const FUNCTION_NAMES = [
   't', 'fcLabel', 'applyStaticTranslations', 'setLanguage',
   'fcEsc', 'fcEscRaw', 'fcFmtNum', 'fcFmtLabel', 'fcCountLabel',
@@ -108,6 +108,7 @@ const FUNCTION_NAMES = [
   'translationValue', 'oemGetAll', 'oemSearch', 'oemRenderCard', 'oemFilter',
   'oemSecFilter', 'oemRenderList', 'oemInit', 'oemReapplyLanguage', 'buildFmea',
   'buildISH', 'ishLookupItem', 'problemAnaliz', 'problemReapplyLanguage',
+  'saveGoldenCase', 'loadGoldenCases',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -341,6 +342,7 @@ function newContext(extractedSource, rawHtml, localStorageSeed, apiRequestImpl) 
   const sandbox = {
     document: documentStub,
     localStorage: localStorageStub,
+    sessionStorage: makeLocalStorage({}),
     console: console,
     alert: (msg) => { alertCalls.push(msg); },
     hesapla: () => {}, // library cascade functions call hesapla() as a side-effect; stubbed no-op here since this harness tests i18n/data-model behavior, not the calculation engine
@@ -2410,6 +2412,186 @@ async function main() {
     const problemSrc = scriptSrc.slice(scriptSrc.indexOf('const ISH='), scriptSrc.indexOf('function problemAnaliz') + 2000);
     check('no visible-label-keyed classification object in Problem Management scope',
       !/\.includes\('[şğüöçİĞÜŞÖÇıA-ZÇĞİÖŞÜ][^']*'\)/.test(problemSrc.replace(/tags\.includes\('[a-z_]+'\)/g, '')));
+  }
+
+  // ================================================================
+  // Faz 2.7.3b -- Golden Cases.
+  // ================================================================
+
+  // ---- 113. page-goldencases static UI TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titleEl = getByI18nKey(ctx, 'golden.title');
+    const saveBtnEl = getByI18nKey(ctx, 'golden.save_btn');
+    ctx.context.applyStaticTranslations();
+    checkEqual('golden page title tr', titleEl.textContent, 'Altın Referans Senaryoları');
+    checkEqual('golden save button tr', saveBtnEl.textContent, 'Altın Senaryoyu Kaydet');
+    ctx.context.setLanguage('en');
+    checkEqual('golden page title en', titleEl.textContent, 'Golden Reference Scenarios');
+    checkEqual('golden save button en', saveBtnEl.textContent, 'Save Golden Scenario');
+  }
+
+  // ---- 114. Form labels TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const nameLabel = getByI18nKey(ctx, 'golden.name_label');
+    const toleranceLabel = getByI18nKey(ctx, 'golden.tolerance_label');
+    ctx.context.applyStaticTranslations();
+    checkEqual('golden name label tr', nameLabel.textContent, 'Senaryo Adı');
+    checkEqual('golden tolerance label tr', toleranceLabel.textContent, 'Tolerans (%)');
+    ctx.context.setLanguage('en');
+    checkEqual('golden name label en', nameLabel.textContent, 'Scenario Name');
+    checkEqual('golden tolerance label en', toleranceLabel.textContent, 'Tolerance (%)');
+  }
+
+  // ---- 115. saveGoldenCase() payload fields unchanged by language ----
+  {
+    async function runSave(lang) {
+      let captured = null;
+      const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+        if (opts && opts.method === 'POST') { captured = JSON.parse(opts.body); return { id: 1 }; }
+        return [];
+      });
+      ctx.byId['gc_name'] = { value: 'M10-10.9-Golden' };
+      ctx.byId['gc_thread'] = { value: 'M10' };
+      ctx.byId['gc_class'] = { value: '10.9' };
+      ctx.byId['gc_reference'] = { value: '70' };
+      ctx.byId['gc_program'] = { value: '69.3' };
+      ctx.byId['gc_tolerance'] = { value: '5' };
+      ctx.byId['goldenCaseRows'] = { innerHTML: '' };
+      ctx.context.CURRENT_ROLE = 'admin';
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.saveGoldenCase();
+      return captured;
+    }
+    const trPayload = await runSave('tr');
+    const enPayload = await runSave('en');
+    checkEqual('payload name identical tr/en', trPayload.name, enPayload.name);
+    checkEqual('payload thread identical tr/en', trPayload.thread, enPayload.thread);
+    checkEqual('payload property_class identical tr/en', trPayload.property_class, enPayload.property_class);
+    checkEqual('payload reference_torque_nm identical tr/en', trPayload.reference_torque_nm, enPayload.reference_torque_nm);
+    checkEqual('payload program_torque_nm identical tr/en', trPayload.program_torque_nm, enPayload.program_torque_nm);
+    checkEqual('payload tolerance_pct identical tr/en', trPayload.tolerance_pct, enPayload.tolerance_pct);
+    checkEqual('thread value untranslated (user input, technical)', trPayload.thread, 'M10');
+    checkEqual('name value untranslated (user input)', trPayload.name, 'M10-10.9-Golden');
+  }
+
+  // ---- 116. loadGoldenCases() empty-state message TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => []);
+    ctx.byId['goldenCaseRows'] = { innerHTML: '' };
+    ctx.context.CURRENT_ROLE = 'admin';
+    await ctx.context.loadGoldenCases();
+    checkEqual('empty-state tr', ctx.byId['goldenCaseRows'].innerHTML, 'Henüz altın senaryo yok.');
+    ctx.context.setLanguage('en');
+    await ctx.context.loadGoldenCases();
+    checkEqual('empty-state en', ctx.byId['goldenCaseRows'].innerHTML, 'No golden scenarios yet.');
+  }
+
+  // ---- 117/118. passed=true -> GEÇTİ/PASSED + ok class;
+  //               passed=false -> KALDI/FAILED + nok class ----
+  {
+    const rows = [
+      { name: 'Case A', thread: 'M10', property_class: '10.9', program_torque_nm: 69.3, reference_torque_nm: 70, error_pct: 1.0, passed: true },
+      { name: 'Case B', thread: 'M12', property_class: '8.8', program_torque_nm: 80, reference_torque_nm: 70, error_pct: 14.3, passed: false },
+    ];
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => rows);
+    ctx.byId['goldenCaseRows'] = { innerHTML: '' };
+    ctx.context.CURRENT_ROLE = 'admin';
+    await ctx.context.loadGoldenCases();
+    const htmlTr = ctx.byId['goldenCaseRows'].innerHTML;
+    check('tr: passed row shows "Geçti"', htmlTr.indexOf('Geçti') !== -1);
+    check('tr: passed row has ok class', /class="badge-prod ok">Geçti/.test(htmlTr));
+    check('tr: failed row shows "Kaldı"', htmlTr.indexOf('Kaldı') !== -1);
+    check('tr: failed row has nok class', /class="badge-prod nok">Kaldı/.test(htmlTr));
+    ctx.context.setLanguage('en');
+    await ctx.context.loadGoldenCases();
+    const htmlEn = ctx.byId['goldenCaseRows'].innerHTML;
+    check('en: passed row shows "Passed"', htmlEn.indexOf('Passed') !== -1);
+    check('en: passed row has ok class', /class="badge-prod ok">Passed/.test(htmlEn));
+    check('en: failed row shows "Failed"', htmlEn.indexOf('Failed') !== -1);
+    check('en: failed row has nok class', /class="badge-prod nok">Failed/.test(htmlEn));
+  }
+
+  // ---- 119. passed boolean decision does not depend on the displayed
+  //           label (source-level: badge class keys off r.passed only) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const lgcSrc = extractFunctionDecl(scriptSrc, 'loadGoldenCases');
+    check('CSS class selection reads r.passed directly, not a translated label', lgcSrc.indexOf("r.passed?'ok':'nok'") !== -1);
+    check('status text reads r.passed via t(), not the other way around', lgcSrc.indexOf("r.passed?t('calibration.status_passed'):t('calibration.status_failed')") !== -1);
+  }
+
+  // ---- 120. Record order and ID set preserved across a language switch ----
+  {
+    const rows = [{ id: 3, name: 'C', passed: true }, { id: 1, name: 'A', passed: false }, { id: 2, name: 'B', passed: true }];
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => rows);
+    ctx.byId['goldenCaseRows'] = { innerHTML: '' };
+    ctx.context.CURRENT_ROLE = 'admin';
+    await ctx.context.loadGoldenCases();
+    const namesTr = [...ctx.byId['goldenCaseRows'].innerHTML.matchAll(/<strong>([^<]*)<\/strong>/g)].map((m) => m[1]);
+    ctx.context.setLanguage('en');
+    await ctx.context.loadGoldenCases();
+    const namesEn = [...ctx.byId['goldenCaseRows'].innerHTML.matchAll(/<strong>([^<]*)<\/strong>/g)].map((m) => m[1]);
+    checkEqual('record order (by name, as returned) unchanged across language switch', JSON.stringify(namesEn), JSON.stringify(namesTr));
+    checkEqual('record order matches backend response order (3,1,2 -> C,A,B)', JSON.stringify(namesTr), JSON.stringify(['C', 'A', 'B']));
+  }
+
+  // ---- 121. User inputs (form fields) untouched by language switch ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.byId['gc_name'] = { value: 'Custom-Scenario-01' };
+    ctx.byId['gc_thread'] = { value: 'M14' };
+    ctx.context.setLanguage('en');
+    checkEqual('gc_name input unaffected by language switch', ctx.byId['gc_name'].value, 'Custom-Scenario-01');
+    checkEqual('gc_thread input unaffected by language switch', ctx.byId['gc_thread'].value, 'M14');
+  }
+
+  // ---- 122. setLanguage() re-render uses GET only; no POST is issued ----
+  {
+    let postCalled = false;
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+      if (opts && opts.method === 'POST') postCalled = true;
+      return [];
+    });
+    ctx.byId['goldenCaseRows'] = { innerHTML: '' };
+    ctx.context.CURRENT_ROLE = 'admin';
+    await ctx.context.loadGoldenCases();
+    ctx.context.setLanguage('en');
+    checkEqual('no POST request was issued by the language-switch re-render', postCalled, false);
+  }
+
+  // ---- 123. No raw translation-key leakage in Golden Cases HTML ----
+  {
+    const rows = [{ name: 'X', thread: 'M10', property_class: '10.9', program_torque_nm: 69, reference_torque_nm: 70, error_pct: 1, passed: true }];
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => rows);
+    ctx.byId['goldenCaseRows'] = { innerHTML: '' };
+    ctx.context.CURRENT_ROLE = 'admin';
+    await ctx.context.loadGoldenCases();
+    const htmlTr = ctx.byId['goldenCaseRows'].innerHTML;
+    check('no raw "golden.xxx"/"calibration.xxx" key text leaks into tr rendering', !/(golden|calibration)\.[a-z_.0-9]+(?![\w])/.test(htmlTr.replace(/<[^>]*>/g, ' ')));
+    ctx.context.setLanguage('en');
+    await ctx.context.loadGoldenCases();
+    const htmlEn = ctx.byId['goldenCaseRows'].innerHTML;
+    check('no raw key text leaks into en rendering', !/(golden|calibration)\.[a-z_.0-9]+(?![\w])/.test(htmlEn.replace(/<[^>]*>/g, ' ')));
+  }
+
+  // ---- 124. Hard-coded user text scan (Golden Cases scope) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const turkishCharRe = /[şğüöçİĞÜŞÖÇı]/;
+    for (const fn of ['saveGoldenCase', 'loadGoldenCases']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      const strs = [...src.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]).filter((s) => turkishCharRe.test(s));
+      check('no hard-coded Turkish string literals remain in ' + fn + '()', strs.length === 0);
+    }
+  }
+
+  // ---- 125. Language-dependent decision anti-pattern scan (closure) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const gcSrc = scriptSrc.slice(scriptSrc.indexOf('async function saveGoldenCase'), scriptSrc.indexOf('async function loadGoldenCases') + 1500);
+    check('no translated-label-driven decision in Golden Cases scope', !/includes\('[şğüöçİĞÜŞÖÇıA-ZÇĞİÖŞÜ][^']*'\)/.test(gcSrc));
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
