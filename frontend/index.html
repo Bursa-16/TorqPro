@@ -993,31 +993,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </div>
 
 <div id="page-deployment" class="page">
-  <div class="section-header"><span class="section-icon">🚀</span><div><div class="section-title">Kurulum Profili</div><div class="section-sub">On-premise · ağ · yedekleme · ortam ayarları</div></div></div>
+  <div class="section-header"><span class="section-icon">🚀</span><div><div class="section-title" data-i18n="deploy.title">Kurulum Profili</div><div class="section-sub" data-i18n="deploy.subtitle">On-premise · ağ · yedekleme · ortam ayarları</div></div></div>
   <div class="deploy-grid">
     <div class="card">
-      <div class="form-row"><div class="form-group"><label class="form-label">Ortam Adı</label><input class="form-input" id="dep_env" value="Production"></div><div class="form-group"><label class="form-label">Kurulum Tipi</label><select class="form-select" id="dep_type"><option value="standalone">Tek Bilgisayar</option><option value="lan">Yerel Ağ Sunucusu</option><option value="cloud">Bulut Sunucusu</option></select></div></div>
-      <div class="form-row"><div class="form-group"><label class="form-label">Sunucu Adresi</label><input class="form-input" id="dep_host" value="127.0.0.1"></div><div class="form-group"><label class="form-label">Port</label><input class="form-input" type="number" id="dep_port" value="8000"></div></div>
-      <div class="form-row"><div class="form-group"><label class="form-label">Yedekleme Sıklığı</label><select class="form-select" id="dep_backup"><option value="daily">Günlük</option><option value="weekly">Haftalık</option><option value="manual">Manuel</option></select></div><div class="form-group"><label class="form-label">Güncelleme Kanalı</label><select class="form-select" id="dep_channel"><option value="stable">Stable</option><option value="pilot">Pilot</option><option value="offline">Offline</option></select></div></div>
-      <button class="btn btn-primary" onclick="saveDeploymentProfile()">Profili Kaydet</button>
+      <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="deploy.environment_label">Ortam Adı</label><input class="form-input" id="dep_env" value="Production"></div><div class="form-group"><label class="form-label" data-i18n="deploy.install_type_label">Kurulum Tipi</label><select class="form-select" id="dep_type"><option value="standalone" data-i18n="deploy.type_standalone">Tek Bilgisayar</option><option value="lan" data-i18n="deploy.type_lan">Yerel Ağ Sunucusu</option><option value="cloud" data-i18n="deploy.type_cloud">Bulut Sunucusu</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="deploy.host_label">Sunucu Adresi</label><input class="form-input" id="dep_host" value="127.0.0.1"></div><div class="form-group"><label class="form-label">Port</label><input class="form-input" type="number" id="dep_port" value="8000"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label" data-i18n="deploy.backup_freq_label">Yedekleme Sıklığı</label><select class="form-select" id="dep_backup"><option value="daily" data-i18n="deploy.backup_daily">Günlük</option><option value="weekly" data-i18n="deploy.backup_weekly">Haftalık</option><option value="manual" data-i18n="deploy.backup_manual">Manuel</option></select></div><div class="form-group"><label class="form-label" data-i18n="deploy.channel_label">Güncelleme Kanalı</label><select class="form-select" id="dep_channel"><option value="stable" data-i18n="deploy.channel_stable">Stable</option><option value="pilot" data-i18n="deploy.channel_pilot">Pilot</option><option value="offline" data-i18n="deploy.channel_offline">Offline</option></select></div></div>
+      <button class="btn btn-primary" onclick="saveDeploymentProfile()" data-i18n="deploy.save_btn">Profili Kaydet</button>
     </div>
-    <div class="card"><div class="card-title">Aktif Profil</div><div id="deploymentPreview">Profil yükleniyor.</div></div>
+    <div class="card"><div class="card-title" data-i18n="deploy.active_profile_title">Aktif Profil</div><div id="deploymentPreview" data-i18n="deploy.loading_profile">Profil yükleniyor.</div></div>
   </div>
 </div>
 
 <div id="page-migration" class="page">
-  <div class="section-header"><span class="section-icon">🔄</span><div><div class="section-title">Veri Taşıma</div><div class="section-sub">Tam sistem dışa aktarma · içe aktarma · bütünlük kontrolü</div></div></div>
+  <div class="section-header"><span class="section-icon">🔄</span><div><div class="section-title" data-i18n="migration.title">Veri Taşıma</div><div class="section-sub" data-i18n="migration.subtitle">Tam sistem dışa aktarma · içe aktarma · bütünlük kontrolü</div></div></div>
   <div class="deploy-grid">
-    <div class="card"><div class="card-title">Dışa Aktarma</div><p>Kurum, kullanıcı, proje, hesap, standart, onay ve rapor verilerini tek JSON paketi olarak oluşturur.</p><button class="btn btn-primary" onclick="exportSystemPackage()">Sistem Paketini Oluştur</button></div>
-    <div class="card"><div class="card-title">İçe Aktarma</div><input class="form-input" type="file" id="migration_file" accept=".json"><button class="btn btn-secondary" style="margin-top:10px" onclick="importSystemPackage()">Paketi Doğrula ve İçe Aktar</button><div id="migrationResult" style="margin-top:10px"></div></div>
+    <div class="card"><div class="card-title" data-i18n="migration.export_title">Dışa Aktarma</div><p data-i18n="migration.export_note">Kurum, kullanıcı, proje, hesap, standart, onay ve rapor verilerini tek JSON paketi olarak oluşturur.</p><button class="btn btn-primary" onclick="exportSystemPackage()" data-i18n="migration.export_btn">Sistem Paketini Oluştur</button></div>
+    <div class="card"><div class="card-title" data-i18n="migration.import_title">İçe Aktarma</div><input class="form-input" type="file" id="migration_file" accept=".json"><button class="btn btn-secondary" style="margin-top:10px" onclick="importSystemPackage()" data-i18n="migration.import_btn">Paketi Doğrula ve İçe Aktar</button><div id="migrationResult" style="margin-top:10px"></div></div>
   </div>
-  <div class="card"><div class="card-title">Son Taşıma İşlemleri</div><div id="migrationHistory"></div></div>
+  <div class="card"><div class="card-title" data-i18n="migration.history_title">Son Taşıma İşlemleri</div><div id="migrationHistory"></div></div>
 </div>
 
 <div id="page-diagnostics" class="page">
-  <div class="section-header"><span class="section-icon">🩺</span><div><div class="section-title">Sistem Tanılama</div><div class="section-sub">Veritabanı · disk · sürüm · API · lisans · veri bütünlüğü</div></div></div>
-  <div class="card"><button class="btn btn-primary" onclick="runDiagnostics()">Tanılama Çalıştır</button><button class="btn btn-secondary" onclick="downloadDiagnostics()">Tanılama Paketi İndir</button></div>
-  <div class="card"><div id="diagnosticRows">Henüz tanılama yapılmadı.</div></div>
+  <div class="section-header"><span class="section-icon">🩺</span><div><div class="section-title" data-i18n="diagnostics.title">Sistem Tanılama</div><div class="section-sub" data-i18n="diagnostics.subtitle">Veritabanı · disk · sürüm · API · lisans · veri bütünlüğü</div></div></div>
+  <div class="card"><button class="btn btn-primary" onclick="runDiagnostics()" data-i18n="diagnostics.run_btn">Tanılama Çalıştır</button><button class="btn btn-secondary" onclick="downloadDiagnostics()" data-i18n="diagnostics.download_btn">Tanılama Paketi İndir</button></div>
+  <div class="card"><div id="diagnosticRows" data-i18n="diagnostics.not_run_yet">Henüz tanılama yapılmadı.</div></div>
 </div>
 
 <div id="page-organization" class="page">
@@ -2403,6 +2403,56 @@ const I18N = {
     'mobile.not_ready': 'Not ready',
     'mobile.check_needed': 'Check',
 
+    // ---- Faz 2.7.4b-2: Deployment / Migration / Diagnostics ----
+    'deploy.title': 'Deployment Profile',
+    'deploy.subtitle': 'On-premise · network · backup · environment settings',
+    'deploy.environment_label': 'Environment Name',
+    'deploy.install_type_label': 'Installation Type',
+    'deploy.type_standalone': 'Single Computer',
+    'deploy.type_lan': 'Local Network Server',
+    'deploy.type_cloud': 'Cloud Server',
+    'deploy.host_label': 'Server Address',
+    'deploy.backup_freq_label': 'Backup Frequency',
+    'deploy.backup_daily': 'Daily',
+    'deploy.backup_weekly': 'Weekly',
+    'deploy.backup_manual': 'Manual',
+    'deploy.channel_label': 'Update Channel',
+    'deploy.channel_stable': 'Stable',
+    'deploy.channel_pilot': 'Pilot',
+    'deploy.channel_offline': 'Offline',
+    'deploy.save_btn': 'Save Profile',
+    'deploy.active_profile_title': 'Active Profile',
+    'deploy.loading_profile': 'Loading profile.',
+    'deploy.row_environment': 'Environment',
+    'deploy.row_type': 'Type',
+    'deploy.row_address': 'Address',
+    'deploy.row_backup': 'Backup',
+    'deploy.row_update': 'Update',
+    'deploy.profile_saved_alert': 'Deployment profile saved.',
+
+    'migration.title': 'Data Migration',
+    'migration.subtitle': 'Full system export · import · integrity check',
+    'migration.export_title': 'Export',
+    'migration.export_note': 'Creates a single JSON package containing organization, user, project, calculation, standard, approval, and report data.',
+    'migration.export_btn': 'Create System Package',
+    'migration.import_title': 'Import',
+    'migration.import_btn': 'Validate and Import Package',
+    'migration.history_title': 'Recent Migration Operations',
+    'migration.select_file_alert': 'Select a file.',
+    'migration.verified_prefix': 'Verified',
+    'migration.table_suffix': 'tables',
+    'migration.no_records': 'No records.',
+
+    'diagnostics.title': 'System Diagnostics',
+    'diagnostics.subtitle': 'Database · disk · version · API · license · data integrity',
+    'diagnostics.run_btn': 'Run Diagnostics',
+    'diagnostics.download_btn': 'Download Diagnostics Package',
+    'diagnostics.not_run_yet': 'No diagnostics run yet.',
+    'diagnostics.error': 'ERROR',
+    'diagnostics.overall_status_label': 'Overall Status',
+    'diagnostics.healthy': 'Healthy',
+    'diagnostics.check_needed': 'Check needed',
+
     'fmea.title': 'FMEA Failure Catalog',
     'fmea.subtitle': 'Failures and solutions compiled from serial production experience',
     'fmea.cause_label': 'Cause',
@@ -3288,6 +3338,56 @@ const I18N = {
     'mobile.not_ready': 'Hazır değil',
     'mobile.check_needed': 'Kontrol',
 
+    // ---- Faz 2.7.4b-2: Kurulum Profili / Veri Taşıma / Sistem Tanılama ----
+    'deploy.title': 'Kurulum Profili',
+    'deploy.subtitle': 'On-premise · ağ · yedekleme · ortam ayarları',
+    'deploy.environment_label': 'Ortam Adı',
+    'deploy.install_type_label': 'Kurulum Tipi',
+    'deploy.type_standalone': 'Tek Bilgisayar',
+    'deploy.type_lan': 'Yerel Ağ Sunucusu',
+    'deploy.type_cloud': 'Bulut Sunucusu',
+    'deploy.host_label': 'Sunucu Adresi',
+    'deploy.backup_freq_label': 'Yedekleme Sıklığı',
+    'deploy.backup_daily': 'Günlük',
+    'deploy.backup_weekly': 'Haftalık',
+    'deploy.backup_manual': 'Manuel',
+    'deploy.channel_label': 'Güncelleme Kanalı',
+    'deploy.channel_stable': 'Stable',
+    'deploy.channel_pilot': 'Pilot',
+    'deploy.channel_offline': 'Offline',
+    'deploy.save_btn': 'Profili Kaydet',
+    'deploy.active_profile_title': 'Aktif Profil',
+    'deploy.loading_profile': 'Profil yükleniyor.',
+    'deploy.row_environment': 'Ortam',
+    'deploy.row_type': 'Tip',
+    'deploy.row_address': 'Adres',
+    'deploy.row_backup': 'Yedekleme',
+    'deploy.row_update': 'Güncelleme',
+    'deploy.profile_saved_alert': 'Kurulum profili kaydedildi.',
+
+    'migration.title': 'Veri Taşıma',
+    'migration.subtitle': 'Tam sistem dışa aktarma · içe aktarma · bütünlük kontrolü',
+    'migration.export_title': 'Dışa Aktarma',
+    'migration.export_note': 'Kurum, kullanıcı, proje, hesap, standart, onay ve rapor verilerini tek JSON paketi olarak oluşturur.',
+    'migration.export_btn': 'Sistem Paketini Oluştur',
+    'migration.import_title': 'İçe Aktarma',
+    'migration.import_btn': 'Paketi Doğrula ve İçe Aktar',
+    'migration.history_title': 'Son Taşıma İşlemleri',
+    'migration.select_file_alert': 'Dosya seçin.',
+    'migration.verified_prefix': 'Doğrulandı',
+    'migration.table_suffix': 'tablo',
+    'migration.no_records': 'Kayıt yok.',
+
+    'diagnostics.title': 'Sistem Tanılama',
+    'diagnostics.subtitle': 'Veritabanı · disk · sürüm · API · lisans · veri bütünlüğü',
+    'diagnostics.run_btn': 'Tanılama Çalıştır',
+    'diagnostics.download_btn': 'Tanılama Paketi İndir',
+    'diagnostics.not_run_yet': 'Henüz tanılama yapılmadı.',
+    'diagnostics.error': 'HATA',
+    'diagnostics.overall_status_label': 'Genel Durum',
+    'diagnostics.healthy': 'Sağlıklı',
+    'diagnostics.check_needed': 'Kontrol gerekli',
+
     'fmea.title': 'FMEA Hata Kataloğu',
     'fmea.subtitle': 'Seri üretim deneyiminden derlenen hatalar ve çözümler',
     'fmea.cause_label': 'Neden',
@@ -3717,6 +3817,18 @@ function setLanguage(lang) {
   if (typeof loadCloudReadiness === 'function' && document.getElementById('page-clouddeploy')?.classList.contains('active')) loadCloudReadiness();
   if (typeof loadRuntimeHealth === 'function' && document.getElementById('page-runtimehealth')?.classList.contains('active')) loadRuntimeHealth();
   if (typeof loadMobileAccess === 'function' && document.getElementById('page-mobileaccess')?.classList.contains('active')) loadMobileAccess();
+  // Faz 2.7.4b-2: deployment-profile and migration-history are
+  // admin-only GET endpoints, guarded by active-page-check for the
+  // same reason as golive-profile/cloud-readiness above. Diagnostics
+  // is explicitly re-rendered from the already-fetched LAST_DIAGNOSTICS
+  // state instead of re-running the check (runDiagnostics() is never
+  // called from here) -- satisfies "no new diagnostics run on a
+  // language switch" while still updating the displayed language.
+  // migration_file (the file <input>) is never touched by any of
+  // this, so a pending file selection survives a language switch.
+  if (typeof loadDeploymentProfile === 'function' && document.getElementById('page-deployment')?.classList.contains('active')) loadDeploymentProfile();
+  if (typeof loadMigrationHistory === 'function' && document.getElementById('page-migration')?.classList.contains('active')) loadMigrationHistory();
+  if (typeof renderDiagnostics === 'function' && typeof LAST_DIAGNOSTICS !== 'undefined' && LAST_DIAGNOSTICS && document.getElementById('page-diagnostics')?.classList.contains('active')) renderDiagnostics(LAST_DIAGNOSTICS);
 }
 
 document.addEventListener('DOMContentLoaded', applyStaticTranslations);
@@ -5348,12 +5460,16 @@ async function loadUsage(){
 
 let LAST_DIAGNOSTICS=null;
 async function loadDeploymentProfile(){const d=await apiRequest('/api/admin/deployment-profile');document.getElementById('dep_env').value=d.environment||'Production';document.getElementById('dep_type').value=d.install_type||'standalone';document.getElementById('dep_host').value=d.host||'127.0.0.1';document.getElementById('dep_port').value=d.port||8000;document.getElementById('dep_backup').value=d.backup_frequency||'daily';document.getElementById('dep_channel').value=d.update_channel||'stable';renderDeployment(d);}
-function renderDeployment(d){document.getElementById('deploymentPreview').innerHTML=`<table class="source-table"><tr><th>Ortam</th><td>${d.environment||'—'}</td></tr><tr><th>Tip</th><td>${d.install_type||'—'}</td></tr><tr><th>Adres</th><td>${d.host||'—'}:${d.port||'—'}</td></tr><tr><th>Yedekleme</th><td>${d.backup_frequency||'—'}</td></tr><tr><th>Güncelleme</th><td>${d.update_channel||'—'}</td></tr></table>`;}
-async function saveDeploymentProfile(){const p={environment:document.getElementById('dep_env').value.trim(),install_type:document.getElementById('dep_type').value,host:document.getElementById('dep_host').value.trim(),port:parseInt(document.getElementById('dep_port').value),backup_frequency:document.getElementById('dep_backup').value,update_channel:document.getElementById('dep_channel').value};await apiRequest('/api/admin/deployment-profile',{method:'PUT',body:JSON.stringify(p)});renderDeployment(p);alert('Kurulum profili kaydedildi.');}
+const DEPLOY_TYPE_LABEL_KEY={standalone:'deploy.type_standalone',lan:'deploy.type_lan',cloud:'deploy.type_cloud'};
+const DEPLOY_BACKUP_LABEL_KEY={daily:'deploy.backup_daily',weekly:'deploy.backup_weekly',manual:'deploy.backup_manual'};
+const DEPLOY_CHANNEL_LABEL_KEY={stable:'deploy.channel_stable',pilot:'deploy.channel_pilot',offline:'deploy.channel_offline'};
+function renderDeployment(d){document.getElementById('deploymentPreview').innerHTML=`<table class="source-table"><tr><th>${t('deploy.row_environment')}</th><td>${d.environment||'—'}</td></tr><tr><th>${t('deploy.row_type')}</th><td>${d.install_type?t(DEPLOY_TYPE_LABEL_KEY[d.install_type]||d.install_type):'—'}</td></tr><tr><th>${t('deploy.row_address')}</th><td>${d.host||'—'}:${d.port||'—'}</td></tr><tr><th>${t('deploy.row_backup')}</th><td>${d.backup_frequency?t(DEPLOY_BACKUP_LABEL_KEY[d.backup_frequency]||d.backup_frequency):'—'}</td></tr><tr><th>${t('deploy.row_update')}</th><td>${d.update_channel?t(DEPLOY_CHANNEL_LABEL_KEY[d.update_channel]||d.update_channel):'—'}</td></tr></table>`;}
+async function saveDeploymentProfile(){const p={environment:document.getElementById('dep_env').value.trim(),install_type:document.getElementById('dep_type').value,host:document.getElementById('dep_host').value.trim(),port:parseInt(document.getElementById('dep_port').value),backup_frequency:document.getElementById('dep_backup').value,update_channel:document.getElementById('dep_channel').value};await apiRequest('/api/admin/deployment-profile',{method:'PUT',body:JSON.stringify(p)});renderDeployment(p);alert(t('deploy.profile_saved_alert'));}
 async function exportSystemPackage(){const p=await apiRequest('/api/admin/system-export',{method:'POST'});downloadBlob(JSON.stringify(p,null,2),p.export_no+'.json','application/json');loadMigrationHistory();}
-async function importSystemPackage(){const f=document.getElementById('migration_file').files[0];if(!f){alert('Dosya seçin.');return;}const text=await f.text();try{const r=await apiRequest('/api/admin/system-import',{method:'POST',body:JSON.stringify({content:text})});document.getElementById('migrationResult').innerHTML=`<span class="ok">Doğrulandı: ${r.import_no} · ${r.table_count} tablo</span>`;loadMigrationHistory();}catch(e){document.getElementById('migrationResult').innerHTML=`<span class="nok">${e.message}</span>`;}}
-async function loadMigrationHistory(){const r=await apiRequest('/api/admin/migration-history');document.getElementById('migrationHistory').innerHTML=r.map(x=>`<div class="diag-row"><div>${x.operation_no}</div><div>${x.operation_type}</div><div>${x.status}</div></div>`).join('')||'Kayıt yok.';}
-async function runDiagnostics(){LAST_DIAGNOSTICS=await apiRequest('/api/admin/diagnostics');document.getElementById('diagnosticRows').innerHTML=LAST_DIAGNOSTICS.checks.map(c=>`<div class="diag-row"><div><strong>${c.name}</strong><div>${c.detail||''}</div></div><div>${c.value??'—'}</div><div class="${c.ok?'qg-pass':'qg-fail'}">${c.ok?'OK':'HATA'}</div></div>`).join('')+`<div class="alert ${LAST_DIAGNOSTICS.overall_ok?'alert-success':'alert-warn'}"><strong>Genel Durum:</strong> ${LAST_DIAGNOSTICS.overall_ok?'Sağlıklı':'Kontrol gerekli'}</div>`;}
+async function importSystemPackage(){const f=document.getElementById('migration_file').files[0];if(!f){alert(t('migration.select_file_alert'));return;}const text=await f.text();try{const r=await apiRequest('/api/admin/system-import',{method:'POST',body:JSON.stringify({content:text})});document.getElementById('migrationResult').innerHTML=`<span class="ok">${t('migration.verified_prefix')}: ${r.import_no} · ${r.table_count} ${t('migration.table_suffix')}</span>`;loadMigrationHistory();}catch(e){document.getElementById('migrationResult').innerHTML=`<span class="nok">${e.message}</span>`;}}
+async function loadMigrationHistory(){const r=await apiRequest('/api/admin/migration-history');document.getElementById('migrationHistory').innerHTML=r.map(x=>`<div class="diag-row"><div>${x.operation_no}</div><div>${x.operation_type}</div><div>${x.status}</div></div>`).join('')||t('migration.no_records');}
+async function runDiagnostics(){LAST_DIAGNOSTICS=await apiRequest('/api/admin/diagnostics');renderDiagnostics(LAST_DIAGNOSTICS);}
+function renderDiagnostics(diag){document.getElementById('diagnosticRows').innerHTML=diag.checks.map(c=>`<div class="diag-row"><div><strong>${c.name}</strong><div>${c.detail||''}</div></div><div>${c.value??'—'}</div><div class="${c.ok?'qg-pass':'qg-fail'}">${c.ok?'OK':t('diagnostics.error')}</div></div>`).join('')+`<div class="alert ${diag.overall_ok?'alert-success':'alert-warn'}"><strong>${t('diagnostics.overall_status_label')}:</strong> ${diag.overall_ok?t('diagnostics.healthy'):t('diagnostics.check_needed')}</div>`;}
 async function downloadDiagnostics(){if(!LAST_DIAGNOSTICS)await runDiagnostics();downloadBlob(JSON.stringify(LAST_DIAGNOSTICS,null,2),'TorqPro_Diagnostics_'+Date.now()+'.json','application/json');}
 
 

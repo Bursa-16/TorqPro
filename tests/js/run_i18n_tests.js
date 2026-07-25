@@ -80,6 +80,7 @@ const CONST_NAMES = [
   'N01391', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
   'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS', 'ISH', 'CURRENT_ROLE',
   'CURRENT_USER', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS', 'deferredPrompt',
+  'DEPLOY_TYPE_LABEL_KEY', 'DEPLOY_BACKUP_LABEL_KEY', 'DEPLOY_CHANNEL_LABEL_KEY', 'LAST_DIAGNOSTICS',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -93,7 +94,7 @@ const CONST_NAMES = [
 // external assignment and internal closures observe the same
 // binding, which is required to test "language switch re-renders
 // already-loaded content" realistically.
-const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT', 'ACTIVE_STANDARD_LIBRARY', 'CURRENT_ROLE', 'LAST_CALCULATION', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS', 'deferredPrompt'];
+const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT', 'ACTIVE_STANDARD_LIBRARY', 'CURRENT_ROLE', 'LAST_CALCULATION', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS', 'deferredPrompt', 'LAST_DIAGNOSTICS'];
 const FUNCTION_NAMES = [
   't', 'fcLabel', 'applyStaticTranslations', 'setLanguage',
   'fcEsc', 'fcEscRaw', 'fcFmtNum', 'fcFmtLabel', 'fcCountLabel',
@@ -114,6 +115,9 @@ const FUNCTION_NAMES = [
   'generateProjectRelease', 'printProjectRelease', 'generateReleaseCertificate', 'printReleaseCertificate',
   'installPwa', 'loadMobileAccess', 'loadCloudReadiness', 'loadRuntimeHealth',
   'loadGoLiveProfile', 'renderGoLiveChecklist', 'saveGoLiveProfile', 'runDnsCheck',
+  'loadDeploymentProfile', 'renderDeployment', 'saveDeploymentProfile',
+  'exportSystemPackage', 'importSystemPackage', 'loadMigrationHistory',
+  'runDiagnostics', 'renderDiagnostics', 'downloadDiagnostics',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -3220,6 +3224,318 @@ async function main() {
     }
     check("https_status==='ready' branches on the stable technical value, not a label",
       scriptSrc.indexOf("https_status==='ready'") !== -1);
+  }
+
+  // ================================================================
+  // Faz 2.7.4b-2 -- Deployment Profile / Data Migration / System
+  // Diagnostics.
+  // ================================================================
+
+  // ---- 163. Three pages' static UI TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const checks = [
+      ['deploy.title', 'Kurulum Profili', 'Deployment Profile'],
+      ['migration.title', 'Veri Taşıma', 'Data Migration'],
+      ['diagnostics.title', 'Sistem Tanılama', 'System Diagnostics'],
+    ];
+    ctx.context.applyStaticTranslations();
+    for (const [key, tr] of checks) checkEqual('tr title for ' + key, getByI18nKey(ctx, key).textContent, tr);
+    ctx.context.setLanguage('en');
+    for (const [key, , en] of checks) checkEqual('en title for ' + key, getByI18nKey(ctx, key).textContent, en);
+  }
+
+  // ---- 164. Deployment dropdown visible labels TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const el = getByI18nKey(ctx, 'deploy.type_lan');
+    ctx.context.applyStaticTranslations();
+    checkEqual('type_lan label tr', el.textContent, 'Yerel Ağ Sunucusu');
+    ctx.context.setLanguage('en');
+    checkEqual('type_lan label en', el.textContent, 'Local Network Server');
+  }
+
+  // ---- 165. Deployment technical value preservation (option values) ----
+  {
+    check('dep_type option values are the fixed set {standalone,lan,cloud}',
+      /value="standalone" data-i18n="deploy\.type_standalone"/.test(rawHtml) &&
+      /value="lan" data-i18n="deploy\.type_lan"/.test(rawHtml) &&
+      /value="cloud" data-i18n="deploy\.type_cloud"/.test(rawHtml));
+    check('dep_backup option values are the fixed set {daily,weekly,manual}',
+      /value="daily" data-i18n="deploy\.backup_daily"/.test(rawHtml) &&
+      /value="weekly" data-i18n="deploy\.backup_weekly"/.test(rawHtml) &&
+      /value="manual" data-i18n="deploy\.backup_manual"/.test(rawHtml));
+    check('dep_channel option values are the fixed set {stable,pilot,offline}',
+      /value="stable" data-i18n="deploy\.channel_stable"/.test(rawHtml) &&
+      /value="pilot" data-i18n="deploy\.channel_pilot"/.test(rawHtml) &&
+      /value="offline" data-i18n="deploy\.channel_offline"/.test(rawHtml));
+  }
+
+  // ---- 166. saveDeploymentProfile() payload identical across languages ----
+  {
+    async function runSaveDeployment(lang) {
+      let captured = null;
+      const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+        if (opts && opts.method === 'PUT') { captured = JSON.parse(opts.body); return captured; }
+        return {};
+      });
+      ctx.byId['dep_env'] = { value: 'Staging' };
+      ctx.byId['dep_type'] = { value: 'lan' };
+      ctx.byId['dep_host'] = { value: '10.1.1.1' };
+      ctx.byId['dep_port'] = { value: '9000' };
+      ctx.byId['dep_backup'] = { value: 'weekly' };
+      ctx.byId['dep_channel'] = { value: 'pilot' };
+      ctx.byId['deploymentPreview'] = { innerHTML: '' };
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.saveDeploymentProfile();
+      return { captured, alert: ctx.alertCalls[ctx.alertCalls.length - 1] };
+    }
+    const trResult = await runSaveDeployment('tr');
+    const enResult = await runSaveDeployment('en');
+    checkEqual('payload identical (environment)', trResult.captured.environment, enResult.captured.environment);
+    checkEqual('payload identical (install_type)', trResult.captured.install_type, enResult.captured.install_type);
+    checkEqual('payload identical (host)', trResult.captured.host, enResult.captured.host);
+    checkEqual('payload identical (port)', trResult.captured.port, enResult.captured.port);
+    checkEqual('payload identical (backup_frequency)', trResult.captured.backup_frequency, enResult.captured.backup_frequency);
+    checkEqual('payload identical (update_channel)', trResult.captured.update_channel, enResult.captured.update_channel);
+    checkEqual('install_type technical value untranslated', trResult.captured.install_type, 'lan');
+  }
+
+  // ---- 167. saveDeploymentProfile() success alert TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => JSON.parse(opts.body));
+    ctx.byId['dep_env'] = { value: 'X' };
+    ctx.byId['dep_type'] = { value: 'standalone' };
+    ctx.byId['dep_host'] = { value: 'localhost' };
+    ctx.byId['dep_port'] = { value: '8000' };
+    ctx.byId['dep_backup'] = { value: 'daily' };
+    ctx.byId['dep_channel'] = { value: 'stable' };
+    ctx.byId['deploymentPreview'] = { innerHTML: '' };
+    await ctx.context.saveDeploymentProfile();
+    checkEqual('tr success alert', ctx.alertCalls[ctx.alertCalls.length - 1], 'Kurulum profili kaydedildi.');
+    ctx.context.setLanguage('en');
+    await ctx.context.saveDeploymentProfile();
+    checkEqual('en success alert', ctx.alertCalls[ctx.alertCalls.length - 1], 'Deployment profile saved.');
+  }
+
+  // ---- 168. renderDeployment(): same technical profile, different
+  //           displayed label per language, technical values unchanged ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const profile = { environment: 'Production', install_type: 'cloud', host: '203.0.113.5', port: 8443, backup_frequency: 'weekly', update_channel: 'pilot' };
+    ctx.byId['deploymentPreview'] = { innerHTML: '' };
+    ctx.context.renderDeployment(profile);
+    const htmlTr = ctx.byId['deploymentPreview'].innerHTML;
+    check('tr shows "Bulut Sunucusu" for cloud', htmlTr.indexOf('Bulut Sunucusu') !== -1);
+    check('tr shows "Haftalık" for weekly', htmlTr.indexOf('Haftalık') !== -1);
+    ctx.context.setLanguage('en');
+    ctx.context.renderDeployment(profile);
+    const htmlEn = ctx.byId['deploymentPreview'].innerHTML;
+    check('en shows "Cloud Server" for the same cloud value', htmlEn.indexOf('Cloud Server') !== -1);
+    check('en shows "Weekly" for the same weekly value', htmlEn.indexOf('Weekly') !== -1);
+    check('host:port (technical) identical in both languages', htmlTr.indexOf('203.0.113.5:8443') !== -1 && htmlEn.indexOf('203.0.113.5:8443') !== -1);
+  }
+
+  // ---- 169. importSystemPackage(): no-file alert TR/EN; POST payload
+  //           {content} unchanged; table count unchanged; only the
+  //           fixed wrapper text changes ----
+  {
+    async function runImport(lang, file) {
+      let captured = null;
+      const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+        if (opts && opts.method === 'POST') { captured = JSON.parse(opts.body); return { import_no: 'IMP-1', table_count: 13 }; }
+        return [];
+      });
+      ctx.byId['migration_file'] = { files: file ? [file] : [] };
+      ctx.byId['migrationResult'] = { innerHTML: '' };
+      ctx.byId['migrationHistory'] = { innerHTML: '' };
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.importSystemPackage();
+      return { captured, alert: ctx.alertCalls[ctx.alertCalls.length - 1], resultHtml: ctx.byId['migrationResult'].innerHTML };
+    }
+    const noFileTr = await runImport('tr', null);
+    checkEqual('tr no-file alert', noFileTr.alert, 'Dosya seçin.');
+    const noFileEn = await runImport('en', null);
+    checkEqual('en no-file alert', noFileEn.alert, 'Select a file.');
+    const fileContent = '{"tables":13}';
+    const fakeFile = { text: async () => fileContent };
+    const withFileTr = await runImport('tr', fakeFile);
+    checkEqual('POST payload content identical to the file contents (tr)', withFileTr.captured.content, fileContent);
+    check('tr result shows "Doğrulandı" and table count 13', withFileTr.resultHtml.indexOf('Doğrulandı') !== -1 && withFileTr.resultHtml.indexOf('13') !== -1);
+    const withFileEn = await runImport('en', fakeFile);
+    checkEqual('POST payload content identical regardless of language', withFileEn.captured.content, fileContent);
+    check('en result shows "Verified" and the same table count 13', withFileEn.resultHtml.indexOf('Verified') !== -1 && withFileEn.resultHtml.indexOf('13') !== -1);
+  }
+
+  // ---- 170. exportSystemPackage(): downloaded JSON content is
+  //           language-independent; a language switch never triggers
+  //           an export ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => ({ export_no: 'EXP-1', tables: { users: [] } }));
+    ctx.byId['migrationHistory'] = { innerHTML: '' };
+    let exportCalled = false;
+    const origLoadHistory = ctx.context.loadMigrationHistory;
+    // exportSystemPackage() itself does not read CURRENT_LANG anywhere.
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const exportSrc = extractFunctionDecl(scriptSrc, 'exportSystemPackage');
+    check('exportSystemPackage() body never references CURRENT_LANG', exportSrc.indexOf('CURRENT_LANG') === -1);
+    const setLangSrc = extractFunctionDecl(scriptSrc, 'setLanguage');
+    check('setLanguage() never calls exportSystemPackage()', setLangSrc.indexOf('exportSystemPackage()') === -1);
+  }
+
+  // ---- 171. loadMigrationHistory(): empty-state TR/EN; record
+  //           order/id set and technical values unchanged ----
+  {
+    async function runHistory(lang, rows) {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => rows);
+      ctx.byId['migrationHistory'] = { innerHTML: '' };
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.loadMigrationHistory();
+      return ctx.byId['migrationHistory'].innerHTML;
+    }
+    checkEqual('tr empty-state', await runHistory('tr', []), 'Kayıt yok.');
+    checkEqual('en empty-state', await runHistory('en', []), 'No records.');
+    const rows = [{ operation_no: 'OP-3', operation_type: 'export', status: 'done' }, { operation_no: 'OP-1', operation_type: 'import', status: 'failed' }];
+    const htmlTr = await runHistory('tr', rows);
+    const htmlEn = await runHistory('en', rows);
+    const idsTr = [...htmlTr.matchAll(/<div>(OP-\d+)<\/div>/g)].map((m) => m[1]);
+    const idsEn = [...htmlEn.matchAll(/<div>(OP-\d+)<\/div>/g)].map((m) => m[1]);
+    checkEqual('operation_no order identical across languages', JSON.stringify(idsTr), JSON.stringify(idsEn));
+    checkEqual('operation order matches backend response order (OP-3, OP-1)', JSON.stringify(idsTr), JSON.stringify(['OP-3', 'OP-1']));
+    check('technical status values (export/import/done/failed) rendered verbatim in both', htmlTr.indexOf('export') !== -1 && htmlEn.indexOf('export') !== -1 && htmlTr.indexOf('failed') !== -1 && htmlEn.indexOf('failed') !== -1);
+  }
+
+  // ---- 172. runDiagnostics(): overall_ok/c.ok booleans and
+  //           qg-pass/qg-fail CSS classes identical; labels TR/EN ----
+  {
+    async function runDiag(lang) {
+      const ctx = newContext(extractedSource, rawHtml, {}, async () => ({
+        overall_ok: false,
+        checks: [{ name: 'Database', value: 'sqlite', ok: true, detail: '' }, { name: 'Disk Space', value: '2GB', ok: false, detail: 'low' }],
+      }));
+      ctx.byId['diagnosticRows'] = { innerHTML: '' };
+      if (lang === 'en') ctx.context.setLanguage('en');
+      await ctx.context.runDiagnostics();
+      return ctx.byId['diagnosticRows'].innerHTML;
+    }
+    const htmlTr = await runDiag('tr');
+    const htmlEn = await runDiag('en');
+    check('tr passing check shows OK and qg-pass', /qg-pass">OK/.test(htmlTr));
+    check('en passing check shows OK and qg-pass (unchanged)', /qg-pass">OK/.test(htmlEn));
+    check('tr failing check shows qg-fail and "HATA"', /qg-fail">HATA/.test(htmlTr));
+    check('en failing check shows qg-fail and "ERROR"', /qg-fail">ERROR/.test(htmlEn));
+    check('tr overall_ok:false shows "Genel Durum" + "Kontrol gerekli"', htmlTr.indexOf('Genel Durum') !== -1 && htmlTr.indexOf('Kontrol gerekli') !== -1);
+    check('en overall_ok:false shows "Overall Status" + "Check needed"', htmlEn.indexOf('Overall Status') !== -1 && htmlEn.indexOf('Check needed') !== -1);
+    check('backend check names (Database/Disk Space) rendered verbatim in both', htmlTr.indexOf('Disk Space') !== -1 && htmlEn.indexOf('Disk Space') !== -1);
+  }
+
+  // ---- 173. downloadDiagnostics(): technical JSON payload is
+  //           language-independent; never triggered by a language switch ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const ddSrc = extractFunctionDecl(scriptSrc, 'downloadDiagnostics');
+    check('downloadDiagnostics() never references CURRENT_LANG', ddSrc.indexOf('CURRENT_LANG') === -1);
+    const setLangSrc = extractFunctionDecl(scriptSrc, 'setLanguage');
+    check('setLanguage() never calls downloadDiagnostics()', setLangSrc.indexOf('downloadDiagnostics()') === -1);
+  }
+
+  // ---- 174. Language switch: Deployment form/dropdown state
+  //           preserved; only GET (no PUT) issued for the active page ----
+  {
+    let putCalled = false;
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+      if (opts && opts.method === 'PUT') putCalled = true;
+      return { environment: 'Prod', install_type: 'cloud', host: '1.2.3.4', port: 443, backup_frequency: 'daily', update_channel: 'stable' };
+    });
+    ctx.byId['dep_env'] = { value: 'Prod-Custom' };
+    ctx.byId['dep_type'] = { value: 'cloud' };
+    ctx.byId['dep_host'] = { value: '1.2.3.4' };
+    ctx.byId['dep_port'] = { value: '443' };
+    ctx.byId['dep_backup'] = { value: 'weekly' };
+    ctx.byId['dep_channel'] = { value: 'offline' };
+    ctx.byId['deploymentPreview'] = { innerHTML: '' };
+    ctx.documentStub.getElementById('page-deployment').classList.add('active');
+    ctx.context.setLanguage('en');
+    checkEqual('dep_env preserved after language switch', ctx.byId['dep_env'].value, 'Prod-Custom');
+    checkEqual('dep_type selection preserved after language switch', ctx.byId['dep_type'].value, 'cloud');
+    checkEqual('dep_backup selection preserved after language switch', ctx.byId['dep_backup'].value, 'weekly');
+    checkEqual('dep_channel selection preserved after language switch', ctx.byId['dep_channel'].value, 'offline');
+    checkEqual('no PUT was triggered by the language switch', putCalled, false);
+  }
+
+  // ---- 175. Language switch: Migration file input untouched; no
+  //           import/export/POST triggered ----
+  {
+    const fakeFile = { name: 'backup.json' };
+    let postCalled = false;
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+      if (opts && opts.method === 'POST') postCalled = true;
+      return [];
+    });
+    ctx.byId['migration_file'] = { files: [fakeFile] };
+    ctx.byId['migrationHistory'] = { innerHTML: '' };
+    ctx.documentStub.getElementById('page-migration').classList.add('active');
+    ctx.context.setLanguage('en');
+    checkEqual('migration_file selection (file object) unchanged by language switch', ctx.byId['migration_file'].files[0], fakeFile);
+    checkEqual('no POST (import/export) was triggered by the language switch', postCalled, false);
+  }
+
+  // ---- 176. Language switch: Diagnostics re-renders cached
+  //           LAST_DIAGNOSTICS without re-running the check ----
+  {
+    let getCalled = false;
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => { getCalled = true; return { overall_ok: true, checks: [] }; });
+    ctx.context.LAST_DIAGNOSTICS = { overall_ok: true, checks: [{ name: 'API', value: 'up', ok: true, detail: '' }] };
+    ctx.byId['diagnosticRows'] = { innerHTML: '' };
+    ctx.documentStub.getElementById('page-diagnostics').classList.add('active');
+    ctx.context.setLanguage('en');
+    checkEqual('runDiagnostics() (a new check) was NOT triggered by the language switch', getCalled, false);
+    check('diagnosticRows re-rendered from cached LAST_DIAGNOSTICS in en', ctx.byId['diagnosticRows'].innerHTML.indexOf('API') !== -1);
+    checkEqual('LAST_DIAGNOSTICS object reference itself is unchanged', ctx.context.LAST_DIAGNOSTICS.checks[0].name, 'API');
+  }
+
+  // ---- 177. No raw translation-key leakage across deployment/
+  //           migration/diagnostics dynamic HTML ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const profile = { environment: 'X', install_type: 'lan', host: 'h', port: 1, backup_frequency: 'manual', update_channel: 'offline' };
+    ctx.byId['deploymentPreview'] = { innerHTML: '' };
+    ctx.byId['diagnosticRows'] = { innerHTML: '' };
+    ctx.context.setLanguage('en');
+    ctx.context.renderDeployment(profile);
+    ctx.context.renderDiagnostics({ overall_ok: true, checks: [{ name: 'X', value: 'Y', ok: true, detail: '' }] });
+    const combined = ctx.byId['deploymentPreview'].innerHTML + ctx.byId['diagnosticRows'].innerHTML;
+    check('no raw namespaced key text leaks into en rendering', !/(deploy|migration|diagnostics)\.[a-z_.0-9]+(?![\w])/.test(combined));
+  }
+
+  // ---- 178. Hard-coded user text scan (this sub-phase's scope) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const turkishCharRe = /[şğüöçİĞÜŞÖÇı]/;
+    for (const fn of ['loadDeploymentProfile', 'renderDeployment', 'saveDeploymentProfile', 'exportSystemPackage', 'importSystemPackage', 'loadMigrationHistory', 'runDiagnostics', 'renderDiagnostics', 'downloadDiagnostics']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      const strs = [...src.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]).filter((s) => turkishCharRe.test(s));
+      check('no hard-coded Turkish string literals remain in ' + fn + '()', strs.length === 0);
+    }
+  }
+
+  // ---- 179. In-scope hardcoded 'tr-TR' scan: 0 (none existed here) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    for (const fn of ['loadDeploymentProfile', 'renderDeployment', 'saveDeploymentProfile', 'exportSystemPackage', 'importSystemPackage', 'loadMigrationHistory', 'runDiagnostics', 'renderDiagnostics', 'downloadDiagnostics']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      check("no hardcoded 'tr-TR' remains in " + fn + '()', src.indexOf("'tr-TR'") === -1);
+    }
+  }
+
+  // ---- 180. Language-dependent decision anti-pattern scan (closure) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    for (const fn of ['saveDeploymentProfile', 'renderDeployment', 'runDiagnostics']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      check('no translated-text-driven decision in ' + fn + '()', !/\.includes\('[şğüöçİĞÜŞÖÇıA-ZÇĞİÖŞÜ][^']*'\)/.test(src));
+    }
+    check('c.ok drives qg-pass/qg-fail directly (stable boolean), not a translated label', scriptSrc.indexOf("c.ok?'qg-pass':'qg-fail'") !== -1);
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
