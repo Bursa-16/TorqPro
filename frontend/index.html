@@ -776,12 +776,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <!-- PROBLEM -->
 <div id="page-problem" class="page">
-  <div class="section-header"><span class="section-icon">⚠️</span><div><div class="section-title">Problem Tanımlama ve Kök Neden</div><div class="section-sub">5N1K + Ishikawa · Otomatik müdahale planı</div></div></div>
-  <div class="card"><div class="card-title">Adım 1 — Problem Tanımı</div>
-    <div class="form-row3"><div class="form-group"><label class="form-label">NE</label><input class="form-input" id="p_ne" placeholder="Tork limit dışı"></div><div class="form-group"><label class="form-label">NEREDE</label><input class="form-input" id="p_nerede" placeholder="Ön süspansiyon"></div><div class="form-group"><label class="form-label">NE ZAMAN</label><input class="form-input" id="p_nezaman" placeholder="10.01.2024 / Sabah"></div></div>
-    <div class="form-row3"><div class="form-group"><label class="form-label">NASIL</label><input class="form-input" id="p_nasil" placeholder="SPC kontrolü"></div><div class="form-group"><label class="form-label">NE KADAR</label><input class="form-input" id="p_nekdar" placeholder="5 araç etkilendi"></div><div class="form-group"><label class="form-label">KİM</label><input class="form-input" id="p_kim" placeholder="Ad Soyad"></div></div>
+  <div class="section-header"><span class="section-icon">⚠️</span><div><div class="section-title" data-i18n="problem.title">Problem Tanımlama ve Kök Neden</div><div class="section-sub" data-i18n="problem.subtitle">5N1K + Ishikawa · Otomatik müdahale planı</div></div></div>
+  <div class="card"><div class="card-title" data-i18n="problem.step1_title">Adım 1 — Problem Tanımı</div>
+    <div class="form-row3"><div class="form-group"><label class="form-label" data-i18n="problem.field_what">NE</label><input class="form-input" id="p_ne" data-i18n-placeholder="problem.placeholder_what" placeholder="Tork limit dışı"></div><div class="form-group"><label class="form-label" data-i18n="problem.field_where">NEREDE</label><input class="form-input" id="p_nerede" data-i18n-placeholder="problem.placeholder_where" placeholder="Ön süspansiyon"></div><div class="form-group"><label class="form-label" data-i18n="problem.field_when">NE ZAMAN</label><input class="form-input" id="p_nezaman" data-i18n-placeholder="problem.placeholder_when" placeholder="10.01.2024 / Sabah"></div></div>
+    <div class="form-row3"><div class="form-group"><label class="form-label" data-i18n="problem.field_how">NASIL</label><input class="form-input" id="p_nasil" data-i18n-placeholder="problem.placeholder_how" placeholder="SPC kontrolü"></div><div class="form-group"><label class="form-label" data-i18n="problem.field_how_much">NE KADAR</label><input class="form-input" id="p_nekdar" data-i18n-placeholder="problem.placeholder_how_much" placeholder="5 araç etkilendi"></div><div class="form-group"><label class="form-label" data-i18n="problem.field_who">KİM</label><input class="form-input" id="p_kim" data-i18n-placeholder="problem.placeholder_who" placeholder="Ad Soyad"></div></div>
   </div>
-  <div class="card"><div class="card-title">Adım 2 — Ishikawa Kök Neden</div><div class="card-sub">Olası nedenleri işaretleyin</div><div id="ishikawa-cats"></div><button class="btn btn-primary" style="margin-top:12px" onclick="problemAnaliz()">🔍 Analiz Et</button></div>
+  <div class="card"><div class="card-title" data-i18n="problem.step2_title">Adım 2 — Ishikawa Kök Neden</div><div class="card-sub" data-i18n="problem.step2_sub">Olası nedenleri işaretleyin</div><div id="ishikawa-cats"></div><button class="btn btn-primary" style="margin-top:12px" onclick="problemAnaliz()">🔍 <span data-i18n="problem.analyze_btn">Analiz Et</span></button></div>
   <div id="mudahale-sonuc"></div>
 </div>
 
@@ -2184,6 +2184,64 @@ const I18N = {
     'norm.flanged': 'Flanged',
 
     // ---- Faz 2.7.2c: FMEA Catalog ----
+    // ---- Faz 2.7.3a: Problem Management / Ishikawa ----
+    'problem.title': 'Problem Definition and Root Cause',
+    'problem.subtitle': '5N1K + Ishikawa · Automatic intervention plan',
+    'problem.step1_title': 'Step 1 — Problem Definition',
+    'problem.field_what': 'WHAT',
+    'problem.placeholder_what': 'Torque out of limits',
+    'problem.field_where': 'WHERE',
+    'problem.placeholder_where': 'Front suspension',
+    'problem.field_when': 'WHEN',
+    'problem.placeholder_when': '01/10/2024 / Morning',
+    'problem.field_how': 'HOW',
+    'problem.placeholder_how': 'SPC check',
+    'problem.field_how_much': 'HOW MUCH',
+    'problem.placeholder_how_much': '5 vehicles affected',
+    'problem.field_who': 'WHO',
+    'problem.placeholder_who': 'Full name',
+    'problem.step2_title': 'Step 2 — Ishikawa Root Cause',
+    'problem.step2_sub': 'Mark the possible causes',
+    'problem.analyze_btn': 'Analyze',
+
+    'problem.category_measurement_tools': 'Measurement / Tools',
+    'problem.category_machine_tool': 'Machine / Tool',
+    'problem.category_material_fastener': 'Material / Fastener',
+    'problem.category_human_operator': 'Human / Operator',
+    'problem.category_product_part': 'Product / Part',
+
+    'problem.item_measurement_program': 'Is the measurement program correct?',
+    'problem.item_torque_wrench_calibration': 'Is the torque wrench calibrated?',
+    'problem.item_machine_capability': 'Has the machine capability study been performed?',
+    'problem.item_triple_verification': 'Is the triple verification adequate?',
+    'problem.item_tool_suitability': 'Is the tool suitable for production?',
+    'problem.item_tool_parameters': 'Are the tool parameters correct?',
+    'problem.item_scheduled_maintenance': 'Has scheduled maintenance been performed?',
+    'problem.item_thread_damage': 'Are the screw threads damaged?',
+    'problem.item_thread_oil_rust': 'Is there oil/rust on the threads?',
+    'problem.item_friction_coefficient': 'Is the friction coefficient adequate?',
+    'problem.item_training_records': 'Are training records available?',
+    'problem.item_new_operator': 'Is there a new operator?',
+    'problem.item_process_sequence': 'Is the process sequence being followed?',
+    'problem.item_part_design_conformance': 'Do the parts conform to the design?',
+    'problem.item_mating_surface_oil': 'Is there oil on the mating surface?',
+    'problem.item_hole_dimensions': 'Are the hole dimensions correct?',
+
+    'problem.report_title': 'Problem Analysis Report',
+    'problem.field_problem': 'Problem',
+    'problem.field_operation': 'Operation',
+    'problem.field_date': 'Date',
+    'problem.field_responsible': 'Responsible',
+    'problem.field_marked_causes': 'Marked Cause',
+    'problem.item_count_suffix': 'item(s)',
+    'problem.sweep_rule': 'Check the 5 units before the faulty unit.',
+    'problem.warning_tool': 'Tool-related: calculate Cm/Cmk, remove if necessary.',
+    'problem.warning_material': 'Material: run a friction coefficient test.',
+    'problem.warning_calibration': 'Check calibration, apply a 5+5 sweep.',
+    'problem.btn_report': 'Report',
+    'problem.btn_corrective_action': 'Corrective Action',
+    'problem.btn_save': 'Save',
+
     'fmea.title': 'FMEA Failure Catalog',
     'fmea.subtitle': 'Failures and solutions compiled from serial production experience',
     'fmea.cause_label': 'Cause',
@@ -2850,6 +2908,64 @@ const I18N = {
     'norm.flanged': 'Flanşlı',
 
     // ---- Faz 2.7.2c: FMEA Kataloğu ----
+    // ---- Faz 2.7.3a: Problem Yönetimi / Ishikawa ----
+    'problem.title': 'Problem Tanımlama ve Kök Neden',
+    'problem.subtitle': '5N1K + Ishikawa · Otomatik müdahale planı',
+    'problem.step1_title': 'Adım 1 — Problem Tanımı',
+    'problem.field_what': 'NE',
+    'problem.placeholder_what': 'Tork limit dışı',
+    'problem.field_where': 'NEREDE',
+    'problem.placeholder_where': 'Ön süspansiyon',
+    'problem.field_when': 'NE ZAMAN',
+    'problem.placeholder_when': '10.01.2024 / Sabah',
+    'problem.field_how': 'NASIL',
+    'problem.placeholder_how': 'SPC kontrolü',
+    'problem.field_how_much': 'NE KADAR',
+    'problem.placeholder_how_much': '5 araç etkilendi',
+    'problem.field_who': 'KİM',
+    'problem.placeholder_who': 'Ad Soyad',
+    'problem.step2_title': 'Adım 2 — Ishikawa Kök Neden',
+    'problem.step2_sub': 'Olası nedenleri işaretleyin',
+    'problem.analyze_btn': 'Analiz Et',
+
+    'problem.category_measurement_tools': 'Ölçme / Aletler',
+    'problem.category_machine_tool': 'Makine / Tabanca',
+    'problem.category_material_fastener': 'Malzeme / Vida',
+    'problem.category_human_operator': 'İnsan / Operatör',
+    'problem.category_product_part': 'Ürün / Parça',
+
+    'problem.item_measurement_program': 'Ölçüm programı doğru mu?',
+    'problem.item_torque_wrench_calibration': 'Tork anahtarı kalibrasyonlu mu?',
+    'problem.item_machine_capability': 'Makine yetenekleri yapılmış mı?',
+    'problem.item_triple_verification': "3'lü doğrulama uygun mu?",
+    'problem.item_tool_suitability': 'Tabanca üretim için uygun mu?',
+    'problem.item_tool_parameters': 'Sıkıcı parametreleri doğru mu?',
+    'problem.item_scheduled_maintenance': 'Programlı bakım yapılmış mı?',
+    'problem.item_thread_damage': 'Vida dişleri hasarlı mı?',
+    'problem.item_thread_oil_rust': 'Dişlerde yağ/pas var mı?',
+    'problem.item_friction_coefficient': 'Sürtünme katsayısı uygun mu?',
+    'problem.item_training_records': 'Eğitim kayıtları mevcut mu?',
+    'problem.item_new_operator': 'Yeni operatör var mı?',
+    'problem.item_process_sequence': 'İşlem sıralamasına uyuluyor mu?',
+    'problem.item_part_design_conformance': 'Parçalar tasarıma uygun mu?',
+    'problem.item_mating_surface_oil': 'Öpüşme yüzeyinde yağ var mı?',
+    'problem.item_hole_dimensions': 'Delik ölçüleri doğru mu?',
+
+    'problem.report_title': 'Problem Analiz Raporu',
+    'problem.field_problem': 'Problem',
+    'problem.field_operation': 'Operasyon',
+    'problem.field_date': 'Tarih',
+    'problem.field_responsible': 'Sorumlu',
+    'problem.field_marked_causes': 'İşaretlenen Neden',
+    'problem.item_count_suffix': 'madde',
+    'problem.sweep_rule': 'Hatalı birimden önceki 5 birim kontrol edilsin.',
+    'problem.warning_tool': 'Sıkıcı kaynaklı: Cm/Cmk hesapla, gerekirse çıkar.',
+    'problem.warning_material': 'Malzeme: Sürtünme katsayısı testi yap.',
+    'problem.warning_calibration': 'Kalibrasyon kontrol et, 5+5 tarama uygula.',
+    'problem.btn_report': 'Rapor',
+    'problem.btn_corrective_action': 'Düzeltici Faaliyet',
+    'problem.btn_save': 'Kaydet',
+
     'fmea.title': 'FMEA Hata Kataloğu',
     'fmea.subtitle': 'Seri üretim deneyiminden derlenen hatalar ve çözümler',
     'fmea.cause_label': 'Neden',
@@ -3263,6 +3379,7 @@ function setLanguage(lang) {
   if (typeof libraryReapplyLanguage === 'function') libraryReapplyLanguage();
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
+  if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();
 }
 
 document.addEventListener('DOMContentLoaded', applyStaticTranslations);
@@ -4274,13 +4391,76 @@ function yetenekHesapla(){
 }
 
 // ========== PROBLEM ==========
-const ISH={'Ölçme / Aletler':['Ölçüm programı doğru mu?','Tork anahtarı kalibrasyonlu mu?','Makine yetenekleri yapılmış mı?','3\'lü doğrulama uygun mu?'],'Makine / Tabanca':['Tabanca üretim için uygun mu?','Sıkıcı parametreleri doğru mu?','Programlı bakım yapılmış mı?'],'Malzeme / Vida':['Vida dişleri hasarlı mı?','Dişlerde yağ/pas var mı?','Sürtünme katsayısı uygun mu?'],'İnsan / Operatör':['Eğitim kayıtları mevcut mu?','Yeni operatör var mı?','İşlem sıralamasına uyuluyor mu?'],'Ürün / Parça':['Parçalar tasarıma uygun mu?','Öpüşme yüzeyinde yağ var mı?','Delik ölçüleri doğru mu?']};
-function buildISH(){let h='';for(let k in ISH){h+=`<div style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;color:var(--accent2);margin-bottom:6px">${k}</div>`;ISH[k].forEach(nd=>{h+=`<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border-radius:6px;cursor:pointer;font-size:13px;color:var(--text2);margin-bottom:3px"><input type="checkbox" style="accent-color:var(--accent)"> ${nd}</label>`;});h+='</div>';}document.getElementById('ishikawa-cats').innerHTML=h;}
+const ISH=[
+  {categoryCode:'measurement_tools',categoryKey:'problem.category_measurement_tools',items:[
+    {itemCode:'measurement_program',itemKey:'problem.item_measurement_program',tags:[]},
+    {itemCode:'torque_wrench_calibration',itemKey:'problem.item_torque_wrench_calibration',tags:[]},
+    {itemCode:'machine_capability',itemKey:'problem.item_machine_capability',tags:['calibration']},
+    {itemCode:'triple_verification',itemKey:'problem.item_triple_verification',tags:[]},
+  ]},
+  {categoryCode:'machine_tool',categoryKey:'problem.category_machine_tool',items:[
+    {itemCode:'tool_suitability',itemKey:'problem.item_tool_suitability',tags:['tightening_tool']},
+    {itemCode:'tool_parameters',itemKey:'problem.item_tool_parameters',tags:['tightening_tool']},
+    {itemCode:'scheduled_maintenance',itemKey:'problem.item_scheduled_maintenance',tags:[]},
+  ]},
+  {categoryCode:'material_fastener',categoryKey:'problem.category_material_fastener',items:[
+    {itemCode:'thread_damage',itemKey:'problem.item_thread_damage',tags:['material']},
+    {itemCode:'thread_oil_rust',itemKey:'problem.item_thread_oil_rust',tags:['material']},
+    {itemCode:'friction_coefficient',itemKey:'problem.item_friction_coefficient',tags:[]},
+  ]},
+  {categoryCode:'human_operator',categoryKey:'problem.category_human_operator',items:[
+    {itemCode:'training_records',itemKey:'problem.item_training_records',tags:[]},
+    {itemCode:'new_operator',itemKey:'problem.item_new_operator',tags:[]},
+    {itemCode:'process_sequence',itemKey:'problem.item_process_sequence',tags:[]},
+  ]},
+  {categoryCode:'product_part',categoryKey:'problem.category_product_part',items:[
+    {itemCode:'part_design_conformance',itemKey:'problem.item_part_design_conformance',tags:[]},
+    {itemCode:'mating_surface_oil',itemKey:'problem.item_mating_surface_oil',tags:['material']},
+    {itemCode:'hole_dimensions',itemKey:'problem.item_hole_dimensions',tags:[]},
+  ]},
+];
+function buildISH(){
+  let h='';
+  ISH.forEach(cat=>{
+    h+=`<div style="margin-bottom:14px"><div style="font-size:13px;font-weight:600;color:var(--accent2);margin-bottom:6px">${t(cat.categoryKey)}</div>`;
+    cat.items.forEach(it=>{h+=`<label style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--surface2);border-radius:6px;cursor:pointer;font-size:13px;color:var(--text2);margin-bottom:3px"><input type="checkbox" style="accent-color:var(--accent)" data-item-code="${it.itemCode}" data-tags="${it.tags.join(',')}"> ${t(it.itemKey)}</label>`;});
+    h+='</div>';
+  });
+  document.getElementById('ishikawa-cats').innerHTML=h;
+}
+function ishLookupItem(code){for(const cat of ISH){const it=cat.items.find(x=>x.itemCode===code);if(it)return it;}return null;}
+
+// Called from setLanguage() only, and only if the Problem Management
+// page's Ishikawa checklist is present. Rebuilds the category/item
+// TEXT in the new language while preserving every checked itemCode
+// (stable, language-independent identifiers -- never the translated
+// label). The 5N1K form inputs (#p_ne etc.) live in a separate card
+// and are never touched by this rebuild, so they persist naturally.
+// If an analysis report is already showing, it is re-generated from
+// the same (now-restored) checked selection so it reflects the new
+// language too.
+function problemReapplyLanguage(){
+  const catsEl=document.getElementById('ishikawa-cats');
+  if(!catsEl)return;
+  const checkedCodes=[...document.querySelectorAll('#ishikawa-cats input:checked')].map(cb=>cb.dataset.itemCode);
+  buildISH();
+  if(checkedCodes.length){
+    const boxes=[...document.querySelectorAll('#ishikawa-cats input[type="checkbox"]')];
+    checkedCodes.forEach(code=>{
+      const cb=boxes.find(x=>x.dataset.itemCode===code);
+      if(cb)cb.checked=true;
+    });
+  }
+  const resultEl=document.getElementById('mudahale-sonuc');
+  if(resultEl&&resultEl.innerHTML.trim())problemAnaliz();
+}
+
 function problemAnaliz(){
   const ne=document.getElementById('p_ne').value||'—',nd=document.getElementById('p_nerede').value||'—',nz=document.getElementById('p_nezaman').value||'—',ki=document.getElementById('p_kim').value||'—';
-  const sec=[];document.querySelectorAll('#ishikawa-cats input:checked').forEach(cb=>sec.push(cb.parentElement.textContent.trim()));
-  const hM=sec.some(s=>s.includes('parametre')||s.includes('Tabanca')),hMa=sec.some(s=>s.includes('diş')||s.includes('yağ')),hS=sec.some(s=>s.includes('yetenek')||s.includes('Cm'));
-  document.getElementById('mudahale-sonuc').innerHTML=`<div class="card" style="margin-top:12px"><div class="card-title">Problem Analiz Raporu</div><div class="result-box" style="margin-bottom:12px"><div class="result-row"><span class="result-key">Problem</span><span class="result-val">${ne}</span></div><div class="result-row"><span class="result-key">Operasyon</span><span class="result-val">${nd}</span></div><div class="result-row"><span class="result-key">Tarih</span><span class="result-val">${nz}</span></div><div class="result-row"><span class="result-key">Sorumlu</span><span class="result-val">${ki}</span></div><div class="result-row"><span class="result-key">İşaretlenen Neden</span><span class="result-val warn">${sec.length} madde</span></div></div>${sec.length>0?`<div style="margin-bottom:12px">${sec.map(s=>`<div style="padding:5px 8px;background:rgba(239,68,68,.1);border-left:2px solid var(--danger);margin-bottom:4px;font-size:12px">${s}</div>`).join('')}</div>`:''}<div class="alert alert-warn">📋 Hatalı birimden önceki 5 birim kontrol edilsin.</div>${hM?'<div class="alert alert-danger">🔧 Sıkıcı kaynaklı: Cm/Cmk hesapla, gerekirse çıkar.</div>':''}${hMa?'<div class="alert alert-warn">🔩 Malzeme: Sürtünme katsayısı testi yap.</div>':''}${hS?'<div class="alert alert-info">📊 Kalibrasyon kontrol et, 5+5 tarama uygula.</div>':''}<div class="btn-group" style="margin-top:12px"><button class="btn btn-primary btn-sm">📄 Rapor</button><button class="btn btn-danger btn-sm">🚨 Düzeltici Faaliyet</button><button class="btn btn-secondary btn-sm">💾 Kaydet</button></div></div>`;
+  const secSel=[];document.querySelectorAll('#ishikawa-cats input:checked').forEach(cb=>{secSel.push({code:cb.dataset.itemCode,tags:(cb.dataset.tags||'').split(',').filter(Boolean)});});
+  const hM=secSel.some(s=>s.tags.includes('tightening_tool')),hMa=secSel.some(s=>s.tags.includes('material')),hS=secSel.some(s=>s.tags.includes('calibration'));
+  const secLabels=secSel.map(s=>{const it=ishLookupItem(s.code);return it?t(it.itemKey):s.code;});
+  document.getElementById('mudahale-sonuc').innerHTML=`<div class="card" style="margin-top:12px"><div class="card-title">${t('problem.report_title')}</div><div class="result-box" style="margin-bottom:12px"><div class="result-row"><span class="result-key">${t('problem.field_problem')}</span><span class="result-val">${ne}</span></div><div class="result-row"><span class="result-key">${t('problem.field_operation')}</span><span class="result-val">${nd}</span></div><div class="result-row"><span class="result-key">${t('problem.field_date')}</span><span class="result-val">${nz}</span></div><div class="result-row"><span class="result-key">${t('problem.field_responsible')}</span><span class="result-val">${ki}</span></div><div class="result-row"><span class="result-key">${t('problem.field_marked_causes')}</span><span class="result-val warn">${secSel.length} ${t('problem.item_count_suffix')}</span></div></div>${secSel.length>0?`<div style="margin-bottom:12px">${secLabels.map(s=>`<div style="padding:5px 8px;background:rgba(239,68,68,.1);border-left:2px solid var(--danger);margin-bottom:4px;font-size:12px">${s}</div>`).join('')}</div>`:''}<div class="alert alert-warn">📋 ${t('problem.sweep_rule')}</div>${hM?`<div class="alert alert-danger">🔧 ${t('problem.warning_tool')}</div>`:''}${hMa?`<div class="alert alert-warn">🔩 ${t('problem.warning_material')}</div>`:''}${hS?`<div class="alert alert-info">📊 ${t('problem.warning_calibration')}</div>`:''}<div class="btn-group" style="margin-top:12px"><button class="btn btn-primary btn-sm">📄 ${t('problem.btn_report')}</button><button class="btn btn-danger btn-sm">🚨 ${t('problem.btn_corrective_action')}</button><button class="btn btn-secondary btn-sm">💾 ${t('problem.btn_save')}</button></div></div>`;
 }
 
 // ========== FMEA ==========

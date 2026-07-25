@@ -78,7 +78,7 @@ const CONST_NAMES = [
   'I18N', 'FC_ENUM_LABELS', 'CURRENT_LANG',
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
   'N01391', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
-  'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS',
+  'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS', 'ISH',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -107,6 +107,7 @@ const FUNCTION_NAMES = [
   'libraryReapplyLanguage', 'confClass', 'captureCurrentCalculation',
   'translationValue', 'oemGetAll', 'oemSearch', 'oemRenderCard', 'oemFilter',
   'oemSecFilter', 'oemRenderList', 'oemInit', 'oemReapplyLanguage', 'buildFmea',
+  'buildISH', 'ishLookupItem', 'problemAnaliz', 'problemReapplyLanguage',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -169,6 +170,7 @@ function buildExtractedSource() {
   parts.push('function __getOemNormDb() { return OEM_NORM_DB; }');
   parts.push('function __getI18N() { return I18N; }');
   parts.push('function __getFmea() { return FMEA; }');
+  parts.push('function __getIsh() { return ISH; }');
   return { source: parts.join('\n\n'), rawHtml: html };
 }
 
@@ -210,6 +212,24 @@ function makeElement(id) {
         const sel = parsed.find((o) => o.attrs.selected !== undefined) || parsed[0];
         _value = sel.attrs.value !== undefined ? sel.attrs.value : sel.text;
       }
+      // Track any <input type="checkbox" data-item-code="..."> tags
+      // found in the rebuilt HTML as live checkbox-like objects, so
+      // container.querySelectorAll('input:checked' / 'input[type="checkbox"]')
+      // (see document.querySelectorAll below) can find them -- this
+      // mirrors real DOM behavior closely enough to test Ishikawa
+      // checkbox selection/restoration without a full DOM tree.
+      const inputTags = [...this._html.matchAll(/<input\b([^>]*)>/g)];
+      this._checkboxes = inputTags
+        .filter((m) => /type="checkbox"/.test(m[0]))
+        .map((m) => {
+          const attrs = parseTagAttrs(m[1]);
+          let checked = attrs.checked !== undefined;
+          return {
+            dataset: { itemCode: attrs['data-item-code'], tags: attrs['data-tags'] || '' },
+            get checked() { return checked; },
+            set checked(val) { checked = val; },
+          };
+        });
     },
     get innerHTML() { return this._html; },
     set placeholder(v) { this._placeholder = String(v); },
@@ -280,6 +300,12 @@ function buildDom(rawHtml, byId) {
       if (selector === '[data-i18n]') return dataI18nEls;
       if (selector === '[data-i18n-placeholder]') return placeholderEls;
       if (selector === '.lang-btn') return langBtns;
+      const scoped = /^#([\w-]+)\s+input(:checked|\[type="checkbox"\])?$/.exec(selector);
+      if (scoped) {
+        const container = this._byId[scoped[1]];
+        if (!container || !container._checkboxes) return [];
+        return scoped[2] === ':checked' ? container._checkboxes.filter((cb) => cb.checked) : container._checkboxes;
+      }
       return [];
     },
     querySelector() { return null; }, // no <meta name="torqpro-edition">; APP_EDITION defaults to 'full'
@@ -2141,6 +2167,249 @@ async function main() {
     const rec = ctx.context.captureCurrentCalculation();
     checkEqual('source_mode fallback is byte-identical to the legacy contract (closure re-check)', rec.source_mode, 'Formül fallback');
     check('family field is a readable string, not a bare technical ID (closure re-check)', typeof rec.family !== 'string' || !/^FAM-/.test(rec.family || ''));
+  }
+
+  // ================================================================
+  // Faz 2.7.3a -- Problem Management / Ishikawa.
+  // ================================================================
+  function setupProblemDom(ctx) {
+    for (const id of ['p_ne', 'p_nerede', 'p_nezaman', 'p_nasil', 'p_nekdar', 'p_kim', 'ishikawa-cats', 'mudahale-sonuc']) {
+      ctx.byId[id] = ctx.documentStub.getElementById(id);
+    }
+    ctx.context.buildISH();
+  }
+  function checkIshItems(ctx, codes) {
+    const boxes = ctx.byId['ishikawa-cats']._checkboxes;
+    codes.forEach((code) => { const cb = boxes.find((b) => b.dataset.itemCode === code); if (cb) cb.checked = true; });
+  }
+
+  // ---- 95. ISH category count preserved: 5 ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    checkEqual('ISH has 5 categories', ctx.context.__getIsh().length, 5);
+  }
+
+  // ---- 96. ISH item count preserved: 16 ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const total = ctx.context.__getIsh().reduce((n, c) => n + c.items.length, 0);
+    checkEqual('ISH has 16 items total', total, 16);
+  }
+
+  // ---- 97. Every category has categoryCode + categoryKey ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const ish = ctx.context.__getIsh();
+    check('every category has categoryCode', ish.every((c) => typeof c.categoryCode === 'string' && c.categoryCode.length > 0));
+    check('every category has categoryKey', ish.every((c) => typeof c.categoryKey === 'string' && c.categoryKey.length > 0));
+  }
+
+  // ---- 98. Every item has itemCode + itemKey + tags array ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const ish = ctx.context.__getIsh();
+    const allItems = ish.flatMap((c) => c.items);
+    check('every item has itemCode', allItems.every((it) => typeof it.itemCode === 'string' && it.itemCode.length > 0));
+    check('every item has itemKey', allItems.every((it) => typeof it.itemKey === 'string' && it.itemKey.length > 0));
+    check('every item has a tags array', allItems.every((it) => Array.isArray(it.tags)));
+  }
+
+  // ---- 99. itemCode values are unique across all 16 items ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const allCodes = ctx.context.__getIsh().flatMap((c) => c.items).map((it) => it.itemCode);
+    checkEqual('16 itemCodes, all unique', new Set(allCodes).size, allCodes.length);
+  }
+
+  // ---- 100. Visible checkbox textContent is not used as a decision
+  //           input (source-level check) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const paSrc = extractFunctionDecl(scriptSrc, 'problemAnaliz');
+    check('problemAnaliz() does not read cb.parentElement.textContent for classification', paSrc.indexOf('parentElement.textContent') === -1);
+    check('problemAnaliz() reads cb.dataset.itemCode / cb.dataset.tags instead', paSrc.indexOf('dataset.itemCode') !== -1 && paSrc.indexOf('dataset.tags') !== -1);
+  }
+
+  // ---- 101. Old Turkish-substring anti-patterns are gone ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    check("no sec.includes('diş')-style anti-pattern remains", scriptSrc.indexOf("includes('diş')") === -1);
+    check("no sec.includes('yağ')-style anti-pattern remains", scriptSrc.indexOf("includes('yağ')") === -1);
+    check("no sec.includes('parametre')-style anti-pattern remains", scriptSrc.indexOf("includes('parametre')") === -1);
+    check("no sec.includes('Tabanca')-style anti-pattern remains", scriptSrc.indexOf("includes('Tabanca')") === -1);
+    check("no sec.includes('yetenek')/('Cm')-style anti-pattern remains", scriptSrc.indexOf("includes('yetenek')") === -1);
+  }
+
+  // ---- 102. Old substring-rule <-> new tag mapping equivalence.
+  //           Derived from the ORIGINAL logic:
+  //             hM  = includes('parametre') || includes('Tabanca')  -> tool_suitability, tool_parameters
+  //             hMa = includes('diş') || includes('yağ')            -> thread_damage, thread_oil_rust, mating_surface_oil
+  //             hS  = includes('yetenek') || includes('Cm')          -> machine_capability
+  //           (mating_surface_oil is a deliberately-preserved
+  //           cross-category quirk: "yağ" also appears in the
+  //           Product/Part item's Turkish text, so the old substring
+  //           rule matched it too -- tagging it 'material' keeps the
+  //           exact same trigger set, not a "corrected" one.) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const allItems = ctx.context.__getIsh().flatMap((c) => c.items);
+    const byTag = (tag) => allItems.filter((it) => it.tags.includes(tag)).map((it) => it.itemCode).sort();
+    checkEqual('tightening_tool tag maps to exactly {tool_suitability, tool_parameters}',
+      JSON.stringify(byTag('tightening_tool')), JSON.stringify(['tool_parameters', 'tool_suitability'].sort()));
+    checkEqual('material tag maps to exactly {thread_damage, thread_oil_rust, mating_surface_oil}',
+      JSON.stringify(byTag('material')), JSON.stringify(['mating_surface_oil', 'thread_damage', 'thread_oil_rust'].sort()));
+    checkEqual('calibration tag maps to exactly {machine_capability}',
+      JSON.stringify(byTag('calibration')), JSON.stringify(['machine_capability']));
+  }
+
+  // ---- 103. Category names TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const expect = {
+      measurement_tools: ['Ölçme / Aletler', 'Measurement / Tools'],
+      machine_tool: ['Makine / Tabanca', 'Machine / Tool'],
+      material_fastener: ['Malzeme / Vida', 'Material / Fastener'],
+      human_operator: ['İnsan / Operatör', 'Human / Operator'],
+      product_part: ['Ürün / Parça', 'Product / Part'],
+    };
+    for (const [code, [tr]] of Object.entries(expect)) {
+      const cat = ctx.context.__getIsh().find((c) => c.categoryCode === code);
+      check('category exists for ' + code, !!cat);
+      checkEqual('category tr for ' + code, ctx.context.t(cat.categoryKey), tr);
+    }
+    ctx.context.setLanguage('en');
+    for (const [code, [, en]] of Object.entries(expect)) {
+      const cat = ctx.context.__getIsh().find((c) => c.categoryCode === code);
+      checkEqual('category en for ' + code, ctx.context.t(cat.categoryKey), en);
+    }
+  }
+
+  // ---- 104. All 16 items TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const allItems = ctx.context.__getIsh().flatMap((c) => c.items);
+    checkEqual('16 items total', allItems.length, 16);
+    let allTr = true, allEn = true;
+    allItems.forEach((it) => { if (ctx.context.t(it.itemKey) === it.itemKey) allTr = false; });
+    ctx.context.setLanguage('en');
+    allItems.forEach((it) => { if (ctx.context.t(it.itemKey) === it.itemKey) allEn = false; });
+    check('all 16 items resolve in tr', allTr);
+    check('all 16 items resolve in en', allEn);
+    checkEqual('sample item (thread_damage) tr', (function () { ctx.context.setLanguage('tr'); return ctx.context.t('problem.item_thread_damage'); })(), 'Vida dişleri hasarlı mı?');
+  }
+
+  // ---- 105. page-problem static UI TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titleEl = getByI18nKey(ctx, 'problem.title');
+    const whatPh = getPlaceholderByKey(ctx, 'problem.placeholder_what');
+    ctx.context.applyStaticTranslations();
+    checkEqual('problem page title tr', titleEl.textContent, 'Problem Tanımlama ve Kök Neden');
+    checkEqual('problem "what" placeholder tr', whatPh.placeholder, 'Tork limit dışı');
+    ctx.context.setLanguage('en');
+    checkEqual('problem page title en', titleEl.textContent, 'Problem Definition and Root Cause');
+    checkEqual('problem "what" placeholder en', whatPh.placeholder, 'Torque out of limits');
+  }
+
+  // ---- 106. problemAnaliz() dynamic report TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupProblemDom(ctx);
+    ctx.byId['p_ne'].value = 'Test problem';
+    ctx.context.problemAnaliz();
+    const htmlTr = ctx.byId['mudahale-sonuc'].innerHTML;
+    check('tr report shows "Problem Analiz Raporu"', htmlTr.indexOf('Problem Analiz Raporu') !== -1);
+    check('tr report shows "Operasyon" label', htmlTr.indexOf('Operasyon') !== -1);
+    ctx.context.setLanguage('en');
+    ctx.context.problemAnaliz();
+    const htmlEn = ctx.byId['mudahale-sonuc'].innerHTML;
+    check('en report shows "Problem Analysis Report"', htmlEn.indexOf('Problem Analysis Report') !== -1);
+    check('en report shows "Operation" label', htmlEn.indexOf('Operation') !== -1);
+  }
+
+  // ---- 107. Three conditional warnings TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupProblemDom(ctx);
+    checkIshItems(ctx, ['tool_parameters', 'thread_damage', 'machine_capability']);
+    ctx.context.problemAnaliz();
+    const htmlTr = ctx.byId['mudahale-sonuc'].innerHTML;
+    check('tr: tool warning shown', htmlTr.indexOf('Sıkıcı kaynaklı') !== -1);
+    check('tr: material warning shown', htmlTr.indexOf('Malzeme: Sürtünme') !== -1);
+    check('tr: calibration warning shown', htmlTr.indexOf('Kalibrasyon kontrol et') !== -1);
+    ctx.context.setLanguage('en');
+    ctx.context.problemAnaliz();
+    const htmlEn = ctx.byId['mudahale-sonuc'].innerHTML;
+    check('en: tool warning shown', htmlEn.indexOf('Tool-related') !== -1);
+    check('en: material warning shown', htmlEn.indexOf('Material: run') !== -1);
+    check('en: calibration warning shown', htmlEn.indexOf('Check calibration') !== -1);
+  }
+
+  // ---- 108. Marked-cause labels render in the active language ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupProblemDom(ctx);
+    checkIshItems(ctx, ['thread_damage']);
+    ctx.context.problemAnaliz();
+    check('tr: marked-cause list shows the tr item label', ctx.byId['mudahale-sonuc'].innerHTML.indexOf('Vida dişleri hasarlı mı?') !== -1);
+    ctx.context.setLanguage('en');
+    ctx.context.problemAnaliz();
+    check('en: marked-cause list shows the en item label', ctx.byId['mudahale-sonuc'].innerHTML.indexOf('Are the screw threads damaged?') !== -1);
+  }
+
+  // ---- 109. Language switch: itemCode selection, form inputs, and
+  //           classification are all preserved; only text changes ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupProblemDom(ctx);
+    ctx.byId['p_ne'].value = 'Torque deviation';
+    ctx.byId['p_nerede'].value = 'Line 3';
+    checkIshItems(ctx, ['tool_suitability', 'mating_surface_oil']);
+    ctx.context.setLanguage('en');
+    const boxesAfter = ctx.byId['ishikawa-cats']._checkboxes;
+    const checkedAfter = boxesAfter.filter((b) => b.checked).map((b) => b.dataset.itemCode).sort();
+    checkEqual('checked itemCode set unchanged after language switch', JSON.stringify(checkedAfter), JSON.stringify(['mating_surface_oil', 'tool_suitability'].sort()));
+    checkEqual('p_ne form input unchanged after language switch', ctx.byId['p_ne'].value, 'Torque deviation');
+    checkEqual('p_nerede form input unchanged after language switch', ctx.byId['p_nerede'].value, 'Line 3');
+    ctx.context.problemAnaliz();
+    const html = ctx.byId['mudahale-sonuc'].innerHTML;
+    check('classification unaffected: tool warning still triggers (tool_suitability tagged tightening_tool)', html.indexOf('Tool-related') !== -1);
+    check('classification unaffected: material warning still triggers (mating_surface_oil tagged material)', html.indexOf('Material: run') !== -1);
+    check('classification unaffected: calibration warning does NOT trigger (nothing tagged calibration)', html.indexOf('Check calibration') === -1);
+  }
+
+  // ---- 110. No raw translation-key leakage in Problem Management
+  //           dynamic HTML ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    setupProblemDom(ctx);
+    checkIshItems(ctx, ['machine_capability']);
+    ctx.context.problemAnaliz();
+    const htmlTr = ctx.byId['ishikawa-cats'].innerHTML + ctx.byId['mudahale-sonuc'].innerHTML;
+    check('no raw "problem.xxx" key text leaks into tr rendering', !/problem\.[a-z_.0-9]+(?![\w])/.test(htmlTr.replace(/<[^>]*>/g, ' ')));
+    ctx.context.setLanguage('en');
+    ctx.context.problemReapplyLanguage();
+    const htmlEn = ctx.byId['ishikawa-cats'].innerHTML + ctx.byId['mudahale-sonuc'].innerHTML;
+    check('no raw "problem.xxx" key text leaks into en rendering', !/problem\.[a-z_.0-9]+(?![\w])/.test(htmlEn.replace(/<[^>]*>/g, ' ')));
+  }
+
+  // ---- 111. Hard-coded user text scan (Problem Management scope) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const turkishCharRe = /[şğüöçİĞÜŞÖÇı]/;
+    for (const fn of ['buildISH', 'problemAnaliz', 'problemReapplyLanguage', 'ishLookupItem']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      const strs = [...src.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]).filter((s) => turkishCharRe.test(s));
+      check('no hard-coded Turkish string literals remain in ' + fn + '()', strs.length === 0);
+    }
+  }
+
+  // ---- 112. Language-dependent decision anti-pattern scan (closure) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const problemSrc = scriptSrc.slice(scriptSrc.indexOf('const ISH='), scriptSrc.indexOf('function problemAnaliz') + 2000);
+    check('no visible-label-keyed classification object in Problem Management scope',
+      !/\.includes\('[şğüöçİĞÜŞÖÇıA-ZÇĞİÖŞÜ][^']*'\)/.test(problemSrc.replace(/tags\.includes\('[a-z_]+'\)/g, '')));
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
