@@ -930,12 +930,12 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 
 <!-- RAPOR -->
 <div id="page-rapor" class="page">
-  <div class="section-header"><span class="section-icon">📄</span><div><div class="section-title">Rapor Merkezi</div><div class="section-sub">PDF · Excel · VDI 2230 · Operatör Özet</div></div></div>
+  <div class="section-header"><span class="section-icon">📄</span><div><div class="section-title" data-i18n="rapor.center_title">Rapor Merkezi</div><div class="section-sub" data-i18n="rapor.center_subtitle">PDF · Excel · VDI 2230 · Operatör Özet</div></div></div>
   <div class="grid2">
-    <div class="card"><div style="font-size:32px;margin-bottom:12px">📋</div><div class="card-title">Operatör Özet</div><div class="card-sub">Tek sayfa · Hedef tork · GEÇTİ/KALDI</div><button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="printCurrentReport()">Raporu Yazdır / PDF</button></div>
-    <div class="card"><div style="font-size:32px;margin-bottom:12px">🔬</div><div class="card-title">VDI 2230 Resmi Raporu</div><div class="card-sub">R1–R13 adımlar · Formüller</div><button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="printCurrentReport()">VDI Ön Raporu Yazdır</button></div>
-    <div class="card"><div style="font-size:32px;margin-bottom:12px">📊</div><div class="card-title">SPC Yetenek Raporu</div><div class="card-sub">Cp/Cpk · Histogram · Haftalık</div><button class="btn btn-secondary" style="width:100%;margin-top:16px" onclick="exportArchiveCSV()">CSV Dışa Aktar</button></div>
-    <div class="card"><div style="font-size:32px;margin-bottom:12px">🔧</div><div class="card-title">Tork Müdahale Çizelgesi</div><div class="card-sub">Tolerans dışı kayıtlar · 15 yıl arşiv</div><button class="btn btn-secondary" style="width:100%;margin-top:16px" onclick="exportArchiveJSON()">JSON Dışa Aktar</button></div>
+    <div class="card"><div style="font-size:32px;margin-bottom:12px">📋</div><div class="card-title" data-i18n="rapor.operator_summary_title">Operatör Özet</div><div class="card-sub" data-i18n="rapor.operator_summary_sub">Tek sayfa · Hedef tork · GEÇTİ/KALDI</div><button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="printCurrentReport()" data-i18n="rapor.print_report_btn">Raporu Yazdır / PDF</button></div>
+    <div class="card"><div style="font-size:32px;margin-bottom:12px">🔬</div><div class="card-title" data-i18n="rapor.vdi_report_title">VDI 2230 Resmi Raporu</div><div class="card-sub" data-i18n="rapor.vdi_report_sub">R1–R13 adımlar · Formüller</div><button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="printCurrentReport()" data-i18n="rapor.print_vdi_btn">VDI Ön Raporu Yazdır</button></div>
+    <div class="card"><div style="font-size:32px;margin-bottom:12px">📊</div><div class="card-title" data-i18n="rapor.spc_report_title">SPC Yetenek Raporu</div><div class="card-sub" data-i18n="rapor.spc_report_sub">Cp/Cpk · Histogram · Haftalık</div><button class="btn btn-secondary" style="width:100%;margin-top:16px" onclick="exportArchiveCSV()" data-i18n="rapor.export_csv_btn">CSV Dışa Aktar</button></div>
+    <div class="card"><div style="font-size:32px;margin-bottom:12px">🔧</div><div class="card-title" data-i18n="rapor.intervention_chart_title">Tork Müdahale Çizelgesi</div><div class="card-sub" data-i18n="rapor.intervention_chart_sub">Tolerans dışı kayıtlar · 15 yıl arşiv</div><button class="btn btn-secondary" style="width:100%;margin-top:16px" onclick="exportArchiveJSON()" data-i18n="rapor.export_json_btn">JSON Dışa Aktar</button></div>
   </div>
 </div>
 
@@ -2256,6 +2256,69 @@ const I18N = {
     'golden.refresh_btn': 'Refresh',
     'golden.no_records_yet': 'No golden scenarios yet.',
 
+    // ---- Faz 2.7.4a: Report Center, printable report, release package/certificate ----
+    'rapor.center_title': 'Report Center',
+    'rapor.center_subtitle': 'PDF · Excel · VDI 2230 · Operator Summary',
+    'rapor.operator_summary_title': 'Operator Summary',
+    'rapor.operator_summary_sub': 'Single page · Target torque · PASSED/FAILED',
+    'rapor.print_report_btn': 'Print Report / PDF',
+    'rapor.vdi_report_title': 'VDI 2230 Official Report',
+    'rapor.vdi_report_sub': 'R1-R13 steps · Formulas',
+    'rapor.print_vdi_btn': 'Print VDI Preliminary Report',
+    'rapor.spc_report_title': 'SPC Capability Report',
+    'rapor.spc_report_sub': 'Cp/Cpk · Histogram · Weekly',
+    'rapor.export_csv_btn': 'Export CSV',
+    'rapor.intervention_chart_title': 'Torque Intervention Chart',
+    'rapor.intervention_chart_sub': 'Out-of-tolerance records · 15-year archive',
+    'rapor.export_json_btn': 'Export JSON',
+    'rapor.report_heading': 'TorqPro Engineering Preliminary Assessment Report',
+    'rapor.record_label': 'Record',
+    'rapor.temporary': 'Temporary',
+    'rapor.date_label': 'Date',
+    'rapor.user_label': 'User',
+    'rapor.product_family_label': 'Product Family',
+    'rapor.standard_thread_label': 'Standard / Thread',
+    'rapor.property_class_label': 'Property Class',
+    'rapor.total_torque_label': 'Total Torque',
+    'rapor.preload_label': 'Preload',
+    'rapor.confidence_label': 'Confidence',
+    'rapor.warning_label': 'Warning',
+    'rapor.preliminary_assessment_note': 'This output is an engineering preliminary assessment.',
+    'rapor.calculate_first_warning': 'Please calculate first.',
+
+    'release.select_project_warning': 'Select a project.',
+    'release.project_label': 'Project',
+    'release.customer_label': 'Customer',
+    'release.code_label': 'Code',
+    'release.package_no_label': 'Package No.',
+    'release.date_label': 'Date',
+    'release.total_calculations_label': 'Total Calculations',
+    'release.approved_revisions_label': 'Approved Revisions',
+    'release.open_revisions_label': 'Open Revisions',
+    'release.decision_label': 'Release Decision',
+    'release.ready': 'READY',
+    'release.not_ready': 'NOT READY',
+    'release.th_calculation': 'Calculation',
+    'release.th_thread': 'Thread',
+    'release.th_class': 'Class',
+    'release.th_torque': 'Torque',
+    'release.th_revision': 'Revision',
+    'release.th_status': 'Status',
+    'release.th_data_version': 'Data Version',
+    'release.th_approver': 'Approver',
+    'release.decision_prefix': 'Decision',
+    'release.create_package_first_warning': 'Please create a package first.',
+
+    'cert.title': 'TorqPro Release Approval Certificate',
+    'cert.certificate_no_label': 'Certificate No.',
+    'cert.created_label': 'Created',
+    'cert.data_version_signature_label': 'Data Version Signature',
+    'cert.none': 'None',
+    'cert.quality_gate_label': 'Quality Gate',
+    'cert.golden_cases_label': 'Golden Cases',
+    'cert.production_readiness_label': 'Production Readiness',
+    'cert.decision_label': 'Decision',
+
     'fmea.title': 'FMEA Failure Catalog',
     'fmea.subtitle': 'Failures and solutions compiled from serial production experience',
     'fmea.cause_label': 'Cause',
@@ -2993,6 +3056,69 @@ const I18N = {
     'golden.records_title': 'Altın Senaryolar',
     'golden.refresh_btn': 'Yenile',
     'golden.no_records_yet': 'Henüz altın senaryo yok.',
+
+    // ---- Faz 2.7.4a: Rapor Merkezi, yazdırılabilir rapor, release paket/sertifika ----
+    'rapor.center_title': 'Rapor Merkezi',
+    'rapor.center_subtitle': 'PDF · Excel · VDI 2230 · Operatör Özet',
+    'rapor.operator_summary_title': 'Operatör Özet',
+    'rapor.operator_summary_sub': 'Tek sayfa · Hedef tork · GEÇTİ/KALDI',
+    'rapor.print_report_btn': 'Raporu Yazdır / PDF',
+    'rapor.vdi_report_title': 'VDI 2230 Resmi Raporu',
+    'rapor.vdi_report_sub': 'R1–R13 adımlar · Formüller',
+    'rapor.print_vdi_btn': 'VDI Ön Raporu Yazdır',
+    'rapor.spc_report_title': 'SPC Yetenek Raporu',
+    'rapor.spc_report_sub': 'Cp/Cpk · Histogram · Haftalık',
+    'rapor.export_csv_btn': 'CSV Dışa Aktar',
+    'rapor.intervention_chart_title': 'Tork Müdahale Çizelgesi',
+    'rapor.intervention_chart_sub': 'Tolerans dışı kayıtlar · 15 yıl arşiv',
+    'rapor.export_json_btn': 'JSON Dışa Aktar',
+    'rapor.report_heading': 'TorqPro Mühendislik Ön Değerlendirme Raporu',
+    'rapor.record_label': 'Kayıt',
+    'rapor.temporary': 'Geçici',
+    'rapor.date_label': 'Tarih',
+    'rapor.user_label': 'Kullanıcı',
+    'rapor.product_family_label': 'Ürün Ailesi',
+    'rapor.standard_thread_label': 'Standart / Diş',
+    'rapor.property_class_label': 'Dayanım Sınıfı',
+    'rapor.total_torque_label': 'Toplam Tork',
+    'rapor.preload_label': 'Ön Yük',
+    'rapor.confidence_label': 'Güven',
+    'rapor.warning_label': 'Uyarı',
+    'rapor.preliminary_assessment_note': 'Bu çıktı mühendislik ön değerlendirmesidir.',
+    'rapor.calculate_first_warning': 'Önce hesap yapın.',
+
+    'release.select_project_warning': 'Proje seçin.',
+    'release.project_label': 'Proje',
+    'release.customer_label': 'Müşteri',
+    'release.code_label': 'Kod',
+    'release.package_no_label': 'Paket No',
+    'release.date_label': 'Tarih',
+    'release.total_calculations_label': 'Toplam Hesap',
+    'release.approved_revisions_label': 'Onaylı Revizyon',
+    'release.open_revisions_label': 'Açık Revizyon',
+    'release.decision_label': 'Release Kararı',
+    'release.ready': 'HAZIR',
+    'release.not_ready': 'HAZIR DEĞİL',
+    'release.th_calculation': 'Hesap',
+    'release.th_thread': 'Diş',
+    'release.th_class': 'Sınıf',
+    'release.th_torque': 'Tork',
+    'release.th_revision': 'Revizyon',
+    'release.th_status': 'Durum',
+    'release.th_data_version': 'Veri Sürümü',
+    'release.th_approver': 'Onaylayan',
+    'release.decision_prefix': 'Karar',
+    'release.create_package_first_warning': 'Önce paket oluşturun.',
+
+    'cert.title': 'TorqPro Sürüm Onay Sertifikası',
+    'cert.certificate_no_label': 'Sertifika No',
+    'cert.created_label': 'Oluşturma',
+    'cert.data_version_signature_label': 'Veri Sürüm İmzası',
+    'cert.none': 'Yok',
+    'cert.quality_gate_label': 'Kalite Kapısı',
+    'cert.golden_cases_label': 'Altın Senaryolar',
+    'cert.production_readiness_label': 'Üretim Hazırlığı',
+    'cert.decision_label': 'Karar',
 
     'fmea.title': 'FMEA Hata Kataloğu',
     'fmea.subtitle': 'Seri üretim deneyiminden derlenen hatalar ve çözümler',
@@ -4640,9 +4766,15 @@ async function clearArchive(){if(!confirm('Kendi tüm kayıtlarınız silinsin m
 function downloadText(filename,text,type){const b=new Blob([text],{type:type||'text/plain;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=filename;a.click();URL.revokeObjectURL(a.href);}
 async function exportArchiveCSV(){const r=await fetch('/api/calculations/export.csv',{headers:{Authorization:'Bearer '+AUTH_TOKEN}});if(!r.ok){alert('CSV üretilemedi');return;}const b=await r.blob(),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='TorqPro_Arsiv.csv';a.click();URL.revokeObjectURL(a.href);}
 async function exportArchiveJSON(){const rows=await apiRequest('/api/calculations');downloadText('TorqPro_Arsiv.json',JSON.stringify(rows,null,2),'application/json');}
-function reportHtml(r){return `<div class="report-sheet"><h1>TorqPro Mühendislik Ön Değerlendirme Raporu</h1><p><strong>Kayıt:</strong> ${r.record_no||'Geçici'} &nbsp; <strong>Tarih:</strong> ${new Date(r.created_at||Date.now()).toLocaleString('tr-TR')}</p><p><strong>Kullanıcı:</strong> ${CURRENT_USER||'Protype Lab'}</p><hr><div class="report-grid"><div class="report-item"><div class="report-label">Ürün Ailesi</div><div class="report-value">${r.family||'—'}</div></div><div class="report-item"><div class="report-label">Standart / Diş</div><div class="report-value">${r.standard||'—'} / ${r.thread||'—'}</div></div><div class="report-item"><div class="report-label">Dayanım Sınıfı</div><div class="report-value">${r.property_class||'—'}</div></div><div class="report-item"><div class="report-label">Toplam Tork</div><div class="report-value">${r.torque_nm!=null?Number(r.torque_nm).toFixed(1)+' Nm':'—'}</div></div><div class="report-item"><div class="report-label">Ön Yük</div><div class="report-value">${r.preload_n!=null?Math.round(r.preload_n).toLocaleString('tr-TR')+' N':'—'}</div></div><div class="report-item"><div class="report-label">Güven</div><div class="report-value">${r.confidence!=null?'G'+r.confidence:'—'}</div></div></div><hr><p><strong>Uyarı:</strong> Bu çıktı mühendislik ön değerlendirmesidir.</p></div>`;}
-function printCurrentReport(){const r=captureCurrentCalculation();if(r.torque_nm==null){alert('Önce hesap yapın.');return;}const p=document.getElementById('printArea');p.innerHTML=reportHtml(r);p.style.display='block';window.print();setTimeout(()=>p.style.display='none',500);}
+// Controlled locale helper for printable reports: the report is
+// formatted in whatever language is active at generation/print time
+// (no separate report-language selector this phase). Persisted
+// numeric values are never altered -- only their display formatting.
+function reportLocale(){return CURRENT_LANG==='en'?'en-US':'tr-TR';}
+function reportHtml(r){return `<div class="report-sheet"><h1>${t('rapor.report_heading')}</h1><p><strong>${t('rapor.record_label')}:</strong> ${r.record_no||t('rapor.temporary')} &nbsp; <strong>${t('rapor.date_label')}:</strong> ${new Date(r.created_at||Date.now()).toLocaleString(reportLocale())}</p><p><strong>${t('rapor.user_label')}:</strong> ${CURRENT_USER||'Protype Lab'}</p><hr><div class="report-grid"><div class="report-item"><div class="report-label">${t('rapor.product_family_label')}</div><div class="report-value">${r.family||'—'}</div></div><div class="report-item"><div class="report-label">${t('rapor.standard_thread_label')}</div><div class="report-value">${r.standard||'—'} / ${r.thread||'—'}</div></div><div class="report-item"><div class="report-label">${t('rapor.property_class_label')}</div><div class="report-value">${r.property_class||'—'}</div></div><div class="report-item"><div class="report-label">${t('rapor.total_torque_label')}</div><div class="report-value">${r.torque_nm!=null?Number(r.torque_nm).toFixed(1)+' Nm':'—'}</div></div><div class="report-item"><div class="report-label">${t('rapor.preload_label')}</div><div class="report-value">${r.preload_n!=null?Math.round(r.preload_n).toLocaleString(reportLocale())+' N':'—'}</div></div><div class="report-item"><div class="report-label">${t('rapor.confidence_label')}</div><div class="report-value">${r.confidence!=null?'G'+r.confidence:'—'}</div></div></div><hr><p><strong>${t('rapor.warning_label')}:</strong> ${t('rapor.preliminary_assessment_note')}</p></div>`;}
+function printCurrentReport(){const r=captureCurrentCalculation();if(r.torque_nm==null){alert(t('rapor.calculate_first_warning'));return;}const p=document.getElementById('printArea');p.innerHTML=reportHtml(r);p.style.display='block';window.print();setTimeout(()=>p.style.display='none',500);}
 function printRecord(id){const r=ARCHIVE_CACHE.find(x=>x.id===id);if(!r)return;const p=document.getElementById('printArea');p.innerHTML=reportHtml(r);p.style.display='block';window.print();setTimeout(()=>p.style.display='none',500);}
+
 
 
 // ========== YÖNETİCİ VE YETKİ İŞLEMLERİ ==========
@@ -4924,14 +5056,14 @@ async function generateReleaseCertificate(){
   try{
     const c=await apiRequest('/api/admin/release-certificate',{method:'POST'});
     document.getElementById('releaseCertificate').innerHTML=`
-      <div class="cert-title">TorqPro Sürüm Onay Sertifikası</div>
-      <div><strong>Sertifika No:</strong> ${c.certificate_no}</div>
-      <div><strong>Oluşturma:</strong> ${new Date(c.created_at).toLocaleString('tr-TR')}</div>
-      <div><strong>Veri Sürüm İmzası:</strong> ${c.version_signature||'Yok'}</div>
-      <div><strong>Kalite Kapısı:</strong> ${c.quality_gate_passed?'GEÇTİ':'KALDI'}</div>
-      <div><strong>Altın Senaryolar:</strong> ${c.golden_passed}/${c.golden_total}</div>
-      <div><strong>Üretim Hazırlığı:</strong> ${c.production_ready?'HAZIR':'HAZIR DEĞİL'}</div>
-      <div><strong>Karar:</strong> ${c.decision}</div>`;
+      <div class="cert-title">${t('cert.title')}</div>
+      <div><strong>${t('cert.certificate_no_label')}:</strong> ${c.certificate_no}</div>
+      <div><strong>${t('cert.created_label')}:</strong> ${new Date(c.created_at).toLocaleString(reportLocale())}</div>
+      <div><strong>${t('cert.data_version_signature_label')}:</strong> ${c.version_signature||t('cert.none')}</div>
+      <div><strong>${t('cert.quality_gate_label')}:</strong> ${c.quality_gate_passed?t('calibration.status_passed'):t('calibration.status_failed')}</div>
+      <div><strong>${t('cert.golden_cases_label')}:</strong> ${c.golden_passed}/${c.golden_total}</div>
+      <div><strong>${t('cert.production_readiness_label')}:</strong> ${c.production_ready?t('release.ready'):t('release.not_ready')}</div>
+      <div><strong>${t('cert.decision_label')}:</strong> ${c.decision}</div>`;
   }catch(e){alert(e.message);}
 }
 function printReleaseCertificate(){
@@ -4963,27 +5095,27 @@ async function populateReleaseProjects(){
 }
 async function generateProjectRelease(){
   const id=parseInt(document.getElementById('release_project').value);
-  if(!id){alert('Proje seçin.');return;}
+  if(!id){alert(t('release.select_project_warning'));return;}
   const title=document.getElementById('release_title').value.trim();
   CURRENT_RELEASE_PACKAGE=await apiRequest('/api/projects/'+id+'/release-package?title='+encodeURIComponent(title));
   const p=CURRENT_RELEASE_PACKAGE;
   document.getElementById('releasePackageView').innerHTML=`
-    <div class="release-header"><h2>${ORG_SETTINGS.report_title||p.title}</h2><div><strong>${ORG_SETTINGS.name||''}</strong></div><div><strong>Proje:</strong> ${p.project.name} · <strong>Müşteri:</strong> ${p.project.customer||'—'} · <strong>Kod:</strong> ${p.project.project_code||'—'}</div><div><strong>Paket No:</strong> ${p.package_no} · <strong>Tarih:</strong> ${new Date(p.created_at).toLocaleString('tr-TR')}</div></div>
+    <div class="release-header"><h2>${ORG_SETTINGS.report_title||p.title}</h2><div><strong>${ORG_SETTINGS.name||''}</strong></div><div><strong>${t('release.project_label')}:</strong> ${p.project.name} · <strong>${t('release.customer_label')}:</strong> ${p.project.customer||'—'} · <strong>${t('release.code_label')}:</strong> ${p.project.project_code||'—'}</div><div><strong>${t('release.package_no_label')}:</strong> ${p.package_no} · <strong>${t('release.date_label')}:</strong> ${new Date(p.created_at).toLocaleString(reportLocale())}</div></div>
     <div class="release-summary">
-      <div class="release-card"><div class="stat-label">Toplam Hesap</div><div class="stat-val blue">${p.summary.total_calculations}</div></div>
-      <div class="release-card"><div class="stat-label">Onaylı Revizyon</div><div class="stat-val green">${p.summary.approved_revisions}</div></div>
-      <div class="release-card"><div class="stat-label">Açık Revizyon</div><div class="stat-val yellow">${p.summary.open_revisions}</div></div>
-      <div class="release-card"><div class="stat-label">Release Kararı</div><div class="stat-val ${p.summary.release_ready?'green':'red'}">${p.summary.release_ready?'HAZIR':'HAZIR DEĞİL'}</div></div>
+      <div class="release-card"><div class="stat-label">${t('release.total_calculations_label')}</div><div class="stat-val blue">${p.summary.total_calculations}</div></div>
+      <div class="release-card"><div class="stat-label">${t('release.approved_revisions_label')}</div><div class="stat-val green">${p.summary.approved_revisions}</div></div>
+      <div class="release-card"><div class="stat-label">${t('release.open_revisions_label')}</div><div class="stat-val yellow">${p.summary.open_revisions}</div></div>
+      <div class="release-card"><div class="stat-label">${t('release.decision_label')}</div><div class="stat-val ${p.summary.release_ready?'green':'red'}">${p.summary.release_ready?t('release.ready'):t('release.not_ready')}</div></div>
     </div>
-    <table class="trace-table"><thead><tr><th>Hesap</th><th>Diş</th><th>Sınıf</th><th>Tork</th><th>Revizyon</th><th>Durum</th><th>Veri Sürümü</th><th>Onaylayan</th></tr></thead><tbody>
+    <table class="trace-table"><thead><tr><th>${t('release.th_calculation')}</th><th>${t('release.th_thread')}</th><th>${t('release.th_class')}</th><th>${t('release.th_torque')}</th><th>${t('release.th_revision')}</th><th>${t('release.th_status')}</th><th>${t('release.th_data_version')}</th><th>${t('release.th_approver')}</th></tr></thead><tbody>
       ${p.items.map(x=>`<tr><td>${x.record_no}</td><td>${x.thread||'—'}</td><td>${x.property_class||'—'}</td><td>${x.torque_nm??'—'} Nm</td><td>${x.revision_no!=null?'R'+x.revision_no:'—'}</td><td>${x.revision_status||'—'}</td><td>${x.version_signature||'—'}</td><td>${x.reviewer_name||'—'}</td></tr>`).join('')}
     </tbody></table>
-    <div class="alert ${p.summary.release_ready?'alert-success':'alert-warn'}"><strong>Karar:</strong> ${p.decision}</div>`;
+    <div class="alert ${p.summary.release_ready?'alert-success':'alert-warn'}"><strong>${t('release.decision_prefix')}:</strong> ${p.decision}</div>`;
 }
-function printProjectRelease(){if(!CURRENT_RELEASE_PACKAGE){alert('Önce paket oluşturun.');return;}const w=window.open('','_blank');w.document.write('<html><body>'+document.getElementById('releasePackageView').innerHTML+'</body></html>');w.document.close();w.print();}
+function printProjectRelease(){if(!CURRENT_RELEASE_PACKAGE){alert(t('release.create_package_first_warning'));return;}const w=window.open('','_blank');w.document.write('<html><body>'+document.getElementById('releasePackageView').innerHTML+'</body></html>');w.document.close();w.print();}
 function downloadBlob(text,name,type){const b=new Blob([text],{type}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();URL.revokeObjectURL(a.href);}
-function downloadReleaseJson(){if(!CURRENT_RELEASE_PACKAGE){alert('Önce paket oluşturun.');return;}downloadBlob(JSON.stringify(CURRENT_RELEASE_PACKAGE,null,2),CURRENT_RELEASE_PACKAGE.package_no+'.json','application/json');}
-function downloadReleaseCsv(){if(!CURRENT_RELEASE_PACKAGE){alert('Önce paket oluşturun.');return;}const h=['record_no','thread','property_class','torque_nm','revision_no','revision_status','version_signature','reviewer_name'];const rows=[h.join(';'),...CURRENT_RELEASE_PACKAGE.items.map(x=>h.map(k=>String(x[k]??'').replace(/;/g,',')).join(';'))];downloadBlob('\ufeff'+rows.join('\n'),CURRENT_RELEASE_PACKAGE.package_no+'.csv','text/csv');}
+function downloadReleaseJson(){if(!CURRENT_RELEASE_PACKAGE){alert(t('release.create_package_first_warning'));return;}downloadBlob(JSON.stringify(CURRENT_RELEASE_PACKAGE,null,2),CURRENT_RELEASE_PACKAGE.package_no+'.json','application/json');}
+function downloadReleaseCsv(){if(!CURRENT_RELEASE_PACKAGE){alert(t('release.create_package_first_warning'));return;}const h=['record_no','thread','property_class','torque_nm','revision_no','revision_status','version_signature','reviewer_name'];const rows=[h.join(';'),...CURRENT_RELEASE_PACKAGE.items.map(x=>h.map(k=>String(x[k]??'').replace(/;/g,',')).join(';'))];downloadBlob('\ufeff'+rows.join('\n'),CURRENT_RELEASE_PACKAGE.package_no+'.csv','text/csv');}
 
 async function loadTraceability(){
   const id=parseInt(document.getElementById('trace_project').value);

@@ -79,6 +79,7 @@ const CONST_NAMES = [
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
   'N01391', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
   'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS', 'ISH', 'CURRENT_ROLE',
+  'CURRENT_USER', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -92,7 +93,7 @@ const CONST_NAMES = [
 // external assignment and internal closures observe the same
 // binding, which is required to test "language switch re-renders
 // already-loaded content" realistically.
-const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT', 'ACTIVE_STANDARD_LIBRARY', 'CURRENT_ROLE'];
+const MUTABLE_STATE_NAMES = ['FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT', 'ACTIVE_STANDARD_LIBRARY', 'CURRENT_ROLE', 'LAST_CALCULATION', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS'];
 const FUNCTION_NAMES = [
   't', 'fcLabel', 'applyStaticTranslations', 'setLanguage',
   'fcEsc', 'fcEscRaw', 'fcFmtNum', 'fcFmtLabel', 'fcCountLabel',
@@ -109,6 +110,8 @@ const FUNCTION_NAMES = [
   'oemSecFilter', 'oemRenderList', 'oemInit', 'oemReapplyLanguage', 'buildFmea',
   'buildISH', 'ishLookupItem', 'problemAnaliz', 'problemReapplyLanguage',
   'saveGoldenCase', 'loadGoldenCases',
+  'reportLocale', 'reportHtml', 'printCurrentReport', 'printRecord',
+  'generateProjectRelease', 'printProjectRelease', 'generateReleaseCertificate', 'printReleaseCertificate',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -339,19 +342,25 @@ function newContext(extractedSource, rawHtml, localStorageSeed, apiRequestImpl) 
   const localStorageStub = makeLocalStorage(localStorageSeed);
   const documentStub = buildDom(rawHtml, byId);
   const alertCalls = [];
+  const windowCalls = [];
   const sandbox = {
     document: documentStub,
     localStorage: localStorageStub,
     sessionStorage: makeLocalStorage({}),
     console: console,
     alert: (msg) => { alertCalls.push(msg); },
+    setTimeout: (fn) => { fn(); },
+    window: {
+      print: () => { windowCalls.push('print'); },
+      open: () => { windowCalls.push('open'); return { document: { write: () => {}, close: () => {} }, print: () => { windowCalls.push('popup-print'); } }; },
+    },
     hesapla: () => {}, // library cascade functions call hesapla() as a side-effect; stubbed no-op here since this harness tests i18n/data-model behavior, not the calculation engine
     apiRequest: apiRequestImpl || (() => { throw new Error('apiRequest should not be called by this harness'); }),
     downloadText: () => { throw new Error('downloadText should not be called by this harness'); },
   };
   const context = vm.createContext(sandbox);
   vm.runInContext(extractedSource, context, { filename: 'fc_i18n_extracted.js' });
-  return { context, byId, localStorageStub, documentStub, alertCalls };
+  return { context, byId, localStorageStub, documentStub, alertCalls, windowCalls };
 }
 
 function getByI18nKey(ctx, key) {
@@ -2684,6 +2693,260 @@ async function main() {
     ctx.context.setLanguage('en');
     checkEqual('closure: no POST triggered by language switch', postCalled, false);
     check('closure: failed record still shows nok class', ctx.byId['goldenCaseRows'].innerHTML.indexOf('badge-prod nok') !== -1);
+  }
+
+  // ================================================================
+  // Faz 2.7.4a -- Report Center + printable report templates
+  // (reportHtml/printCurrentReport/printRecord/generateProjectRelease/
+  // printProjectRelease/generateReleaseCertificate/
+  // printReleaseCertificate).
+  // ================================================================
+
+  // ---- 131. page-rapor static UI TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titleEl = getByI18nKey(ctx, 'rapor.center_title');
+    const printBtnEl = getByI18nKey(ctx, 'rapor.print_report_btn');
+    ctx.context.applyStaticTranslations();
+    checkEqual('report center title tr', titleEl.textContent, 'Rapor Merkezi');
+    checkEqual('print report button tr', printBtnEl.textContent, 'Raporu Yazdır / PDF');
+    ctx.context.setLanguage('en');
+    checkEqual('report center title en', titleEl.textContent, 'Report Center');
+    checkEqual('print report button en', printBtnEl.textContent, 'Print Report / PDF');
+  }
+
+  // ---- 132. reportLocale(): tr -> tr-TR, en -> en-US ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    checkEqual('reportLocale() returns tr-TR when CURRENT_LANG is tr', ctx.context.reportLocale(), 'tr-TR');
+    ctx.context.setLanguage('en');
+    checkEqual('reportLocale() returns en-US when CURRENT_LANG is en', ctx.context.reportLocale(), 'en-US');
+  }
+
+  // ---- 133. reportHtml() heading and labels TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const rec = { record_no: 'TP-0001', family: 'Hex head fully-threaded bolt', standard: 'ISO 4017', thread: 'M10', property_class: '10.9', torque_nm: 65.4, preload_n: 34700, confidence: 4, created_at: '2026-01-15T10:00:00Z' };
+    const htmlTr = ctx.context.reportHtml(rec);
+    check('tr report heading present', htmlTr.indexOf('TorqPro Mühendislik Ön Değerlendirme Raporu') !== -1);
+    check('tr "Toplam Tork" label present', htmlTr.indexOf('Toplam Tork') !== -1);
+    ctx.context.setLanguage('en');
+    const htmlEn = ctx.context.reportHtml(rec);
+    check('en report heading present', htmlEn.indexOf('TorqPro Engineering Preliminary Assessment Report') !== -1);
+    check('en "Total Torque" label present', htmlEn.indexOf('Total Torque') !== -1);
+  }
+
+  // ---- 134. Technical record fields identical in both languages
+  //           (family/standard/thread/property_class/coating/source_mode
+  //           are never translated -- they render verbatim) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const rec = { record_no: 'TP-0002', family: 'Altıgen başlı tam dişli civata', standard: 'ISO 4017', thread: 'M12', property_class: '8.8', coating: 'Elektrolitik çinko', source_mode: 'Kütüphane', torque_nm: 80, preload_n: 40000, confidence: 3 };
+    const htmlTr = ctx.context.reportHtml(rec);
+    ctx.context.setLanguage('en');
+    const htmlEn = ctx.context.reportHtml(rec);
+    check('r.family renders verbatim (untranslated) in tr', htmlTr.indexOf('Altıgen başlı tam dişli civata') !== -1);
+    check('r.family renders verbatim (untranslated) in en too -- never auto-translated', htmlEn.indexOf('Altıgen başlı tam dişli civata') !== -1);
+    check('r.standard identical in both languages', htmlTr.indexOf('ISO 4017') !== -1 && htmlEn.indexOf('ISO 4017') !== -1);
+    check('r.thread identical in both languages', htmlTr.indexOf('M12') !== -1 && htmlEn.indexOf('M12') !== -1);
+    check('r.property_class identical in both languages', htmlTr.indexOf('8.8') !== -1 && htmlEn.indexOf('8.8') !== -1);
+  }
+
+  // ---- 135. Raw numeric values unchanged across languages ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const rec = { torque_nm: 123.456, preload_n: 78901, confidence: 2 };
+    const htmlTr = ctx.context.reportHtml(rec);
+    ctx.context.setLanguage('en');
+    const htmlEn = ctx.context.reportHtml(rec);
+    check('torque decimal precision (1 digit) unchanged in tr', htmlTr.indexOf('123.5 Nm') !== -1);
+    check('torque decimal precision (1 digit) unchanged in en (same rounding, Number.toFixed is locale-independent)', htmlEn.indexOf('123.5 Nm') !== -1);
+    check('confidence code G2 identical in both languages', htmlTr.indexOf('G2') !== -1 && htmlEn.indexOf('G2') !== -1);
+  }
+
+  // ---- 136. Date formatting: tr-TR vs en-US locale ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const rec = { created_at: '2026-03-15T14:30:00Z' };
+    const htmlTr = ctx.context.reportHtml(rec);
+    ctx.context.setLanguage('en');
+    const htmlEn = ctx.context.reportHtml(rec);
+    const dateTr = new Date(rec.created_at).toLocaleString('tr-TR');
+    const dateEn = new Date(rec.created_at).toLocaleString('en-US');
+    check('tr report date uses tr-TR formatting', htmlTr.indexOf(dateTr) !== -1);
+    check('en report date uses en-US formatting', htmlEn.indexOf(dateEn) !== -1);
+    check('tr-TR and en-US date strings actually differ (locale is genuinely applied)', dateTr !== dateEn);
+  }
+
+  // ---- 137. Number formatting: same raw number, locale-only display difference ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const rec = { preload_n: 1234567 };
+    const htmlTr = ctx.context.reportHtml(rec);
+    ctx.context.setLanguage('en');
+    const htmlEn = ctx.context.reportHtml(rec);
+    const numTr = Math.round(rec.preload_n).toLocaleString('tr-TR');
+    const numEn = Math.round(rec.preload_n).toLocaleString('en-US');
+    check('tr preload uses tr-TR grouping (e.g. 1.234.567)', htmlTr.indexOf(numTr) !== -1);
+    check('en preload uses en-US grouping (e.g. 1,234,567)', htmlEn.indexOf(numEn) !== -1);
+    check('the underlying raw number is identical (only separators differ)', numTr.replace(/[.,]/g, '') === numEn.replace(/[.,]/g, ''));
+  }
+
+  // ---- 138. Units and technical terms identical in both languages ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const rec = { torque_nm: 50, preload_n: 20000, confidence: 4 };
+    const htmlTr = ctx.context.reportHtml(rec);
+    ctx.context.setLanguage('en');
+    const htmlEn = ctx.context.reportHtml(rec);
+    check('Nm unit unchanged in tr', htmlTr.indexOf(' Nm') !== -1);
+    check('Nm unit unchanged in en', htmlEn.indexOf(' Nm') !== -1);
+    check('N unit unchanged in tr', htmlTr.indexOf(' N<') !== -1);
+    check('N unit unchanged in en', htmlEn.indexOf(' N<') !== -1);
+  }
+
+  // ---- 139. G1-G4 confidence codes preserved ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    for (const c of [1, 2, 3, 4]) {
+      const html = ctx.context.reportHtml({ confidence: c });
+      check('confidence code G' + c + ' preserved verbatim', html.indexOf('G' + c) !== -1);
+    }
+    ctx.context.setLanguage('en');
+    for (const c of [1, 2, 3, 4]) {
+      const html = ctx.context.reportHtml({ confidence: c });
+      check('confidence code G' + c + ' preserved verbatim in en too', html.indexOf('G' + c) !== -1);
+    }
+  }
+
+  // ---- 140. printCurrentReport() uses the active language (including
+  //           its "calculate first" guard message) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.byId['printArea'] = { style: {}, innerHTML: '' };
+    // No real calculation has been performed in this harness, so
+    // captureCurrentCalculation() returns torque_nm: null and
+    // printCurrentReport() takes its guard-alert path -- this still
+    // exercises the "uses the active language" requirement via the
+    // translated alert message.
+    ctx.context.printCurrentReport();
+    checkEqual('printCurrentReport() alert uses tr text when no calculation exists', ctx.alertCalls[ctx.alertCalls.length - 1], 'Önce hesap yapın.');
+    ctx.context.setLanguage('en');
+    ctx.context.printCurrentReport();
+    checkEqual('printCurrentReport() alert uses en text after switching language', ctx.alertCalls[ctx.alertCalls.length - 1], 'Please calculate first.');
+  }
+
+  // ---- 141. printRecord() uses the active language ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.ARCHIVE_CACHE = [{ id: 7, record_no: 'TP-0007', torque_nm: 40, preload_n: 15000, confidence: 3 }];
+    ctx.byId['printArea'] = { style: {}, innerHTML: '' };
+    ctx.context.setLanguage('en');
+    ctx.context.printRecord(7);
+    check('printRecord() renders in en', ctx.byId['printArea'].innerHTML.indexOf('Total Torque') !== -1);
+    checkEqual('printRecord() triggers window.print()', ctx.windowCalls.indexOf('print') !== -1, true);
+  }
+
+  // ---- 142. No stale-language cache: re-printing after a language
+  //           switch reflects the NEW language, not the old one ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.ARCHIVE_CACHE = [{ id: 1, torque_nm: 10, preload_n: 1000, confidence: 1 }];
+    ctx.byId['printArea'] = { style: {}, innerHTML: '' };
+    ctx.context.printRecord(1);
+    check('first print (tr) shows Turkish label', ctx.byId['printArea'].innerHTML.indexOf('Toplam Tork') !== -1);
+    ctx.context.setLanguage('en');
+    ctx.context.printRecord(1);
+    check('second print (after switching to en) shows English label, not stale tr', ctx.byId['printArea'].innerHTML.indexOf('Total Torque') !== -1);
+    check('second print does not contain the old tr label', ctx.byId['printArea'].innerHTML.indexOf('Toplam Tork') === -1);
+  }
+
+  // ---- 143. Release certificate/package headings TR/EN ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => ({
+      title: 'X', package_no: 'PKG-1', created_at: '2026-01-01T00:00:00Z',
+      project: { name: 'Proj', customer: 'Cust', project_code: 'C1' },
+      summary: { total_calculations: 3, approved_revisions: 2, open_revisions: 1, release_ready: true },
+      items: [], decision: 'OK',
+    }));
+    ctx.byId['release_project'] = { value: '1' };
+    ctx.byId['release_title'] = { value: '' };
+    ctx.byId['releasePackageView'] = { innerHTML: '' };
+    ctx.context.ORG_SETTINGS = {};
+    await ctx.context.generateProjectRelease();
+    const htmlTr = ctx.byId['releasePackageView'].innerHTML;
+    check('tr release package shows "Proje" label', htmlTr.indexOf('Proje') !== -1);
+    check('tr release package shows "HAZIR" decision', htmlTr.indexOf('HAZIR') !== -1);
+    ctx.context.setLanguage('en');
+    await ctx.context.generateProjectRelease();
+    const htmlEn = ctx.byId['releasePackageView'].innerHTML;
+    check('en release package shows "Project" label', htmlEn.indexOf('Project') !== -1);
+    check('en release package shows "READY" decision', htmlEn.indexOf('READY') !== -1);
+  }
+
+  // ---- 144. Release package technical/project/customer values
+  //           are not auto-translated ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => ({
+      title: 'X', package_no: 'PKG-2', created_at: '2026-01-01T00:00:00Z',
+      project: { name: 'Müşteri Özel Proje', customer: 'Acme Otomotiv', project_code: 'CODE-9' },
+      summary: { total_calculations: 1, approved_revisions: 1, open_revisions: 0, release_ready: false },
+      items: [{ record_no: 'TP-1', thread: 'M10', property_class: '10.9', torque_nm: 65, revision_no: 1, revision_status: 'approved', version_signature: 'v1', reviewer_name: 'A. Yilmaz' }],
+      decision: 'Beklemede',
+    }));
+    ctx.byId['release_project'] = { value: '1' };
+    ctx.byId['release_title'] = { value: '' };
+    ctx.byId['releasePackageView'] = { innerHTML: '' };
+    ctx.context.ORG_SETTINGS = {};
+    ctx.context.setLanguage('en');
+    await ctx.context.generateProjectRelease();
+    const html = ctx.byId['releasePackageView'].innerHTML;
+    check('project name (free text) not translated in en mode', html.indexOf('Müşteri Özel Proje') !== -1);
+    check('customer name (free text) not translated in en mode', html.indexOf('Acme Otomotiv') !== -1);
+    check('decision text (free text from backend) not translated in en mode', html.indexOf('Beklemede') !== -1);
+    check('thread/property_class technical values untouched', html.indexOf('M10') !== -1 && html.indexOf('10.9') !== -1);
+  }
+
+  // ---- 145. window.print() flow preserved (no popup/window behavior change) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.CURRENT_RELEASE_PACKAGE = { package_no: 'PKG-3' };
+    ctx.byId['releasePackageView'] = { innerHTML: '<p>content</p>' };
+    ctx.context.printProjectRelease();
+    checkEqual('printProjectRelease() opens a popup window', ctx.windowCalls.indexOf('open') !== -1, true);
+    checkEqual('printProjectRelease() calls print() on the popup', ctx.windowCalls.indexOf('popup-print') !== -1, true);
+  }
+
+  // ---- 146. No raw translation-key leakage in report/release/certificate HTML ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const htmlTr = ctx.context.reportHtml({ torque_nm: 1, preload_n: 1, confidence: 1 });
+    check('no raw "rapor.xxx" key text leaks into tr report', !/rapor\.[a-z_.0-9]+(?![\w])/.test(htmlTr));
+    ctx.context.setLanguage('en');
+    const htmlEn = ctx.context.reportHtml({ torque_nm: 1, preload_n: 1, confidence: 1 });
+    check('no raw "rapor.xxx" key text leaks into en report', !/rapor\.[a-z_.0-9]+(?![\w])/.test(htmlEn));
+  }
+
+  // ---- 147. Hard-coded user text scan (Report Center scope) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const turkishCharRe = /[şğüöçİĞÜŞÖÇı]/;
+    for (const fn of ['reportHtml', 'printCurrentReport', 'printRecord', 'generateProjectRelease', 'generateReleaseCertificate']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      const strs = [...src.matchAll(/'((?:[^'\\]|\\.)*)'/g)].map((m) => m[1]).filter((s) => turkishCharRe.test(s));
+      check('no hard-coded Turkish string literals remain in ' + fn + '()', strs.length === 0);
+    }
+  }
+
+  // ---- 148. In-scope hardcoded 'tr-TR' scan: 0 in report functions
+  //           (out-of-scope occurrences elsewhere are noted in the
+  //           phase report, not modified here) ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    for (const fn of ['reportHtml', 'generateProjectRelease', 'generateReleaseCertificate']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      check("no hardcoded 'tr-TR' remains in " + fn + '()', src.indexOf("'tr-TR'") === -1);
+    }
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
