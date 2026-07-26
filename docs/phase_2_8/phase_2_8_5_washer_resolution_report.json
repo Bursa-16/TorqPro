@@ -1,0 +1,573 @@
+{
+  "action_needed_record_count": 76,
+  "blocked_authoritative_source_count": 5,
+  "confidence_distribution": {
+    "2": 34,
+    "3": 15,
+    "4": 27
+  },
+  "issue_type_distribution": {
+    "dimensional_conflict": 10,
+    "duplicate_or_alias": 0,
+    "other": 0,
+    "source_ambiguous": 0,
+    "source_missing": 34,
+    "standard_identity_ambiguous": 5,
+    "verification_pending": 27
+  },
+  "open_resolution_count": 71,
+  "provenance_category_totals": {
+    "action_needed": 76,
+    "generated_from_unverified_source": 0,
+    "no_external_evidence": 139,
+    "secondary_source_only": 8,
+    "standard_verified": 0
+  },
+  "resolution_status_counts": {
+    "accepted_as_is": 0,
+    "blocked_authoritative_source": 5,
+    "open": 71,
+    "rejected": 0,
+    "resolved": 0,
+    "under_review": 0
+  },
+  "resolved_count": 0,
+  "total_resolution_entries": 76,
+  "total_washer_records": 223,
+  "unresolved_count": 76,
+  "unresolved_records": [
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M10",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M10"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M100",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M100"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M12",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M12"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M14",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M14"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M16",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M16"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M18",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M18"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M2",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M2"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M2.2",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M2.2"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M2.5",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M2.5"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M20",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M20"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M22",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M22"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M24",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M24"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M27",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M27"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M3",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M3"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M3.5",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M3.5"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M30",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M30"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M36",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M36"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M39",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M39"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M4",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M4"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M42",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M42"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M45",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M45"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M48",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M48"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M5",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M5"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M52",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M52"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M56",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M56"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M6",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M6"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M60",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M60"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M64",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M64"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M68",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M68"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M7",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M7"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M72",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M72"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M8",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M8"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M80",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M80"
+    },
+    {
+      "issue_type": "source_missing",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-DIN127B-M90",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-DIN127B-M90"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7089-M14",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7089-M14"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7090-M10",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7090-M10"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7090-M12",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7090-M12"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7090-M14",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7090-M14"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7090-M16",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7090-M16"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7090-M20",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7090-M20"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7090-M24",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7090-M24"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7090-M5",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7090-M5"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7090-M6",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7090-M6"
+    },
+    {
+      "issue_type": "dimensional_conflict",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO7090-M8",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO7090-M8"
+    },
+    {
+      "issue_type": "standard_identity_ambiguous",
+      "requires_authoritative_source": true,
+      "resolution_id": "RES-WASH-ISO7093-M10",
+      "resolution_status": "blocked_authoritative_source",
+      "washer_record_id": "WASH-ISO7093-M10"
+    },
+    {
+      "issue_type": "standard_identity_ambiguous",
+      "requires_authoritative_source": true,
+      "resolution_id": "RES-WASH-ISO7093-M12",
+      "resolution_status": "blocked_authoritative_source",
+      "washer_record_id": "WASH-ISO7093-M12"
+    },
+    {
+      "issue_type": "standard_identity_ambiguous",
+      "requires_authoritative_source": true,
+      "resolution_id": "RES-WASH-ISO7093-M16",
+      "resolution_status": "blocked_authoritative_source",
+      "washer_record_id": "WASH-ISO7093-M16"
+    },
+    {
+      "issue_type": "standard_identity_ambiguous",
+      "requires_authoritative_source": true,
+      "resolution_id": "RES-WASH-ISO7093-M6",
+      "resolution_status": "blocked_authoritative_source",
+      "washer_record_id": "WASH-ISO7093-M6"
+    },
+    {
+      "issue_type": "standard_identity_ambiguous",
+      "requires_authoritative_source": true,
+      "resolution_id": "RES-WASH-ISO7093-M8",
+      "resolution_status": "blocked_authoritative_source",
+      "washer_record_id": "WASH-ISO7093-M8"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M10",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M10"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M12",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M12"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M14",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M14"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M16",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M16"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M18",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M18"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M20",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M20"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M22",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M22"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M24",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M24"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M27",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M27"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M3",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M3"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M3.5",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M3.5"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M30",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M30"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M33",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M33"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M36",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M36"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M39",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M39"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M4",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M4"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M42",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M42"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M45",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M45"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M48",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M48"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M5",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M5"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M52",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M52"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M56",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M56"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M6",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M6"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M60",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M60"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M64",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M64"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M7",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M7"
+    },
+    {
+      "issue_type": "verification_pending",
+      "requires_authoritative_source": false,
+      "resolution_id": "RES-WASH-ISO8738-M8",
+      "resolution_status": "open",
+      "washer_record_id": "WASH-ISO8738-M8"
+    }
+  ],
+  "verified_record_count": 0
+}
