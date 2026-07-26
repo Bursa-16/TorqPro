@@ -336,6 +336,21 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .fc-warning-item.fc-w-restricted{background:rgba(239,68,68,.16);border-color:var(--danger);font-weight:600}
 .fc-range-svg-wrap{width:100%;overflow-x:auto}
 .fc-empty{padding:20px;text-align:center;color:var(--text3);font-size:13px}
+/* BOLT/NUT STRENGTH CLASSES (Faz 2.8.3) */
+.sc-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:center}
+.sc-toolbar .form-input,.sc-toolbar .form-select{flex:1;min-width:150px}
+.sc-table-wrap{overflow-x:auto;max-width:100%}
+.sc-table{width:100%;border-collapse:collapse;font-size:12px}
+.sc-table th,.sc-table td{padding:8px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+.sc-table td.sc-wrap{white-space:normal;max-width:260px;word-break:break-word}
+.sc-status-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:10px;font-size:12px;font-weight:700}
+.sc-check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin:10px 0}
+.sc-check-item{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:12px}
+.sc-check-item .sc-check-label{color:var(--text3);font-size:11px}
+@media(max-width:900px){
+  .sc-toolbar{flex-direction:column}
+  .sc-toolbar .form-input,.sc-toolbar .form-select{width:100%}
+}
 @media(max-width:900px){
   .fc-toolbar{flex-direction:column}
   .fc-toolbar .form-input,.fc-toolbar .form-select{width:100%}
@@ -411,6 +426,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="sidebar-label" data-i18n="sidebar.section_reference">Referans</div>
     <div class="sidebar-item" onclick="showPage('oem')"><span class="sidebar-icon">🔍</span> <span data-i18n="sidebar.oem_norm_query">OEM Norm Sorgu</span></div>
     <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> <span data-i18n="sidebar.frictioncondition">Friction Condition</span></div>
+    <div class="sidebar-item" onclick="showPage('strengthclasses')"><span class="sidebar-icon">🔗</span> <span data-i18n="sidebar.strengthclasses">Bolt/Nut Strength Classes</span></div>
     <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> <span data-i18n="sidebar.norm_guide">Norm Rehberi</span></div>
     <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> <span data-i18n="sidebar.fmea_catalog">FMEA Kataloğu</span></div>
   </div>
@@ -908,6 +924,63 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       </div>
       <div id="fc-report"></div>
     </div>
+  </div>
+</div>
+
+<!-- BOLT/NUT STRENGTH CLASSES (Faz 2.8.3) -->
+<div id="page-strengthclasses" class="page">
+  <div class="section-header"><span class="section-icon">🔗</span><div>
+    <div class="section-title" data-i18n="sc.page_title">Bolt/Nut Strength Classes</div>
+    <div class="section-sub" data-i18n="sc.page_subtitle">ISO 898-1/-2 and ISO 3506-1 property class reference data and strength-class compatibility checking</div>
+  </div></div>
+  <div class="alert alert-info" data-i18n="sc.banner">
+    This workspace shows reference strength-class data and structured compatibility checks. It does not determine
+    friction coefficient or tightening torque.
+  </div>
+  <div class="alert alert-warn">
+    <ul style="margin:0;padding-left:18px">
+      <li data-i18n="sc.caution.friction">Strength class does not determine the friction coefficient.</li>
+      <li data-i18n="sc.caution.torque">A higher strength class does not automatically mean a higher tightening torque.</li>
+      <li data-i18n="sc.caution.stress_definitions">Proof stress, yield strength and tensile strength are not the same value.</li>
+      <li data-i18n="sc.caution.iso_equivalence">ISO 898 and ISO 3506 classes are not directly equivalent.</li>
+      <li data-i18n="sc.caution.oem_limits">OEM standards may impose additional restrictions.</li>
+      <li data-i18n="sc.caution.diameter_conditional">A result outside the diameter range is only a conditional evaluation.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="sc.bolt_section_title">Bolt Classes</div>
+    <div id="sc-bolt-status" class="fc-muted"></div>
+    <div id="sc-bolt-table" class="sc-table-wrap"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="sc.nut_section_title">Nut Classes</div>
+    <div id="sc-nut-status" class="fc-muted"></div>
+    <div id="sc-nut-table" class="sc-table-wrap"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="sc.compat_section_title">Compatibility Checker</div>
+    <div class="card-sub" data-i18n="sc.compat_section_sub">Select a bolt strength class and a nut property class to check strength-class compatibility.</div>
+    <div class="sc-toolbar">
+      <select class="form-select" id="sc-compat-bolt"></select>
+      <select class="form-select" id="sc-compat-nut"></select>
+      <input class="form-input" id="sc-compat-diameter" type="number" min="0" step="0.1" data-i18n-placeholder="sc.diameter_placeholder" placeholder="Nominal diameter (mm, optional)">
+      <select class="form-select" id="sc-compat-standard">
+        <option value="" data-i18n="sc.standard_any">Any standard</option>
+        <option value="ISO 898">ISO 898</option>
+        <option value="ISO 3506">ISO 3506</option>
+      </select>
+      <select class="form-select" id="sc-compat-material-family">
+        <option value="" data-i18n="sc.material_family_any">Any material family</option>
+        <option value="carbon_alloy_steel" data-i18n="sc.material_family_carbon">Carbon/alloy steel</option>
+        <option value="stainless_a2" data-i18n="sc.material_family_a2">Stainless A2</option>
+        <option value="stainless_a4" data-i18n="sc.material_family_a4">Stainless A4</option>
+      </select>
+      <button class="btn btn-primary" id="sc-compat-check-btn" onclick="scCheckCompatibility()" data-i18n="sc.compat_check_button">Check compatibility</button>
+    </div>
+    <div id="sc-compat-result"></div>
   </div>
 </div>
 
@@ -2573,6 +2646,67 @@ const I18N = {
     'fmea.cause.fmea_008': 'Process drift',
     'fmea.effect.fmea_008': 'Risk of a serial NOK run',
     'fmea.recommendation.fmea_008': '5+5 sweep rule: check the 5 units before/after the faulty unit',
+
+    // ---- Faz 2.8.3: Bolt/Nut Strength Classes ----
+    'sidebar.strengthclasses': 'Bolt/Nut Strength Classes',
+    'sc.page_title': 'Bolt/Nut Strength Classes',
+    'sc.page_subtitle': 'ISO 898-1/-2 and ISO 3506-1 property class reference data and strength-class compatibility checking',
+    'sc.banner': 'This workspace shows reference strength-class data and structured compatibility checks. It does not determine friction coefficient or tightening torque.',
+    'sc.caution.friction': 'Strength class does not determine the friction coefficient.',
+    'sc.caution.torque': 'A higher strength class does not automatically mean a higher tightening torque.',
+    'sc.caution.stress_definitions': 'Proof stress, yield strength and tensile strength are not the same value.',
+    'sc.caution.iso_equivalence': 'ISO 898 and ISO 3506 classes are not directly equivalent.',
+    'sc.caution.oem_limits': 'OEM standards may impose additional restrictions.',
+    'sc.caution.diameter_conditional': 'A result outside the diameter range is only a conditional evaluation.',
+    'sc.bolt_section_title': 'Bolt Classes',
+    'sc.nut_section_title': 'Nut Classes',
+    'sc.compat_section_title': 'Compatibility Checker',
+    'sc.compat_section_sub': 'Select a bolt strength class and a nut property class to check strength-class compatibility.',
+    'sc.diameter_placeholder': 'Nominal diameter (mm, optional)',
+    'sc.standard_any': 'Any standard',
+    'sc.material_family_any': 'Any material family',
+    'sc.material_family_carbon': 'Carbon/alloy steel',
+    'sc.material_family_a2': 'Stainless A2',
+    'sc.material_family_a4': 'Stainless A4',
+    'sc.compat_check_button': 'Check compatibility',
+    'sc.compat_select_bolt': 'Select bolt strength class',
+    'sc.compat_select_nut': 'Select nut property class',
+    'sc.loading': 'Loading...',
+    'sc.empty_state': 'No records found.',
+    'sc.api_error_prefix': 'Could not load strength class data: ',
+    'sc.field.designation': 'Designation',
+    'sc.field.standard': 'Standard',
+    'sc.field.material_family': 'Material family',
+    'sc.field.nominal_tensile': 'Nominal Rm',
+    'sc.field.min_tensile': 'Min Rm',
+    'sc.field.yield_ratio': 'Yield ratio',
+    'sc.field.min_yield': 'Min Rp0.2',
+    'sc.field.proof_stress': 'Proof stress',
+    'sc.field.hardness': 'Hardness',
+    'sc.field.diameter_range': 'Diameter range',
+    'sc.field.heat_treatment': 'Heat treatment',
+    'sc.field.elongation': 'Elongation',
+    'sc.field.verification_status': 'Verification',
+    'sc.field.notes': 'Engineering notes',
+    'sc.field.source': 'Source',
+    'sc.field.proof_load_stress': 'Proof-load stress',
+    'sc.field.compatible_bolt_classes': 'Compatible bolt classes',
+    'sc.field.nut_style': 'Nut style',
+    'sc.status.compatible': 'Compatible',
+    'sc.status.conditionally_compatible': 'Conditionally compatible',
+    'sc.status.not_compatible': 'Not compatible',
+    'sc.status.unknown': 'Unknown',
+    'sc.check.strength_class': 'Strength-class check',
+    'sc.check.diameter_range': 'Diameter-range check',
+    'sc.check.standard': 'Standard check',
+    'sc.check.material_family': 'Material-family check',
+    'sc.result_recommended_min_nut': 'Recommended minimum nut class',
+    'sc.result_reasons': 'Reasons',
+    'sc.result_warnings': 'Warnings',
+    'sc.verification.validated': 'Validated',
+    'sc.verification.reference_only': 'Reference only',
+    'sc.verification.provisional': 'Provisional',
+    'sc.verification.unknown': 'Unknown',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -3771,6 +3905,67 @@ const I18N = {
     'dashboard.status_nok': 'NOK',
     'dashboard.status_borderline': 'SINIRDA',
     'dashboard.status_resolved': 'Çözüldü',
+
+    // ---- Faz 2.8.3: Civata/Somun Dayanım Sınıfları ----
+    'sidebar.strengthclasses': 'Civata/Somun Dayanım Sınıfları',
+    'sc.page_title': 'Civata/Somun Dayanım Sınıfları',
+    'sc.page_subtitle': 'ISO 898-1/-2 ve ISO 3506-1 dayanım sınıfı referans verisi ve dayanım sınıfı uyumluluk kontrolü',
+    'sc.banner': 'Bu çalışma alanı referans dayanım sınıfı verilerini ve yapılandırılmış uyumluluk kontrollerini gösterir. Sürtünme katsayısını veya sıkma torkunu belirlemez.',
+    'sc.caution.friction': 'Dayanım sınıfı sürtünme katsayısını belirlemez.',
+    'sc.caution.torque': 'Daha yüksek dayanım sınıfı otomatik olarak daha yüksek sıkma torku anlamına gelmez.',
+    'sc.caution.stress_definitions': 'Proof stress, akma dayanımı ve çekme dayanımı aynı değer değildir.',
+    'sc.caution.iso_equivalence': 'ISO 898 ve ISO 3506 sınıfları doğrudan eşdeğer değildir.',
+    'sc.caution.oem_limits': 'OEM standartları ek sınırlamalar getirebilir.',
+    'sc.caution.diameter_conditional': 'Diameter aralığı dışındaki sonuç yalnızca koşullu bir değerlendirmedir.',
+    'sc.bolt_section_title': 'Civata Sınıfları',
+    'sc.nut_section_title': 'Somun Sınıfları',
+    'sc.compat_section_title': 'Uyumluluk Kontrolü',
+    'sc.compat_section_sub': 'Dayanım sınıfı uyumluluğunu kontrol etmek için bir civata dayanım sınıfı ve bir somun mukavemet sınıfı seçin.',
+    'sc.diameter_placeholder': 'Nominal çap (mm, opsiyonel)',
+    'sc.standard_any': 'Herhangi bir standart',
+    'sc.material_family_any': 'Herhangi bir malzeme ailesi',
+    'sc.material_family_carbon': 'Karbon/alaşımlı çelik',
+    'sc.material_family_a2': 'Paslanmaz A2',
+    'sc.material_family_a4': 'Paslanmaz A4',
+    'sc.compat_check_button': 'Uyumluluğu kontrol et',
+    'sc.compat_select_bolt': 'Civata dayanım sınıfı seçin',
+    'sc.compat_select_nut': 'Somun mukavemet sınıfı seçin',
+    'sc.loading': 'Yükleniyor...',
+    'sc.empty_state': 'Kayıt bulunamadı.',
+    'sc.api_error_prefix': 'Dayanım sınıfı verisi yüklenemedi: ',
+    'sc.field.designation': 'Sınıf',
+    'sc.field.standard': 'Standart',
+    'sc.field.material_family': 'Malzeme ailesi',
+    'sc.field.nominal_tensile': 'Nominal Rm',
+    'sc.field.min_tensile': 'Min Rm',
+    'sc.field.yield_ratio': 'Akma oranı',
+    'sc.field.min_yield': 'Min Rp0.2',
+    'sc.field.proof_stress': 'Proof stress',
+    'sc.field.hardness': 'Sertlik',
+    'sc.field.diameter_range': 'Çap aralığı',
+    'sc.field.heat_treatment': 'Isıl işlem',
+    'sc.field.elongation': 'Uzama',
+    'sc.field.verification_status': 'Doğrulama',
+    'sc.field.notes': 'Mühendislik notları',
+    'sc.field.source': 'Kaynak',
+    'sc.field.proof_load_stress': 'Proof-load gerilmesi',
+    'sc.field.compatible_bolt_classes': 'Uyumlu civata sınıfları',
+    'sc.field.nut_style': 'Somun stili',
+    'sc.status.compatible': 'Uyumlu',
+    'sc.status.conditionally_compatible': 'Koşullu uyumlu',
+    'sc.status.not_compatible': 'Uyumsuz',
+    'sc.status.unknown': 'Bilinmiyor',
+    'sc.check.strength_class': 'Dayanım sınıfı kontrolü',
+    'sc.check.diameter_range': 'Çap aralığı kontrolü',
+    'sc.check.standard': 'Standart kontrolü',
+    'sc.check.material_family': 'Malzeme ailesi kontrolü',
+    'sc.result_recommended_min_nut': 'Önerilen minimum somun sınıfı',
+    'sc.result_reasons': 'Nedenler',
+    'sc.result_warnings': 'Uyarılar',
+    'sc.verification.validated': 'Doğrulandı',
+    'sc.verification.reference_only': 'Yalnızca referans',
+    'sc.verification.provisional': 'Geçici',
+    'sc.verification.unknown': 'Bilinmiyor',
   },
 };
 
@@ -3898,6 +4093,215 @@ function fcLabel(value) {
   return fcFmtLabel(value);
 }
 
+// ========== BOLT/NUT STRENGTH CLASSES (Faz 2.8.3) ==========
+// Displays already-computed backend strength-class reference data
+// (backend.library.strength_classes / .strength_compatibility) and
+// its structured compatibility results. Produces no new engineering
+// value client-side -- every rendered fact comes verbatim from the
+// backend response. Uses the same escaping/table pattern already
+// established by the Friction Condition workspace (fcEsc).
+let SC_BOLTS = [];
+let SC_NUTS = [];
+let SC_LOADED = false;
+
+function scEsc(s) {
+  if (s === null || s === undefined || s === '') return '—';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function scFmtNum(v, unit) {
+  if (v === null || v === undefined) return '—';
+  return Number(v) + (unit ? ' ' + unit : '');
+}
+function scFmtRange(min, max, unit) {
+  if (min === null || min === undefined || max === null || max === undefined) return '—';
+  return 'M' + min + '\u2013M' + max + (unit ? ' ' + unit : '');
+}
+function scVerificationLabel(status) {
+  const key = 'sc.verification.' + (status || 'unknown');
+  return t(key);
+}
+
+async function loadStrengthClassesWorkspace() {
+  const boltStatus = document.getElementById('sc-bolt-status');
+  const nutStatus = document.getElementById('sc-nut-status');
+  boltStatus.textContent = t('sc.loading');
+  nutStatus.textContent = t('sc.loading');
+  try {
+    const [bolts, nuts] = await Promise.all([
+      apiRequest('/api/engineering/bolt-strength-classes'),
+      apiRequest('/api/engineering/nut-property-classes'),
+    ]);
+    SC_BOLTS = Array.isArray(bolts) ? bolts : [];
+    SC_NUTS = Array.isArray(nuts) ? nuts : [];
+    SC_LOADED = true;
+    boltStatus.textContent = SC_BOLTS.length ? '' : t('sc.empty_state');
+    nutStatus.textContent = SC_NUTS.length ? '' : t('sc.empty_state');
+    scRenderBoltTable();
+    scRenderNutTable();
+    scPopulateCompatSelectors();
+  } catch (e) {
+    const msg = t('sc.api_error_prefix') + scEsc(e && e.message ? e.message : String(e));
+    boltStatus.textContent = msg;
+    nutStatus.textContent = msg;
+    document.getElementById('sc-bolt-table').innerHTML = '';
+    document.getElementById('sc-nut-table').innerHTML = '';
+  }
+}
+
+function scRenderBoltTable() {
+  const el = document.getElementById('sc-bolt-table');
+  if (!SC_BOLTS.length) { el.innerHTML = ''; return; }
+  const rows = SC_BOLTS.map(b => `<tr>
+    <td>${scEsc(b.designation)}</td>
+    <td>${scEsc(b.standard)}</td>
+    <td>${scEsc(b.material_family)}</td>
+    <td>${scFmtNum(b.nominal_tensile_strength_mpa,'MPa')}</td>
+    <td>${scFmtNum(b.min_tensile_strength_mpa,'MPa')}</td>
+    <td>${scFmtNum(b.yield_ratio)}</td>
+    <td>${scFmtNum(b.min_yield_strength_mpa,'MPa')}</td>
+    <td>${scFmtNum(b.proof_stress_mpa,'MPa')}</td>
+    <td>${b.hardness_min!=null&&b.hardness_max!=null?scEsc(b.hardness_min+'-'+b.hardness_max+' '+(b.hardness_scale||'')):'—'}</td>
+    <td>${scFmtRange(b.diameter_min_mm,b.diameter_max_mm)}</td>
+    <td class="sc-wrap">${scEsc(b.heat_treatment)}</td>
+    <td>${scFmtNum(b.elongation_percent,'%')}</td>
+    <td>${scVerificationLabel(b.verification_status)}</td>
+    <td class="sc-wrap">${scEsc(CURRENT_LANG==='tr'?(b.notes_tr||b.notes_en):(b.notes_en||b.notes_tr))}</td>
+    <td class="sc-wrap">${scEsc(b.source)}</td>
+  </tr>`).join('');
+  el.innerHTML = `<table class="sc-table"><thead><tr>
+    <th data-i18n="sc.field.designation">Designation</th>
+    <th data-i18n="sc.field.standard">Standard</th>
+    <th data-i18n="sc.field.material_family">Material family</th>
+    <th data-i18n="sc.field.nominal_tensile">Nominal Rm</th>
+    <th data-i18n="sc.field.min_tensile">Min Rm</th>
+    <th data-i18n="sc.field.yield_ratio">Yield ratio</th>
+    <th data-i18n="sc.field.min_yield">Min Rp0.2</th>
+    <th data-i18n="sc.field.proof_stress">Proof stress</th>
+    <th data-i18n="sc.field.hardness">Hardness</th>
+    <th data-i18n="sc.field.diameter_range">Diameter range</th>
+    <th data-i18n="sc.field.heat_treatment">Heat treatment</th>
+    <th data-i18n="sc.field.elongation">Elongation</th>
+    <th data-i18n="sc.field.verification_status">Verification</th>
+    <th data-i18n="sc.field.notes">Notes</th>
+    <th data-i18n="sc.field.source">Source</th>
+  </tr></thead><tbody>${rows}</tbody></table>`;
+  applyStaticTranslations();
+}
+
+function scRenderNutTable() {
+  const el = document.getElementById('sc-nut-table');
+  if (!SC_NUTS.length) { el.innerHTML = ''; return; }
+  const rows = SC_NUTS.map(n => `<tr>
+    <td>${scEsc(n.designation)}</td>
+    <td>${scEsc(n.standard)}</td>
+    <td>${scEsc(n.material_family)}</td>
+    <td>${scFmtNum(n.proof_load_stress_mpa,'MPa')}</td>
+    <td class="sc-wrap">${scEsc((n.compatible_bolt_classes||[]).join(', '))}</td>
+    <td>${scFmtRange(n.diameter_min_mm,n.diameter_max_mm)}</td>
+    <td>${scEsc(n.nut_style)}</td>
+    <td>${n.hardness_min!=null&&n.hardness_max!=null?scEsc(n.hardness_min+'-'+n.hardness_max+' '+(n.hardness_scale||'')):'—'}</td>
+    <td class="sc-wrap">${scEsc(n.heat_treatment)}</td>
+    <td>${scVerificationLabel(n.verification_status)}</td>
+    <td class="sc-wrap">${scEsc(CURRENT_LANG==='tr'?(n.notes_tr||n.notes_en):(n.notes_en||n.notes_tr))}</td>
+    <td class="sc-wrap">${scEsc(n.source)}</td>
+  </tr>`).join('');
+  el.innerHTML = `<table class="sc-table"><thead><tr>
+    <th data-i18n="sc.field.designation">Designation</th>
+    <th data-i18n="sc.field.standard">Standard</th>
+    <th data-i18n="sc.field.material_family">Material family</th>
+    <th data-i18n="sc.field.proof_load_stress">Proof-load stress</th>
+    <th data-i18n="sc.field.compatible_bolt_classes">Compatible bolt classes</th>
+    <th data-i18n="sc.field.diameter_range">Diameter range</th>
+    <th data-i18n="sc.field.nut_style">Nut style</th>
+    <th data-i18n="sc.field.hardness">Hardness</th>
+    <th data-i18n="sc.field.heat_treatment">Heat treatment</th>
+    <th data-i18n="sc.field.verification_status">Verification</th>
+    <th data-i18n="sc.field.notes">Notes</th>
+    <th data-i18n="sc.field.source">Source</th>
+  </tr></thead><tbody>${rows}</tbody></table>`;
+  applyStaticTranslations();
+}
+
+function scPopulateCompatSelectors() {
+  const boltSel = document.getElementById('sc-compat-bolt');
+  const nutSel = document.getElementById('sc-compat-nut');
+  const boltValue = boltSel.value, nutValue = nutSel.value;
+  boltSel.innerHTML = '<option value="">' + scEsc(t('sc.compat_select_bolt')) + '</option>' +
+    SC_BOLTS.map(b => `<option value="${scEsc(b.designation)}">${scEsc(b.designation)} (${scEsc(b.standard)})</option>`).join('');
+  nutSel.innerHTML = '<option value="">' + scEsc(t('sc.compat_select_nut')) + '</option>' +
+    SC_NUTS.map(n => `<option value="${scEsc(n.designation)}">${scEsc(n.designation)}</option>`).join('');
+  if (boltValue) boltSel.value = boltValue;
+  if (nutValue) nutSel.value = nutValue;
+}
+
+const SC_STATUS_META = {
+  compatible: {cls: 'alert-ok', icon: '\u2705'},
+  conditionally_compatible: {cls: 'alert-warn', icon: '\u26a0\ufe0f'},
+  not_compatible: {cls: 'alert-danger', icon: '\u274c'},
+  unknown: {cls: 'alert-info', icon: '\u2753'},
+};
+
+async function scCheckCompatibility() {
+  const resultEl = document.getElementById('sc-compat-result');
+  const btn = document.getElementById('sc-compat-check-btn');
+  const bolt = document.getElementById('sc-compat-bolt').value || null;
+  const nut = document.getElementById('sc-compat-nut').value || null;
+  const diameterRaw = document.getElementById('sc-compat-diameter').value;
+  const diameter = diameterRaw === '' ? null : Number(diameterRaw);
+  const standard = document.getElementById('sc-compat-standard').value || null;
+  const materialFamily = document.getElementById('sc-compat-material-family').value || null;
+  btn.disabled = true;
+  resultEl.innerHTML = '<div class="fc-muted">' + scEsc(t('sc.loading')) + '</div>';
+  try {
+    const result = await apiRequest('/api/engineering/bolt-nut-compatibility', {
+      method: 'POST',
+      body: JSON.stringify({
+        bolt_strength_class: bolt, nut_property_class: nut,
+        nominal_diameter_mm: diameter, standard: standard, material_family: materialFamily,
+      }),
+    });
+    scRenderCompatResult(result);
+  } catch (e) {
+    resultEl.innerHTML = '<div class="alert alert-danger">' + t('sc.api_error_prefix') + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function scRenderCompatResult(result) {
+  const resultEl = document.getElementById('sc-compat-result');
+  const meta = SC_STATUS_META[result.status] || SC_STATUS_META.unknown;
+  const statusLabel = t('sc.status.' + result.status);
+  const checksHtml = Object.entries(result.checks || {}).map(([key, value]) => `
+    <div class="sc-check-item">
+      <div class="sc-check-label">${scEsc(t('sc.check.' + key) || key)}</div>
+      <div>${scEsc(value)}</div>
+    </div>`).join('');
+  const reasonsHtml = (result.reasons || []).map(r => `<li>${scEsc(r)}</li>`).join('');
+  const warningsHtml = (result.warnings || []).map(w => `<li>${scEsc(w)}</li>`).join('');
+  resultEl.innerHTML = `
+    <div class="alert ${meta.cls}">
+      <span class="sc-status-badge">${meta.icon} ${scEsc(statusLabel)}</span>
+    </div>
+    <div class="fc-field-row"><span class="fc-field-label" data-i18n="sc.result_recommended_min_nut">Recommended minimum nut class</span>
+      <span class="fc-field-value">${scEsc(result.recommended_minimum_nut_class)}</span></div>
+    <div class="sc-check-grid">${checksHtml}</div>
+    ${reasonsHtml ? '<div class="sc-check-label" data-i18n="sc.result_reasons">Reasons</div><ul>' + reasonsHtml + '</ul>' : ''}
+    ${warningsHtml ? '<div class="sc-check-label" data-i18n="sc.result_warnings">Warnings</div><ul>' + warningsHtml + '</ul>' : ''}
+  `;
+  applyStaticTranslations();
+}
+
+// Re-renders already-fetched strength-class data in the new language
+// without re-requesting the API -- same pattern as
+// libraryReapplyLanguage() / the Friction Condition setLanguage hook.
+function scReapplyLanguage() {
+  if (!SC_LOADED) return;
+  scRenderBoltTable();
+  scRenderNutTable();
+  scPopulateCompatSelectors();
+}
+
 function applyStaticTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(function (el) {
     el.textContent = t(el.getAttribute('data-i18n'));
@@ -3943,6 +4347,7 @@ function setLanguage(lang) {
     fcRenderReport(FC_LAST_REPORT);
   }
   if (typeof libraryReapplyLanguage === 'function') libraryReapplyLanguage();
+  if (typeof scReapplyLanguage === 'function') scReapplyLanguage();
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
   if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();
@@ -4128,7 +4533,7 @@ function showPage(id, el) {
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}
+  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}
 }
 
 // ========== FRICTION CONDITION WORKSPACE (Faz 2.6.6) ==========
