@@ -1,10 +1,10 @@
-# TorqPro v2.8.2
+# TorqPro v2.8.3
 
 Professional Fastening Engineering Platform for Automotive, Defense and Industrial Manufacturing
 
 TorqPro is an engineering platform developed for bolt, nut and threaded joint analysis. It combines engineering calculations, OEM standards, friction condition management, capability analysis and manufacturing quality tools in a single application.
 
-**Current Stable Release:** v2.8.2
+**Current Stable Release:** v2.8.3
 
 ---
 
@@ -88,6 +88,25 @@ TorqPro is an engineering platform developed for bolt, nut and threaded joint an
 
 ---
 
+# Bolt/Nut Strength Classes (Phase 2.8.3)
+
+- Separate bolt and nut strength-class domain models
+- 9 ISO 898-1 bolt strength classes
+- 8 ISO 898-2 nut property classes
+- 3 ISO 3506-1 stainless bolt classifications
+- Deterministic bolt/nut strength compatibility engine (diameter-range,
+  standard-family and material-family checks)
+- Five engineering API endpoints
+- TR/EN Bolt/Nut Strength Classes frontend workspace, including a
+  Compatibility Checker
+- Manual override support with field-level value-source traceability
+- Report collector/renderer integration
+- Merged via PR #16
+- The Engineering Library audit tool (`tools/audit_engineering_library.py`)
+  was restored via a separate hotfix as part of this delivery
+
+---
+
 # Current Development Status
 
 | Phase | Status |
@@ -99,13 +118,18 @@ TorqPro is an engineering platform developed for bolt, nut and threaded joint an
 | Phase 2.7 Report Engine | 🚧 In Progress |
 | Phase 2.8.1 Engineering Library Inventory & Gap Analysis | ✅ Completed |
 | Phase 2.8.2 Thread Geometry Verification & Confidence Upgrade | ✅ Completed |
+| Phase 2.8.3 Bolt/Nut Strength Classes | ✅ Completed |
+| Phase 2.8.4 | Planned |
 | Phase 2.8 Demo Mode | Planned |
 
 ---
 
 # Test Status
 
-**900 / 900 tests passing**
+**985 / 985 tests passing**
+
+- Phase 2.8.3 tests: 100 passed
+- Phase 2.8.2 verification tests: 29 passed
 
 ---
 
@@ -196,11 +220,11 @@ http://127.0.0.1:8000
 
 Current Release
 
-**v2.8.2**
+**v2.8.3**
 
 Release Date
 
-**25 July 2026**
+**26 July 2026**
 
 ---
 
@@ -214,10 +238,11 @@ Completed
 - ✅ Phase 2.6.9 Global TR/EN Localization
 - ✅ Phase 2.8.1 Engineering Library Inventory & Gap Analysis
 - ✅ Phase 2.8.2 Thread Geometry Verification & Confidence Upgrade
+- ✅ Phase 2.8.3 Bolt/Nut Strength Classes
 
 Next
 
-- → Phase 2.8.3 Bolt / Nut Strength Classes
+- → Phase 2.8.4 (Planned)
 - Phase 2.7 Report Engine
 - Phase 2.8 Demo Mode
 - PDF Report Generator
