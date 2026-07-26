@@ -1323,6 +1323,102 @@ def dns_check(domain:str,expected_ip:str="",u=Depends(admin)):
     return {"domain":domain,"resolved_ips":ips,"expected_ip":expected_ip,"matches_expected":matches,
             "https_ready":https_ready,"status":"YAYINA HAZIR" if matches and https_ready else "EKSİKLER VAR"}
 
+
+# ---------------------------------------------------------------------
+# Faz 2.8.3: bolt/nut strength class engineering endpoints.
+# Orchestration only -- no engineering rule is hard-coded here; all
+# domain logic lives in backend.library.strength_classes /
+# .strength_compatibility (imported lazily inside each handler,
+# matching the existing friction-condition endpoints' pattern above,
+# to avoid any import-cycle risk with backend.app).
+# ---------------------------------------------------------------------
+
+@app.get("/api/engineering/bolt-strength-classes")
+def list_bolt_strength_classes_endpoint(
+    standard: Optional[str] = None,
+    material_family: Optional[str] = None,
+    designation: Optional[str] = None,
+    diameter_mm: Optional[float] = None,
+    verification_status: Optional[str] = None,
+    u=Depends(user),
+):
+    from backend.library.strength_classes import list_bolt_strength_classes
+    try:
+        records = list_bolt_strength_classes(
+            standard=standard, material_family=material_family,
+            designation=designation, diameter_mm=diameter_mm,
+            verification_status=verification_status,
+        )
+    except Exception as e:
+        raise HTTPException(400, f"Geçersiz filtre: {e}")
+    return [r.model_dump(mode="json") for r in records]
+
+
+@app.get("/api/engineering/bolt-strength-classes/{designation}")
+def get_bolt_strength_class_endpoint(designation: str, u=Depends(user)):
+    from backend.library.strength_classes import get_bolt_strength_class
+    record = get_bolt_strength_class(designation)
+    if record is None:
+        raise HTTPException(404, f"Bilinmeyen civata dayanım sınıfı: {designation}")
+    return record.model_dump(mode="json")
+
+
+@app.get("/api/engineering/nut-property-classes")
+def list_nut_property_classes_endpoint(
+    standard: Optional[str] = None,
+    material_family: Optional[str] = None,
+    designation: Optional[str] = None,
+    diameter_mm: Optional[float] = None,
+    verification_status: Optional[str] = None,
+    u=Depends(user),
+):
+    from backend.library.strength_classes import list_nut_property_classes
+    try:
+        records = list_nut_property_classes(
+            standard=standard, material_family=material_family,
+            designation=designation, diameter_mm=diameter_mm,
+            verification_status=verification_status,
+        )
+    except Exception as e:
+        raise HTTPException(400, f"Geçersiz filtre: {e}")
+    return [r.model_dump(mode="json") for r in records]
+
+
+@app.get("/api/engineering/nut-property-classes/{designation}")
+def get_nut_property_class_endpoint(designation: str, u=Depends(user)):
+    from backend.library.strength_classes import get_nut_property_class
+    record = get_nut_property_class(designation)
+    if record is None:
+        raise HTTPException(404, f"Bilinmeyen somut mukavemet sınıfı: {designation}")
+    return record.model_dump(mode="json")
+
+
+class BoltNutCompatibilityCheck(BaseModel):
+    # Faz 2.8.3: additive, new endpoint. Never touches
+    # /api/engineering/check's request/response contract.
+    bolt_strength_class: Optional[str] = None
+    nut_property_class: Optional[str] = None
+    nominal_diameter_mm: Optional[float] = None
+    standard: Optional[str] = None
+    material_family: Optional[str] = None
+
+
+@app.post("/api/engineering/bolt-nut-compatibility")
+def bolt_nut_compatibility_endpoint(x: BoltNutCompatibilityCheck, u=Depends(user)):
+    from backend.library.strength_compatibility import check_bolt_nut_strength_compatibility
+    try:
+        result = check_bolt_nut_strength_compatibility(
+            bolt_strength_class=x.bolt_strength_class,
+            nut_property_class=x.nut_property_class,
+            nominal_diameter_mm=x.nominal_diameter_mm,
+            standard=x.standard,
+            material_family=x.material_family,
+        )
+    except Exception as e:
+        raise HTTPException(400, f"Uyumluluk kontrolü yapılamadı: {e}")
+    return result.model_dump(mode="json")
+
+
 @app.get("/")
 def root():return FileResponse(FRONT/"index.html")
 

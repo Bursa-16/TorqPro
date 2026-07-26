@@ -82,6 +82,7 @@ const CONST_NAMES = [
   'CURRENT_USER', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS', 'deferredPrompt',
   'DEPLOY_TYPE_LABEL_KEY', 'DEPLOY_BACKUP_LABEL_KEY', 'DEPLOY_CHANNEL_LABEL_KEY', 'LAST_DIAGNOSTICS',
   'THRESHOLD_TBD_KEY', 'SYSTEM_HEALTH_HELP', 'INFO_ICON_SEQ', 'AUTH_TOKEN',
+  'SC_BOLTS', 'SC_NUTS', 'SC_LOADED', 'SC_STATUS_META',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -121,6 +122,9 @@ const FUNCTION_NAMES = [
   'runDiagnostics', 'renderDiagnostics', 'downloadDiagnostics',
   'changeOwnPassword', 'adminCreateUser', 'loadAdminUsers', 'adminUpdateUser', 'adminResetPassword',
   'loadAudit', 'downloadBackup', 'loadSystemHealth', 'shInfo', 'infoIconHtml',
+  'scEsc', 'scFmtNum', 'scFmtRange', 'scVerificationLabel', 'loadStrengthClassesWorkspace',
+  'scRenderBoltTable', 'scRenderNutTable', 'scPopulateCompatSelectors', 'scCheckCompatibility',
+  'scRenderCompatResult', 'scReapplyLanguage',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -3930,6 +3934,233 @@ async function main() {
     }
     check("role decisions branch on u.role==='viewer'/'engineer'/'admin' (stable technical value)",
       scriptSrc.indexOf("u.role==='viewer'") !== -1);
+  }
+
+  // ---- 201. Faz 2.8.3: sidebar item, page id, and the three sections
+  //           exist in the real markup (byId auto-vivifies stub
+  //           elements on first access, so existence is checked
+  //           against rawHtml text directly, not ctx.byId) ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    check('sidebar strengthclasses item exists (i18n key present)', !!getByI18nKey(ctx, 'sidebar.strengthclasses'));
+    check('page-strengthclasses container exists', rawHtml.indexOf('id="page-strengthclasses"') !== -1);
+    check('sc page_title i18n key present', !!getByI18nKey(ctx, 'sc.page_title'));
+    check('Bolt Classes section title present', !!getByI18nKey(ctx, 'sc.bolt_section_title'));
+    check('Nut Classes section title present', !!getByI18nKey(ctx, 'sc.nut_section_title'));
+    check('Compatibility Checker section title present', !!getByI18nKey(ctx, 'sc.compat_section_title'));
+    check('bolt strength-class table container exists', rawHtml.indexOf('id="sc-bolt-table"') !== -1);
+    check('nut property-class table container exists', rawHtml.indexOf('id="sc-nut-table"') !== -1);
+    check('sidebar item calls showPage(\'strengthclasses\')', rawHtml.indexOf("showPage('strengthclasses')") !== -1);
+  }
+
+  // ---- 202. Faz 2.8.3: compatibility checker inputs exist in the
+  //           real markup ----
+  {
+    check('bolt class selector exists', rawHtml.indexOf('id="sc-compat-bolt"') !== -1);
+    check('nut class selector exists', rawHtml.indexOf('id="sc-compat-nut"') !== -1);
+    check('nominal diameter input exists', rawHtml.indexOf('id="sc-compat-diameter"') !== -1);
+    check('standard selector exists', rawHtml.indexOf('id="sc-compat-standard"') !== -1);
+    check('material-family selector exists', rawHtml.indexOf('id="sc-compat-material-family"') !== -1);
+    check('compatibility check button exists', rawHtml.indexOf('id="sc-compat-check-btn"') !== -1);
+    check('compatibility result container exists', rawHtml.indexOf('id="sc-compat-result"') !== -1);
+  }
+
+  // ---- 203. Faz 2.8.3: four compatibility statuses have EN+TR i18n
+  //           keys, and loader/compatibility functions are defined ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const i18n = ctx.context.__getI18N();
+    for (const status of ['compatible', 'conditionally_compatible', 'not_compatible', 'unknown']) {
+      const key = 'sc.status.' + status;
+      check('EN has ' + key, Object.prototype.hasOwnProperty.call(i18n.en, key));
+      check('TR has ' + key, Object.prototype.hasOwnProperty.call(i18n.tr, key));
+    }
+    check('loadStrengthClassesWorkspace is a function', typeof ctx.context.loadStrengthClassesWorkspace === 'function');
+    check('scCheckCompatibility is a function', typeof ctx.context.scCheckCompatibility === 'function');
+    check('scRenderCompatResult is a function', typeof ctx.context.scRenderCompatResult === 'function');
+  }
+
+  // ---- 204. Faz 2.8.3: EN/TR key parity across the whole dictionary
+  //           (not just the sc.* subset) still holds after this
+  //           phase's additions ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const i18n = ctx.context.__getI18N();
+    const enKeys = Object.keys(i18n.en);
+    const trKeys = Object.keys(i18n.tr);
+    const missingInTr = enKeys.filter((k) => !trKeys.includes(k));
+    const missingInEn = trKeys.filter((k) => !enKeys.includes(k));
+    checkEqual('no EN key missing from TR', missingInTr.length, 0);
+    checkEqual('no TR key missing from EN', missingInEn.length, 0);
+  }
+
+  // ---- 205. Faz 2.8.3: the six required engineering caution
+  //           messages exist, in both languages ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const i18n = ctx.context.__getI18N();
+    const cautionKeys = [
+      'sc.caution.friction', 'sc.caution.torque', 'sc.caution.stress_definitions',
+      'sc.caution.iso_equivalence', 'sc.caution.oem_limits', 'sc.caution.diameter_conditional',
+    ];
+    for (const key of cautionKeys) {
+      check('EN caution present: ' + key, !!(i18n.en[key] && i18n.en[key].length > 0));
+      check('TR caution present: ' + key, !!(i18n.tr[key] && i18n.tr[key].length > 0));
+    }
+  }
+
+  // ---- 206. Faz 2.8.3: loadStrengthClassesWorkspace renders fetched
+  //           bolt/nut data, escapes API text, and only calls the API
+  //           when the page is loaded (not on every showPage call) ----
+  {
+    let callCount = 0;
+    const fakeBolt = {
+      designation: '8.8', standard: 'ISO 898-1', material_family: 'carbon_alloy_steel',
+      nominal_tensile_strength_mpa: 800, min_tensile_strength_mpa: 830, yield_ratio: 0.8,
+      min_yield_strength_mpa: 660, proof_stress_mpa: 660, hardness_min: 255, hardness_max: 335,
+      hardness_scale: 'HV', diameter_min_mm: 5, diameter_max_mm: 39,
+      heat_treatment: 'Quenched & tempered <script>alert(1)</script>', elongation_percent: 12,
+      verification_status: 'reference_only', notes_en: 'note <b>x</b>', notes_tr: 'not', source: 'ISO 898-1',
+    };
+    const fakeNut = {
+      designation: '04', standard: 'ISO 898-2', material_family: 'carbon_alloy_steel',
+      proof_load_stress_mpa: 400, compatible_bolt_classes: ['3.6', '4.6'],
+      diameter_min_mm: 1.6, diameter_max_mm: 39, nut_style: 'thin (style 0)',
+      hardness_min: null, hardness_max: null, hardness_scale: 'HV',
+      heat_treatment: 'Not mandatory', verification_status: 'reference_only',
+      notes_en: 'nut note', notes_tr: 'somun notu', source: 'ISO 898-2',
+    };
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url) => {
+      callCount++;
+      if (url.indexOf('/api/engineering/bolt-strength-classes') !== -1) return [fakeBolt];
+      if (url.indexOf('/api/engineering/nut-property-classes') !== -1) return [fakeNut];
+      return [];
+    });
+    ctx.documentStub.getElementById('page-strengthclasses').classList.add('active');
+    await ctx.context.loadStrengthClassesWorkspace();
+    checkEqual('exactly 2 API calls made on page load (bolts + nuts)', callCount, 2);
+    const boltHtml = ctx.byId['sc-bolt-table'].innerHTML;
+    check('04 designation rendered in nut table without truncation', ctx.byId['sc-nut-table'].innerHTML.indexOf('04') !== -1);
+    check('8.8 designation rendered in bolt table', boltHtml.indexOf('8.8') !== -1);
+    check('API text with markup is escaped (no raw <script> in rendered bolt table)', boltHtml.indexOf('<script>alert(1)</script>') === -1);
+    check('escaped markup entity present instead', boltHtml.indexOf('&lt;script&gt;') !== -1);
+    check('bolt selector populated for compatibility checker', ctx.byId['sc-compat-bolt'].innerHTML.indexOf('8.8') !== -1);
+    check('nut selector populated for compatibility checker', ctx.byId['sc-compat-nut'].innerHTML.indexOf('04') !== -1);
+
+    // Re-invoking load (simulating a second showPage navigation) must
+    // not silently accumulate duplicate DOM/listener state -- table
+    // innerHTML is fully replaced, not appended to. One <thead><tr>
+    // (headers) + one <tbody><tr> (the single fake bolt record) = 2,
+    // stable across repeated loads (not 4, which would indicate
+    // accumulation).
+    await ctx.context.loadStrengthClassesWorkspace();
+    const boltRowCount = (ctx.byId['sc-bolt-table'].innerHTML.match(/<tr>/g) || []).length;
+    checkEqual('re-loading the page replaces (not duplicates) table rows', boltRowCount, 2);
+  }
+
+  // ---- 207. Faz 2.8.3: compatibility checker calls the POST
+  //           endpoint, renders status/reasons/warnings/checks, and
+  //           surfaces a clean error message (no raw exception) on
+  //           API failure ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url, opts) => {
+      if (opts && opts.method === 'POST') {
+        return {
+          status: 'not_compatible', compatible: false,
+          bolt_strength_class: '10.9', nut_property_class: '8',
+          recommended_minimum_nut_class: '10',
+          reasons: ['Nut property class 8 is below the minimum for bolt class 10.9.'],
+          warnings: [], warning_codes: [],
+          checks: { strength_class: 'fail', diameter_range: 'pass', standard: 'pass', material_family: 'pass' },
+        };
+      }
+      return [];
+    });
+    ctx.byId['sc-compat-bolt'] = { value: '10.9' };
+    ctx.byId['sc-compat-nut'] = { value: '8' };
+    ctx.byId['sc-compat-diameter'] = { value: '' };
+    ctx.byId['sc-compat-standard'] = { value: '' };
+    ctx.byId['sc-compat-material-family'] = { value: '' };
+    ctx.byId['sc-compat-check-btn'] = { disabled: false };
+    await ctx.context.scCheckCompatibility();
+    const resultHtml = ctx.byId['sc-compat-result'].innerHTML;
+    const statusLabelTr = ctx.context.__getI18N().tr['sc.status.not_compatible'];
+    check('result shows not_compatible status text', resultHtml.indexOf(statusLabelTr) !== -1);
+    check('result shows recommended minimum nut class', resultHtml.indexOf('10') !== -1);
+    check('result shows the reason text (escaped)', resultHtml.indexOf('below the minimum for bolt class 10.9') !== -1);
+    check('result shows strength_class check outcome', resultHtml.indexOf('fail') !== -1);
+
+    // API failure path: apiRequest throws Error(detail) already (see
+    // apiRequest's own error handling) -- confirm the workspace shows
+    // that clean message, not "[object Object]" or a raw stack.
+    const ctxErr = newContext(extractedSource, rawHtml, {}, async () => { throw new Error('Bilinmeyen civata dayanım sınıfı: XX'); });
+    ctxErr.byId['sc-compat-bolt'] = { value: 'XX' };
+    ctxErr.byId['sc-compat-nut'] = { value: '8' };
+    ctxErr.byId['sc-compat-diameter'] = { value: '' };
+    ctxErr.byId['sc-compat-standard'] = { value: '' };
+    ctxErr.byId['sc-compat-material-family'] = { value: '' };
+    ctxErr.byId['sc-compat-check-btn'] = { disabled: false };
+    await ctxErr.context.scCheckCompatibility();
+    const errHtml = ctxErr.byId['sc-compat-result'].innerHTML;
+    check('API error renders the real message text', errHtml.indexOf('Bilinmeyen civata dayanım sınıfı: XX') !== -1);
+    check('API error does not render "[object Object]"', errHtml.indexOf('[object Object]') === -1);
+    check('API error does not render "undefined"', errHtml.indexOf('undefined') === -1);
+  }
+
+  // ---- 208. Faz 2.8.3: language switch re-renders already-fetched
+  //           strength-class data in place (no re-fetch) ----
+  {
+    let callCount = 0;
+    const ctx = newContext(extractedSource, rawHtml, {}, async (url) => {
+      callCount++;
+      if (url.indexOf('bolt-strength-classes') !== -1) return [{
+        designation: '8.8', standard: 'ISO 898-1', material_family: 'carbon_alloy_steel',
+        verification_status: 'reference_only', notes_en: 'en note', notes_tr: 'tr note', source: 'ISO 898-1',
+      }];
+      if (url.indexOf('nut-property-classes') !== -1) return [];
+      return [];
+    });
+    ctx.documentStub.getElementById('page-strengthclasses').classList.add('active');
+    await ctx.context.loadStrengthClassesWorkspace();
+    const callsAfterLoad = callCount;
+    ctx.context.setLanguage('en');
+    checkEqual('language switch triggers no additional API calls', callCount, callsAfterLoad);
+    check('bolt table re-rendered with English note text after language switch',
+      ctx.byId['sc-bolt-table'].innerHTML.indexOf('en note') !== -1);
+    ctx.context.setLanguage('tr');
+    check('bolt table re-rendered with Turkish note text after language switch back',
+      ctx.byId['sc-bolt-table'].innerHTML.indexOf('tr note') !== -1);
+  }
+
+  // ---- 209. Faz 2.8.3: endpoint paths referenced in the extracted
+  //           source match the real backend routes exactly ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const loadFnSrc = extractFunctionDecl(scriptSrc, 'loadStrengthClassesWorkspace');
+    const compatFnSrc = extractFunctionDecl(scriptSrc, 'scCheckCompatibility');
+    check('loadStrengthClassesWorkspace calls the bolt list endpoint',
+      loadFnSrc.indexOf('/api/engineering/bolt-strength-classes') !== -1);
+    check('loadStrengthClassesWorkspace calls the nut list endpoint',
+      loadFnSrc.indexOf('/api/engineering/nut-property-classes') !== -1);
+    check('scCheckCompatibility calls the compatibility POST endpoint',
+      compatFnSrc.indexOf('/api/engineering/bolt-nut-compatibility') !== -1);
+  }
+
+  // ---- 210. Faz 2.8.3: no duplicate event-listener wiring -- the new
+  //           page uses inline on* handlers (idempotent on re-render,
+  //           same pattern as the rest of this codebase) rather than
+  //           addEventListener, so re-invoking the loader cannot
+  //           accumulate duplicate handlers. ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    for (const fn of ['scRenderBoltTable', 'scRenderNutTable', 'scRenderCompatResult']) {
+      const src = extractFunctionDecl(scriptSrc, fn);
+      check(fn + '() does not call addEventListener', src.indexOf('addEventListener') === -1);
+    }
+    const htmlSrc = fs.readFileSync(FRONTEND_PATH, 'utf-8');
+    const pageBlockMatch = htmlSrc.match(/<div id="page-strengthclasses"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/);
+    check('strength classes page markup uses inline handlers, not addEventListener',
+      htmlSrc.indexOf('addEventListener') === -1 || !pageBlockMatch || pageBlockMatch[0].indexOf('addEventListener') === -1);
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
