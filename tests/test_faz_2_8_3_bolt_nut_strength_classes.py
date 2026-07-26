@@ -566,21 +566,90 @@ class TestReportEngine:
 # Baseline problem (re-verification, Faz 2.8.3 scope)
 # ---------------------------------------------------------------------
 
+# ---------------------------------------------------------------------
+# Baseline problem (re-verification, Faz 2.8.3 scope)
+#
+# History: at the time Faz 2.8.3 was developed, tools/audit_
+# engineering_library.py was absent from the base commit (19bbe5c),
+# which made tests/test_faz_2_8_2_thread_geometry_verification.py
+# fail to collect (that test's own dependency,
+# tools/verify_thread_geometry_faz_2_8_2.py, loads the audit module
+# by file path via importlib). That was documented as a pre-existing,
+# out-of-scope baseline problem and deliberately left unfixed here.
+#
+# PR #17 (hotfix/faz-2.8.2-missing-audit-engineering-library, merged
+# into main as d691e18) restored the missing file with a real,
+# working implementation -- not a stub. This branch now includes that
+# merge, so the old "the dependency must still be missing" assertion
+# is stale; asserting it here would make working code report a false
+# baseline failure. This class now asserts the restored, positive
+# behaviour instead: both files exist, and the Faz 2.8.2 verification
+# module can actually be imported (not just "the file is present")
+# without raising, end to end through the same importlib path
+# tools/verify_thread_geometry_faz_2_8_2.py itself uses.
+# ---------------------------------------------------------------------
+
 class TestBaselineProblem:
-    def test_faz_2_8_2_test_file_present_but_its_dependency_is_not(self):
+    def test_faz_2_8_2_test_file_and_its_dependency_both_present(self):
         import pathlib
         repo_root = pathlib.Path(__file__).resolve().parent.parent
         test_file = repo_root / "tests" / "test_faz_2_8_2_thread_geometry_verification.py"
         dependency = repo_root / "tools" / "audit_engineering_library.py"
         assert test_file.exists(), (
-            "tests/test_faz_2_8_2_thread_geometry_verification.py is expected to "
-            "exist in this base commit (19bbe5c) -- if this assertion starts "
-            "failing, the pre-existing-baseline-problem description in the Faz "
-            "2.8.3 delivery report is stale and must be updated."
+            "tests/test_faz_2_8_2_thread_geometry_verification.py is expected "
+            "to exist -- if this assertion starts failing, the test file was "
+            "unexpectedly removed."
         )
-        assert not dependency.exists(), (
-            "tools/audit_engineering_library.py now exists in this base commit -- "
-            "if this assertion starts failing, tests/test_faz_2_8_2_thread_geometry_"
-            "verification.py should collect successfully again and the "
-            "pre-existing-baseline-problem note in the Faz 2.8.3 report is stale."
+        assert dependency.exists(), (
+            "tools/audit_engineering_library.py is expected to exist -- "
+            "restored by PR #17 (hotfix/faz-2.8.2-missing-audit-engineering-"
+            "library, merged as d691e18). If this assertion starts failing, "
+            "that hotfix was reverted or the file was moved/renamed."
         )
+
+    def test_audit_engineering_library_module_imports_successfully(self):
+        # Exercises the exact loading path
+        # tools/verify_thread_geometry_faz_2_8_2.py uses at import time
+        # (importlib.util.spec_from_file_location by file path), rather
+        # than a plain "import tools.audit_engineering_library" -- this
+        # is what previously raised FileNotFoundError during collection.
+        import importlib.util
+        import pathlib
+
+        repo_root = pathlib.Path(__file__).resolve().parent.parent
+        module_path = repo_root / "tools" / "audit_engineering_library.py"
+        spec = importlib.util.spec_from_file_location(
+            "audit_engineering_library_reimport_check", module_path,
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)  # must not raise
+        assert hasattr(module, "build_report")
+        assert hasattr(module, "LIBRARY_KEYS")
+
+    def test_faz_2_8_2_verification_module_now_loads_without_error(self):
+        # The actual regression this hotfix fixes: importing
+        # tools/verify_thread_geometry_faz_2_8_2.py (which
+        # tests/test_faz_2_8_2_thread_geometry_verification.py depends
+        # on) must no longer raise FileNotFoundError.
+        import importlib.util
+        import pathlib
+
+        repo_root = pathlib.Path(__file__).resolve().parent.parent
+        module_path = repo_root / "tools" / "verify_thread_geometry_faz_2_8_2.py"
+        spec = importlib.util.spec_from_file_location(
+            "verify_thread_geometry_faz_2_8_2_reimport_check", module_path,
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)  # previously: FileNotFoundError
+        assert hasattr(module, "analyze")
+
+    def test_faz_2_8_2_test_module_collects_without_error(self):
+        # End-to-end confirmation at the pytest level: the Faz 2.8.2
+        # test module itself must be collectible (no collection
+        # error), which is what CI actually runs and what PR #16
+        # originally failed on.
+        result = pytest.main([
+            "-q", "--collect-only",
+            "tests/test_faz_2_8_2_thread_geometry_verification.py",
+        ])
+        assert result == pytest.ExitCode.OK
