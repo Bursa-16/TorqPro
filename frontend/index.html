@@ -347,6 +347,22 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .sc-check-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;margin:10px 0}
 .sc-check-item{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:12px}
 .sc-check-item .sc-check-label{color:var(--text3);font-size:11px}
+.ai-form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.ai-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:10px 0}
+.ai-summary-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.ai-summary-card .ai-summary-label{color:var(--text3);font-size:11px}
+.ai-summary-card .ai-summary-value{font-size:18px;font-weight:700;margin-top:2px}
+.ai-check-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.ai-check-row{font-size:12px}
+.ai-check-row .ai-check-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.ai-check-row .ai-check-name{font-weight:700}
+.ai-check-row .ai-check-field{margin-top:4px}
+.ai-check-row .ai-check-field-label{color:var(--text3);font-size:11px}
+.ai-critical-banner{font-size:16px;font-weight:700;padding:16px;margin-bottom:14px}
+@media(max-width:950px){
+  .ai-form-grid{grid-template-columns:1fr}
+  .ai-summary-grid{grid-template-columns:repeat(2,1fr)}
+}
 @media(max-width:900px){
   .sc-toolbar{flex-direction:column}
   .sc-toolbar .form-input,.sc-toolbar .form-select{width:100%}
@@ -427,6 +443,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="sidebar-item" onclick="showPage('oem')"><span class="sidebar-icon">🔍</span> <span data-i18n="sidebar.oem_norm_query">OEM Norm Sorgu</span></div>
     <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> <span data-i18n="sidebar.frictioncondition">Friction Condition</span></div>
     <div class="sidebar-item" onclick="showPage('strengthclasses')"><span class="sidebar-icon">🔗</span> <span data-i18n="sidebar.strengthclasses">Bolt/Nut Strength Classes</span></div>
+    <div class="sidebar-item" onclick="showPage('assemblyintelligence')"><span class="sidebar-icon">🧠</span> <span data-i18n="sidebar.assemblyintelligence">Montaj Zekâsı</span></div>
     <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> <span data-i18n="sidebar.norm_guide">Norm Rehberi</span></div>
     <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> <span data-i18n="sidebar.fmea_catalog">FMEA Kataloğu</span></div>
   </div>
@@ -984,8 +1001,65 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   </div>
 </div>
 
+<!-- ASSEMBLY INTELLIGENCE (Faz 2.8.6 Stage 4) -->
+<div id="page-assemblyintelligence" class="page">
+  <div class="section-header"><span class="section-icon">🧠</span><div>
+    <div class="section-title" data-i18n="ai.page_title">Assembly Intelligence</div>
+    <div class="section-sub" data-i18n="ai.page_subtitle">Evaluates bolt, nut, washer, strength class, and operating conditions together.</div>
+  </div></div>
+  <div class="alert alert-info" data-i18n="ai.banner">
+    All results shown below come directly from the backend assessment -- this page performs no scoring, status, or
+    risk calculation of its own.
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="ai.input_title">Assembly Inputs</div>
+    <div class="card-sub" data-i18n="ai.input_sub">All fields are optional. Leave a field empty if you do not have that information.</div>
+    <div class="ai-form-grid">
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.bolt_designation">Bolt designation</label>
+        <input class="form-input" id="ai-bolt-designation" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.nut_designation">Nut designation</label>
+        <input class="form-input" id="ai-nut-designation" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.bolt_strength_class">Bolt strength class</label>
+        <input class="form-input" id="ai-bolt-strength-class" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.nut_property_class">Nut property class</label>
+        <input class="form-input" id="ai-nut-property-class" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.nominal_diameter_mm">Nominal diameter (mm)</label>
+        <input class="form-input" id="ai-nominal-diameter" type="number" min="0" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.thread_designation">Thread designation</label>
+        <input class="form-input" id="ai-thread-designation" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.bolt_size">Bolt size</label>
+        <input class="form-input" id="ai-bolt-size" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.washer_standard">Washer standard</label>
+        <input class="form-input" id="ai-washer-standard" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.friction_condition_id">Friction condition ID</label>
+        <input class="form-input" id="ai-friction-condition-id" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.standard_name">Standard name</label>
+        <input class="form-input" id="ai-standard-name" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.oem_reference">OEM reference</label>
+        <input class="form-input" id="ai-oem-reference" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.automotive_reference">Automotive reference</label>
+        <input class="form-input" id="ai-automotive-reference" type="text"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.intended_operating_temperature_c">Intended operating temperature (°C)</label>
+        <input class="form-input" id="ai-intended-operating-temperature" type="number" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ai.field.intended_coating">Intended coating</label>
+        <input class="form-input" id="ai-intended-coating" type="text"></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:12px;cursor:pointer;font-size:13px;color:var(--text2)">
+      <input type="checkbox" id="ai-include-report" style="accent-color:var(--accent)">
+      <span data-i18n="ai.field.include_report">Include report</span>
+    </label>
+    <div style="margin-top:14px">
+      <button class="btn btn-primary" id="ai-assess-btn" onclick="aiAssessAssembly()" data-i18n="ai.assess_button">Assess Assembly</button>
+    </div>
+  </div>
+
+  <div id="ai-result"></div>
+</div>
+
 <!-- NORM REHBERİ -->
 <div id="page-norm" class="page">
+
   <div class="section-header"><span class="section-icon">📋</span><div><div class="section-title" data-i18n="norm.title">Norm ve Standart Rehberi</div><div class="section-sub" data-i18n="norm.subtitle">VDI 2230 · ISO 16047 · Genel otomotiv standartları</div></div></div>
   <div class="grid2">
     <div class="card"><div class="card-title" data-i18n="norm.control_methods_title">Tork Kontrol Yöntemleri</div><div class="result-box"><div class="result-row"><span class="result-key" data-i18n="norm.method_dynamic">Dinamik Tork (Sistem A)</span><span class="result-val" data-i18n="norm.method_dynamic_desc">Sıkma anında ölçüm</span></div><div class="result-row"><span class="result-key" data-i18n="norm.method_static">Statik Tork (C Metodu)</span><span class="result-val" data-i18n="norm.method_static_desc">İlk harekete geçme torku</span></div><div class="result-row"><span class="result-key" data-i18n="norm.method_torque_angle">Tork + Açı</span><span class="result-val" data-i18n="norm.method_torque_angle_desc">Başlangıç torku + açı</span></div><div class="result-row"><span class="result-key" data-i18n="norm.method_ultrasonic">Ultrasonik</span><span class="result-val" data-i18n="norm.method_ultrasonic_desc">Cıvata uzaması ile ölçüm</span></div></div></div>
@@ -2707,6 +2781,51 @@ const I18N = {
     'sc.verification.reference_only': 'Reference only',
     'sc.verification.provisional': 'Provisional',
     'sc.verification.unknown': 'Unknown',
+    // ---- Faz 2.8.6 Stage 4: Assembly Intelligence ----
+    'sidebar.assemblyintelligence': 'Assembly Intelligence',
+    'ai.page_title': 'Assembly Intelligence',
+    'ai.page_subtitle': 'Evaluates bolt, nut, washer, strength class, and operating conditions together.',
+    'ai.banner': 'All results shown below come directly from the backend assessment -- this page performs no scoring, status, or risk calculation of its own.',
+    'ai.input_title': 'Assembly Inputs',
+    'ai.input_sub': 'All fields are optional. Leave a field empty if you do not have that information.',
+    'ai.field.bolt_designation': 'Bolt designation',
+    'ai.field.nut_designation': 'Nut designation',
+    'ai.field.bolt_strength_class': 'Bolt strength class',
+    'ai.field.nut_property_class': 'Nut property class',
+    'ai.field.nominal_diameter_mm': 'Nominal diameter (mm)',
+    'ai.field.thread_designation': 'Thread designation',
+    'ai.field.bolt_size': 'Bolt size',
+    'ai.field.washer_standard': 'Washer standard',
+    'ai.field.friction_condition_id': 'Friction condition ID',
+    'ai.field.standard_name': 'Standard name',
+    'ai.field.oem_reference': 'OEM reference',
+    'ai.field.automotive_reference': 'Automotive reference',
+    'ai.field.intended_operating_temperature_c': 'Intended operating temperature (°C)',
+    'ai.field.intended_coating': 'Intended coating',
+    'ai.field.include_report': 'Include report',
+    'ai.assess_button': 'Assess Assembly',
+    'ai.loading': 'Loading',
+    'ai.assessment_completed': 'Assessment completed',
+    'ai.assessment_failed': 'Assessment failed',
+    'ai.not_enough_data': 'There is not enough data for an assessment. Enter more assembly information.',
+    'ai.overall_score': 'Overall Score',
+    'ai.coverage': 'Coverage',
+    'ai.overall_status': 'Overall Status',
+    'ai.risk_level': 'Risk Level',
+    'ai.passed': 'Passed',
+    'ai.warnings': 'Warnings',
+    'ai.failed': 'Failed',
+    'ai.detected_problems': 'Detected Problems',
+    'ai.recommendations': 'Recommendations',
+    'ai.compatibility': 'Compatibility',
+    'ai.critical_incompatibilities': 'Critical Incompatibilities',
+    'ai.critical_detected': 'Critical incompatibility detected',
+    'ai.suggested_action': 'Suggested Action',
+    'ai.data_source': 'Data Source',
+    'ai.no_critical_incompatibility': 'No critical incompatibility',
+    'ai.no_recommendation': 'No recommendation available',
+    'ai.report_preview_title': 'Report Preview',
+    'ai.assembly_readiness': 'Assembly Readiness',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -3966,6 +4085,51 @@ const I18N = {
     'sc.verification.reference_only': 'Yalnızca referans',
     'sc.verification.provisional': 'Geçici',
     'sc.verification.unknown': 'Bilinmiyor',
+    // ---- Faz 2.8.6 Stage 4: Assembly Intelligence ----
+    'sidebar.assemblyintelligence': 'Montaj Zekâsı',
+    'ai.page_title': 'Montaj Zekâsı',
+    'ai.page_subtitle': 'Civata, somun, pul, dayanım sınıfı ve çalışma koşullarını birlikte değerlendirir.',
+    'ai.banner': 'Aşağıda gösterilen tüm sonuçlar doğrudan backend değerlendirmesinden gelir -- bu sayfa kendi skor, durum veya risk hesaplamasını yapmaz.',
+    'ai.input_title': 'Montaj Girdileri',
+    'ai.input_sub': 'Tüm alanlar opsiyoneldir. Bilginiz olmayan alanı boş bırakın.',
+    'ai.field.bolt_designation': 'Civata tanımı',
+    'ai.field.nut_designation': 'Somun tanımı',
+    'ai.field.bolt_strength_class': 'Civata dayanım sınıfı',
+    'ai.field.nut_property_class': 'Somun özellik sınıfı',
+    'ai.field.nominal_diameter_mm': 'Nominal çap (mm)',
+    'ai.field.thread_designation': 'Diş tanımı',
+    'ai.field.bolt_size': 'Civata boyutu',
+    'ai.field.washer_standard': 'Pul standardı',
+    'ai.field.friction_condition_id': 'Sürtünme koşulu ID',
+    'ai.field.standard_name': 'Standart adı',
+    'ai.field.oem_reference': 'OEM referansı',
+    'ai.field.automotive_reference': 'Otomotiv referansı',
+    'ai.field.intended_operating_temperature_c': 'Hedeflenen çalışma sıcaklığı (°C)',
+    'ai.field.intended_coating': 'Hedeflenen kaplama',
+    'ai.field.include_report': 'Raporu dahil et',
+    'ai.assess_button': 'Montajı Değerlendir',
+    'ai.loading': 'Yükleniyor',
+    'ai.assessment_completed': 'Değerlendirme tamamlandı',
+    'ai.assessment_failed': 'Değerlendirme başarısız',
+    'ai.not_enough_data': 'Değerlendirme için yeterli veri bulunmuyor. Daha fazla bağlantı bilgisi girin.',
+    'ai.overall_score': 'Genel Skor',
+    'ai.coverage': 'Kapsama',
+    'ai.overall_status': 'Genel Durum',
+    'ai.risk_level': 'Risk Seviyesi',
+    'ai.passed': 'Geçti',
+    'ai.warnings': 'Uyarılar',
+    'ai.failed': 'Başarısız',
+    'ai.detected_problems': 'Tespit Edilen Sorunlar',
+    'ai.recommendations': 'Öneriler',
+    'ai.compatibility': 'Uyumluluk',
+    'ai.critical_incompatibilities': 'Kritik Uyumsuzluklar',
+    'ai.critical_detected': 'Kritik uyumsuzluk tespit edildi',
+    'ai.suggested_action': 'Önerilen Aksiyon',
+    'ai.data_source': 'Veri Kaynağı',
+    'ai.no_critical_incompatibility': 'Kritik uyumsuzluk yok',
+    'ai.no_recommendation': 'Öneri bulunmuyor',
+    'ai.report_preview_title': 'Rapor Önizleme',
+    'ai.assembly_readiness': 'Montaj Hazırlığı',
   },
 };
 
@@ -4302,6 +4466,219 @@ function scReapplyLanguage() {
   scPopulateCompatSelectors();
 }
 
+// ---------------------------------------------------------------------
+// Assembly Intelligence (Faz 2.8.6 Stage 4)
+//
+// Renders the POST /api/assembly-intelligence/assess response
+// (Faz 2.8.6 Stage 3) verbatim. This module computes no score,
+// status, risk level, or compatibility result of its own -- every
+// value shown comes directly from the API response object held in
+// AI_LAST_RESULT; language switching only re-renders that same
+// object, it never re-requests or re-derives anything.
+// ---------------------------------------------------------------------
+let AI_LAST_RESULT = null;
+let AI_REQUEST_IN_FLIGHT = false;
+
+function aiEsc(s) {
+  if (s === null || s === undefined || s === '') return '—';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const AI_STATUS_META = {
+  compatible: {cls: 'alert-ok', icon: '\u2705'},
+  incompatible: {cls: 'alert-danger', icon: '\u274c'},
+  insufficient_data: {cls: 'alert-info', icon: '\u2753'},
+  blocked_authoritative_source: {cls: 'alert-warn', icon: '\u26a0\ufe0f'},
+};
+
+// Trims a raw input value: '' -> undefined (field omitted from the
+// request body entirely -- never sent as null/'' to avoid the exact
+// empty-vs-null ambiguity the brief calls out). A numeric field that
+// fails to parse is also omitted rather than sending NaN/garbage.
+function aiTrimField(id) {
+  const el = document.getElementById(id);
+  const v = el.value.trim();
+  return v === '' ? undefined : v;
+}
+function aiNumericField(id) {
+  const el = document.getElementById(id);
+  const raw = el.value.trim();
+  if (raw === '') return undefined;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+function aiBuildPayload() {
+  const payload = {
+    bolt_designation: aiTrimField('ai-bolt-designation'),
+    nut_designation: aiTrimField('ai-nut-designation'),
+    bolt_strength_class: aiTrimField('ai-bolt-strength-class'),
+    nut_property_class: aiTrimField('ai-nut-property-class'),
+    nominal_diameter_mm: aiNumericField('ai-nominal-diameter'),
+    thread_designation: aiTrimField('ai-thread-designation'),
+    bolt_size: aiTrimField('ai-bolt-size'),
+    washer_standard: aiTrimField('ai-washer-standard'),
+    friction_condition_id: aiTrimField('ai-friction-condition-id'),
+    standard_name: aiTrimField('ai-standard-name'),
+    oem_reference: aiTrimField('ai-oem-reference'),
+    automotive_reference: aiTrimField('ai-automotive-reference'),
+    intended_operating_temperature_c: aiNumericField('ai-intended-operating-temperature'),
+    intended_coating: aiTrimField('ai-intended-coating'),
+    include_report: document.getElementById('ai-include-report').checked,
+  };
+  // Only include_report is ever sent as an explicit boolean; every
+  // other omitted (undefined) key is stripped so the request body
+  // never carries a stray null/'' for a field the user left blank.
+  Object.keys(payload).forEach(k => { if (payload[k] === undefined) delete payload[k]; });
+  return payload;
+}
+
+async function aiAssessAssembly() {
+  if (AI_REQUEST_IN_FLIGHT) return; // double-submit guard
+  const btn = document.getElementById('ai-assess-btn');
+  const resultEl = document.getElementById('ai-result');
+  AI_REQUEST_IN_FLIGHT = true;
+  btn.disabled = true;
+  resultEl.innerHTML = '<div class="fc-muted">' + aiEsc(t('ai.loading')) + '</div>';
+  try {
+    const payload = aiBuildPayload();
+    const result = await apiRequest('/api/assembly-intelligence/assess', {
+      method: 'POST', body: JSON.stringify(payload),
+    });
+    AI_LAST_RESULT = result;
+    aiRenderResult(result);
+  } catch (e) {
+    AI_LAST_RESULT = null;
+    resultEl.innerHTML = '<div class="alert alert-danger">' + aiEsc(t('ai.assessment_failed')) + ': ' +
+      aiEsc(e && e.message ? e.message : String(e)) + '</div>';
+  } finally {
+    AI_REQUEST_IN_FLIGHT = false;
+    btn.disabled = false;
+  }
+}
+
+function aiRenderResult(result) {
+  const resultEl = document.getElementById('ai-result');
+  const readiness = result.assembly_readiness || {};
+  const score = result.score || {};
+  const coverage = result.coverage || {};
+  const summary = result.check_summary || {};
+
+  // not_assessable is a normal, controlled outcome -- not an error
+  // screen. It still renders every field the API actually returned.
+  const notAssessableNote = readiness.overall_status === 'not_assessable'
+    ? '<div class="alert alert-info">' + aiEsc(t('ai.not_enough_data')) + '</div>'
+    : '';
+
+  const criticalList = result.critical_incompatibilities || [];
+  const criticalBanner = criticalList.length
+    ? '<div class="alert alert-danger ai-critical-banner">\u26a0\ufe0f ' + aiEsc(t('ai.critical_detected')) + '</div>'
+    : '';
+
+  const scoreDisplay = (score.assembly_intelligence_score === null || score.assembly_intelligence_score === undefined)
+    ? '—' : Number(score.assembly_intelligence_score).toFixed(2);
+  const coverageDisplay = (coverage.assessment_coverage_percent === null || coverage.assessment_coverage_percent === undefined)
+    ? '—' : Number(coverage.assessment_coverage_percent).toFixed(2) + '%';
+
+  const summaryCards = [
+    ['ai.overall_score', scoreDisplay],
+    ['ai.coverage', coverageDisplay],
+    ['ai.overall_status', aiEsc(readiness.overall_status)],
+    ['ai.risk_level', aiEsc(readiness.overall_risk_level)],
+    ['ai.passed', summary.passed],
+    ['ai.warnings', summary.warning],
+    ['ai.failed', summary.failed],
+  ].map(([key, value]) => `
+    <div class="ai-summary-card">
+      <div class="ai-summary-label">${aiEsc(t(key))}</div>
+      <div class="ai-summary-value">${value === undefined || value === null ? '—' : value}</div>
+    </div>`).join('');
+
+  const checksHtml = (result.checks || []).map(c => {
+    const meta = AI_STATUS_META[c.status] || AI_STATUS_META.insufficient_data;
+    return `
+      <div class="alert ${meta.cls} ai-check-row">
+        <div class="ai-check-head">
+          <span class="sc-status-badge">${meta.icon} ${aiEsc(c.check_name)}</span>
+          <span style="color:var(--text3);font-size:11px">${aiEsc(c.status)} · ${aiEsc(c.severity)}</span>
+        </div>
+        <div class="ai-check-field">${aiEsc(c.message)}</div>
+        <div class="ai-check-field"><span class="ai-check-field-label">${aiEsc(t('ai.data_source'))}: </span>${aiEsc(c.data_source)}</div>
+        <div class="ai-check-field"><span class="ai-check-field-label">${aiEsc(t('ai.suggested_action'))}: </span>${aiEsc(c.suggested_action)}</div>
+      </div>`;
+  }).join('');
+
+  const criticalSectionHtml = criticalList.length
+    ? `<div class="card">
+        <div class="card-title">${aiEsc(t('ai.critical_incompatibilities'))}</div>
+        <ul>${criticalList.map(item => `<li>${aiEsc(item)}</li>`).join('')}</ul>
+      </div>`
+    : `<div class="card">
+        <div class="card-title">${aiEsc(t('ai.critical_incompatibilities'))}</div>
+        <div class="fc-muted">${aiEsc(t('ai.no_critical_incompatibility'))}</div>
+      </div>`;
+
+  const reportHtml = (document.getElementById('ai-include-report').checked && result.report)
+    ? aiRenderReportSection(result.report) : '';
+
+  resultEl.innerHTML = `
+    ${criticalBanner}
+    ${notAssessableNote}
+    <div class="card">
+      <div class="card-title">${aiEsc(t('ai.assessment_completed'))}</div>
+      <div class="ai-summary-grid">${summaryCards}</div>
+    </div>
+    <div class="card">
+      <div class="card-title">${aiEsc(t('ai.detected_problems'))}</div>
+      <div class="ai-check-list">${checksHtml || '<div class="fc-muted">' + aiEsc(t('ai.no_recommendation')) + '</div>'}</div>
+    </div>
+    ${criticalSectionHtml}
+    ${reportHtml}
+  `;
+}
+
+// Renders the Stage 2 report section (result.report) when the user
+// requested include_report -- structured, never raw JSON dumped to
+// the page.
+function aiRenderReportSection(report) {
+  const readiness = report.assembly_readiness || {};
+  const score = report.score || {};
+  const coverage = report.coverage || {};
+  const checks = report.checks || [];
+  const critical = report.critical_incompatibilities || [];
+  const scoreDisplay = (score.assembly_intelligence_score === null || score.assembly_intelligence_score === undefined)
+    ? '—' : Number(score.assembly_intelligence_score).toFixed(2);
+  const coverageDisplay = (coverage.assessment_coverage_percent === null || coverage.assessment_coverage_percent === undefined)
+    ? '—' : Number(coverage.assessment_coverage_percent).toFixed(2) + '%';
+  const compatSummary = checks.map(c =>
+    `<li>${aiEsc(c.check_name)}: ${aiEsc(c.status)}</li>`).join('');
+  const recommendations = checks
+    .flatMap(c => (c.engine_recommendations || []).map(r => `${aiEsc(c.check_name)}: ${aiEsc(r)}`));
+  return `
+    <div class="card">
+      <div class="card-title">${aiEsc(t('ai.report_preview_title'))}</div>
+      <div class="fc-field-row"><span class="fc-field-label">${aiEsc(t('ai.assembly_readiness'))}</span>
+        <span class="fc-field-value">${aiEsc(readiness.overall_status)} / ${aiEsc(readiness.overall_risk_level)}</span></div>
+      <div class="fc-field-row"><span class="fc-field-label">${aiEsc(t('ai.overall_score'))}</span>
+        <span class="fc-field-value">${scoreDisplay}</span></div>
+      <div class="fc-field-row"><span class="fc-field-label">${aiEsc(t('ai.coverage'))}</span>
+        <span class="fc-field-value">${coverageDisplay}</span></div>
+      <div class="sc-check-label">${aiEsc(t('ai.compatibility'))}</div>
+      <ul>${compatSummary || '<li>' + aiEsc(t('ai.no_recommendation')) + '</li>'}</ul>
+      <div class="sc-check-label">${aiEsc(t('ai.critical_incompatibilities'))}</div>
+      <ul>${critical.length ? critical.map(i => `<li>${aiEsc(i)}</li>`).join('') : '<li>' + aiEsc(t('ai.no_critical_incompatibility')) + '</li>'}</ul>
+      <div class="sc-check-label">${aiEsc(t('ai.recommendations'))}</div>
+      <ul>${recommendations.length ? recommendations.join('') : '<li>' + aiEsc(t('ai.no_recommendation')) + '</li>'}</ul>
+    </div>`;
+}
+
+// Re-renders the already-fetched result in the new language without
+// re-requesting the API -- same pattern as scReapplyLanguage() /
+// fcRenderOverview() above.
+function aiReapplyLanguage() {
+  if (AI_LAST_RESULT) aiRenderResult(AI_LAST_RESULT);
+}
+
 function applyStaticTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(function (el) {
     el.textContent = t(el.getAttribute('data-i18n'));
@@ -4348,6 +4725,7 @@ function setLanguage(lang) {
   }
   if (typeof libraryReapplyLanguage === 'function') libraryReapplyLanguage();
   if (typeof scReapplyLanguage === 'function') scReapplyLanguage();
+  if (typeof aiReapplyLanguage === 'function') aiReapplyLanguage();
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
   if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();
