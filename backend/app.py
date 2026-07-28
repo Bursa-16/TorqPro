@@ -21,6 +21,10 @@ try:
         assess_recommendation_readiness, generate_friction_warnings, compare_friction_conditions,
     )
     from backend.calculation_engine.friction_report import build_friction_condition_report_section
+    from backend.calculation_engine.assembly_intelligence import assess_assembly
+    from backend.calculation_engine.assembly_intelligence_report import (
+        collect_assembly_intelligence_report_from_result,
+    )
     from backend.calculation_engine.exceptions import CalculationInputError
 except ImportError:  # pragma: no cover - direct import with backend/ on sys.path
     from engineering_core.joint import evaluate_joint  # type: ignore[no-redef]
@@ -30,6 +34,10 @@ except ImportError:  # pragma: no cover - direct import with backend/ on sys.pat
         assess_recommendation_readiness, generate_friction_warnings, compare_friction_conditions,
     )
     from calculation_engine.friction_report import build_friction_condition_report_section  # type: ignore[no-redef]
+    from calculation_engine.assembly_intelligence import assess_assembly  # type: ignore[no-redef]
+    from calculation_engine.assembly_intelligence_report import (  # type: ignore[no-redef]
+        collect_assembly_intelligence_report_from_result,
+    )
     from calculation_engine.exceptions import CalculationInputError  # type: ignore[no-redef]
 
 BASE=Path(__file__).resolve().parent.parent
@@ -539,6 +547,81 @@ def friction_condition_report_preview(x: FrictionConditionReportPreview, u=Depen
     except CalculationInputError as e:
         raise HTTPException(422, str(e))
     return section.to_dict()
+
+
+class AssemblyIntelligenceAssess(BaseModel):
+    # Faz 2.8.6 Stage 3: additive, new endpoint. Field set mirrors
+    # backend.calculation_engine.assembly_intelligence.assess_assembly's
+    # real keyword parameters 1:1 -- no field invented, none omitted.
+    # Every field is optional because assess_assembly itself requires
+    # none: a missing input makes the corresponding check(s)
+    # insufficient_data rather than raising (see Stage 1 module
+    # docstring), so there is no "required" field to invent here either.
+    bolt_designation: Optional[str] = None
+    nut_designation: Optional[str] = None
+    bolt_strength_class: Optional[str] = None
+    nut_property_class: Optional[str] = None
+    nominal_diameter_mm: Optional[float] = None
+    thread_designation: Optional[str] = None
+    bolt_size: Optional[str] = None
+    washer_standard: Optional[str] = None
+    friction_condition_id: Optional[str] = None
+    standard_name: Optional[str] = None
+    oem_reference: Optional[str] = None
+    automotive_reference: Optional[str] = None
+    intended_operating_temperature_c: Optional[float] = None
+    intended_coating: Optional[str] = None
+    # Stage 3 API-only flag -- not a Stage 1/2 engine parameter.
+    # Controls whether the full Stage 2 JSON report section is
+    # additionally embedded under response["report"].
+    include_report: bool = False
+
+
+@app.post("/api/assembly-intelligence/assess")
+def assembly_intelligence_assess(x: AssemblyIntelligenceAssess, u=Depends(user)):
+    # Orchestration only: no engineering formula, status mapping or
+    # score rule lives here -- see
+    # backend.calculation_engine.assembly_intelligence (Stage 1) and
+    # .assembly_intelligence_report (Stage 2) for the deterministic
+    # logic, both unchanged by this endpoint.
+    #
+    # Unlike /api/friction-condition/assess (whose engine can raise
+    # CalculationInputError for a broken coating/lubricant reference),
+    # assess_assembly() never raises for missing, unknown or malformed
+    # *engineering* input -- every such case already resolves to
+    # insufficient_data or blocked_authoritative_source inside Stage 1.
+    # There is therefore no expected-error branch to catch here: a
+    # malformed request body is rejected by Pydantic before this
+    # function runs (FastAPI's standard 4xx), and a genuine unexpected
+    # exception is left to propagate to FastAPI's default 500 handler,
+    # matching every other engineering endpoint in this module.
+    fields = x.model_dump()
+    include_report = fields.pop("include_report")
+    result = assess_assembly(**fields)
+    report = collect_assembly_intelligence_report_from_result(result)
+    response = {
+        "engine_result": result.to_dict(),
+        "assembly_readiness": report["assembly_readiness"],
+        "score": report["score"],
+        "coverage": report["coverage"],
+        "check_summary": report["check_summary"],
+        "checks": [
+            {
+                "check_id": row["check_id"],
+                "check_name": row["check_name"],
+                "status": row["status"],
+                "severity": row["severity"],
+                "message": row["detail"],
+                "data_source": row["data_source"],
+                "suggested_action": row["suggested_action"],
+            }
+            for row in report["checks"]
+        ],
+        "critical_incompatibilities": report["critical_incompatibilities"],
+    }
+    if include_report:
+        response["report"] = report
+    return response
 
 
 DATA_DIR=BASE/"data"

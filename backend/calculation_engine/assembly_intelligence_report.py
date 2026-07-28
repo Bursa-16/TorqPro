@@ -401,6 +401,16 @@ def render_assembly_intelligence_report_markdown(report: Dict[str, Any]) -> str:
 
 __all__ = [
     "collect_assembly_intelligence_report",
+    "collect_assembly_intelligence_report_from_result",
     "render_assembly_intelligence_report_json",
     "render_assembly_intelligence_report_markdown",
 ]
+
+# Public alias for _collect_from_result (Stage 3 addition): the API
+# layer (backend/app.py) already has a Stage 1 AssemblyIntelligenceResult
+# in hand and must not call assess_assembly() a second time just to
+# build the report -- exactly the reuse case _collect_from_result's own
+# docstring anticipated. No engineering logic changed; this is a pure
+# visibility alias, the underscore-prefixed name is untouched and still
+# used internally/by Stage 2 tests.
+collect_assembly_intelligence_report_from_result = _collect_from_result

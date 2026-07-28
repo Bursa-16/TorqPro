@@ -399,3 +399,38 @@ def test_regression_report_collector_does_not_mutate_population_library():
     )
     bolts_after = len(population.find_bolt())
     assert bolts_before == bolts_after
+
+
+# ---------------------------------------------------------------------
+# Public alias for Stage 3 reuse (collect_assembly_intelligence_report_from_result)
+# ---------------------------------------------------------------------
+
+def test_public_alias_exists_and_is_exported():
+    assert "collect_assembly_intelligence_report_from_result" in report_module.__all__
+    assert (
+        report_module.collect_assembly_intelligence_report_from_result
+        is report_module._collect_from_result
+    )
+
+
+def test_public_alias_builds_identical_report_to_private_helper():
+    result = ai.assess_assembly(bolt_strength_class="8.8", nut_property_class="8")
+    via_private = report_module._collect_from_result(result)
+    via_public = report_module.collect_assembly_intelligence_report_from_result(result)
+    assert via_private == via_public
+
+
+def test_public_alias_avoids_a_second_assess_assembly_call(sample_bolt, sample_nut_for):
+    """The whole point of the alias: an API layer that already has a
+    Stage 1 result must be able to build the report without calling
+    assess_assembly() again. Verify the alias accepts an
+    AssemblyIntelligenceResult directly and needs no further engine
+    call to produce a complete, correct report."""
+    result = ai.assess_assembly(
+        bolt_designation=sample_bolt["designation"],
+        nut_designation=sample_nut_for["designation"],
+        nominal_diameter_mm=sample_bolt["nominal_diameter_mm"],
+    )
+    report = report_module.collect_assembly_intelligence_report_from_result(result)
+    assert report["score"]["assembly_intelligence_score"] == result.score
+    assert len(report["checks"]) == len(result.checks)
