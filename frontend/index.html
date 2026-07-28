@@ -444,6 +444,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> <span data-i18n="sidebar.frictioncondition">Friction Condition</span></div>
     <div class="sidebar-item" onclick="showPage('strengthclasses')"><span class="sidebar-icon">🔗</span> <span data-i18n="sidebar.strengthclasses">Bolt/Nut Strength Classes</span></div>
     <div class="sidebar-item" onclick="showPage('assemblyintelligence')"><span class="sidebar-icon">🧠</span> <span data-i18n="sidebar.assemblyintelligence">Montaj Zekâsı</span></div>
+    <div class="sidebar-item" onclick="showPage('jointanalysis')"><span class="sidebar-icon">⚙️</span> <span data-i18n="sidebar.jointanalysis">Joint Analysis</span></div>
     <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> <span data-i18n="sidebar.norm_guide">Norm Rehberi</span></div>
     <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> <span data-i18n="sidebar.fmea_catalog">FMEA Kataloğu</span></div>
   </div>
@@ -1055,6 +1056,81 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   </div>
 
   <div id="ai-result"></div>
+</div>
+
+<!-- JOINT ANALYSIS & TORQUE OPTIMIZATION (Faz 2.8.7) -->
+<div id="page-jointanalysis" class="page">
+  <div class="section-header"><span class="section-icon">⚙️</span><div>
+    <div class="section-title" data-i18n="ja.page_title">Joint Analysis</div>
+    <div class="section-sub" data-i18n="ja.page_subtitle">Torque, preload, stiffness and safety assessment from existing verified formulas</div>
+  </div></div>
+  <div class="alert alert-info" data-i18n="ja.banner">
+    All values below come directly from existing, already-tested calculation functions -- this page invents no new
+    formula, coefficient or default limit. A missing input leaves the corresponding result unevaluated rather than
+    guessed.
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="ja.input_title">Joint Inputs</div>
+    <div class="card-sub" data-i18n="ja.input_sub">All fields are optional. Leave a field empty if you do not have that information -- coverage/readiness will reflect what could be evaluated.</div>
+    <div class="ai-form-grid">
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.diameter_mm">Nominal diameter (mm)</label>
+        <input class="form-input" id="ja-diameter-mm" type="number" min="0" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.pitch_mm">Thread pitch (mm)</label>
+        <input class="form-input" id="ja-pitch-mm" type="number" min="0" step="0.05"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.rp02_mpa">Yield/proof strength Rp0.2 (MPa)</label>
+        <input class="form-input" id="ja-rp02-mpa" type="number" min="0" step="1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.target_yield_ratio">Target yield utilization ratio (0-1)</label>
+        <input class="form-input" id="ja-target-yield-ratio" type="number" min="0" max="1" step="0.01"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.max_utilization_ratio">Max allowed utilization ratio (0-1)</label>
+        <input class="form-input" id="ja-max-utilization-ratio" type="number" min="0" max="1" step="0.01"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.mu_thread_nom">Thread friction coefficient (nominal)</label>
+        <input class="form-input" id="ja-mu-thread-nom" type="number" min="0" max="1" step="0.01"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.mu_bearing_nom">Bearing friction coefficient (nominal)</label>
+        <input class="form-input" id="ja-mu-bearing-nom" type="number" min="0" max="1" step="0.01"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.effective_bearing_diameter_mm">Effective bearing diameter (mm)</label>
+        <input class="form-input" id="ja-effective-bearing-diameter" type="number" min="0" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.external_axial_load_n">External axial load (N)</label>
+        <input class="form-input" id="ja-external-axial-load" type="number" step="1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.minimum_required_clamp_load_n">Minimum required clamp load (N)</label>
+        <input class="form-input" id="ja-min-clamp-load" type="number" min="0" step="1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.applied_torque_nm">Applied torque (Nm)</label>
+        <input class="form-input" id="ja-applied-torque" type="number" min="0" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.fail_threshold">Fail utilization threshold (0-1)</label>
+        <input class="form-input" id="ja-fail-threshold" type="number" min="0" max="1" step="0.01"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.warn_threshold">Warn utilization threshold (0-1)</label>
+        <input class="form-input" id="ja-warn-threshold" type="number" min="0" max="1" step="0.01"></div>
+    </div>
+
+    <div class="card-title" style="margin-top:18px" data-i18n="ja.bolt_segment_title">Bolt Stiffness Segment</div>
+    <div class="card-sub" data-i18n="ja.segment_sub">One representative series-compliance segment (length, modulus, area). The API supports several segments per stack; this quick form covers the common single-segment case.</div>
+    <div class="ai-form-grid">
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.segment_length_mm">Length (mm)</label>
+        <input class="form-input" id="ja-bolt-seg-length" type="number" min="0" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.segment_modulus_mpa">Elastic modulus (MPa)</label>
+        <input class="form-input" id="ja-bolt-seg-modulus" type="number" min="0" step="100"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.segment_area_mm2">Cross-section area (mm²)</label>
+        <input class="form-input" id="ja-bolt-seg-area" type="number" min="0" step="0.1"></div>
+    </div>
+
+    <div class="card-title" style="margin-top:18px" data-i18n="ja.joint_segment_title">Clamped-Part (Joint) Stiffness Segment</div>
+    <div class="card-sub" data-i18n="ja.segment_sub">One representative series-compliance segment (length, modulus, area). The API supports several segments per stack; this quick form covers the common single-segment case.</div>
+    <div class="ai-form-grid">
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.segment_length_mm">Length (mm)</label>
+        <input class="form-input" id="ja-joint-seg-length" type="number" min="0" step="0.1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.segment_modulus_mpa">Elastic modulus (MPa)</label>
+        <input class="form-input" id="ja-joint-seg-modulus" type="number" min="0" step="100"></div>
+      <div class="form-group"><label class="form-label" data-i18n="ja.field.segment_area_mm2">Cross-section area (mm²)</label>
+        <input class="form-input" id="ja-joint-seg-area" type="number" min="0" step="0.1"></div>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:10px">
+      <button class="btn btn-primary" id="ja-calculate-btn" onclick="jaCalculate()" data-i18n="ja.calculate_button">Calculate</button>
+      <button class="btn btn-secondary" id="ja-reset-btn" onclick="jaReset()" data-i18n="ja.reset_button">Reset</button>
+    </div>
+  </div>
+
+  <div id="ja-result"></div>
 </div>
 
 <!-- NORM REHBERİ -->
@@ -2826,6 +2902,81 @@ const I18N = {
     'ai.no_recommendation': 'No recommendation available',
     'ai.report_preview_title': 'Report Preview',
     'ai.assembly_readiness': 'Assembly Readiness',
+    'sidebar.jointanalysis': 'Joint Analysis',
+    'ja.page_title': 'Joint Analysis',
+    'ja.page_subtitle': 'Torque, preload, stiffness and safety assessment from existing verified formulas',
+    'ja.banner': 'All values below come directly from existing, already-tested calculation functions -- this page invents no new formula, coefficient or default limit. A missing input leaves the corresponding result unevaluated rather than guessed.',
+    'ja.input_title': 'Joint Inputs',
+    'ja.input_sub': 'All fields are optional. Leave a field empty if you do not have that information -- coverage/readiness will reflect what could be evaluated.',
+    'ja.bolt_segment_title': 'Bolt Stiffness Segment',
+    'ja.joint_segment_title': 'Clamped-Part (Joint) Stiffness Segment',
+    'ja.segment_sub': 'One representative series-compliance segment (length, modulus, area). The API supports several segments per stack; this quick form covers the common single-segment case.',
+    'ja.field.diameter_mm': 'Nominal diameter (mm)',
+    'ja.field.pitch_mm': 'Thread pitch (mm)',
+    'ja.field.rp02_mpa': 'Yield/proof strength Rp0.2 (MPa)',
+    'ja.field.target_yield_ratio': 'Target yield utilization ratio (0-1)',
+    'ja.field.max_utilization_ratio': 'Max allowed utilization ratio (0-1)',
+    'ja.field.mu_thread_nom': 'Thread friction coefficient (nominal)',
+    'ja.field.mu_bearing_nom': 'Bearing friction coefficient (nominal)',
+    'ja.field.effective_bearing_diameter_mm': 'Effective bearing diameter (mm)',
+    'ja.field.external_axial_load_n': 'External axial load (N)',
+    'ja.field.minimum_required_clamp_load_n': 'Minimum required clamp load (N)',
+    'ja.field.applied_torque_nm': 'Applied torque (Nm)',
+    'ja.field.fail_threshold': 'Fail utilization threshold (0-1)',
+    'ja.field.warn_threshold': 'Warn utilization threshold (0-1)',
+    'ja.field.segment_length_mm': 'Length (mm)',
+    'ja.field.segment_modulus_mpa': 'Elastic modulus (MPa)',
+    'ja.field.segment_area_mm2': 'Cross-section area (mm\u00b2)',
+    'ja.calculate_button': 'Calculate',
+    'ja.reset_button': 'Reset',
+    'ja.loading': 'Calculating',
+    'ja.calculation_failed': 'Calculation failed',
+    'ja.results_title': 'Results',
+    'ja.readiness_title': 'Readiness',
+    'ja.coverage_title': 'Coverage',
+    'ja.coverage_percent': 'Coverage',
+    'ja.warnings_title': 'Warnings',
+    'ja.critical_title': 'Critical Findings',
+    'ja.critical_detected': 'Critical safety finding detected',
+    'ja.no_critical': 'No critical finding',
+    'ja.no_warnings': 'No warnings',
+    'ja.formula_trace_title': 'Formula / Source Traceability',
+    'ja.no_formula_trace': 'No formula trace available',
+    'ja.unsupported_effects_title': 'Unsupported Effects',
+    'ja.unsupported_effects_sub': 'Not modeled in this phase -- see the brief for scope.',
+    'ja.safety_status_title': 'Safety Status',
+    'ja.result.applied_torque_nm': 'Applied Torque',
+    'ja.result.target_preload_n': 'Target / Calculated Preload',
+    'ja.result.preload_from_applied_torque_n': 'Preload From Applied Torque',
+    'ja.result.recommended_torque_nm': 'Recommended / Required Torque',
+    'ja.result.torque_window_min_nm': 'Minimum Torque',
+    'ja.result.torque_window_max_nm': 'Maximum Torque',
+    'ja.result.bolt_stiffness_n_per_mm': 'Bolt Stiffness',
+    'ja.result.joint_stiffness_n_per_mm': 'Joint Stiffness',
+    'ja.result.phi': 'Joint Stiffness Ratio (Phi)',
+    'ja.result.bolt_load_increase_n': 'Bolt Load Increase',
+    'ja.result.residual_clamp_load_n': 'Remaining Clamp Load',
+    'ja.result.yield_utilization': 'Yield Utilization',
+    'ja.result.safety_factor': 'Safety Factor',
+    'ja.readiness.insufficient_data': 'Insufficient data',
+    'ja.readiness.partial': 'Partial',
+    'ja.readiness.torque_window_partial': 'Torque window partial',
+    'ja.readiness.full': 'Full',
+    'ja.safety_status.pass': 'Pass',
+    'ja.safety_status.warn': 'Warning',
+    'ja.safety_status.fail': 'Critical failure',
+    'ja.safety_status.not_evaluable': 'Not evaluable',
+    'ja.safety_status.invalid_input': 'Invalid input',
+    'ja.safety_status.missing_input': 'Missing input',
+    'ja.unsupported.settlement_embedment': 'Settlement / embedding loss',
+    'ja.unsupported.thermal_preload_change': 'Thermal preload change',
+    'ja.unsupported.relaxation_creep': 'Time-dependent relaxation / creep',
+    'ja.unsupported.torque_angle_tightening': 'Torque-angle tightening simulation',
+    'ja.unsupported.multi_step_tightening': 'Multi-step tightening simulation',
+    'ja.unsupported.sequence_optimization': 'Tightening sequence optimization',
+    'ja.unsupported.full_vdi2230_compliance': 'Full VDI 2230 compliance claim',
+    'ja.unsupported.fea': 'Finite element analysis (FEA)',
+    'ja.unsupported.ai_ml_torque_prediction': 'AI/ML torque prediction',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -4130,6 +4281,81 @@ const I18N = {
     'ai.no_recommendation': 'Öneri bulunmuyor',
     'ai.report_preview_title': 'Rapor Önizleme',
     'ai.assembly_readiness': 'Montaj Hazırlığı',
+    'sidebar.jointanalysis': 'Bağlantı Analizi',
+    'ja.page_title': 'Bağlantı Analizi',
+    'ja.page_subtitle': 'Mevcut, doğrulanmış formüllerden tork, ön yük, rijitlik ve güvenlik değerlendirmesi',
+    'ja.banner': 'Aşağıdaki tüm değerler mevcut, zaten test edilmiş hesaplama fonksiyonlarından doğrudan gelir -- bu sayfa yeni bir formül, katsayı veya varsayılan eşik uydurmaz. Eksik bir girdi, ilgili sonucu tahmin etmek yerine değerlendirilmemiş bırakır.',
+    'ja.input_title': 'Bağlantı Girdileri',
+    'ja.input_sub': 'Tüm alanlar isteğe bağlıdır. Bilginiz yoksa alanı boş bırakın -- coverage/readiness neyin hesaplanabildiğini yansıtır.',
+    'ja.bolt_segment_title': 'Cıvata Rijitlik Segmenti',
+    'ja.joint_segment_title': 'Sıkılan Parça (Bağlantı) Rijitlik Segmenti',
+    'ja.segment_sub': 'Tek bir temsili seri-uyumluluk segmenti (uzunluk, modül, alan). API her yığın için birden çok segmenti destekler; bu hızlı form yaygın tek-segment durumunu kapsar.',
+    'ja.field.diameter_mm': 'Nominal çap (mm)',
+    'ja.field.pitch_mm': 'Diş adımı (mm)',
+    'ja.field.rp02_mpa': 'Akma/proof dayanımı Rp0.2 (MPa)',
+    'ja.field.target_yield_ratio': 'Hedef akma kullanım oranı (0-1)',
+    'ja.field.max_utilization_ratio': 'İzin verilen maksimum kullanım oranı (0-1)',
+    'ja.field.mu_thread_nom': 'Diş sürtünme katsayısı (nominal)',
+    'ja.field.mu_bearing_nom': 'Yatak sürtünme katsayısı (nominal)',
+    'ja.field.effective_bearing_diameter_mm': 'Efektif yatak çapı (mm)',
+    'ja.field.external_axial_load_n': 'Harici eksenel yük (N)',
+    'ja.field.minimum_required_clamp_load_n': 'Minimum gerekli sıkma kuvveti (N)',
+    'ja.field.applied_torque_nm': 'Uygulanan tork (Nm)',
+    'ja.field.fail_threshold': 'Başarısızlık kullanım eşiği (0-1)',
+    'ja.field.warn_threshold': 'Uyarı kullanım eşiği (0-1)',
+    'ja.field.segment_length_mm': 'Uzunluk (mm)',
+    'ja.field.segment_modulus_mpa': 'Elastisite modülü (MPa)',
+    'ja.field.segment_area_mm2': 'Kesit alanı (mm\u00b2)',
+    'ja.calculate_button': 'Hesapla',
+    'ja.reset_button': 'Sıfırla',
+    'ja.loading': 'Hesaplanıyor',
+    'ja.calculation_failed': 'Hesaplama başarısız',
+    'ja.results_title': 'Sonuçlar',
+    'ja.readiness_title': 'Hazırlık Durumu',
+    'ja.coverage_title': 'Kapsam',
+    'ja.coverage_percent': 'Kapsam',
+    'ja.warnings_title': 'Uyarılar',
+    'ja.critical_title': 'Kritik Bulgular',
+    'ja.critical_detected': 'Kritik güvenlik bulgusu tespit edildi',
+    'ja.no_critical': 'Kritik bulgu yok',
+    'ja.no_warnings': 'Uyarı yok',
+    'ja.formula_trace_title': 'Formül / Kaynak İzlenebilirliği',
+    'ja.no_formula_trace': 'Formül izi mevcut değil',
+    'ja.unsupported_effects_title': 'Kapsam Dışı Etkiler',
+    'ja.unsupported_effects_sub': 'Bu fazda modellenmez -- kapsam için brief\'e bakın.',
+    'ja.safety_status_title': 'Güvenlik Durumu',
+    'ja.result.applied_torque_nm': 'Uygulanan Tork',
+    'ja.result.target_preload_n': 'Hedef / Hesaplanan Ön Yük',
+    'ja.result.preload_from_applied_torque_n': 'Uygulanan Torktan Ön Yük',
+    'ja.result.recommended_torque_nm': 'Önerilen / Gerekli Tork',
+    'ja.result.torque_window_min_nm': 'Minimum Tork',
+    'ja.result.torque_window_max_nm': 'Maksimum Tork',
+    'ja.result.bolt_stiffness_n_per_mm': 'Cıvata Rijitliği',
+    'ja.result.joint_stiffness_n_per_mm': 'Bağlantı Rijitliği',
+    'ja.result.phi': 'Bağlantı Rijitlik Oranı (Phi)',
+    'ja.result.bolt_load_increase_n': 'Cıvata Yükü Artışı',
+    'ja.result.residual_clamp_load_n': 'Kalan Sıkma Kuvveti',
+    'ja.result.yield_utilization': 'Akma Kullanım Oranı',
+    'ja.result.safety_factor': 'Emniyet Katsayısı',
+    'ja.readiness.insufficient_data': 'Yetersiz veri',
+    'ja.readiness.partial': 'Kısmi',
+    'ja.readiness.torque_window_partial': 'Tork aralığı kısmi',
+    'ja.readiness.full': 'Tam',
+    'ja.safety_status.pass': 'Uygun',
+    'ja.safety_status.warn': 'Uyarı',
+    'ja.safety_status.fail': 'Kritik başarısızlık',
+    'ja.safety_status.not_evaluable': 'Değerlendirilemiyor',
+    'ja.safety_status.invalid_input': 'Geçersiz girdi',
+    'ja.safety_status.missing_input': 'Eksik girdi',
+    'ja.unsupported.settlement_embedment': 'Yerleşme / gömülme kaybı',
+    'ja.unsupported.thermal_preload_change': 'Termal ön yük değişimi',
+    'ja.unsupported.relaxation_creep': 'Zamana bağlı gevşeme / relaksasyon',
+    'ja.unsupported.torque_angle_tightening': 'Tork-açı sıkma simülasyonu',
+    'ja.unsupported.multi_step_tightening': 'Çok kademeli sıkma simülasyonu',
+    'ja.unsupported.sequence_optimization': 'Sıkma sırası optimizasyonu',
+    'ja.unsupported.full_vdi2230_compliance': 'Tam VDI 2230 uygunluk iddiası',
+    'ja.unsupported.fea': 'Sonlu elemanlar analizi (FEA)',
+    'ja.unsupported.ai_ml_torque_prediction': 'AI/ML tork tahmini',
   },
 };
 
@@ -4478,6 +4704,8 @@ function scReapplyLanguage() {
 // ---------------------------------------------------------------------
 let AI_LAST_RESULT = null;
 let AI_REQUEST_IN_FLIGHT = false;
+let JA_LAST_RESULT = null;
+let JA_REQUEST_IN_FLIGHT = false;
 
 function aiEsc(s) {
   if (s === null || s === undefined || s === '') return '—';
@@ -4679,6 +4907,254 @@ function aiReapplyLanguage() {
   if (AI_LAST_RESULT) aiRenderResult(AI_LAST_RESULT);
 }
 
+// ---------------------------------------------------------------
+// Faz 2.8.7: Joint Analysis & Torque Optimization
+// ---------------------------------------------------------------
+function jaEsc(s) {
+  if (s === null || s === undefined || s === '') return '—';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function jaNumericField(id) {
+  const el = document.getElementById(id);
+  const raw = el.value.trim();
+  if (raw === '') return undefined;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n : undefined;
+}
+
+function jaFmtNum(v, digits) {
+  if (v === null || v === undefined) return '—';
+  return Number(v).toFixed(digits === undefined ? 2 : digits);
+}
+
+const JA_READINESS_KEY = {
+  insufficient_data: 'ja.readiness.insufficient_data',
+  partial: 'ja.readiness.partial',
+  torque_window_partial: 'ja.readiness.torque_window_partial',
+  full: 'ja.readiness.full',
+};
+
+const JA_SAFETY_STATUS_KEY = {
+  pass: 'ja.safety_status.pass',
+  warn: 'ja.safety_status.warn',
+  fail: 'ja.safety_status.fail',
+  not_evaluable: 'ja.safety_status.not_evaluable',
+  invalid_input: 'ja.safety_status.invalid_input',
+  missing_input: 'ja.safety_status.missing_input',
+};
+
+const JA_SAFETY_STATUS_CLASS = {
+  pass: 'alert-ok',
+  warn: 'alert-warn',
+  fail: 'alert-danger',
+  not_evaluable: 'alert-info',
+  invalid_input: 'alert-danger',
+  missing_input: 'alert-info',
+};
+
+const JA_UNSUPPORTED_KEY = {
+  settlement_embedment: 'ja.unsupported.settlement_embedment',
+  thermal_preload_change: 'ja.unsupported.thermal_preload_change',
+  relaxation_creep: 'ja.unsupported.relaxation_creep',
+  torque_angle_tightening: 'ja.unsupported.torque_angle_tightening',
+  multi_step_tightening: 'ja.unsupported.multi_step_tightening',
+  sequence_optimization: 'ja.unsupported.sequence_optimization',
+  full_vdi2230_compliance: 'ja.unsupported.full_vdi2230_compliance',
+  fea: 'ja.unsupported.fea',
+  ai_ml_torque_prediction: 'ja.unsupported.ai_ml_torque_prediction',
+};
+
+// Builds the request body. A segment (bolt or joint) is included
+// only when all three of its fields are filled in -- a partially
+// filled segment is dropped rather than sent as a malformed/guessed
+// segment, so it surfaces as "not evaluable" instead of a 422.
+function jaBuildPayload() {
+  const payload = {
+    diameter_mm: jaNumericField('ja-diameter-mm'),
+    pitch_mm: jaNumericField('ja-pitch-mm'),
+    rp02_mpa: jaNumericField('ja-rp02-mpa'),
+    target_yield_ratio: jaNumericField('ja-target-yield-ratio'),
+    max_utilization_ratio: jaNumericField('ja-max-utilization-ratio'),
+    mu_thread_nom: jaNumericField('ja-mu-thread-nom'),
+    mu_bearing_nom: jaNumericField('ja-mu-bearing-nom'),
+    effective_bearing_diameter_mm: jaNumericField('ja-effective-bearing-diameter'),
+    external_axial_load_n: jaNumericField('ja-external-axial-load'),
+    minimum_required_clamp_load_n: jaNumericField('ja-min-clamp-load'),
+    applied_torque_nm: jaNumericField('ja-applied-torque'),
+    fail_threshold: jaNumericField('ja-fail-threshold'),
+    warn_threshold: jaNumericField('ja-warn-threshold'),
+  };
+  const boltSeg = {
+    length_mm: jaNumericField('ja-bolt-seg-length'),
+    modulus_mpa: jaNumericField('ja-bolt-seg-modulus'),
+    area_mm2: jaNumericField('ja-bolt-seg-area'),
+  };
+  if (boltSeg.length_mm !== undefined && boltSeg.modulus_mpa !== undefined && boltSeg.area_mm2 !== undefined) {
+    payload.bolt_segments = [boltSeg];
+  }
+  const jointSeg = {
+    length_mm: jaNumericField('ja-joint-seg-length'),
+    modulus_mpa: jaNumericField('ja-joint-seg-modulus'),
+    area_mm2: jaNumericField('ja-joint-seg-area'),
+  };
+  if (jointSeg.length_mm !== undefined && jointSeg.modulus_mpa !== undefined && jointSeg.area_mm2 !== undefined) {
+    payload.joint_segments = [jointSeg];
+  }
+  Object.keys(payload).forEach(k => { if (payload[k] === undefined) delete payload[k]; });
+  return payload;
+}
+
+async function jaCalculate() {
+  if (JA_REQUEST_IN_FLIGHT) return; // double-submit guard
+  const btn = document.getElementById('ja-calculate-btn');
+  const resultEl = document.getElementById('ja-result');
+  JA_REQUEST_IN_FLIGHT = true;
+  btn.disabled = true;
+  resultEl.innerHTML = '<div class="fc-muted">' + jaEsc(t('ja.loading')) + '</div>';
+  try {
+    const payload = jaBuildPayload();
+    const result = await apiRequest('/api/engineering/joint-analysis', {
+      method: 'POST', body: JSON.stringify(payload),
+    });
+    JA_LAST_RESULT = result;
+    jaRenderResult(result);
+  } catch (e) {
+    JA_LAST_RESULT = null;
+    resultEl.innerHTML = '<div class="alert alert-danger">' + jaEsc(t('ja.calculation_failed')) + ': ' +
+      jaEsc(e && e.message ? e.message : String(e)) + '</div>';
+  } finally {
+    JA_REQUEST_IN_FLIGHT = false;
+    btn.disabled = false;
+  }
+}
+
+function jaReset() {
+  [
+    'ja-diameter-mm', 'ja-pitch-mm', 'ja-rp02-mpa', 'ja-target-yield-ratio',
+    'ja-max-utilization-ratio', 'ja-mu-thread-nom', 'ja-mu-bearing-nom',
+    'ja-effective-bearing-diameter', 'ja-external-axial-load', 'ja-min-clamp-load',
+    'ja-applied-torque', 'ja-fail-threshold', 'ja-warn-threshold',
+    'ja-bolt-seg-length', 'ja-bolt-seg-modulus', 'ja-bolt-seg-area',
+    'ja-joint-seg-length', 'ja-joint-seg-modulus', 'ja-joint-seg-area',
+  ].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  JA_LAST_RESULT = null;
+  const resultEl = document.getElementById('ja-result');
+  if (resultEl) resultEl.innerHTML = '';
+}
+
+function jaRenderResult(result) {
+  const resultEl = document.getElementById('ja-result');
+  const cv = result.calculated_values || {};
+  const window_ = result.torque_window || {};
+  const safety = result.safety || {};
+  const coverage = result.coverage || {};
+  const warnings = result.warnings || [];
+  const critical = result.critical_findings || [];
+  const traces = result.formula_trace || [];
+  const unsupported = result.unsupported_effects || [];
+
+  const criticalBanner = critical.length
+    ? '<div class="alert alert-danger ai-critical-banner">\u26a0\ufe0f ' + jaEsc(t('ja.critical_detected')) + '</div>'
+    : '';
+
+  const readinessLabel = jaEsc(t(JA_READINESS_KEY[result.readiness] || result.readiness));
+  const safetyStatusLabel = jaEsc(t(JA_SAFETY_STATUS_KEY[safety.status] || safety.status));
+  const safetyClass = JA_SAFETY_STATUS_CLASS[safety.status] || 'alert-info';
+
+  // Distinct fields per the Faz 2.8.7 requirement: applied torque
+  // (user input, echoed from result.inputs), calculated/target
+  // preload, preload implied by an already-applied torque, the
+  // required/recommended nominal torque for the target preload, and
+  // the min/max torque window -- never merged into one number.
+  const inputs = result.inputs || {};
+  const summaryCards = [
+    ['ja.result.applied_torque_nm', inputs.applied_torque_nm, ' Nm'],
+    ['ja.result.target_preload_n', cv.target_preload_n, ' N'],
+    ['ja.result.preload_from_applied_torque_n', cv.preload_from_applied_torque_n, ' N'],
+    ['ja.result.recommended_torque_nm', cv.recommended_torque_nm, ' Nm'],
+    ['ja.result.torque_window_min_nm', window_.min_nm, ' Nm'],
+    ['ja.result.torque_window_max_nm', window_.max_nm, ' Nm'],
+    ['ja.result.bolt_stiffness_n_per_mm', cv.bolt_stiffness_n_per_mm, ' N/mm'],
+    ['ja.result.joint_stiffness_n_per_mm', cv.joint_stiffness_n_per_mm, ' N/mm'],
+    ['ja.result.phi', cv.phi, ''],
+    ['ja.result.bolt_load_increase_n', cv.bolt_load_increase_n, ' N'],
+    ['ja.result.residual_clamp_load_n', cv.residual_clamp_load_n, ' N'],
+    ['ja.result.yield_utilization', cv.yield_utilization, ''],
+    ['ja.result.safety_factor', cv.safety_factor, ''],
+  ].map(([key, value, unit]) => `
+    <div class="ai-summary-card">
+      <div class="ai-summary-label">${jaEsc(t(key))}</div>
+      <div class="ai-summary-value">${value === undefined || value === null ? '—' : jaFmtNum(value, 3) + unit}</div>
+    </div>`).join('');
+
+  const coverageBar = `
+    <div class="card">
+      <div class="card-title">${jaEsc(t('ja.coverage_title'))}</div>
+      <div class="result-box">
+        <div class="result-row"><span class="result-key">${jaEsc(t('ja.readiness_title'))}</span><span class="result-val">${readinessLabel}</span></div>
+        <div class="result-row"><span class="result-key">${jaEsc(t('ja.coverage_percent'))}</span><span class="result-val">${jaFmtNum(coverage.coverage_percent, 1)}% (${coverage.evaluated_count ?? 0}/${coverage.total_count ?? 0})</span></div>
+      </div>
+    </div>`;
+
+  const safetyBox = `
+    <div class="alert ${safetyClass}">
+      <strong>${jaEsc(t('ja.safety_status_title'))}:</strong> ${safetyStatusLabel}
+      ${safety.message ? ' — ' + jaEsc(safety.message) : ''}
+    </div>`;
+
+  const warningsHtml = warnings.length
+    ? '<ul>' + warnings.map(w => `<li>${jaEsc(w)}</li>`).join('') + '</ul>'
+    : `<div class="fc-muted">${jaEsc(t('ja.no_warnings'))}</div>`;
+
+  const criticalHtml = critical.length
+    ? '<ul>' + critical.map(c => `<li>${jaEsc(c)}</li>`).join('') + '</ul>'
+    : `<div class="fc-muted">${jaEsc(t('ja.no_critical'))}</div>`;
+
+  const traceHtml = traces.length
+    ? traces.map(tr => `
+        <div class="result-row">
+          <span class="result-key">${jaEsc(tr.symbol)} (${jaEsc(tr.formula_id)})</span>
+          <span class="result-val" style="text-align:right;max-width:60%">${jaEsc(tr.validation_status)} · ${jaEsc(tr.source)}</span>
+        </div>`).join('')
+    : `<div class="fc-muted">${jaEsc(t('ja.no_formula_trace'))}</div>`;
+
+  const unsupportedHtml = unsupported.map(id =>
+    `<li>${jaEsc(t(JA_UNSUPPORTED_KEY[id] || id))}</li>`
+  ).join('');
+
+  resultEl.innerHTML = `
+    ${criticalBanner}
+    <div class="card">
+      <div class="card-title">${jaEsc(t('ja.results_title'))}</div>
+      <div class="ai-summary-grid">${summaryCards}</div>
+    </div>
+    ${safetyBox}
+    ${coverageBar}
+    <div class="card">
+      <div class="card-title">${jaEsc(t('ja.critical_title'))}</div>
+      ${criticalHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">${jaEsc(t('ja.warnings_title'))}</div>
+      ${warningsHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">${jaEsc(t('ja.formula_trace_title'))}</div>
+      <div class="result-box">${traceHtml}</div>
+    </div>
+    <div class="card">
+      <div class="card-title">${jaEsc(t('ja.unsupported_effects_title'))}</div>
+      <div class="card-sub">${jaEsc(t('ja.unsupported_effects_sub'))}</div>
+      <ul>${unsupportedHtml}</ul>
+    </div>
+  `;
+}
+
+function jaReapplyLanguage() {
+  if (JA_LAST_RESULT) jaRenderResult(JA_LAST_RESULT);
+}
+
 function applyStaticTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(function (el) {
     el.textContent = t(el.getAttribute('data-i18n'));
@@ -4726,6 +5202,7 @@ function setLanguage(lang) {
   if (typeof libraryReapplyLanguage === 'function') libraryReapplyLanguage();
   if (typeof scReapplyLanguage === 'function') scReapplyLanguage();
   if (typeof aiReapplyLanguage === 'function') aiReapplyLanguage();
+  if (typeof jaReapplyLanguage === 'function') jaReapplyLanguage();
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
   if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();

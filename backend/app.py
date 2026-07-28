@@ -4,7 +4,7 @@ import csv, json, hashlib, hmac, io, logging, os, platform, secrets, socket, sql
 from collections import defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List
 from fastapi import FastAPI, Depends, HTTPException, Header, Request
 from fastapi.responses import FileResponse, StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -25,7 +25,12 @@ try:
     from backend.calculation_engine.assembly_intelligence_report import (
         collect_assembly_intelligence_report_from_result,
     )
+    from backend.calculation_engine.joint_analysis import analyze_joint
     from backend.calculation_engine.exceptions import CalculationInputError
+    from backend.vdi2230_core import (
+        CalculationDomainError as VdiCalculationDomainError,
+        CalculationInputError as VdiCalculationInputError,
+    )
 except ImportError:  # pragma: no cover - direct import with backend/ on sys.path
     from engineering_core.joint import evaluate_joint  # type: ignore[no-redef]
     from engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed  # type: ignore[no-redef]
@@ -38,7 +43,12 @@ except ImportError:  # pragma: no cover - direct import with backend/ on sys.pat
     from calculation_engine.assembly_intelligence_report import (  # type: ignore[no-redef]
         collect_assembly_intelligence_report_from_result,
     )
+    from calculation_engine.joint_analysis import analyze_joint  # type: ignore[no-redef]
     from calculation_engine.exceptions import CalculationInputError  # type: ignore[no-redef]
+    from vdi2230_core import (  # type: ignore[no-redef]
+        CalculationDomainError as VdiCalculationDomainError,
+        CalculationInputError as VdiCalculationInputError,
+    )
 
 BASE=Path(__file__).resolve().parent.parent
 def _read_app_version() -> str:
@@ -621,6 +631,61 @@ def assembly_intelligence_assess(x: AssemblyIntelligenceAssess, u=Depends(user))
     }
     if include_report:
         response["report"] = report
+    return response
+
+
+class StiffnessSegmentInput(BaseModel):
+    # Mirrors backend.vdi2230_core.StiffnessSegment 1:1 -- no field
+    # invented, none omitted. Faz 2.8.7.
+    length_mm: float = Field(gt=0)
+    modulus_mpa: float = Field(gt=0)
+    area_mm2: float = Field(gt=0)
+
+
+class JointAnalysisRequest(BaseModel):
+    # Faz 2.8.7: additive, new endpoint. Every field is optional
+    # because backend.calculation_engine.joint_analysis.analyze_joint
+    # itself requires none -- a missing input makes the corresponding
+    # output(s) not evaluable rather than raising, so there is no
+    # "required" field to invent here either (mirrors
+    # AssemblyIntelligenceAssess's own rationale above).
+    diameter_mm: Optional[float] = Field(default=None, gt=0)
+    pitch_mm: Optional[float] = Field(default=None, gt=0)
+    rp02_mpa: Optional[float] = Field(default=None, gt=0)
+    target_yield_ratio: Optional[float] = Field(default=None, gt=0, le=1)
+    max_utilization_ratio: Optional[float] = Field(default=None, gt=0, le=1)
+    mu_thread_nom: Optional[float] = Field(default=None, ge=0, le=1)
+    mu_bearing_nom: Optional[float] = Field(default=None, ge=0, le=1)
+    effective_bearing_diameter_mm: Optional[float] = Field(default=None, gt=0)
+    bolt_segments: Optional[List[StiffnessSegmentInput]] = None
+    joint_segments: Optional[List[StiffnessSegmentInput]] = None
+    external_axial_load_n: Optional[float] = None
+    minimum_required_clamp_load_n: Optional[float] = Field(default=None, ge=0)
+    applied_torque_nm: Optional[float] = Field(default=None, gt=0)
+    fail_threshold: Optional[float] = Field(default=None, gt=0)
+    warn_threshold: Optional[float] = Field(default=None, gt=0)
+
+
+@app.post("/api/engineering/joint-analysis")
+def joint_analysis_endpoint(x: JointAnalysisRequest, u=Depends(user)):
+    # Orchestration only: no engineering formula lives here -- see
+    # backend.calculation_engine.joint_analysis.analyze_joint, which
+    # composes already-tested backend.vdi2230_core /
+    # backend.engineering_core functions and is unchanged by this
+    # endpoint. Deterministic error mapping: a *malformed* value the
+    # engine's wired core rejects (e.g. a degenerate torque
+    # coefficient) surfaces as its own vdi2230_core exception, mapped
+    # here to 422 exactly like /api/engineering/check and
+    # /api/friction-condition/assess already do for their own core
+    # exceptions. A malformed request body (wrong type, out-of-range
+    # field) is rejected by Pydantic before this function runs.
+    fields = x.model_dump()
+    try:
+        result = analyze_joint(**fields)
+    except (VdiCalculationInputError, VdiCalculationDomainError) as e:
+        raise HTTPException(422, str(e))
+    response = result.to_dict()
+    response["inputs"] = x.model_dump()
     return response
 
 
