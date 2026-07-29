@@ -186,6 +186,22 @@ even though the harness reports a "clean" result. Not fixed here
 refactor that harness into the same awaited `async function main()`
 pattern this phase's own harness now uses.
 
+## 12C. Faz 2.8.10 – Test Harness & Quality (TR/EN)
+
+**Delivered** 2026-07-29 — see
+`docs/phase_2_8/phase_2_8_10_completion_report.md` for full detail
+(bilingual TR/EN), including the Stage 1 quality-audit findings, the
+Stage 2 shared pytest fixtures, the Stage 3 shared JS harness module
+and global TR/EN parity guard, the Stage 4 repository quality-gate
+runner (`tools/run_quality_gate.py`), and final verified test counts
+(1559/1559 full pytest suite, clean-clone-verified).
+
+Test-infrastructure and quality-tooling phase — no production
+calculation, API, or frontend behavior changed. No ADR was added for
+this phase: it introduces no new architectural pattern or
+irreversible design decision for future phases to reference, so the
+completion report is the appropriate and sufficient record.
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.
