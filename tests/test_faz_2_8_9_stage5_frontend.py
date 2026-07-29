@@ -87,9 +87,12 @@ def test_harness_file_is_dependency_free():
     assert "require('jsdom')" not in text
     assert "require('puppeteer')" not in text
     assert "require('playwright')" not in text
+    # require('./harness_common') is Faz 2.8.10 Stage 3's shared,
+    # dependency-free, in-repo helper module (see tests/js/harness_common.js) --
+    # not an external package, so it is allowed alongside the Node builtins.
     assert "require(" not in text.replace("require('fs')", "").replace(
         "require('path')", ""
-    ).replace("require('vm')", "")
+    ).replace("require('vm')", "").replace("require('./harness_common')", "")
 
 
 def test_harness_uses_awaited_main_not_bare_process_exit():
