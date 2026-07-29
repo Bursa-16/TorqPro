@@ -445,6 +445,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="sidebar-item" onclick="showPage('strengthclasses')"><span class="sidebar-icon">🔗</span> <span data-i18n="sidebar.strengthclasses">Bolt/Nut Strength Classes</span></div>
     <div class="sidebar-item" onclick="showPage('assemblyintelligence')"><span class="sidebar-icon">🧠</span> <span data-i18n="sidebar.assemblyintelligence">Montaj Zekâsı</span></div>
     <div class="sidebar-item" onclick="showPage('jointanalysis')"><span class="sidebar-icon">⚙️</span> <span data-i18n="sidebar.jointanalysis">Joint Analysis</span></div>
+    <div class="sidebar-item" onclick="showPage('materialintelligence')"><span class="sidebar-icon">🧬</span> <span data-i18n="sidebar.materialintelligence">Material Intelligence</span></div>
     <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> <span data-i18n="sidebar.norm_guide">Norm Rehberi</span></div>
     <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> <span data-i18n="sidebar.fmea_catalog">FMEA Kataloğu</span></div>
   </div>
@@ -1131,6 +1132,51 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   </div>
 
   <div id="ja-result"></div>
+</div>
+
+<!-- MATERIAL INTELLIGENCE (Faz 2.8.8) -->
+<div id="page-materialintelligence" class="page">
+  <div class="section-header"><span class="section-icon">🧬</span><div>
+    <div class="section-title" data-i18n="mi.page_title">Material Intelligence</div>
+    <div class="section-sub" data-i18n="mi.page_subtitle">Requirement matching, comparison and readiness-gated recommendations over existing verified material records</div>
+  </div></div>
+  <div class="alert alert-info" data-i18n="mi.banner">
+    This workspace is a separate advisory layer: it never modifies preload, torque, clamp force, stiffness or
+    safety-factor calculations. It only reads existing material records and states what it can and cannot
+    recommend today, and why.
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="mi.materials_title">Material Library</div>
+    <div class="card-sub" data-i18n="mi.materials_sub">8 reference material families -- all reference-only, pending engineering approval.</div>
+    <div id="mi-materials-status" class="fc-muted"></div>
+    <div id="mi-materials-table"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="mi.requirement_title">Material Recommendation</div>
+    <div class="card-sub" data-i18n="mi.requirement_sub">All fields are optional. Leave a field empty to apply no filter on that property.</div>
+    <div class="ai-form-grid">
+      <div class="form-group"><label class="form-label" data-i18n="mi.field.min_rp02_mpa">Minimum Rp0.2 (MPa)</label>
+        <input class="form-input" id="mi-min-rp02" type="number" min="0" step="1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="mi.field.min_rm_mpa">Minimum Rm (MPa)</label>
+        <input class="form-input" id="mi-min-rm" type="number" min="0" step="1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="mi.field.min_e_mpa">Minimum elastic modulus (MPa)</label>
+        <input class="form-input" id="mi-min-e" type="number" min="0" step="100"></div>
+      <div class="form-group"><label class="form-label" data-i18n="mi.field.material_family">Material family contains</label>
+        <input class="form-input" id="mi-material-family" type="text"></div>
+    </div>
+    <div style="margin-top:14px">
+      <button class="btn btn-primary" id="mi-recommend-btn" onclick="miRecommend()" data-i18n="mi.recommend_button">Get Recommendation</button>
+    </div>
+    <div id="mi-recommendation-result" style="margin-top:16px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="mi.formula_validation_title">Engineering Formula Validation</div>
+    <div class="card-sub" data-i18n="mi.formula_validation_sub">Read-only coverage report over existing formula catalogs -- never alters any formula or coefficient.</div>
+    <div id="mi-formula-validation-result"></div>
+  </div>
 </div>
 
 <!-- NORM REHBERİ -->
@@ -2977,6 +3023,38 @@ const I18N = {
     'ja.unsupported.full_vdi2230_compliance': 'Full VDI 2230 compliance claim',
     'ja.unsupported.fea': 'Finite element analysis (FEA)',
     'ja.unsupported.ai_ml_torque_prediction': 'AI/ML torque prediction',
+
+    // ---- Faz 2.8.8: Material Intelligence / Formula Validation ----
+    'sidebar.materialintelligence': 'Material Intelligence',
+    'mi.page_title': 'Material Intelligence',
+    'mi.page_subtitle': 'Requirement matching, comparison and readiness-gated recommendations over existing verified material records',
+    'mi.banner': 'This workspace is a separate advisory layer: it never modifies preload, torque, clamp force, stiffness or safety-factor calculations. It only reads existing material records and states what it can and cannot recommend today, and why.',
+    'mi.materials_title': 'Material Library',
+    'mi.materials_sub': '8 reference material families -- all reference-only, pending engineering approval.',
+    'mi.requirement_title': 'Material Recommendation',
+    'mi.requirement_sub': 'All fields are optional. Leave a field empty to apply no filter on that property.',
+    'mi.field.min_rp02_mpa': 'Minimum Rp0.2 (MPa)',
+    'mi.field.min_rm_mpa': 'Minimum Rm (MPa)',
+    'mi.field.min_e_mpa': 'Minimum elastic modulus (MPa)',
+    'mi.field.material_family': 'Material family contains',
+    'mi.field.readiness_level': 'Readiness level',
+    'mi.recommend_button': 'Get Recommendation',
+    'mi.formula_validation_title': 'Engineering Formula Validation',
+    'mi.formula_validation_sub': 'Read-only coverage report over existing formula catalogs -- never alters any formula or coefficient.',
+    'mi.loading': 'Loading...',
+    'mi.empty_state': 'No material records available.',
+    'mi.no_candidates': 'No material record meets the stated requirement.',
+    'mi.api_error_prefix': 'Request failed: ',
+    'mi.col.id': 'ID',
+    'mi.col.material': 'Material',
+    'mi.col.grade': 'Grade',
+    'mi.col.validation_status': 'Validation status',
+    'mi.col.approval_status': 'Approval status',
+    'mi.col.margin': 'Requirement margin',
+    'mi.col.symbol': 'Symbol',
+    'mi.col.classification': 'Classification',
+    'mi.col.catalog': 'Catalog',
+    'mi.col.approved_count': 'Approved / Total',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -4356,6 +4434,38 @@ const I18N = {
     'ja.unsupported.full_vdi2230_compliance': 'Tam VDI 2230 uygunluk iddiası',
     'ja.unsupported.fea': 'Sonlu elemanlar analizi (FEA)',
     'ja.unsupported.ai_ml_torque_prediction': 'AI/ML tork tahmini',
+
+    // ---- Faz 2.8.8: Malzeme Zekası / Formül Doğrulama ----
+    'sidebar.materialintelligence': 'Malzeme Zekası',
+    'mi.page_title': 'Malzeme Zekası',
+    'mi.page_subtitle': 'Mevcut doğrulanmış malzeme kayıtları üzerinde gereksinim eşleştirme, karşılaştırma ve hazırlık kapılı öneriler',
+    'mi.banner': 'Bu çalışma alanı ayrı bir danışma katmanıdır: ön yük, tork, sıkıştırma kuvveti, rijitlik veya emniyet katsayısı hesaplamalarını asla değiştirmez. Yalnızca mevcut malzeme kayıtlarını okur ve bugün neyi önerip öneremediğini, nedenini belirterek açıklar.',
+    'mi.materials_title': 'Malzeme Kütüphanesi',
+    'mi.materials_sub': '8 referans malzeme ailesi -- tümü yalnızca referans amaçlı, mühendislik onayı bekliyor.',
+    'mi.requirement_title': 'Malzeme Önerisi',
+    'mi.requirement_sub': 'Tüm alanlar isteğe bağlıdır. Bir özellik üzerinde filtre uygulamamak için ilgili alanı boş bırakın.',
+    'mi.field.min_rp02_mpa': 'En az Rp0.2 (MPa)',
+    'mi.field.min_rm_mpa': 'En az Rm (MPa)',
+    'mi.field.min_e_mpa': 'Minimum elastik modül (MPa)',
+    'mi.field.material_family': 'Malzeme ailesi içerir',
+    'mi.field.readiness_level': 'Hazırlık seviyesi',
+    'mi.recommend_button': 'Öneri Al',
+    'mi.formula_validation_title': 'Mühendislik Formülü Doğrulama',
+    'mi.formula_validation_sub': 'Mevcut formül katalogları üzerinde salt-okunur kapsam raporu -- hiçbir formülü veya katsayıyı değiştirmez.',
+    'mi.loading': 'Yükleniyor...',
+    'mi.empty_state': 'Kullanılabilir malzeme kaydı yok.',
+    'mi.no_candidates': 'Belirtilen gereksinimi karşılayan malzeme kaydı bulunamadı.',
+    'mi.api_error_prefix': 'İstek başarısız: ',
+    'mi.col.id': 'Kod',
+    'mi.col.material': 'Malzeme',
+    'mi.col.grade': 'Sınıf',
+    'mi.col.validation_status': 'Doğrulama durumu',
+    'mi.col.approval_status': 'Onay durumu',
+    'mi.col.margin': 'Gereksinim marjı',
+    'mi.col.symbol': 'Sembol',
+    'mi.col.classification': 'Sınıflandırma',
+    'mi.col.catalog': 'Katalog',
+    'mi.col.approved_count': 'Onaylı / Toplam',
   },
 };
 
@@ -5043,6 +5153,131 @@ function jaReset() {
   if (resultEl) resultEl.innerHTML = '';
 }
 
+// ---------------------------------------------------------------------
+// Material Intelligence (Faz 2.8.8) -- advisory layer only. Never
+// calls, imports or displays a preload/torque/clamp/stiffness/safety
+// calculation result; see backend.calculation_engine.material_intelligence
+// module docstring for the structural boundary this mirrors.
+// ---------------------------------------------------------------------
+let MI_MATERIALS = [];
+let MI_LAST_REQUIREMENT_PAYLOAD = null;
+
+async function loadMaterialIntelligenceWorkspace() {
+  const status = document.getElementById('mi-materials-status');
+  status.textContent = t('mi.loading');
+  try {
+    const data = await apiRequest('/api/library/materials');
+    MI_MATERIALS = Array.isArray(data.materials) ? data.materials : [];
+    status.textContent = MI_MATERIALS.length ? '' : t('mi.empty_state');
+    miRenderMaterialsTable();
+    await miLoadFormulaValidation();
+  } catch (e) {
+    status.textContent = t('mi.api_error_prefix') + scEsc(e && e.message ? e.message : String(e));
+  }
+}
+
+function miRenderMaterialsTable() {
+  const el = document.getElementById('mi-materials-table');
+  if (!MI_MATERIALS.length) { el.innerHTML = ''; return; }
+  const rows = MI_MATERIALS.map(m => `<tr>
+    <td>${scEsc(m.id)}</td>
+    <td>${scEsc(m.material)}</td>
+    <td>${scEsc(m.grade)}</td>
+    <td>${scFmtNum(m.rp02_mpa, 'MPa')}</td>
+    <td>${scFmtNum(m.rm_mpa, 'MPa')}</td>
+    <td>${scFmtNum(m.elastic_modulus_mpa, 'MPa')}</td>
+    <td>${scEsc(m.validation_status)}</td>
+    <td>${scEsc(m.approval_status)}</td>
+  </tr>`).join('');
+  el.innerHTML = `<table class="sc-table"><thead><tr>
+    <th>${scEsc(t('mi.col.id'))}</th><th>${scEsc(t('mi.col.material'))}</th>
+    <th>${scEsc(t('mi.col.grade'))}</th><th>Rp0.2</th><th>Rm</th><th>E</th>
+    <th>${scEsc(t('mi.col.validation_status'))}</th><th>${scEsc(t('mi.col.approval_status'))}</th>
+  </tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function miBuildRequirementPayload() {
+  const num = id => { const v = document.getElementById(id).value; return v === '' ? null : Number(v); };
+  const fam = document.getElementById('mi-material-family').value.trim();
+  return {
+    min_rp02_mpa: num('mi-min-rp02'),
+    min_rm_mpa: num('mi-min-rm'),
+    min_elastic_modulus_mpa: num('mi-min-e'),
+    material_family: fam === '' ? null : fam,
+    lang: CURRENT_LANG,
+  };
+}
+
+async function miRecommend() {
+  const btn = document.getElementById('mi-recommend-btn');
+  const resultEl = document.getElementById('mi-recommendation-result');
+  btn.disabled = true;
+  resultEl.innerHTML = '<div class="fc-muted">' + scEsc(t('mi.loading')) + '</div>';
+  try {
+    const payload = miBuildRequirementPayload();
+    MI_LAST_REQUIREMENT_PAYLOAD = payload;
+    const result = await apiRequest('/api/engineering/material-recommendation', {
+      method: 'POST', body: JSON.stringify(payload),
+    });
+    miRenderRecommendation(result);
+  } catch (e) {
+    resultEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function miRenderRecommendation(result) {
+  const el = document.getElementById('mi-recommendation-result');
+  const candidates = result.candidates || [];
+  const rows = candidates.map(c => `<tr>
+    <td>${scEsc(c.material_id)}</td><td>${scEsc(c.material)}</td><td>${scEsc(c.grade)}</td>
+    <td>${scFmtNum(c.rp02_mpa, 'MPa')}</td><td>${scFmtNum(c.rm_mpa, 'MPa')}</td>
+    <td>${c.requirement_margin_ratio == null ? '—' : c.requirement_margin_ratio}</td>
+  </tr>`).join('');
+  const table = candidates.length
+    ? `<table class="sc-table"><thead><tr><th>${scEsc(t('mi.col.id'))}</th><th>${scEsc(t('mi.col.material'))}</th>
+        <th>${scEsc(t('mi.col.grade'))}</th><th>Rp0.2</th><th>Rm</th><th>${scEsc(t('mi.col.margin'))}</th></tr></thead>
+        <tbody>${rows}</tbody></table>`
+    : `<div class="fc-muted">${scEsc(t('mi.no_candidates'))}</div>`;
+  const warnings = (result.engineering_warnings || []).map(w =>
+    `<div class="fc-warning-item fc-w-caution">${scEsc(w)}</div>`).join('');
+  const reasons = (result.blocking_reasons || []).map(r =>
+    `<div class="fc-warning-item fc-w-information">${scEsc(r)}</div>`).join('');
+  el.innerHTML =
+    `<div class="fc-field-row"><span class="fc-field-label">${scEsc(t('mi.field.readiness_level'))}</span>` +
+    `<span class="fc-field-value">${scEsc(result.readiness_level)}</span></div>` +
+    table +
+    (warnings ? `<div style="margin-top:10px">${warnings}</div>` : '') +
+    (reasons ? `<div style="margin-top:10px">${reasons}</div>` : '') +
+    `<div class="alert alert-info" style="margin-top:10px">${scEsc(result.sign_off_notice)}</div>`;
+}
+
+async function miLoadFormulaValidation() {
+  const el = document.getElementById('mi-formula-validation-result');
+  el.innerHTML = '<div class="fc-muted">' + scEsc(t('mi.loading')) + '</div>';
+  try {
+    const report = await apiRequest('/api/engineering/formula-validation?lang=' + encodeURIComponent(CURRENT_LANG));
+    const rows = (report.entries || []).map(e => `<tr>
+      <td>${scEsc(e.formula_id)}</td><td>${scEsc(e.symbol)}</td><td>${scEsc(e.classification)}</td>
+      <td>${scEsc(e.validation_status)}</td><td>${scEsc(e.catalog)}</td>
+    </tr>`).join('');
+    const notices = (report.notices || []).map(n =>
+      `<div class="fc-warning-item fc-w-information">${scEsc(n)}</div>`).join('');
+    el.innerHTML =
+      `<div class="fc-field-row"><span class="fc-field-label">${scEsc(t('mi.col.approved_count'))}</span>` +
+      `<span class="fc-field-value">${report.approved_count}/${report.total_count}</span></div>` +
+      `<table class="sc-table"><thead><tr><th>ID</th><th>${scEsc(t('mi.col.symbol'))}</th>` +
+      `<th>${scEsc(t('mi.col.classification'))}</th><th>${scEsc(t('mi.col.validation_status'))}</th>` +
+      `<th>${scEsc(t('mi.col.catalog'))}</th></tr></thead><tbody>${rows}</tbody></table>` +
+      (notices ? `<div style="margin-top:10px">${notices}</div>` : '');
+  } catch (e) {
+    el.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
 function jaRenderResult(result) {
   const resultEl = document.getElementById('ja-result');
   const cv = result.calculated_values || {};
@@ -5155,6 +5390,30 @@ function jaReapplyLanguage() {
   if (JA_LAST_RESULT) jaRenderResult(JA_LAST_RESULT);
 }
 
+function miReapplyLanguage() {
+  // Faz 2.8.8: re-render already-fetched Material Intelligence data
+  // with the newly selected language's t()-resolved labels -- the
+  // materials table needs no new network call (its data is
+  // language-independent, only labels change); the formula-
+  // validation panel's server-side notices ARE language-dependent,
+  // so it is re-fetched, as is any previously issued recommendation
+  // request (its warnings/blocking_reasons/sign_off_notice are
+  // server-rendered in the request's lang).
+  if (MI_MATERIALS.length) miRenderMaterialsTable();
+  const onMaterialIntelligencePage =
+    document.getElementById('page-materialintelligence') &&
+    document.getElementById('page-materialintelligence').classList.contains('active');
+  if (onMaterialIntelligencePage) {
+    miLoadFormulaValidation();
+    if (MI_LAST_REQUIREMENT_PAYLOAD) {
+      const payload = { ...MI_LAST_REQUIREMENT_PAYLOAD, lang: CURRENT_LANG };
+      apiRequest('/api/engineering/material-recommendation', {
+        method: 'POST', body: JSON.stringify(payload),
+      }).then(miRenderRecommendation).catch(function () {});
+    }
+  }
+}
+
 function applyStaticTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(function (el) {
     el.textContent = t(el.getAttribute('data-i18n'));
@@ -5203,6 +5462,7 @@ function setLanguage(lang) {
   if (typeof scReapplyLanguage === 'function') scReapplyLanguage();
   if (typeof aiReapplyLanguage === 'function') aiReapplyLanguage();
   if (typeof jaReapplyLanguage === 'function') jaReapplyLanguage();
+  if (typeof miReapplyLanguage === 'function') miReapplyLanguage();
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
   if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();
@@ -5388,7 +5648,7 @@ function showPage(id, el) {
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}
+  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}
 }
 
 // ========== FRICTION CONDITION WORKSPACE (Faz 2.6.6) ==========

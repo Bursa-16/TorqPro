@@ -27,6 +27,12 @@ try:
     )
     from backend.calculation_engine.joint_analysis import analyze_joint
     from backend.calculation_engine.exceptions import CalculationInputError
+    from backend.calculation_engine.material_intelligence import (
+        MaterialRequirement, list_materials, get_material_record, recommend_materials,
+    )
+    from backend.calculation_engine.formula_validation import (
+        build_formula_validation_report,
+    )
     from backend.vdi2230_core import (
         CalculationDomainError as VdiCalculationDomainError,
         CalculationInputError as VdiCalculationInputError,
@@ -45,6 +51,12 @@ except ImportError:  # pragma: no cover - direct import with backend/ on sys.pat
     )
     from calculation_engine.joint_analysis import analyze_joint  # type: ignore[no-redef]
     from calculation_engine.exceptions import CalculationInputError  # type: ignore[no-redef]
+    from calculation_engine.material_intelligence import (  # type: ignore[no-redef]
+        MaterialRequirement, list_materials, get_material_record, recommend_materials,
+    )
+    from calculation_engine.formula_validation import (  # type: ignore[no-redef]
+        build_formula_validation_report,
+    )
     from vdi2230_core import (  # type: ignore[no-redef]
         CalculationDomainError as VdiCalculationDomainError,
         CalculationInputError as VdiCalculationInputError,
@@ -687,6 +699,56 @@ def joint_analysis_endpoint(x: JointAnalysisRequest, u=Depends(user)):
     response = result.to_dict()
     response["inputs"] = x.model_dump()
     return response
+
+
+class MaterialRecommendationRequest(BaseModel):
+    # Faz 2.8.8: additive, new endpoint. Every field optional, mirrors
+    # JointAnalysisRequest's own rationale -- a missing requirement
+    # field applies no filter rather than inventing a default.
+    min_rp02_mpa: Optional[float] = Field(default=None, gt=0)
+    min_rm_mpa: Optional[float] = Field(default=None, gt=0)
+    min_elastic_modulus_mpa: Optional[float] = Field(default=None, gt=0)
+    material_family: Optional[str] = None
+    lang: Optional[str] = "tr"
+
+
+@app.get("/api/library/materials")
+def library_materials_list(u=Depends(user)):
+    # Faz 2.8.8: read-only listing of the 8 existing MaterialRecord
+    # entries already served by backend.library.population -- no new
+    # data, no calculation. See backend.calculation_engine.material_intelligence.
+    return {"materials": list_materials()}
+
+
+@app.get("/api/library/materials/{material_id}")
+def library_materials_detail(material_id: str, u=Depends(user)):
+    record = get_material_record(material_id)
+    if record is None:
+        raise HTTPException(404, "Malzeme kaydı bulunamadı")
+    return record
+
+
+@app.post("/api/engineering/material-recommendation")
+def engineering_material_recommendation(x: MaterialRecommendationRequest, u=Depends(user)):
+    # Orchestration only: no engineering formula, ranking rule or
+    # readiness-gate logic lives here -- see
+    # backend.calculation_engine.material_intelligence.recommend_materials
+    # (advisory layer, never touches preload/torque/clamp/safety-
+    # factor calculations -- see that module's docstring).
+    fields = x.model_dump()
+    lang = fields.pop("lang", "tr")
+    requirement = MaterialRequirement(**fields)
+    result = recommend_materials(requirement, lang=lang)
+    return result.to_dict()
+
+
+@app.get("/api/engineering/formula-validation")
+def engineering_formula_validation(lang: Optional[str] = "tr", u=Depends(user)):
+    # Read-only aggregation of existing formula catalogs -- see
+    # backend.calculation_engine.formula_validation module docstring
+    # (never writes to or reclassifies either catalog).
+    report = build_formula_validation_report(lang=lang)
+    return report.to_dict()
 
 
 DATA_DIR=BASE/"data"
