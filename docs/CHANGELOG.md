@@ -29,3 +29,20 @@
 - Process capability math (Cp/Cpk/Pp/Ppk/Cmk) intentionally not implemented;
   reserved for Faz 2.5B/2.5C.
 - Documented in `docs/phases/PHASE_2.5A_PRODUCTION_VALIDATION_FOUNDATION.md`.
+
+## Faz 2.8.9 — 2026-07-29
+
+- Added the washer resolution decision workflow: an append-only decision
+  ledger (`backend/library/data/washer_resolution_decisions.json`) separate
+  from and never overwriting the Faz 2.8.5 source resolution ledger; a
+  closed state machine; an idempotency-key-first decision API; an
+  `effective_status` overlay computed from both ledgers together — see
+  `docs/adr/ADR-0013-washer-resolution-decision-workflow.md`.
+- Extended `backend/library/washer_report.py` additively with
+  effective-status counts, a real-decision-only `resolved` count, and a
+  new English Markdown renderer (TR/EN parity) — no existing report field
+  removed or renamed.
+- Added `GET /api/library/washers/resolutions/{queue,decisions,report}`
+  (all read-only, additive) and the `page-washerresolution` frontend
+  workspace, with full TR/EN parity (38/38 `wrr.*` keys).
+- Documented in `docs/phases/PHASE_2.8.9_WASHER_RESOLUTION_DECISION_WORKFLOW.md`.
