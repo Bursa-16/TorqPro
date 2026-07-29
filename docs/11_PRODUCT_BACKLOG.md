@@ -146,6 +146,46 @@ Scope (additive only, no existing module modified except `backend/app.py` route 
 - **Reporting**: `material_intelligence_report` follows the `friction_report.py` / `strength_class_report.py` pattern (deterministic JSON + Markdown, no wall-clock timestamp, checksum-traceable, selected-language preserved in export).
 - New additive endpoints: `GET /api/library/materials`, `GET /api/library/materials/{id}`, `POST /api/engineering/material-recommendation`, `GET /api/engineering/formula-validation`. No existing endpoint is changed.
 
+## 12B. Faz 2.8.9 – Washer Resolution Decision Workflow (TR/EN)
+
+**Delivered** 2026-07-29 — see
+`docs/adr/ADR-0013-washer-resolution-decision-workflow.md` and
+`docs/phases/PHASE_2.8.9_WASHER_RESOLUTION_DECISION_WORKFLOW.md` for
+full detail, including final verified test counts (188/188 Faz 2.8.9
+tests across 6 stages, 1525/1525 full pytest suite, zero regression,
+32/32 Node harness, 1097/1097 existing i18n harness) and TR/EN parity
+result (38/38 `wrr.*` keys, 100% parity).
+
+Faz 2.8.5 left 76 washer correction/resolution records read-only (71
+`open`, 5 `blocked_authoritative_source`); closing any of them
+requires real evidence this codebase cannot invent
+(`docs/12_CLAUDE_CONTEXT.md` §4). Faz 2.8.9 does not close any of
+them — it adds the workflow mechanism that lets a human record such a
+decision safely: an append-only decision ledger
+(`washer_resolution_decisions.json`, separate from and never
+overwriting the Faz 2.8.5 source ledger), a closed state machine (no
+reopening a terminal decision, no deciding a blocked-source record
+through this workflow), an idempotency-key-first decision API, and an
+`effective_status` overlay computed from the two ledgers together
+without ever mutating the source one. Reporting (Stage 4/5A) is
+strictly read-only and additive to the existing
+`washer_report.py`/`GET /api/library/washers/resolutions/*`
+surface — no existing field renamed or removed, no effective-status
+logic duplicated between the report, the API and the frontend. The
+frontend workspace (`page-washerresolution`) never guesses a value
+for an incomplete or malformed report response.
+
+**Known follow-up (out of scope for this phase):** while building and
+verifying this phase's own JS test harness
+(`tests/js/run_washer_resolution_report_tests.js`), a pre-existing,
+unrelated weakness was found in `tests/js/run_material_intelligence_tests.js`
+(Faz 2.8.8): its asynchronous test scenarios are not awaited before
+the harness process exits, so their assertions never actually run,
+even though the harness reports a "clean" result. Not fixed here
+(explicitly out of scope for Faz 2.8.9); a future phase should
+refactor that harness into the same awaited `async function main()`
+pattern this phase's own harness now uses.
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.

@@ -1,0 +1,10 @@
+{
+  "metadata": {
+    "name": "Washer Resolution Decision Ledger",
+    "version": "2.8.9",
+    "description": "Faz 2.8.9 append-only audit trail of human resolution decisions made against backend/library/data/washer_resolution_ledger.json (Faz 2.8.5). This file never overwrites or replaces the source ledger; it only records who decided what, when, and on what evidence. Empty at delivery time: no washer_resolution_ledger.json record's status has been changed by this phase.",
+    "source_ledger": "backend/library/data/washer_resolution_ledger.json",
+    "record_count": 0
+  },
+  "decisions": []
+}

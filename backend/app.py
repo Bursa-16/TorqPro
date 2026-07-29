@@ -1629,6 +1629,157 @@ def bolt_nut_compatibility_endpoint(x: BoltNutCompatibilityCheck, u=Depends(user
     return result.model_dump(mode="json")
 
 
+# ---------------------------------------------------------------------
+# Faz 2.8.9: washer resolution decision workflow endpoints.
+# Orchestration only -- every business rule (state machine, blocked-
+# source rejection, checksum, idempotency, append-only persistence)
+# lives in backend.library.washer_resolution_service /
+# .washer_resolution_decisions / .washer_resolution_decisions_store
+# (imported lazily inside each handler, matching the existing
+# strength-class/friction-condition endpoints' pattern above). Never
+# writes to washer_resolution_ledger.json (Faz 2.8.5 source ledger) --
+# see washer_resolution_service module docstring for the
+# effective-status design that makes this possible.
+# ---------------------------------------------------------------------
+
+
+class WasherResolutionDecisionRequest(BaseModel):
+    # Faz 2.8.9: additive, new endpoint. decided_at is deliberately
+    # absent from this schema -- the backend always generates it
+    # itself in UTC (task brief rule 7); a client-supplied timestamp
+    # is never accepted, not even as an optional override.
+    new_status: str
+    resolution_note: str
+    evidence_reference: str
+    resolved_by: str
+    idempotency_key: str
+    confidence_level: Optional[int] = None
+
+
+@app.get("/api/library/washers/resolutions/queue")
+def washer_resolution_queue_endpoint(u=Depends(user)):
+    from backend.library.washer_resolution_service import resolution_queue
+    try:
+        return {"records": resolution_queue()}
+    except Exception:
+        log.exception("washer_resolution_queue_endpoint: unexpected error")
+        raise HTTPException(500, "Kuyruk okunurken beklenmeyen bir hata oluştu.")
+
+
+@app.get("/api/library/washers/resolutions/{resolution_id}/decisions")
+def washer_resolution_decision_history_endpoint(resolution_id: str, u=Depends(user)):
+    from backend.library import washer_resolution as wr_module
+    from backend.library.washer_resolution_decisions_store import decisions_for_resolution
+    record = wr_module.get_washer_resolution(resolution_id)
+    if record is None:
+        raise HTTPException(404, f"Bilinmeyen resolution_id: {resolution_id}")
+    try:
+        history = decisions_for_resolution(resolution_id)
+    except Exception:
+        log.exception("washer_resolution_decision_history_endpoint: unexpected error")
+        raise HTTPException(500, "Karar geçmişi okunurken beklenmeyen bir hata oluştu.")
+    return {
+        "resolution_id": resolution_id,
+        "decisions": [d.model_dump(mode="json") for d in history],
+    }
+
+
+@app.post("/api/library/washers/resolutions/{resolution_id}/decide")
+def washer_resolution_decide_endpoint(
+    resolution_id: str, x: WasherResolutionDecisionRequest, u=Depends(user)
+):
+    from backend.library import washer_resolution as wr_module
+    from backend.library import washer_resolution_service as svc
+
+    try:
+        new_status = wr_module.WasherResolutionStatus(x.new_status)
+    except ValueError:
+        raise HTTPException(400, f"Geçersiz new_status: {x.new_status}")
+
+    confidence_level = None
+    if x.confidence_level is not None:
+        try:
+            confidence_level = wr_module.ConfidenceLevel(x.confidence_level)
+        except ValueError:
+            raise HTTPException(400, f"Geçersiz confidence_level: {x.confidence_level}")
+
+    try:
+        decision, created = svc.decide_resolution(
+            resolution_id=resolution_id,
+            new_status=new_status,
+            resolution_note=x.resolution_note,
+            evidence_reference=x.evidence_reference,
+            resolved_by=x.resolved_by,
+            idempotency_key=x.idempotency_key,
+            confidence_level=confidence_level,
+        )
+    except svc.ResolutionNotFoundError as e:
+        raise HTTPException(404, str(e))
+    except svc.BlockedRecordDecisionError as e:
+        raise HTTPException(409, str(e))
+    except svc.InvalidTransitionError as e:
+        raise HTTPException(409, str(e))
+    except svc.IdempotencyConflictError as e:
+        raise HTTPException(409, str(e))
+    except svc.DuplicateDecisionIdError:
+        # Practically unreachable (decision_id is a server-generated
+        # uuid4), but a ledger-level id collision is a conflict with
+        # existing state, not a client input error -- 409, not 500.
+        raise HTTPException(409, "Karar kaydı çakışması (decision_id).")
+    except svc.MissingEvidenceError as e:
+        raise HTTPException(422, str(e))
+    except svc.MissingIdempotencyKeyError:
+        raise HTTPException(400, "idempotency_key zorunludur.")
+    except HTTPException:
+        raise
+    except Exception:
+        # Anything else (e.g. a corrupted ledger file) is an internal
+        # fault: log the real detail server-side, never leak a file
+        # path or stack trace to the client.
+        log.exception("washer_resolution_decide_endpoint: unexpected error")
+        raise HTTPException(500, "Karar kaydedilirken beklenmeyen bir hata oluştu.")
+
+    return {
+        "decision": decision.model_dump(mode="json"),
+        "created": created,
+    }
+
+
+@app.get("/api/library/washers/resolutions/report")
+def washer_resolution_report_endpoint(
+    lang: str = "tr", format: str = "json", u=Depends(user)  # noqa: A002
+):
+    # Faz 2.8.9 Stage 5A: read-only, additive. Uses
+    # backend.library.washer_report.collect_washer_resolution_report()
+    # (Stage 4) as the sole source of truth -- no effective-status
+    # calculation is duplicated here, and this endpoint has no write
+    # path of any kind (GET only, no decision can be created/modified
+    # through it).
+    if lang not in ("tr", "en"):
+        raise HTTPException(400, f"Desteklenmeyen dil: {lang} (yalnizca 'tr'/'en').")
+    if format not in ("json", "markdown"):
+        raise HTTPException(400, f"Desteklenmeyen format: {format} (yalnizca 'json'/'markdown').")
+
+    from backend.library import washer_report as report_module
+
+    try:
+        report = report_module.collect_washer_resolution_report()
+    except report_module.WasherReportDataError:
+        raise HTTPException(
+            500, "Pul çözümleme raporu üretilirken beklenmeyen bir hata oluştu."
+        )
+
+    if format == "markdown":
+        renderer = (
+            report_module.render_washer_resolution_report_markdown_en
+            if lang == "en"
+            else report_module.render_washer_resolution_report_markdown
+        )
+        return {"format": "markdown", "lang": lang, "content": renderer(report)}
+
+    return {"format": "json", "lang": lang, "report": report}
+
+
 @app.get("/")
 def root():return FileResponse(FRONT/"index.html")
 
