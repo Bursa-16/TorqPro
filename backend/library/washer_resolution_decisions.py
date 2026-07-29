@@ -262,6 +262,13 @@ class WasherResolutionDecision(BaseModel):
     decided_at: str
     confidence_level: Optional[ConfidenceLevel] = None
     integrity_checksum: str
+    #: Caller-supplied idempotency key (Stage 2/3: the API layer is
+    #: expected to require this on every decision request). ``None``
+    #: is still accepted at the model level so Stage 1's existing
+    #: tests, written before idempotency was in scope, keep working
+    #: unchanged -- the *requirement* that it be present is enforced
+    #: by the Stage 3 API layer, not by this schema.
+    idempotency_key: Optional[str] = None
 
     @field_validator("resolution_note")
     @classmethod
