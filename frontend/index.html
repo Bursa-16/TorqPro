@@ -443,6 +443,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="sidebar-item" onclick="showPage('oem')"><span class="sidebar-icon">🔍</span> <span data-i18n="sidebar.oem_norm_query">OEM Norm Sorgu</span></div>
     <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> <span data-i18n="sidebar.frictioncondition">Friction Condition</span></div>
     <div class="sidebar-item" onclick="showPage('strengthclasses')"><span class="sidebar-icon">🔗</span> <span data-i18n="sidebar.strengthclasses">Bolt/Nut Strength Classes</span></div>
+    <div class="sidebar-item" onclick="showPage('washerresolution')"><span class="sidebar-icon">🧾</span> <span data-i18n="sidebar.washerresolution">Washer Resolution Report</span></div>
     <div class="sidebar-item" onclick="showPage('assemblyintelligence')"><span class="sidebar-icon">🧠</span> <span data-i18n="sidebar.assemblyintelligence">Montaj Zekâsı</span></div>
     <div class="sidebar-item" onclick="showPage('jointanalysis')"><span class="sidebar-icon">⚙️</span> <span data-i18n="sidebar.jointanalysis">Joint Analysis</span></div>
     <div class="sidebar-item" onclick="showPage('materialintelligence')"><span class="sidebar-icon">🧬</span> <span data-i18n="sidebar.materialintelligence">Material Intelligence</span></div>
@@ -1135,6 +1136,53 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 </div>
 
 <!-- MATERIAL INTELLIGENCE (Faz 2.8.8) -->
+<div id="page-washerresolution" class="page">
+  <div class="section-header"><span class="section-icon">🧾</span><div>
+    <div class="section-title" data-i18n="wrr.page_title">Washer Resolution Report</div>
+    <div class="section-sub" data-i18n="wrr.page_subtitle">Read-only status overview of the Faz 2.8.5 washer correction/resolution ledger and the Faz 2.8.9 decision history</div>
+  </div></div>
+  <div class="alert alert-info" data-i18n="wrr.source_notice">
+    Effective statuses are derived from the decision history. The source ledger is not modified.
+  </div>
+
+  <div id="wrr-status" class="fc-muted"></div>
+  <div id="wrr-content" style="display:none">
+
+    <div class="card">
+      <div class="card-title" data-i18n="wrr.summary_title">Summary</div>
+      <div class="ai-form-grid" id="wrr-summary-cards"></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="card-title" data-i18n="wrr.source_distribution_title">Source Status Distribution</div>
+        <div class="card-sub" data-i18n="wrr.source_distribution_sub">The immutable status recorded in washer_resolution_ledger.json.</div>
+        <div id="wrr-source-distribution"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" data-i18n="wrr.effective_distribution_title">Effective Status Distribution</div>
+        <div class="card-sub" data-i18n="wrr.effective_distribution_sub">Overlays the most recent recorded decision on top of the source status.</div>
+        <div id="wrr-effective-distribution"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" data-i18n="wrr.issue_type_title">Issue Type Distribution</div>
+      <div id="wrr-issue-type-distribution"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" data-i18n="wrr.latest_decisions_title">Latest Decision Summary</div>
+      <div id="wrr-latest-decisions"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" data-i18n="wrr.integrity_title">Integrity</div>
+      <div id="wrr-integrity"></div>
+    </div>
+  </div>
+</div>
+
 <div id="page-materialintelligence" class="page">
   <div class="section-header"><span class="section-icon">🧬</span><div>
     <div class="section-title" data-i18n="mi.page_title">Material Intelligence</div>
@@ -3055,6 +3103,47 @@ const I18N = {
     'mi.col.classification': 'Classification',
     'mi.col.catalog': 'Catalog',
     'mi.col.approved_count': 'Approved / Total',
+
+    // ---- Faz 2.8.9 Stage 5: Washer Resolution Report ----
+    'sidebar.washerresolution': 'Washer Resolution Report',
+    'wrr.page_title': 'Washer Resolution Report',
+    'wrr.page_subtitle': 'Read-only status overview of the Faz 2.8.5 washer correction/resolution ledger and the Faz 2.8.9 decision history',
+    'wrr.source_notice': 'Effective statuses are derived from the decision history. The source ledger is not modified.',
+    'wrr.summary_title': 'Summary',
+    'wrr.source_distribution_title': 'Source Status Distribution',
+    'wrr.source_distribution_sub': 'The immutable status recorded in washer_resolution_ledger.json.',
+    'wrr.effective_distribution_title': 'Effective Status Distribution',
+    'wrr.effective_distribution_sub': 'Overlays the most recent recorded decision on top of the source status.',
+    'wrr.issue_type_title': 'Issue Type Distribution',
+    'wrr.latest_decisions_title': 'Latest Decision Summary',
+    'wrr.integrity_title': 'Integrity',
+    'wrr.loading': 'Loading...',
+    'wrr.empty_state': 'No records available.',
+    'wrr.no_decisions': 'No resolution decisions have been recorded yet.',
+    'wrr.malformed_response': 'The report response was incomplete; showing nothing rather than a guessed value.',
+    'wrr.api_error_prefix': 'Request failed: ',
+    'wrr.report_checksum': 'Report Checksum',
+    'wrr.integrity_warning_prefix': 'Data integrity warnings:',
+    'wrr.card.total_records': 'Total Resolution Records',
+    'wrr.card.effective_open': 'Effective Open',
+    'wrr.card.under_review': 'Under Review',
+    'wrr.card.terminal': 'Terminal',
+    'wrr.card.blocked': 'Blocked',
+    'wrr.card.resolved': 'Resolved',
+    'wrr.card.total_decisions': 'Total Decisions',
+    'wrr.card.integrity_warnings': 'Data Integrity Warnings',
+    'wrr.status.open': 'Open',
+    'wrr.status.under_review': 'Under Review',
+    'wrr.status.resolved': 'Resolved',
+    'wrr.status.accepted_as_is': 'Accepted As-Is',
+    'wrr.status.blocked_authoritative_source': 'Blocked',
+    'wrr.status.rejected': 'Rejected',
+    'wrr.col.resolution_id': 'Resolution ID',
+    'wrr.col.effective_status': 'Effective Status',
+    'wrr.col.decision_count': 'Decision Count',
+    'wrr.col.last_decision': 'Last Decision',
+    'wrr.col.decided_at': 'Decided At (UTC)',
+    'wrr.col.decided_by': 'Decided By',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -4466,6 +4555,47 @@ const I18N = {
     'mi.col.classification': 'Sınıflandırma',
     'mi.col.catalog': 'Katalog',
     'mi.col.approved_count': 'Onaylı / Toplam',
+
+    // ---- Faz 2.8.9 Stage 5: Pul Çözümleme Raporu ----
+    'sidebar.washerresolution': 'Pul Çözümleme Raporu',
+    'wrr.page_title': 'Pul Çözümleme Raporu',
+    'wrr.page_subtitle': 'Faz 2.8.5 pul düzeltme/çözümleme kayıt defteri ve Faz 2.8.9 karar geçmişinin salt-okunur durum özeti',
+    'wrr.source_notice': 'Efektif durumlar karar geçmişinden türetilir. Kaynak kayıt defteri değiştirilmez.',
+    'wrr.summary_title': 'Özet',
+    'wrr.source_distribution_title': 'Kaynak Durum Dağılımı',
+    'wrr.source_distribution_sub': 'washer_resolution_ledger.json içinde kayıtlı, değişmez durum.',
+    'wrr.effective_distribution_title': 'Efektif Durum Dağılımı',
+    'wrr.effective_distribution_sub': 'En son kaydedilen kararı kaynak durumun üzerine bindirir.',
+    'wrr.issue_type_title': 'Sorun Türü Dağılımı',
+    'wrr.latest_decisions_title': 'Son Karar Özeti',
+    'wrr.integrity_title': 'Bütünlük',
+    'wrr.loading': 'Yükleniyor...',
+    'wrr.empty_state': 'Gösterilecek kayıt yok.',
+    'wrr.no_decisions': 'Henüz herhangi bir çözümleme kararı kaydedilmedi.',
+    'wrr.malformed_response': 'Rapor yanıtı eksikti; tahmini bir değer göstermek yerine hiçbir şey gösterilmiyor.',
+    'wrr.api_error_prefix': 'İstek başarısız: ',
+    'wrr.report_checksum': 'Rapor Sağlama Toplamı',
+    'wrr.integrity_warning_prefix': 'Veri bütünlüğü uyarıları:',
+    'wrr.card.total_records': 'Toplam Çözümleme Kaydı',
+    'wrr.card.effective_open': 'Efektif Açık',
+    'wrr.card.under_review': 'İnceleme Altında',
+    'wrr.card.terminal': 'Nihai',
+    'wrr.card.blocked': 'Bloke',
+    'wrr.card.resolved': 'Çözüldü',
+    'wrr.card.total_decisions': 'Toplam Karar',
+    'wrr.card.integrity_warnings': 'Veri Bütünlüğü Uyarıları',
+    'wrr.status.open': 'Açık',
+    'wrr.status.under_review': 'İnceleme Altında',
+    'wrr.status.resolved': 'Çözüldü',
+    'wrr.status.accepted_as_is': 'Olduğu Gibi Kabul Edildi',
+    'wrr.status.blocked_authoritative_source': 'Bloke',
+    'wrr.status.rejected': 'Reddedildi',
+    'wrr.col.resolution_id': 'Çözümleme ID',
+    'wrr.col.effective_status': 'Efektif Durum',
+    'wrr.col.decision_count': 'Karar Sayısı',
+    'wrr.col.last_decision': 'Son Karar',
+    'wrr.col.decided_at': 'Karar Zamanı (UTC)',
+    'wrr.col.decided_by': 'Kararı Veren',
   },
 };
 
@@ -5161,6 +5291,7 @@ function jaReset() {
 // ---------------------------------------------------------------------
 let MI_MATERIALS = [];
 let MI_LAST_REQUIREMENT_PAYLOAD = null;
+let WRR_LAST_REPORT = null;
 
 async function loadMaterialIntelligenceWorkspace() {
   const status = document.getElementById('mi-materials-status');
@@ -5390,6 +5521,162 @@ function jaReapplyLanguage() {
   if (JA_LAST_RESULT) jaRenderResult(JA_LAST_RESULT);
 }
 
+// ---------------------------------------------------------------
+// Faz 2.8.9 Stage 5: Washer Resolution Report workspace.
+// Read-only. Never creates or modifies a decision -- this page only
+// calls the GET report endpoint. The JSON report payload itself is
+// language-independent (status codes, not localized text); all
+// labels are resolved client-side via t(), so a language switch
+// re-renders the already-fetched data without a new network call.
+// ---------------------------------------------------------------
+
+const WRR_STATUS_LABEL_KEYS = {
+  open: 'wrr.status.open',
+  under_review: 'wrr.status.under_review',
+  resolved: 'wrr.status.resolved',
+  accepted_as_is: 'wrr.status.accepted_as_is',
+  blocked_authoritative_source: 'wrr.status.blocked_authoritative_source',
+  rejected: 'wrr.status.rejected',
+};
+
+function wrrStatusLabel(code) {
+  const key = WRR_STATUS_LABEL_KEYS[code];
+  return key ? t(key) : scEsc(code);
+}
+
+// Fields the renderers require; a response missing any of these is
+// treated as malformed and never partially/guessed-rendered.
+const WRR_REQUIRED_FIELDS = [
+  'total_resolution_records', 'effective_open_count', 'effective_under_review_count',
+  'effective_terminal_count', 'effective_blocked_count', 'effective_resolved_count',
+  'total_decision_count', 'data_integrity_warning_count', 'report_checksum',
+  'source_status_distribution', 'effective_status_distribution',
+  'issue_type_distribution', 'latest_decision_summary',
+];
+
+function wrrIsWellFormed(report) {
+  if (!report || typeof report !== 'object') return false;
+  return WRR_REQUIRED_FIELDS.every((f) => Object.prototype.hasOwnProperty.call(report, f));
+}
+
+async function loadWasherResolutionReport() {
+  const statusEl = document.getElementById('wrr-status');
+  const contentEl = document.getElementById('wrr-content');
+  contentEl.style.display = 'none';
+  statusEl.textContent = t('wrr.loading');
+  try {
+    const data = await apiRequest('/api/library/washers/resolutions/report');
+    const report = data && data.report;
+    if (!wrrIsWellFormed(report)) {
+      WRR_LAST_REPORT = null;
+      statusEl.innerHTML = '<div class="alert alert-danger">' + scEsc(t('wrr.malformed_response')) + '</div>';
+      return;
+    }
+    WRR_LAST_REPORT = report;
+    statusEl.textContent = '';
+    contentEl.style.display = '';
+    wrrRenderAll(report);
+  } catch (e) {
+    WRR_LAST_REPORT = null;
+    statusEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(t('wrr.api_error_prefix')) + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
+function wrrRenderAll(report) {
+  wrrRenderSummaryCards(report);
+  wrrRenderDistribution('wrr-source-distribution', report.source_status_distribution);
+  wrrRenderDistribution('wrr-effective-distribution', report.effective_status_distribution);
+  wrrRenderIssueTypeDistribution(report.issue_type_distribution);
+  wrrRenderLatestDecisions(report.latest_decision_summary);
+  wrrRenderIntegrity(report);
+}
+
+function wrrSummaryCard(labelKey, value) {
+  return `<div class="form-group"><div class="fc-field-label">${scEsc(t(labelKey))}</div>
+    <div class="fc-field-value" style="font-size:20px;font-weight:600">${scEsc(String(value))}</div></div>`;
+}
+
+function wrrRenderSummaryCards(report) {
+  const el = document.getElementById('wrr-summary-cards');
+  el.innerHTML = [
+    wrrSummaryCard('wrr.card.total_records', report.total_resolution_records),
+    wrrSummaryCard('wrr.card.effective_open', report.effective_open_count),
+    wrrSummaryCard('wrr.card.under_review', report.effective_under_review_count),
+    wrrSummaryCard('wrr.card.terminal', report.effective_terminal_count),
+    wrrSummaryCard('wrr.card.blocked', report.effective_blocked_count),
+    wrrSummaryCard('wrr.card.resolved', report.effective_resolved_count),
+    wrrSummaryCard('wrr.card.total_decisions', report.total_decision_count),
+    wrrSummaryCard('wrr.card.integrity_warnings', report.data_integrity_warning_count),
+  ].join('');
+}
+
+function wrrRenderDistribution(elementId, distribution) {
+  const el = document.getElementById(elementId);
+  const entries = Object.entries(distribution || {});
+  if (!entries.length) { el.innerHTML = `<div class="fc-muted">${scEsc(t('wrr.empty_state'))}</div>`; return; }
+  const rows = entries.map(([code, count]) =>
+    `<div class="result-row"><span class="result-key">${wrrStatusLabel(code)}</span><span class="result-val">${scEsc(String(count))}</span></div>`
+  ).join('');
+  el.innerHTML = `<div class="result-box">${rows}</div>`;
+}
+
+function wrrRenderIssueTypeDistribution(distribution) {
+  const el = document.getElementById('wrr-issue-type-distribution');
+  const entries = Object.entries(distribution || {});
+  if (!entries.length) { el.innerHTML = `<div class="fc-muted">${scEsc(t('wrr.empty_state'))}</div>`; return; }
+  const rows = entries.map(([code, count]) =>
+    `<div class="result-row"><span class="result-key">${scEsc(code)}</span><span class="result-val">${scEsc(String(count))}</span></div>`
+  ).join('');
+  el.innerHTML = `<div class="result-box">${rows}</div>`;
+}
+
+function wrrRenderLatestDecisions(rows) {
+  const el = document.getElementById('wrr-latest-decisions');
+  if (!Array.isArray(rows) || !rows.length) {
+    el.innerHTML = `<div class="fc-muted">${scEsc(t('wrr.no_decisions'))}</div>`;
+    return;
+  }
+  const body = rows.map((r) => `<tr>
+    <td>${scEsc(r.resolution_id)}</td>
+    <td>${wrrStatusLabel(r.effective_status)}</td>
+    <td>${scEsc(String(r.decision_count))}</td>
+    <td>${wrrStatusLabel(r.last_decision_new_status)}</td>
+    <td>${scEsc(r.last_decided_at)}</td>
+    <td>${scEsc(r.last_resolved_by)}</td>
+  </tr>`).join('');
+  el.innerHTML = `<table class="sc-table"><thead><tr>
+    <th>${scEsc(t('wrr.col.resolution_id'))}</th><th>${scEsc(t('wrr.col.effective_status'))}</th>
+    <th>${scEsc(t('wrr.col.decision_count'))}</th><th>${scEsc(t('wrr.col.last_decision'))}</th>
+    <th>${scEsc(t('wrr.col.decided_at'))}</th><th>${scEsc(t('wrr.col.decided_by'))}</th>
+  </tr></thead><tbody>${body}</tbody></table>`;
+}
+
+function wrrRenderIntegrity(report) {
+  const el = document.getElementById('wrr-integrity');
+  const warningCount = report.data_integrity_warning_count || 0;
+  const warningHtml = warningCount > 0
+    ? `<div class="alert alert-warning">${scEsc(t('wrr.integrity_warning_prefix'))} ${scEsc(String(warningCount))}</div>`
+    : '';
+  el.innerHTML =
+    `<div class="fc-field-row"><span class="fc-field-label">${scEsc(t('wrr.report_checksum'))}</span>` +
+    `<span class="fc-field-value" style="font-family:monospace">${scEsc(report.report_checksum)}</span></div>` +
+    warningHtml;
+}
+
+function wrrReapplyLanguage() {
+  const onWasherResolutionPage =
+    document.getElementById('page-washerresolution') &&
+    document.getElementById('page-washerresolution').classList.contains('active');
+  if (!onWasherResolutionPage) return;
+  if (WRR_LAST_REPORT) {
+    wrrRenderAll(WRR_LAST_REPORT);
+  } else {
+    const statusEl = document.getElementById('wrr-status');
+    if (statusEl && statusEl.textContent) statusEl.textContent = t('wrr.loading');
+  }
+}
+
 function miReapplyLanguage() {
   // Faz 2.8.8: re-render already-fetched Material Intelligence data
   // with the newly selected language's t()-resolved labels -- the
@@ -5463,6 +5750,7 @@ function setLanguage(lang) {
   if (typeof aiReapplyLanguage === 'function') aiReapplyLanguage();
   if (typeof jaReapplyLanguage === 'function') jaReapplyLanguage();
   if (typeof miReapplyLanguage === 'function') miReapplyLanguage();
+  if (typeof wrrReapplyLanguage === 'function') wrrReapplyLanguage();
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
   if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();
@@ -5648,7 +5936,7 @@ function showPage(id, el) {
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}
+  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();}
 }
 
 // ========== FRICTION CONDITION WORKSPACE (Faz 2.6.6) ==========

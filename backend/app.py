@@ -1745,6 +1745,41 @@ def washer_resolution_decide_endpoint(
     }
 
 
+@app.get("/api/library/washers/resolutions/report")
+def washer_resolution_report_endpoint(
+    lang: str = "tr", format: str = "json", u=Depends(user)  # noqa: A002
+):
+    # Faz 2.8.9 Stage 5A: read-only, additive. Uses
+    # backend.library.washer_report.collect_washer_resolution_report()
+    # (Stage 4) as the sole source of truth -- no effective-status
+    # calculation is duplicated here, and this endpoint has no write
+    # path of any kind (GET only, no decision can be created/modified
+    # through it).
+    if lang not in ("tr", "en"):
+        raise HTTPException(400, f"Desteklenmeyen dil: {lang} (yalnizca 'tr'/'en').")
+    if format not in ("json", "markdown"):
+        raise HTTPException(400, f"Desteklenmeyen format: {format} (yalnizca 'json'/'markdown').")
+
+    from backend.library import washer_report as report_module
+
+    try:
+        report = report_module.collect_washer_resolution_report()
+    except report_module.WasherReportDataError:
+        raise HTTPException(
+            500, "Pul çözümleme raporu üretilirken beklenmeyen bir hata oluştu."
+        )
+
+    if format == "markdown":
+        renderer = (
+            report_module.render_washer_resolution_report_markdown_en
+            if lang == "en"
+            else report_module.render_washer_resolution_report_markdown
+        )
+        return {"format": "markdown", "lang": lang, "content": renderer(report)}
+
+    return {"format": "json", "lang": lang, "report": report}
+
+
 @app.get("/")
 def root():return FileResponse(FRONT/"index.html")
 
