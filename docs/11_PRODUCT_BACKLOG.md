@@ -131,6 +131,21 @@ remain open for Faz 2.5B/2.5C.
 
 **Compatibility constraint (all sub-phases):** the existing lubrication library is never renamed or restructured at the code/data level without a superseding ADR; no existing record or field is removed.
 
+## 12A. Faz 2.8.8 – Material Intelligence, Engineering Formula Validation and Recommendation Engine (TR/EN)
+
+**Delivered** 2026-07-29 (approved 2026-07-28) — see `docs/adr/ADR-0012-material-intelligence-formula-validation.md` and `docs/phases/PHASE_2.8.8_MATERIAL_INTELLIGENCE_FORMULA_VALIDATION.md` for full detail, including the final verified test counts (81 dedicated backend tests, 28 JS harness assertions, 1337/1337 full pytest suite, zero regression) and TR/EN parity result (29/29 `mi.*` keys, 100% parity).
+
+Investigation finding: `backend/library/material_library.py` is a Phase 1.3 metadata-only shell (`status="draft"`, `record_count=0`), but real data already exists and is wired through `backend.library.population.find_material()` — 8 real, sourced records in `backend/library/data/material_library.json` (`MaterialRecord` model, Faz 2.4.2B), every one `validation_status="reference_only"`, `approval_status="pending"`, `confidence=3`. `backend/calculation_engine/formula_registry.py` is an intentionally empty engine-level scaffold; the only populated formula catalog is `backend.vdi2230_core.trace` (7 entries, 2 `APPROVED` / 5 `PROVISIONAL`), kept independent by design. No recommendation engine of any kind exists.
+
+Scope (additive only, no existing module modified except `backend/app.py` route registration and `frontend/index.html` navigation):
+
+- **Material Intelligence** (`backend.calculation_engine.material_intelligence`): deterministic requirement-matching and comparison over the 8 existing `MaterialRecord`s — no new material data invented, no coefficient added.
+- **Formula Validation** (`backend.calculation_engine.formula_validation`): read-only aggregation and validation of the existing `vdi2230_core.trace` and `calculation_engine.formula_registry` catalogs (via their existing public accessors). Never edits either catalog's classification.
+- **Engineering Recommendation Engine** (part of `material_intelligence`): follows the Faz 2.6.4 readiness-gated philosophy exactly — a `MaterialRecommendationResult` states its `readiness_level`, which capabilities are available/blocked, and *why* a higher level is not reached (data is uniformly `reference_only`/`pending`), instead of guessing. Ranking is quantitative and deterministic (margin against a stated numeric requirement), always carries an explicit "engineering sign-off required before production use" disclaimer, and never claims a value it cannot support.
+- **TR/EN from day one**: known limitation carried since Faz 2.6.8 (frontend comment, `frontend/index.html`) is that backend warning/report prose is free-text and English-only, deliberately left untranslated because there is no closed vocabulary. Faz 2.8.8 does not retrofit older phases, but its own new warnings/messages use a stable `code` plus a bilingual `{tr, en}` text pair from the start — the fix Faz 2.6.8 described as out of scope is applied here for all new content.
+- **Reporting**: `material_intelligence_report` follows the `friction_report.py` / `strength_class_report.py` pattern (deterministic JSON + Markdown, no wall-clock timestamp, checksum-traceable, selected-language preserved in export).
+- New additive endpoints: `GET /api/library/materials`, `GET /api/library/materials/{id}`, `POST /api/engineering/material-recommendation`, `GET /api/engineering/formula-validation`. No existing endpoint is changed.
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.
