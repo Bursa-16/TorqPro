@@ -198,16 +198,26 @@ def validate_transition(
         raise InvalidTransitionError(previous_status, new_status)
 
 
-def validate_decision_fields(resolution_note: str, evidence_reference: str) -> None:
-    """Raise :class:`MissingEvidenceError` if either field is empty or
-    whitespace-only. Both are mandatory for every decision regardless
-    of target status (task brief: resolution note + evidence reference
-    are always required)."""
+def validate_decision_fields(
+    resolution_note: str,
+    evidence_reference: str,
+    resolved_by: Optional[str] = None,
+) -> None:
+    """Raise :class:`MissingEvidenceError` if any required field is
+    empty or whitespace-only. ``resolution_note`` and
+    ``evidence_reference`` are always required. ``resolved_by`` is
+    only checked when the caller passes it explicitly (not ``None``)
+    -- this keeps the two-argument call form used by Stage 1's tests
+    working unchanged, while the Stage 3 service layer (which always
+    has a ``resolved_by`` value from the request) gets it validated
+    too."""
     missing = set()
     if not resolution_note or not resolution_note.strip():
         missing.add("resolution_note")
     if not evidence_reference or not evidence_reference.strip():
         missing.add("evidence_reference")
+    if resolved_by is not None and not resolved_by.strip():
+        missing.add("resolved_by")
     if missing:
         raise MissingEvidenceError(frozenset(missing))
 

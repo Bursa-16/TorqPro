@@ -38,14 +38,21 @@ service-layer concern, not a persistence concern.
 
 from __future__ import annotations
 
-import fcntl
 import hashlib
 import json
 import os
 import tempfile
+import threading
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Any, Dict, Iterator, List, Optional
+
+try:
+    import fcntl
+    _HAS_FCNTL = True
+except ImportError:  # pragma: no cover - Windows has no fcntl module
+    fcntl = None  # type: ignore[assignment]
+    _HAS_FCNTL = False
 
 from .washer_resolution_decisions import WasherResolutionDecision
 
@@ -168,19 +175,40 @@ def verify_integrity(decision: WasherResolutionDecision) -> bool:
 # ---------------------------------------------------------------------
 
 
+#: Extra in-process guard against thread races, layered on top of the
+#: cross-process file lock (when available). Always used, on every
+#: platform -- harmless on POSIX (flock already serializes there too)
+#: and load-bearing on platforms without fcntl.
+_PROCESS_LOCK = threading.Lock()
+
+
 @contextmanager
 def _locked() -> Iterator[None]:
-    """Advisory exclusive lock over the ledger file's lifetime for the
-    duration of the ``with`` block, serializing concurrent
-    read-check-write cycles across processes/threads. Released
-    automatically (even on exception) when the block exits."""
-    _LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(_LOCK_PATH, "w", encoding="utf-8") as lock_handle:
-        fcntl.flock(lock_handle, fcntl.LOCK_EX)
-        try:
+    """Serialize concurrent read-check-write cycles for the duration
+    of the ``with`` block, released automatically (even on exception)
+    when the block exits.
+
+    On POSIX, an advisory ``fcntl.flock`` over :data:`_LOCK_PATH`
+    provides a cross-process guard, in addition to the in-process
+    :data:`_PROCESS_LOCK`. On platforms without ``fcntl`` (e.g.
+    Windows), only :data:`_PROCESS_LOCK` is used -- this still
+    prevents concurrent-thread races within one running process (the
+    scenario this phase's tests exercise); a multi-process guard on
+    such platforms is out of scope for this phase. Module import never
+    fails for lack of ``fcntl`` -- see the top-of-module try/except.
+    """
+    if _HAS_FCNTL:
+        _LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(_LOCK_PATH, "w", encoding="utf-8") as lock_handle:
+            fcntl.flock(lock_handle, fcntl.LOCK_EX)
+            try:
+                with _PROCESS_LOCK:
+                    yield
+            finally:
+                fcntl.flock(lock_handle, fcntl.LOCK_UN)
+    else:  # pragma: no cover - exercised via _HAS_FCNTL monkeypatch, not real Windows
+        with _PROCESS_LOCK:
             yield
-        finally:
-            fcntl.flock(lock_handle, fcntl.LOCK_UN)
 
 
 def _read_raw() -> Dict[str, Any]:
