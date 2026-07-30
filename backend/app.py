@@ -1788,4 +1788,11 @@ def root():return FileResponse(FRONT/"index.html")
 from backend.api.routes.production_validation import router as production_validation_router
 app.include_router(production_validation_router)
 
+# Faz 2.8.11 Stage 4: governance API module (backend/governance/api.py). Additive only --
+# new routes under /api/governance, nothing existing renamed or removed. Isolated from every
+# existing mechanism (see backend/governance/api.py module docstring for the full
+# compatibility contract); reuses the same `user` auth dependency as every other endpoint.
+from backend.governance.api import router as governance_router
+app.include_router(governance_router)
+
 app.mount("/",StaticFiles(directory=FRONT,html=True),name="frontend")

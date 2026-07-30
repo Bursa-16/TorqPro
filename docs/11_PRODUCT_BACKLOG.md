@@ -202,6 +202,86 @@ this phase: it introduces no new architectural pattern or
 irreversible design decision for future phases to reference, so the
 completion report is the appropriate and sufficient record.
 
+## 12D. Faz 2.8.11 – Engineering Governance Architecture and Decision
+Workflow Standardization (Stages 1–5, complete)
+
+**Delivered** 2026-07-30 — see
+`docs/adr/ADR-0014-engineering-governance-architecture.md`,
+`docs/phases/PHASE_2.8.11_ENGINEERING_GOVERNANCE_ARCHITECTURE.md`, and
+`docs/phases/PHASE_2.8.11_COMPLETION_REPORT_TR_EN.md` (bilingual
+final report) for full detail.
+
+A read-only repository analysis performed before this phase began
+found four independent, already-shipped governance mechanisms with
+overlapping responsibility and inconsistent vocabulary: the
+Production Validation workflow (Faz 2.5A), the legacy calculation-
+revision review/approve/reject workflow in `backend/app.py`, the
+joint revision lifecycle (`backend/joints/`, ADR-0003), and the
+Washer Resolution Decision Workflow (Faz 2.8.9, ADR-0013). Building a
+fifth bespoke "Engineering Decision Audit & Approval Workflow" — the
+phase's original framing — was assessed as a fragmentation risk, not
+a fix. The phase scope was revised, before any code was written, to a
+**standardization phase**, delivered across five stages:
+
+- **Stage 1** (docs-only): ADR-0014 — the canonical model. Three
+  independent lifecycle groups (review, publication/revision,
+  resolution), a canonical field-name set, transition/audit/
+  idempotency/revision-lineage principles, compatibility and
+  migration strategy.
+- **Stage 2**: `backend/governance/enums.py` (`ReviewStatus`,
+  `PublicationStatus`, `ResolutionStatus`, `LifecycleGroup`, closed
+  transition tables), `models.py` (`ReviewDecision`/
+  `PublicationDecision`/`ResolutionDecision`, `extra="forbid"`,
+  required-field validation per ADR-0014's table), `transitions.py`
+  (shared fail-closed transition checking), `exceptions.py`.
+- **Stage 3**: `backend/governance/events.py`
+  (`GovernanceEvent`), `store.py` (`FileGovernanceEventStore` —
+  append-only, atomic writes, Windows-compatible locking, corruption
+  detection, no default data path), `service.py` (nine
+  idempotency-first command functions + effective-status/history/
+  latest-event read accessors; idempotency is resolved *before*
+  transition validation so a legitimate retry survives state
+  progression; `previous_status` is never caller-suppliable).
+- **Stage 4**: `backend/governance/api.py` (11 additive routes under
+  `/api/governance`, mounted onto `backend.app.app`, reusing the
+  existing `user` auth dependency; `actor` derived from the
+  authenticated user only; lazy `TORQPRO_GOVERNANCE_EVENT_STORE_PATH`
+  store provider, safe 503 when unconfigured) and a generic,
+  domain-agnostic bilingual `page-governance` frontend workspace
+  (53/53 TR/EN key parity).
+- **Stage 5**: one read-only compatibility adapter,
+  `backend/governance/adapters/washer_resolution.py`, projecting the
+  existing Faz 2.8.9 washer resolution workflow onto the canonical
+  vocabulary (71 exact + 5 explicitly unsupported mappings across all
+  76 real ledger records, zero guessed values); Production
+  Validation, the legacy calculation-revision workflow, and joints
+  were deliberately **not** adapted in this phase (all three require
+  a live SQLite connection to read, which a first read-only adapter
+  should not force into `backend/governance/`'s dependency graph);
+  and the pre-existing async defect in
+  `tests/js/run_material_intelligence_tests.js` (see below) was
+  fixed.
+
+**No existing table, JSON ledger, API endpoint, enum, or transition
+graph was modified anywhere in this phase.** No data was migrated. No
+field was renamed. The Faz 2.8.9 washer resolution workflow is
+unchanged and was verified byte-identical before/after every adapter
+call. No existing mechanism imports `backend.governance`, except the
+one Stage 4-approved router mount in `backend/app.py`; no governance
+module imports an existing mechanism, except the one Stage 5-approved
+adapter file, which is read-only and exposes no mutation/persistence
+method.
+
+**Resolved follow-up:** the pre-existing async test-harness gap in
+`tests/js/run_material_intelligence_tests.js` (Faz 2.8.8, first
+documented in ADR-0013's Consequences and §12B above) is fixed as of
+this phase — its 19 scenarios now run through an awaited
+`async function main()`, matching the pattern already used by the
+washer-resolution and governance-workspace harnesses. Fixed under a
+narrow, test-file-only, no-production-code-touched change, with a
+regression-guard assertion-count test and a deliberate-failure proof
+performed before and after the fix.
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.
