@@ -21,66 +21,22 @@ const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
+const {
+  extractScript,
+  extractConstDecl,
+  extractFunctionDecl,
+  extractStatementAfter,
+  toVarDecl,
+} = require('./harness_common');
+
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const FRONTEND_PATH = path.join(REPO_ROOT, 'frontend', 'index.html');
 
 // ---------------------------------------------------------------
-// Extraction (same technique as the other two harnesses)
+// Extraction helpers now come from tests/js/harness_common.js (Faz
+// 2.8.10 Stage 3) -- same technique as the other harnesses, verified
+// byte-identical before being shared.
 // ---------------------------------------------------------------
-function extractScript(html) {
-  const m = /<script>([\s\S]*?)<\/script>/.exec(html);
-  if (!m) throw new Error('no <script> block found in frontend/index.html');
-  return m[1];
-}
-
-function extractConstDecl(script, name) {
-  const re = new RegExp('\\b(?:const|let)\\s+' + name + '\\s*=');
-  const m = re.exec(script);
-  if (!m) throw new Error('declaration not found: ' + name);
-  let i = script.indexOf('=', m.index);
-  let depth = 0;
-  let j = i;
-  for (; j < script.length; j++) {
-    const c = script[j];
-    if (c === '{' || c === '[' || c === '(') depth++;
-    else if (c === '}' || c === ']' || c === ')') depth--;
-    else if (c === ';' && depth === 0) break;
-  }
-  return script.slice(m.index, j + 1);
-}
-
-function extractFunctionDecl(script, name) {
-  const re = new RegExp('\\bfunction\\s+' + name + '\\s*\\(');
-  const m = re.exec(script);
-  if (!m) throw new Error('function not found: ' + name);
-  const braceStart = script.indexOf('{', m.index);
-  let depth = 0;
-  let j = braceStart;
-  for (; j < script.length; j++) {
-    const c = script[j];
-    if (c === '{') depth++;
-    else if (c === '}') { depth--; if (depth === 0) break; }
-  }
-  let start = m.index;
-  const asyncMatch = /async\s+$/.exec(script.slice(Math.max(0, start - 10), start));
-  if (asyncMatch) start -= asyncMatch[0].length;
-  return script.slice(start, j + 1);
-}
-
-function extractStatementAfter(script, anchorRegex, statementRegex) {
-  const anchor = anchorRegex.exec(script);
-  if (!anchor) throw new Error('anchor not found: ' + anchorRegex);
-  const rest = script.slice(anchor.index + anchor[0].length);
-  const m = statementRegex.exec(rest);
-  if (!m) throw new Error('statement not found after anchor: ' + statementRegex);
-  return m[0];
-}
-
-function toVarDecl(declText, name) {
-  const re = new RegExp('^(const|let)(\\s+' + name + '\\s*=)');
-  if (!re.test(declText)) throw new Error('expected declaration of ' + name + ' to rewrite to var, got: ' + declText.slice(0, 60));
-  return declText.replace(re, 'var$2');
-}
 
 // Only what Joint Analysis's own functions actually need -- same
 // rationale as the other two harnesses: avoid needing a much larger
@@ -122,91 +78,11 @@ function buildExtractedSource() {
 }
 
 // ---------------------------------------------------------------
-// Minimal DOM / localStorage stub (identical shape to the other two
-// harnesses).
+// Minimal DOM / localStorage stub and assertion bookkeeping now come
+// from tests/js/harness_common.js (Faz 2.8.10 Stage 3).
 // ---------------------------------------------------------------
-function makeElement(id) {
-  let _value = '';
-  return {
-    id: id,
-    _text: '',
-    _html: '',
-    disabled: false,
-    checked: false,
-    style: {},
-    set textContent(v) { this._text = String(v); },
-    get textContent() { return this._text; },
-    set innerHTML(v) { this._html = String(v); },
-    get innerHTML() { return this._html; },
-    set value(v) { _value = v; },
-    get value() { return _value; },
-  };
-}
-
-function makeLocalStorage(initial) {
-  const store = new Map(Object.entries(initial || {}));
-  return {
-    getItem(k) { return store.has(k) ? store.get(k) : null; },
-    setItem(k, v) { store.set(k, String(v)); },
-    removeItem(k) { store.delete(k); },
-  };
-}
-
-function scrapeDataI18nKeys(rawHtml, attr) {
-  const re = new RegExp(attr + '="([a-zA-Z0-9_.]+)"', 'g');
-  const keys = [];
-  let m;
-  while ((m = re.exec(rawHtml))) keys.push(m[1]);
-  return keys;
-}
-
-function buildDom(rawHtml, byId) {
-  const dataI18nEls = scrapeDataI18nKeys(rawHtml, 'data-i18n').map((key) => {
-    const el = makeElement(null);
-    el._attrs = { 'data-i18n': key };
-    el.getAttribute = (n) => el._attrs[n] || null;
-    return el;
-  });
-  const placeholderEls = scrapeDataI18nKeys(rawHtml, 'data-i18n-placeholder').map((key) => {
-    const el = makeElement(null);
-    el._attrs = { 'data-i18n-placeholder': key };
-    el.getAttribute = (n) => el._attrs[n] || null;
-    el.set = (v) => { el.placeholder = v; };
-    return el;
-  });
-  return {
-    _byId: byId,
-    getElementById(id) {
-      if (!(id in this._byId)) this._byId[id] = makeElement(id);
-      return this._byId[id];
-    },
-    querySelectorAll(selector) {
-      if (selector === '[data-i18n]') return dataI18nEls;
-      if (selector === '[data-i18n-placeholder]') return placeholderEls;
-      if (selector === '.lang-btn') return [];
-      return [];
-    },
-    querySelector() { return null; },
-    addEventListener() {},
-  };
-}
-
-// ---------------------------------------------------------------
-// Assertion bookkeeping
-// ---------------------------------------------------------------
-let pass = 0;
-let fail = 0;
-const failures = [];
-function check(name, cond) {
-  if (cond) { pass++; }
-  else { fail++; failures.push(name); console.log('FAIL: ' + name); }
-}
-function checkIncludes(name, haystack, needle) {
-  check(name, typeof haystack === 'string' && haystack.indexOf(needle) !== -1);
-}
-function checkNotIncludes(name, haystack, needle) {
-  check(name, typeof haystack === 'string' && haystack.indexOf(needle) === -1);
-}
+const { makeElement, makeLocalStorage, buildDom, createChecker } = require('./harness_common');
+const { check, checkIncludes, checkNotIncludes, summary } = createChecker();
 
 function newContext(extractedSource, rawHtml, apiRequestImpl) {
   const byId = {};
@@ -554,9 +430,12 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
 })();
 
 // =================================================================
-console.log((pass + fail) + ' assertions, ' + pass + ' passed, ' + fail + ' failed');
-if (fail > 0) {
-  console.log('Failures:\n  - ' + failures.join('\n  - '));
-  process.exit(1);
+{
+  const { pass, fail, failures } = summary();
+  console.log((pass + fail) + ' assertions, ' + pass + ' passed, ' + fail + ' failed');
+  if (fail > 0) {
+    console.log('Failures:\n  - ' + failures.join('\n  - '));
+    process.exit(1);
+  }
+  process.exit(0);
 }
-process.exit(0);

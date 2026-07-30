@@ -60,3 +60,16 @@ Invalid package cannot pass gate. Approval and activation are separate. Rollback
 ## 8. Test reports
 
 CI/local release generates machine-readable and human summary with commit, environment, versions, pass/fail and known skipped validations.
+
+## 9. Repository quality gate
+
+`python tools/run_quality_gate.py`, run from the repository root, is the single deterministic command that runs the full local release-readiness check. It runs six checks in a fixed order and stops at the first failure, printing that check's full underlying output:
+
+1. `git diff --check`
+2. Python compile validation (`backend/`, `tests/`)
+3. JSON validity for repository-owned `*.json` files (`.git`, virtualenvs, caches, `node_modules`, `runtime/`, build/dist output, and vendor directories excluded; files processed in deterministic sorted order)
+4. TR/EN translation key parity (`tests/test_i18n_key_parity.py`)
+5. All JavaScript regression harnesses (`tests/js/run_*.js`) -- Node.js is required and its absence is a hard failure with an actionable message, never a silent skip
+6. The full `pytest -q` suite
+
+Exit code `0` means every gate passed and the repository is release-ready for this gate; non-zero means the numbered check it stopped at failed. It uses only the Python standard library plus the project's own existing tools (`git`, `node`, `compileall`, `pytest`) -- no new dependency. It deliberately does not run full-tree `flake8` (Stage 1 found ~2175 pre-existing style-debt findings unrelated to correctness there; flake8 remains a scoped, per-diff practice) and does not enforce a coverage threshold. Focused tests for the runner itself live in `tests/test_run_quality_gate.py`.
