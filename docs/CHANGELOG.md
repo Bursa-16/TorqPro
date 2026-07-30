@@ -46,3 +46,23 @@
   (all read-only, additive) and the `page-washerresolution` frontend
   workspace, with full TR/EN parity (38/38 `wrr.*` keys).
 - Documented in `docs/phases/PHASE_2.8.9_WASHER_RESOLUTION_DECISION_WORKFLOW.md`.
+
+## Faz 2.8.11 (Stage 1) — 2026-07-30
+
+- Documentation-only architecture stage. No table, JSON ledger, API
+  endpoint, enum, transition graph, or frontend string was added,
+  modified, or renamed; `backend/`, `frontend/`, and `tests/` are
+  unchanged.
+- Added `docs/adr/ADR-0014-engineering-governance-architecture.md`:
+  a canonical governance model unifying the vocabulary of four
+  independently-evolved mechanisms — the Production Validation
+  workflow (Faz 2.5A), the legacy `calculation_revisions` review/
+  approve/reject workflow in `backend/app.py`, the joint revision
+  lifecycle (`backend/joints/`, ADR-0003), and the Faz 2.8.9 Washer
+  Resolution Decision Workflow (ADR-0013) — into three independent
+  lifecycle groups (review, publication/revision, resolution) and a
+  canonical field-name set, without changing any existing mechanism.
+- Documented in
+  `docs/phases/PHASE_2.8.11_ENGINEERING_GOVERNANCE_ARCHITECTURE.md`.
+- Stages 2–5 (shared contracts, event store, additive API/TR-EN
+  workspace, compatibility adapters) are not started.

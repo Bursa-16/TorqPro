@@ -202,6 +202,61 @@ this phase: it introduces no new architectural pattern or
 irreversible design decision for future phases to reference, so the
 completion report is the appropriate and sufficient record.
 
+## 12D. Faz 2.8.11 – Engineering Governance Architecture and Decision
+Workflow Standardization (Stage 1: Architecture & Documentation)
+
+**Delivered (Stage 1 only)** 2026-07-30 — see
+`docs/adr/ADR-0014-engineering-governance-architecture.md` and
+`docs/phases/PHASE_2.8.11_ENGINEERING_GOVERNANCE_ARCHITECTURE.md` for
+full detail.
+
+A read-only repository analysis performed before this phase began
+found four independent, already-shipped governance mechanisms with
+overlapping responsibility and inconsistent vocabulary: the
+Production Validation workflow (Faz 2.5A), the legacy calculation-
+revision review/approve/reject workflow in `backend/app.py`, the
+joint revision lifecycle (`backend/joints/`, ADR-0003), and the
+Washer Resolution Decision Workflow (Faz 2.8.9, ADR-0013). Building a
+fifth bespoke "Engineering Decision Audit & Approval Workflow" — the
+phase's original framing — was assessed as a fragmentation risk, not
+a fix, since `status`, `approved_by`, `reviewed_by`, and `superseded`
+already carry three subtly different meanings across those four
+mechanisms.
+
+The phase scope was revised, before any code was written, to a
+**standardization phase**: ADR-0014 inventories all four mechanisms,
+compares their status vocabularies, precisely distinguishes review /
+approval / activation / resolution / revision / supersession /
+archival, and defines a canonical model with three independent
+lifecycle groups — review (`draft -> under_review -> approved|
+rejected`), publication/revision (`draft -> active -> superseded|
+archived`), and resolution (`open -> resolved|rejected|waived`) —
+deliberately never merged into one overloaded status field, plus a
+canonical field-name set (`submitted_by/at`, `reviewed_by/at`,
+`approved_by/at`, `rejected_by/at`, `review_comment`,
+`change_reason`, `revision_no`, `supersedes_id`, `superseded_by_id`,
+`decision_id`, `idempotency_key`, `created_at`), idempotency and
+audit/immutability principles, a compatibility strategy, and a
+migration strategy.
+
+**Stage 1 is documentation-only**: no existing table, JSON ledger, API
+endpoint, enum, or transition graph was modified; no data was
+migrated; no field was renamed; the Faz 2.8.9 washer resolution
+workflow is unchanged; no shared runtime governance implementation
+exists yet. `backend/`, `frontend/`, and `tests/` are unchanged by
+this phase — only `docs/` files were added or edited
+(`docs/adr/ADR-0014-...md`, `docs/phases/PHASE_2.8.11_...md`, this
+entry, `docs/314_Roadmap.md`, `docs/CHANGELOG.md`).
+
+**Known follow-up (out of scope for this stage, tracked separately):**
+the pre-existing async test-harness gap in
+`tests/js/run_material_intelligence_tests.js` (Faz 2.8.8, first
+documented in ADR-0013's Consequences and §12B above) remains
+unfixed. Stages 2–5 (shared governance contracts, append-only event
+store, additive API/TR-EN workspace, compatibility adapters) are not
+started and each requires its own scoping approval before work
+begins — see ADR-0014's "Future-stage plan."
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.
