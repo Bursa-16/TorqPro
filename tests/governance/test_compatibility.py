@@ -1,13 +1,17 @@
-"""Faz 2.8.11 Stage 2/3 compatibility guard.
+"""Faz 2.8.11 Stage 2/3/4 compatibility guard.
 
-ADR-0014's Stage 2/3 scope is explicit: "No existing mechanism
-imports or depends on it yet," and Stage 3 adds "without connecting
-it to existing production workflows or exposing API endpoints." This
-test enforces both mechanically rather than relying on code review
-alone -- if a future change accidentally wires ``backend.governance``
-into ``backend.production_validation``, ``backend.joints``,
-``backend.library``, or ``backend.app``, or adds an API route, before
-an explicit Stage 4/5 authorizes it, this test fails loudly.
+ADR-0014's Stage 2/3 scope was "no existing mechanism imports or
+depends on it yet," and Stage 3 added "without connecting it to
+existing production workflows or exposing API endpoints." Stage 4
+authorizes exactly **one** new coupling point: ``backend/app.py``
+additively mounting ``backend.governance.api``'s router (task item 1,
+"Mount the governance API additively onto the existing
+`backend.app.app`"). This test enforces that everything else stays
+exactly as isolated as before -- if a future change wires
+``backend.governance`` into ``backend.production_validation``,
+``backend.joints``, ``backend.library``, or any part of
+``backend/app.py`` beyond that one approved router-mount import,
+before an explicit Stage 5 authorizes it, this test fails loudly.
 """
 
 import re
@@ -34,9 +38,11 @@ def _import_lines(text: str):
     ]
 
 
-#: Existing mechanisms that must not depend on backend.governance yet
-#: (ADR-0014, "Compatibility strategy"). Paths are relative to the
-#: repo root.
+#: Existing mechanisms that must not depend on backend.governance,
+#: except for the one Stage 4-approved exception handled explicitly
+#: in test_no_existing_mechanism_imports_governance_package below
+#: (backend/app.py's single router-mount import). Paths are relative
+#: to the repo root.
 EXISTING_MECHANISM_PATHS = [
     REPO_ROOT / "backend" / "production_validation",
     REPO_ROOT / "backend" / "joints",
@@ -46,8 +52,14 @@ EXISTING_MECHANISM_PATHS = [
     REPO_ROOT / "backend" / "calculation_engine",
     REPO_ROOT / "backend" / "engineering_core",
     REPO_ROOT / "backend" / "standards",
-    REPO_ROOT / "backend" / "api",
+    REPO_ROOT / "backend" / "api" / "routes",
 ]
+
+#: The exact, sole Stage 4-approved import of backend.governance from
+#: outside the package -- backend/app.py mounting the governance
+#: router. Any other import line containing "backend.governance"
+#: anywhere in EXISTING_MECHANISM_PATHS is still a violation.
+_APPROVED_APP_PY_IMPORT_SUBSTRING = "from backend.governance.api import router as governance_router"
 
 
 def _python_files(path: Path):
@@ -57,26 +69,46 @@ def _python_files(path: Path):
         yield from path.rglob("*.py")
 
 
-def test_no_existing_mechanism_imports_governance_package():
+def test_no_existing_mechanism_imports_governance_package_except_the_one_approved_mount():
     offenders = []
     for mechanism_path in EXISTING_MECHANISM_PATHS:
         if not mechanism_path.exists():
             continue
         for py_file in _python_files(mechanism_path):
             for line in _import_lines(py_file.read_text(encoding="utf-8")):
-                if "backend.governance" in line or "backend import governance" in line:
-                    offenders.append(f"{py_file.relative_to(REPO_ROOT)}: {line.strip()}")
+                if "backend.governance" not in line and "backend import governance" not in line:
+                    continue
+                is_app_py = py_file == REPO_ROOT / "backend" / "app.py"
+                is_the_approved_line = _APPROVED_APP_PY_IMPORT_SUBSTRING in line
+                if is_app_py and is_the_approved_line:
+                    continue  # the one Stage 4-approved coupling point
+                offenders.append(f"{py_file.relative_to(REPO_ROOT)}: {line.strip()}")
     assert not offenders, (
-        "Stage 2 requires backend.governance to be inert: the following "
-        "existing files import it and must not: " + ", ".join(offenders)
+        "Only backend/app.py's single governance-router mount import is "
+        "approved (Stage 4); the following additional import(s) are not: "
+        + ", ".join(offenders)
     )
+
+
+def test_app_py_mounts_governance_router_exactly_once():
+    """The inverse check: the one approved coupling point must exist
+    exactly once (not duplicated, not silently dropped)."""
+    app_py = REPO_ROOT / "backend" / "app.py"
+    text = app_py.read_text(encoding="utf-8")
+    assert text.count(_APPROVED_APP_PY_IMPORT_SUBSTRING) == 1
+    assert text.count("app.include_router(governance_router)") == 1
 
 
 def test_governance_package_does_not_import_existing_mechanisms():
     """Symmetric check: backend.governance itself must not reach into
     any of the four existing mechanisms' modules via an actual import
     statement (it may exist alongside them, and its own docstrings
-    may *name* them in prose, without depending on their internals)."""
+    may *name* them in prose, without depending on their internals).
+    ``backend.api.dependencies`` (the shared, mechanism-agnostic auth
+    dependency every TorqPro endpoint already uses) is deliberately
+    *not* in this forbidden list -- reusing it is Stage 4's approved
+    "no new authentication mechanism" requirement, not a coupling to
+    any of the four production mechanisms."""
     governance_path = REPO_ROOT / "backend" / "governance"
     forbidden_substrings = [
         "backend.production_validation",
@@ -87,6 +119,7 @@ def test_governance_package_does_not_import_existing_mechanisms():
         "backend.calculation_engine",
         "backend.engineering_core",
         "backend.standards",
+        "backend.api.routes",
     ]
     offenders = []
     for py_file in _python_files(governance_path):
@@ -95,6 +128,19 @@ def test_governance_package_does_not_import_existing_mechanisms():
                 if forbidden in line:
                     offenders.append(f"{py_file.relative_to(REPO_ROOT)}: {line.strip()}")
     assert not offenders, "backend.governance must stay decoupled: " + "; ".join(offenders)
+
+
+def test_governance_api_only_imports_the_approved_auth_dependency():
+    """Even narrower than the general check above: confirm
+    backend/governance/api.py's only import reaching outside
+    backend.governance is exactly ``backend.api.dependencies``."""
+    api_py = REPO_ROOT / "backend" / "governance" / "api.py"
+    outside_imports = [
+        line.strip()
+        for line in _import_lines(api_py.read_text(encoding="utf-8"))
+        if "backend" in line and "backend.governance" not in line
+    ]
+    assert outside_imports == ["from backend.api.dependencies import user"]
 
 
 def _strip_triple_quoted_strings(text: str) -> str:
@@ -136,9 +182,10 @@ def test_governance_package_has_no_default_data_directory():
     (``FileGovernanceEventStore``), but no default, hard-coded
     production data path -- every store instance in this package's
     own tests is constructed with an explicit, caller-supplied path
-    (a temp directory). This guards against a future change silently
-    introducing a shipped default path/directory under
-    backend/governance/data/."""
+    (a temp directory), and the Stage 4 API resolves it lazily from
+    an environment variable with no fallback path. This guards
+    against a future change silently introducing a shipped default
+    path/directory under backend/governance/data/."""
     governance_path = REPO_ROOT / "backend" / "governance"
     data_dir = governance_path / "data"
     assert not data_dir.exists(), (
@@ -147,14 +194,26 @@ def test_governance_package_has_no_default_data_directory():
     )
 
 
-def test_governance_package_has_no_api_layer_yet():
-    """Stage 3 scope guard: no FastAPI route decorator or router
-    should exist under backend/governance/ yet -- additive API
-    endpoints are Stage 4 scope, not Stage 3."""
-    governance_path = REPO_ROOT / "backend" / "governance"
-    for py_file in _python_files(governance_path):
-        text = py_file.read_text(encoding="utf-8")
-        assert "@app." not in text and "APIRouter" not in text, (
-            f"{py_file.relative_to(REPO_ROOT)} appears to define an API "
-            "route; Stage 3 is event store/service layer only, no API."
-        )
+def test_governance_api_defines_only_the_nine_approved_write_routes_and_two_read_routes():
+    """Stage 4 scope guard: exactly the approved endpoint set exists
+    under backend/governance/api.py -- no extra route was added, and
+    none of the nine write routes or two read routes is missing."""
+    from backend.governance.api import router
+
+    paths = sorted({route.path for route in router.routes})
+    expected = sorted(
+        {
+            "/api/governance/{aggregate_id}/history",
+            "/api/governance/{aggregate_id}/status",
+            "/api/governance/review/{aggregate_id}/submit",
+            "/api/governance/review/{aggregate_id}/approve",
+            "/api/governance/review/{aggregate_id}/reject",
+            "/api/governance/publication/{aggregate_id}/activate",
+            "/api/governance/publication/{aggregate_id}/supersede",
+            "/api/governance/publication/{aggregate_id}/archive",
+            "/api/governance/resolution/{aggregate_id}/resolve",
+            "/api/governance/resolution/{aggregate_id}/reject",
+            "/api/governance/resolution/{aggregate_id}/waive",
+        }
+    )
+    assert paths == expected

@@ -444,6 +444,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> <span data-i18n="sidebar.frictioncondition">Friction Condition</span></div>
     <div class="sidebar-item" onclick="showPage('strengthclasses')"><span class="sidebar-icon">🔗</span> <span data-i18n="sidebar.strengthclasses">Bolt/Nut Strength Classes</span></div>
     <div class="sidebar-item" onclick="showPage('washerresolution')"><span class="sidebar-icon">🧾</span> <span data-i18n="sidebar.washerresolution">Washer Resolution Report</span></div>
+    <div class="sidebar-item" onclick="showPage('governance')"><span class="sidebar-icon">🗂️</span> <span data-i18n="sidebar.governance">Governance Workspace</span></div>
     <div class="sidebar-item" onclick="showPage('assemblyintelligence')"><span class="sidebar-icon">🧠</span> <span data-i18n="sidebar.assemblyintelligence">Montaj Zekâsı</span></div>
     <div class="sidebar-item" onclick="showPage('jointanalysis')"><span class="sidebar-icon">⚙️</span> <span data-i18n="sidebar.jointanalysis">Joint Analysis</span></div>
     <div class="sidebar-item" onclick="showPage('materialintelligence')"><span class="sidebar-icon">🧬</span> <span data-i18n="sidebar.materialintelligence">Material Intelligence</span></div>
@@ -1180,6 +1181,59 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       <div class="card-title" data-i18n="wrr.integrity_title">Integrity</div>
       <div id="wrr-integrity"></div>
     </div>
+  </div>
+</div>
+
+<div id="page-governance" class="page">
+  <div class="section-header"><span class="section-icon">🗂️</span><div>
+    <div class="section-title" data-i18n="gov.page_title">Engineering Governance Workspace</div>
+    <div class="section-sub" data-i18n="gov.page_subtitle">Generic, domain-agnostic review / publication / resolution event workspace (Faz 2.8.11 Stage 4)</div>
+  </div></div>
+
+  <div class="alert alert-info">
+    <div data-i18n="gov.notice_append_only">Governance events are append-only: nothing is ever edited or deleted, only added.</div>
+    <div data-i18n="gov.notice_effective_status">Effective status is always derived from the full event history, never stored separately.</div>
+    <div data-i18n="gov.notice_lifecycle_independent">Review, publication and resolution are three independent lifecycle groups -- they never share one status.</div>
+    <div data-i18n="gov.notice_stage4_generic">This Stage 4 workspace is intentionally generic: it does not yet know about any specific TorqPro record type. Connecting it to real washer resolutions, calculation revisions or joint revisions is Stage 5 work.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="gov.lookup_title">Aggregate Lookup</div>
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="gov.aggregate_id_label">Aggregate ID</label><input class="form-input" id="gov_aggregate_id"></div>
+      <div class="form-group"><label class="form-label" data-i18n="gov.aggregate_type_label">Aggregate Type</label><input class="form-input" id="gov_aggregate_type"></div>
+      <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="govLoad()" data-i18n="gov.load_button">Load</button></div>
+    </div>
+  </div>
+
+  <div id="gov-status-message" class="fc-muted"></div>
+
+  <div id="gov-content" style="display:none">
+    <div class="card">
+      <div class="card-title" data-i18n="gov.status_title">Lifecycle Status</div>
+      <div class="ai-form-grid" id="gov-status-cards"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" data-i18n="gov.history_title">Event History (append-only)</div>
+      <div id="gov-history-list"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" data-i18n="gov.command_title">Record a Decision</div>
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="gov.action_label">Action</label><select class="form-input" id="gov_action" onchange="govOnActionChange()"></select></div>
+      <div class="form-group"><label class="form-label" data-i18n="gov.decision_id_label">Decision ID</label><input class="form-input" id="gov_decision_id"></div>
+      <div class="form-group"><label class="form-label" data-i18n="gov.idempotency_key_label">Idempotency Key</label><input class="form-input" id="gov_idempotency_key"></div>
+    </div>
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="gov.occurred_at_label">Occurred At (UTC ISO-8601)</label><input class="form-input" id="gov_occurred_at" placeholder="2026-07-30T10:00:00Z"></div>
+      <div class="form-group" id="gov-superseded-by-group" style="display:none"><label class="form-label" data-i18n="gov.superseded_by_id_label">Superseded By ID</label><input class="form-input" id="gov_superseded_by_id"></div>
+      <div class="form-group"><label class="form-label" data-i18n="gov.metadata_label">Metadata (JSON, optional)</label><input class="form-input" id="gov_metadata" data-i18n-placeholder="gov.metadata_placeholder" placeholder="{}"></div>
+    </div>
+    <button class="btn btn-primary" onclick="govSubmitCommand()" data-i18n="gov.submit_button">Submit Decision</button>
+    <div id="gov-command-result" style="margin-top:10px"></div>
   </div>
 </div>
 
@@ -3144,6 +3198,60 @@ const I18N = {
     'wrr.col.last_decision': 'Last Decision',
     'wrr.col.decided_at': 'Decided At (UTC)',
     'wrr.col.decided_by': 'Decided By',
+
+    'sidebar.governance': 'Governance Workspace',
+    'gov.page_title': 'Engineering Governance Workspace',
+    'gov.page_subtitle': 'Generic, domain-agnostic review / publication / resolution event workspace (Faz 2.8.11 Stage 4)',
+    'gov.notice_append_only': 'Governance events are append-only: nothing is ever edited or deleted, only added.',
+    'gov.notice_effective_status': 'Effective status is always derived from the full event history, never stored separately.',
+    'gov.notice_lifecycle_independent': 'Review, publication and resolution are three independent lifecycle groups -- they never share one status.',
+    'gov.notice_stage4_generic': 'This Stage 4 workspace is intentionally generic: it does not yet know about any specific TorqPro record type. Connecting it to real washer resolutions, calculation revisions or joint revisions is Stage 5 work.',
+    'gov.lookup_title': 'Aggregate Lookup',
+    'gov.aggregate_id_label': 'Aggregate ID',
+    'gov.aggregate_type_label': 'Aggregate Type',
+    'gov.load_button': 'Load',
+    'gov.loading': 'Loading...',
+    'gov.empty_state': 'No governance record exists yet for this aggregate_id / aggregate_type.',
+    'gov.malformed_response': 'The response was incomplete; showing nothing rather than a guessed value.',
+    'gov.api_error_prefix': 'Request failed: ',
+    'gov.auth_error': 'Session expired or invalid; please sign in again.',
+    'gov.validation_error_prefix': 'Invalid request: ',
+    'gov.conflict_error_prefix': 'Conflict: ',
+    'gov.not_found_error': 'No governance record exists yet for this aggregate_id / aggregate_type.',
+    'gov.unavailable_error': 'The governance event store is currently unavailable.',
+    'gov.status_title': 'Lifecycle Status',
+    'gov.history_title': 'Event History (append-only)',
+    'gov.history_empty': 'No events recorded yet.',
+    'gov.command_title': 'Record a Decision',
+    'gov.action_label': 'Action',
+    'gov.decision_id_label': 'Decision ID',
+    'gov.idempotency_key_label': 'Idempotency Key',
+    'gov.occurred_at_label': 'Occurred At (UTC ISO-8601)',
+    'gov.metadata_label': 'Metadata (JSON, optional)',
+    'gov.metadata_placeholder': '{}',
+    'gov.superseded_by_id_label': 'Superseded By ID',
+    'gov.submit_button': 'Submit Decision',
+    'gov.result_created': 'New event recorded.',
+    'gov.result_existing': 'Identical request already recorded -- returning the original event (idempotent retry).',
+    'gov.group.review': 'Review',
+    'gov.group.publication': 'Publication',
+    'gov.group.resolution': 'Resolution',
+    'gov.status.none': 'No events yet',
+    'gov.action.review_submit': 'Review: Submit',
+    'gov.action.review_approve': 'Review: Approve',
+    'gov.action.review_reject': 'Review: Reject',
+    'gov.action.publication_activate': 'Publication: Activate',
+    'gov.action.publication_supersede': 'Publication: Supersede',
+    'gov.action.publication_archive': 'Publication: Archive',
+    'gov.action.resolution_resolve': 'Resolution: Resolve',
+    'gov.action.resolution_reject': 'Resolution: Reject',
+    'gov.action.resolution_waive': 'Resolution: Waive',
+    'gov.col.event_id': 'Event ID',
+    'gov.col.lifecycle_group': 'Lifecycle Group',
+    'gov.col.previous_status': 'Previous Status',
+    'gov.col.new_status': 'New Status',
+    'gov.col.actor': 'Actor',
+    'gov.col.occurred_at': 'Occurred At (UTC)',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -4596,6 +4704,60 @@ const I18N = {
     'wrr.col.last_decision': 'Son Karar',
     'wrr.col.decided_at': 'Karar Zamanı (UTC)',
     'wrr.col.decided_by': 'Kararı Veren',
+
+    'sidebar.governance': 'Yönetişim Çalışma Alanı',
+    'gov.page_title': 'Mühendislik Yönetişim Çalışma Alanı',
+    'gov.page_subtitle': 'Genel, alan-bağımsız inceleme / yayınlama / çözümleme olay çalışma alanı (Faz 2.8.11 Aşama 4)',
+    'gov.notice_append_only': 'Yönetişim olayları yalnızca eklenir: hiçbir kayıt asla düzenlenmez veya silinmez.',
+    'gov.notice_effective_status': 'Efektif durum her zaman tüm olay geçmişinden türetilir; ayrıca saklanmaz.',
+    'gov.notice_lifecycle_independent': 'İnceleme, yayınlama ve çözümleme birbirinden bağımsız üç yaşam döngüsü grubudur -- asla tek bir durumu paylaşmazlar.',
+    'gov.notice_stage4_generic': 'Bu Aşama 4 çalışma alanı bilinçli olarak geneldir: henüz belirli bir TorqPro kayıt türünü tanımaz. Gerçek pul çözümlemeleri, hesap revizyonları veya birleşim revizyonlarıyla bağlantı Aşama 5 kapsamındadır.',
+    'gov.lookup_title': 'Varlık Sorgulama',
+    'gov.aggregate_id_label': 'Varlık Kimliği (aggregate_id)',
+    'gov.aggregate_type_label': 'Varlık Türü (aggregate_type)',
+    'gov.load_button': 'Yükle',
+    'gov.loading': 'Yükleniyor...',
+    'gov.empty_state': 'Bu aggregate_id / aggregate_type için henüz bir yönetişim kaydı yok.',
+    'gov.malformed_response': 'Yanıt eksikti; tahmini bir değer göstermek yerine hiçbir şey gösterilmiyor.',
+    'gov.api_error_prefix': 'İstek başarısız: ',
+    'gov.auth_error': 'Oturum süresi doldu veya geçersiz; lütfen yeniden giriş yapın.',
+    'gov.validation_error_prefix': 'Geçersiz istek: ',
+    'gov.conflict_error_prefix': 'Çakışma: ',
+    'gov.not_found_error': 'Bu aggregate_id / aggregate_type için henüz bir yönetişim kaydı yok.',
+    'gov.unavailable_error': 'Yönetişim olay deposu şu anda kullanılamıyor.',
+    'gov.status_title': 'Yaşam Döngüsü Durumu',
+    'gov.history_title': 'Olay Geçmişi (yalnızca ekleme)',
+    'gov.history_empty': 'Henüz kayıtlı olay yok.',
+    'gov.command_title': 'Bir Karar Kaydet',
+    'gov.action_label': 'Eylem',
+    'gov.decision_id_label': 'Karar Kimliği (decision_id)',
+    'gov.idempotency_key_label': 'Tekrarsızlık Anahtarı (idempotency_key)',
+    'gov.occurred_at_label': 'Gerçekleşme Zamanı (UTC ISO-8601)',
+    'gov.metadata_label': 'Meta Veri (JSON, isteğe bağlı)',
+    'gov.metadata_placeholder': '{}',
+    'gov.superseded_by_id_label': 'Yerini Alan Kimlik (superseded_by_id)',
+    'gov.submit_button': 'Kararı Gönder',
+    'gov.result_created': 'Yeni olay kaydedildi.',
+    'gov.result_existing': 'Aynı istek zaten kaydedilmişti -- orijinal olay döndürülüyor (tekrarsız yeniden deneme).',
+    'gov.group.review': 'İnceleme',
+    'gov.group.publication': 'Yayınlama',
+    'gov.group.resolution': 'Çözümleme',
+    'gov.status.none': 'Henüz olay yok',
+    'gov.action.review_submit': 'İnceleme: Gönder',
+    'gov.action.review_approve': 'İnceleme: Onayla',
+    'gov.action.review_reject': 'İnceleme: Reddet',
+    'gov.action.publication_activate': 'Yayınlama: Etkinleştir',
+    'gov.action.publication_supersede': 'Yayınlama: Yerini Al',
+    'gov.action.publication_archive': 'Yayınlama: Arşivle',
+    'gov.action.resolution_resolve': 'Çözümleme: Çözümle',
+    'gov.action.resolution_reject': 'Çözümleme: Reddet',
+    'gov.action.resolution_waive': 'Çözümleme: Vazgeç',
+    'gov.col.event_id': 'Olay Kimliği',
+    'gov.col.lifecycle_group': 'Yaşam Döngüsü Grubu',
+    'gov.col.previous_status': 'Önceki Durum',
+    'gov.col.new_status': 'Yeni Durum',
+    'gov.col.actor': 'Aktör',
+    'gov.col.occurred_at': 'Gerçekleşme Zamanı (UTC)',
   },
 };
 
@@ -5751,6 +5913,7 @@ function setLanguage(lang) {
   if (typeof jaReapplyLanguage === 'function') jaReapplyLanguage();
   if (typeof miReapplyLanguage === 'function') miReapplyLanguage();
   if (typeof wrrReapplyLanguage === 'function') wrrReapplyLanguage();
+  if (typeof govReapplyLanguage === 'function') govReapplyLanguage();
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
   if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();
@@ -5936,7 +6099,7 @@ function showPage(id, el) {
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();}
+  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();}if(id==='governance'){govInit();}
 }
 
 // ========== FRICTION CONDITION WORKSPACE (Faz 2.6.6) ==========
@@ -7484,6 +7647,269 @@ async function runDnsCheck(){
     const r=await apiRequest('/api/admin/dns-check?domain='+encodeURIComponent(d)+'&expected_ip='+encodeURIComponent(ip));
     document.getElementById('dnsResult').innerHTML=`<div class="dns-result"><div><strong>${t('dns.resolved_ip_label')}:</strong> ${r.resolved_ips.join(', ')||t('dns.none')}</div><div><strong>${t('dns.ip_match_label')}:</strong> ${r.matches_expected?t('dns.yes'):t('dns.no')}</div><div><strong>HTTPS:</strong> ${r.https_ready?t('dns.https_ready'):t('dns.https_not_ready')}</div><div><strong>${t('dns.status_label')}:</strong> ${r.status}</div></div>`;
   }catch(e){document.getElementById('dnsResult').innerHTML=`<div class="dns-result qg-fail">${e.message}</div>`;}
+}
+
+// ========== ENGINEERING GOVERNANCE WORKSPACE (Faz 2.8.11 Stage 4) ==========
+// Generic, domain-agnostic client for backend.governance.api. Renders only
+// backend-supplied status/event values -- no lifecycle transition rule,
+// idempotency rule or effective-status derivation is implemented here; the
+// backend remains the sole source of truth. `actor` and `previous_status`
+// are never sent from this module (the request bodies below simply never
+// include those fields).
+const GOV_ACTIONS = [
+  { value: 'review_submit', group: 'review', labelKey: 'gov.action.review_submit', path: (id) => `/api/governance/review/${encodeURIComponent(id)}/submit`, supersede: false },
+  { value: 'review_approve', group: 'review', labelKey: 'gov.action.review_approve', path: (id) => `/api/governance/review/${encodeURIComponent(id)}/approve`, supersede: false },
+  { value: 'review_reject', group: 'review', labelKey: 'gov.action.review_reject', path: (id) => `/api/governance/review/${encodeURIComponent(id)}/reject`, supersede: false },
+  { value: 'publication_activate', group: 'publication', labelKey: 'gov.action.publication_activate', path: (id) => `/api/governance/publication/${encodeURIComponent(id)}/activate`, supersede: false },
+  { value: 'publication_supersede', group: 'publication', labelKey: 'gov.action.publication_supersede', path: (id) => `/api/governance/publication/${encodeURIComponent(id)}/supersede`, supersede: true },
+  { value: 'publication_archive', group: 'publication', labelKey: 'gov.action.publication_archive', path: (id) => `/api/governance/publication/${encodeURIComponent(id)}/archive`, supersede: false },
+  { value: 'resolution_resolve', group: 'resolution', labelKey: 'gov.action.resolution_resolve', path: (id) => `/api/governance/resolution/${encodeURIComponent(id)}/resolve`, supersede: false },
+  { value: 'resolution_reject', group: 'resolution', labelKey: 'gov.action.resolution_reject', path: (id) => `/api/governance/resolution/${encodeURIComponent(id)}/reject`, supersede: false },
+  { value: 'resolution_waive', group: 'resolution', labelKey: 'gov.action.resolution_waive', path: (id) => `/api/governance/resolution/${encodeURIComponent(id)}/waive`, supersede: false },
+];
+
+let GOV_LAST_HISTORY = null;
+let GOV_LAST_STATUS = null;
+let GOV_LAST_ERROR = null;
+
+function govEsc(s) {
+  if (s === null || s === undefined || s === '') return '\u2014';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function govGroupLabel(group) {
+  return t('gov.group.' + group);
+}
+
+function govStatusLabel(status) {
+  if (status === null || status === undefined || status === '') return t('gov.status.none');
+  return govEsc(status);
+}
+
+function govActionLabel(actionValue) {
+  const found = GOV_ACTIONS.find(a => a.value === actionValue);
+  return found ? t(found.labelKey) : govEsc(actionValue);
+}
+
+function govPopulateActionSelect() {
+  const sel = document.getElementById('gov_action');
+  if (!sel) return;
+  const previous = sel.value;
+  sel.innerHTML = GOV_ACTIONS.map(a => `<option value="${a.value}">${govEsc(t(a.labelKey))}</option>`).join('');
+  if (previous && GOV_ACTIONS.some(a => a.value === previous)) sel.value = previous;
+  govOnActionChange();
+}
+
+function govOnActionChange() {
+  const sel = document.getElementById('gov_action');
+  const group = document.getElementById('gov-superseded-by-group');
+  if (!sel || !group) return;
+  const found = GOV_ACTIONS.find(a => a.value === sel.value);
+  group.style.display = (found && found.supersede) ? '' : 'none';
+}
+
+// ---- Well-formedness guards: a malformed/incomplete response is
+// treated as an error, never partially rendered with a guessed value
+// (mirrors wrrIsWellFormed()'s contract for the washer resolution
+// workspace). ----
+
+function govIsWellFormedHistory(data) {
+  return !!data && typeof data === 'object'
+    && typeof data.aggregate_id === 'string'
+    && typeof data.aggregate_type === 'string'
+    && Array.isArray(data.events)
+    && typeof data.total_events === 'number';
+}
+
+function govIsWellFormedStatus(data) {
+  if (!data || typeof data !== 'object') return false;
+  if (typeof data.aggregate_id !== 'string' || typeof data.aggregate_type !== 'string') return false;
+  if (!data.status || typeof data.status !== 'object') return false;
+  if (!data.latest_events || typeof data.latest_events !== 'object') return false;
+  const groups = ['review', 'publication', 'resolution'];
+  return groups.every(g => g in data.status && g in data.latest_events);
+}
+
+// ---- Render: loading / empty / error states ----
+
+function govRenderLoading() {
+  const msg = document.getElementById('gov-status-message');
+  const content = document.getElementById('gov-content');
+  if (msg) msg.textContent = t('gov.loading');
+  if (content) content.style.display = 'none';
+}
+
+function govRenderEmpty() {
+  const msg = document.getElementById('gov-status-message');
+  const content = document.getElementById('gov-content');
+  if (msg) msg.textContent = t('gov.empty_state');
+  if (content) content.style.display = 'none';
+}
+
+function govRenderError(kind, detail) {
+  const msg = document.getElementById('gov-status-message');
+  const content = document.getElementById('gov-content');
+  if (content) content.style.display = 'none';
+  let prefix = t('gov.api_error_prefix');
+  if (kind === 'validation') prefix = t('gov.validation_error_prefix');
+  else if (kind === 'conflict') prefix = t('gov.conflict_error_prefix');
+  else if (kind === 'auth') { if (msg) msg.textContent = t('gov.auth_error'); return; }
+  else if (kind === 'not_found') { if (msg) msg.textContent = t('gov.not_found_error'); return; }
+  else if (kind === 'unavailable') { if (msg) msg.textContent = t('gov.unavailable_error'); return; }
+  else if (kind === 'malformed') { if (msg) msg.textContent = t('gov.malformed_response'); return; }
+  if (msg) msg.textContent = prefix + govEsc(detail || '');
+}
+
+// ---- Render: status / history (backend values only) ----
+
+function govRenderStatus(data) {
+  if (!govIsWellFormedStatus(data)) { govRenderError('malformed'); return; }
+  GOV_LAST_STATUS = data;
+  const el = document.getElementById('gov-status-cards');
+  if (!el) return;
+  const groups = ['review', 'publication', 'resolution'];
+  el.innerHTML = groups.map(g => {
+    const status = data.status[g];
+    const latest = data.latest_events[g];
+    const latestLine = latest
+      ? `${govEsc(t('gov.col.actor'))}: ${govEsc(latest.actor)} &middot; ${govEsc(t('gov.col.occurred_at'))}: ${govEsc(latest.occurred_at)}`
+      : '';
+    return `<div class="form-group"><div class="fc-field-label">${govEsc(govGroupLabel(g))}</div>` +
+      `<div class="fc-field-value" style="font-size:16px;font-weight:600">${govStatusLabel(status)}</div>` +
+      `<div class="fc-muted" style="font-size:11px">${latestLine}</div></div>`;
+  }).join('');
+}
+
+function govRenderHistory(data) {
+  if (!govIsWellFormedHistory(data)) { govRenderError('malformed'); return; }
+  GOV_LAST_HISTORY = data;
+  const el = document.getElementById('gov-history-list');
+  if (!el) return;
+  if (data.events.length === 0) {
+    el.innerHTML = `<div class="fc-muted">${govEsc(t('gov.history_empty'))}</div>`;
+    return;
+  }
+  const rows = data.events.map(e => `<tr>` +
+    `<td>${govEsc(e.event_id)}</td>` +
+    `<td>${govEsc(govGroupLabel(e.lifecycle_group))}</td>` +
+    `<td>${govStatusLabel(e.previous_status)}</td>` +
+    `<td>${govStatusLabel(e.new_status)}</td>` +
+    `<td>${govEsc(e.actor)}</td>` +
+    `<td>${govEsc(e.occurred_at)}</td>` +
+    `</tr>`).join('');
+  el.innerHTML = `<table class="table"><thead><tr>` +
+    `<th>${govEsc(t('gov.col.event_id'))}</th>` +
+    `<th>${govEsc(t('gov.col.lifecycle_group'))}</th>` +
+    `<th>${govEsc(t('gov.col.previous_status'))}</th>` +
+    `<th>${govEsc(t('gov.col.new_status'))}</th>` +
+    `<th>${govEsc(t('gov.col.actor'))}</th>` +
+    `<th>${govEsc(t('gov.col.occurred_at'))}</th>` +
+    `</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ---- Actions ----
+
+function govInit() {
+  govPopulateActionSelect();
+  const resultEl = document.getElementById('gov-command-result');
+  if (resultEl) resultEl.innerHTML = '';
+}
+
+function govClassifyError(e) {
+  // apiRequest() only exposes the server's `detail` text on the
+  // thrown Error, never the HTTP status code itself -- so
+  // classification here matches this module's own backend error
+  // message vocabulary (backend/governance/api.py), not status-code
+  // digits that would never actually appear in that text.
+  const msg = (e && e.message) || '';
+  if (/oturum/i.test(msg)) return 'auth';
+  if (/bulunamadı/i.test(msg)) return 'not_found';
+  if (/kullanılamıyor|yapılandırılmamış/i.test(msg)) return 'unavailable';
+  if (/not permitted|already used|already exists/i.test(msg)) return 'conflict';
+  if (/geçersiz|missing required field/i.test(msg)) return 'validation';
+  return 'generic';
+}
+
+async function govLoad() {
+  const idEl = document.getElementById('gov_aggregate_id');
+  const typeEl = document.getElementById('gov_aggregate_type');
+  const aggId = idEl ? idEl.value.trim() : '';
+  const aggType = typeEl ? typeEl.value.trim() : '';
+  if (!aggId || !aggType) { govRenderError('validation', t('gov.aggregate_id_label') + ' / ' + t('gov.aggregate_type_label')); return; }
+  govRenderLoading();
+  const qs = '?aggregate_type=' + encodeURIComponent(aggType);
+  try {
+    const [historyData, statusData] = await Promise.all([
+      apiRequest('/api/governance/' + encodeURIComponent(aggId) + '/history' + qs),
+      apiRequest('/api/governance/' + encodeURIComponent(aggId) + '/status' + qs),
+    ]);
+    if (!govIsWellFormedHistory(historyData) || !govIsWellFormedStatus(statusData)) {
+      govRenderError('malformed');
+      return;
+    }
+    const msg = document.getElementById('gov-status-message');
+    const content = document.getElementById('gov-content');
+    if (msg) msg.textContent = '';
+    if (content) content.style.display = '';
+    govRenderStatus(statusData);
+    govRenderHistory(historyData);
+  } catch (e) {
+    const kind = govClassifyError(e);
+    if (kind === 'not_found') { govRenderEmpty(); return; }
+    govRenderError(kind, e.message);
+  }
+}
+
+async function govSubmitCommand() {
+  const idEl = document.getElementById('gov_aggregate_id');
+  const typeEl = document.getElementById('gov_aggregate_type');
+  const actionEl = document.getElementById('gov_action');
+  const decisionEl = document.getElementById('gov_decision_id');
+  const keyEl = document.getElementById('gov_idempotency_key');
+  const occurredEl = document.getElementById('gov_occurred_at');
+  const metadataEl = document.getElementById('gov_metadata');
+  const supersededEl = document.getElementById('gov_superseded_by_id');
+  const resultEl = document.getElementById('gov-command-result');
+
+  const aggId = idEl ? idEl.value.trim() : '';
+  const aggType = typeEl ? typeEl.value.trim() : '';
+  const action = GOV_ACTIONS.find(a => a.value === (actionEl ? actionEl.value : ''));
+  if (!resultEl) return;
+  if (!aggId || !aggType || !action) { resultEl.innerHTML = govEsc(t('gov.validation_error_prefix')); return; }
+
+  const body = {
+    aggregate_type: aggType,
+    decision_id: decisionEl ? decisionEl.value.trim() : '',
+    idempotency_key: keyEl ? keyEl.value.trim() : '',
+    occurred_at: occurredEl ? occurredEl.value.trim() : '',
+  };
+  const metadataRaw = metadataEl ? metadataEl.value.trim() : '';
+  if (metadataRaw) {
+    try { body.metadata = JSON.parse(metadataRaw); }
+    catch (e) { resultEl.innerHTML = `<div class="dns-result qg-fail">${govEsc(t('gov.validation_error_prefix'))}metadata JSON</div>`; return; }
+  }
+  if (action.supersede) {
+    body.superseded_by_id = supersededEl ? supersededEl.value.trim() : '';
+  }
+
+  try {
+    const res = await apiRequest(action.path(aggId), { method: 'POST', body: JSON.stringify(body) });
+    const created = res && res.result === 'created';
+    resultEl.innerHTML = `<div class="alert alert-info">${govEsc(created ? t('gov.result_created') : t('gov.result_existing'))}</div>`;
+    await govLoad();
+  } catch (e) {
+    const kind = govClassifyError(e);
+    let prefix = t('gov.api_error_prefix');
+    if (kind === 'conflict') prefix = t('gov.conflict_error_prefix');
+    else if (kind === 'validation') prefix = t('gov.validation_error_prefix');
+    resultEl.innerHTML = `<div class="dns-result qg-fail">${govEsc(prefix)}${govEsc(e.message)}</div>`;
+  }
+}
+
+function govReapplyLanguage() {
+  govPopulateActionSelect();
+  if (GOV_LAST_STATUS) govRenderStatus(GOV_LAST_STATUS);
+  if (GOV_LAST_HISTORY) govRenderHistory(GOV_LAST_HISTORY);
 }
 
 // ========== BAŞLAT ==========
