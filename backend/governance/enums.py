@@ -87,6 +87,21 @@ class ResolutionStatus(str, Enum):
     WAIVED = "waived"
 
 
+class LifecycleGroup(str, Enum):
+    """Which of the three canonical lifecycle groups a governance
+    event belongs to (Faz 2.8.11 Stage 3,
+    ``backend.governance.events.GovernanceEvent.lifecycle_group``).
+    Deliberately a separate, small "which group is this" tag -- it is
+    not itself a status value and is never compared against
+    :class:`ReviewStatus`/:class:`PublicationStatus`/
+    :class:`ResolutionStatus` members, so the three status
+    vocabularies stay independent per ADR-0014."""
+
+    REVIEW = "review"
+    PUBLICATION = "publication"
+    RESOLUTION = "resolution"
+
+
 #: Explicit, closed transition table for lifecycle A. Any
 #: ``(previous_status, new_status)`` pair not present here is
 #: illegal. Statuses absent as a key (``approved``, ``rejected``) are
@@ -176,6 +191,7 @@ __all__ = [
     "ReviewStatus",
     "PublicationStatus",
     "ResolutionStatus",
+    "LifecycleGroup",
     "REVIEW_TRANSITIONS",
     "REVIEW_TERMINAL_STATUSES",
     "PUBLICATION_TRANSITIONS",

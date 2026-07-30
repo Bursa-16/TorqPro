@@ -1,11 +1,13 @@
-"""Faz 2.8.11 Stage 2 compatibility guard.
+"""Faz 2.8.11 Stage 2/3 compatibility guard.
 
-ADR-0014's Stage 2 scope is explicit: "No existing mechanism imports
-or depends on it yet." This test enforces that mechanically rather
-than relying on code review alone -- if a future change accidentally
-wires ``backend.governance`` into ``backend.production_validation``,
-``backend.joints``, ``backend.library``, or ``backend.app`` before an
-explicit Stage 3/4/5 authorizes it, this test fails loudly.
+ADR-0014's Stage 2/3 scope is explicit: "No existing mechanism
+imports or depends on it yet," and Stage 3 adds "without connecting
+it to existing production workflows or exposing API endpoints." This
+test enforces both mechanically rather than relying on code review
+alone -- if a future change accidentally wires ``backend.governance``
+into ``backend.production_validation``, ``backend.joints``,
+``backend.library``, or ``backend.app``, or adds an API route, before
+an explicit Stage 4/5 authorizes it, this test fails loudly.
 """
 
 import re
@@ -95,20 +97,64 @@ def test_governance_package_does_not_import_existing_mechanisms():
     assert not offenders, "backend.governance must stay decoupled: " + "; ".join(offenders)
 
 
-def test_governance_package_has_no_persistence_or_api_layer_yet():
-    """Stage 2 scope guard: no JSON ledger file, no SQLite schema, and
-    no FastAPI route decorator should exist under backend/governance/
-    yet -- those are Stage 3 (event store/service) and Stage 4
-    (additive API) concerns."""
+def _strip_triple_quoted_strings(text: str) -> str:
+    """Remove ``\"\"\"...\"\"\"``/``'''...'''`` blocks (module, class and
+    function docstrings) so prose mentions inside them don't trigger
+    a false positive in code-content scans below. Not a full Python
+    parser -- good enough for this repository's consistent docstring
+    style (triple-double-quoted, never containing an escaped triple
+    quote)."""
+    return re.sub(r'"""[\s\S]*?"""', "", text)
+
+
+def test_governance_package_never_references_washer_ledger_paths():
+    """Explicit Stage 3 requirement: 'Existing washer resolution
+    ledger must not be read, modified, migrated or reused.' Checked
+    directly by scanning for the two washer ledger filenames anywhere
+    in backend/governance/ source *outside* of docstrings (this
+    package's own docstrings intentionally name them, in prose, to
+    document what must stay untouched -- a hard-coded path string
+    used in actual code would be the real violation)."""
+    governance_path = REPO_ROOT / "backend" / "governance"
+    forbidden_filenames = [
+        "washer_resolution_ledger.json",
+        "washer_resolution_decisions.json",
+    ]
+    offenders = []
+    for py_file in _python_files(governance_path):
+        code_only = _strip_triple_quoted_strings(py_file.read_text(encoding="utf-8"))
+        for forbidden in forbidden_filenames:
+            if forbidden in code_only:
+                offenders.append(f"{py_file.relative_to(REPO_ROOT)} references {forbidden}")
+    assert not offenders, "backend.governance must not reference washer ledgers: " + "; ".join(
+        offenders
+    )
+
+
+def test_governance_package_has_no_default_data_directory():
+    """Stage 3 defines a file-backed store class
+    (``FileGovernanceEventStore``), but no default, hard-coded
+    production data path -- every store instance in this package's
+    own tests is constructed with an explicit, caller-supplied path
+    (a temp directory). This guards against a future change silently
+    introducing a shipped default path/directory under
+    backend/governance/data/."""
     governance_path = REPO_ROOT / "backend" / "governance"
     data_dir = governance_path / "data"
     assert not data_dir.exists(), (
-        "Stage 2 defines no persistence layer; backend/governance/data/ "
-        "must not exist yet."
+        "backend/governance/data/ must not exist -- the store's storage "
+        "path is always caller-supplied, never a shipped default."
     )
+
+
+def test_governance_package_has_no_api_layer_yet():
+    """Stage 3 scope guard: no FastAPI route decorator or router
+    should exist under backend/governance/ yet -- additive API
+    endpoints are Stage 4 scope, not Stage 3."""
+    governance_path = REPO_ROOT / "backend" / "governance"
     for py_file in _python_files(governance_path):
         text = py_file.read_text(encoding="utf-8")
         assert "@app." not in text and "APIRouter" not in text, (
             f"{py_file.relative_to(REPO_ROOT)} appears to define an API "
-            "route; Stage 2 is contracts/models only."
+            "route; Stage 3 is event store/service layer only, no API."
         )
