@@ -68,8 +68,58 @@ def test_material_intelligence_harness_reports_a_nonzero_assertion_count():
     assert m, "harness output missing expected summary line:\n" + result.stdout
     total, passed, failed = int(m.group(1)), int(m.group(2)), int(m.group(3))
     assert failed == 0
-    assert total > 0
     assert passed == total
+    assert total > 0
+
+
+def test_material_intelligence_harness_assertion_count_exceeds_original_sync_only_count():
+    """Faz 2.8.11 Stage 5: this harness's async scenarios were
+    previously invoked as bare, unawaited top-level IIFEs -- the
+    synchronous summary/process.exit() block ran before several
+    scenarios' check() calls (sitting inside a `.then()` callback)
+    had a chance to execute, so the harness silently reported a
+    'clean' but incomplete result. Now fixed to the same awaited
+    `async function main()` pattern as
+    tests/js/run_washer_resolution_report_tests.js and
+    tests/js/run_governance_workspace_tests.js. This is the
+    regression guard: the real count must stay materially above what
+    the synchronous-only portion of the 19 scenarios could ever
+    report on its own."""
+    result = _run_harness()
+    m = re.search(r"(\d+) assertions, (\d+) passed, (\d+) failed", result.stdout)
+    assert m, "harness output missing expected summary line:\n" + result.stdout
+    total, passed, failed = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    assert failed == 0
+    assert passed == total
+    assert total > 19, f"only {total} assertions ran -- async scenarios may not be awaited"
+
+
+def test_harness_uses_awaited_main_not_bare_process_exit():
+    """Structural guard against regressing back to the Faz 2.8.8
+    defect: the harness must funnel every scenario through an
+    awaited `main()`, never call `process.exit()` unconditionally
+    before all promises have settled."""
+    text = HARNESS_PATH.read_text(encoding="utf-8")
+    code_only = "\n".join(
+        line for line in text.splitlines() if not line.strip().startswith("//")
+    )
+    assert "async function main()" in code_only
+    assert re.search(r"await\s+testFn\(\)", code_only)
+    assert "main().catch(" in code_only
+    assert "process.exit(" not in code_only
+    assert "process.exitCode" in code_only
+
+
+def test_every_scenario_in_all_tests_is_declared_async():
+    text = HARNESS_PATH.read_text(encoding="utf-8")
+    idx = text.index("const ALL_TESTS = [")
+    end = text.index("];", idx)
+    names = re.findall(r"\n\s*(test\w+),?", text[idx:end])
+    assert len(names) == 19
+    for name in names:
+        assert re.search(r"async function " + re.escape(name) + r"\(", text), (
+            f"{name} is listed in ALL_TESTS but is not declared async"
+        )
 
 
 def test_harness_file_is_dependency_free():

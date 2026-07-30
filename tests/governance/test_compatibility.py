@@ -1,17 +1,18 @@
-"""Faz 2.8.11 Stage 2/3/4 compatibility guard.
+"""Faz 2.8.11 Stage 2/3/4/5 compatibility guard.
 
-ADR-0014's Stage 2/3 scope was "no existing mechanism imports or
-depends on it yet," and Stage 3 added "without connecting it to
-existing production workflows or exposing API endpoints." Stage 4
-authorizes exactly **one** new coupling point: ``backend/app.py``
-additively mounting ``backend.governance.api``'s router (task item 1,
-"Mount the governance API additively onto the existing
-`backend.app.app`"). This test enforces that everything else stays
-exactly as isolated as before -- if a future change wires
-``backend.governance`` into ``backend.production_validation``,
-``backend.joints``, ``backend.library``, or any part of
-``backend/app.py`` beyond that one approved router-mount import,
-before an explicit Stage 5 authorizes it, this test fails loudly.
+Stage 2/3 scope was "no existing mechanism imports or depends on it
+yet," and Stage 3 added "without connecting it to existing production
+workflows or exposing API endpoints." Stage 4 authorized exactly
+**one** new coupling point: ``backend/app.py`` additively mounting
+``backend.governance.api``'s router. Stage 5 authorizes exactly
+**one more**, in the opposite direction: ``backend/governance/
+adapters/washer_resolution.py`` reading from
+``backend.library.washer_resolution*`` (read-only, no governance
+event is ever written by it -- see that module's own docstring). No
+existing mechanism module may import ``backend.governance`` beyond
+the Stage 4 exception, and no *other* governance module besides that
+one adapter file may import an existing mechanism -- this test
+enforces both boundaries mechanically.
 """
 
 import re
@@ -61,6 +62,14 @@ EXISTING_MECHANISM_PATHS = [
 #: anywhere in EXISTING_MECHANISM_PATHS is still a violation.
 _APPROVED_APP_PY_IMPORT_SUBSTRING = "from backend.governance.api import router as governance_router"
 
+#: The one Stage 5-approved adapter file allowed to import FROM an
+#: existing mechanism (the opposite direction from the rule above).
+#: Every other file under backend/governance/ (including the rest of
+#: backend/governance/adapters/) must still have zero such imports.
+_APPROVED_ADAPTER_PATH = (
+    REPO_ROOT / "backend" / "governance" / "adapters" / "washer_resolution.py"
+)
+
 
 def _python_files(path: Path):
     if path.is_file() and path.suffix == ".py":
@@ -108,7 +117,9 @@ def test_governance_package_does_not_import_existing_mechanisms():
     dependency every TorqPro endpoint already uses) is deliberately
     *not* in this forbidden list -- reusing it is Stage 4's approved
     "no new authentication mechanism" requirement, not a coupling to
-    any of the four production mechanisms."""
+    any of the four production mechanisms. The one Stage 5-approved
+    adapter file (``adapters/washer_resolution.py``) is excluded from
+    this scan and checked by its own, narrower test below instead."""
     governance_path = REPO_ROOT / "backend" / "governance"
     forbidden_substrings = [
         "backend.production_validation",
@@ -123,11 +134,71 @@ def test_governance_package_does_not_import_existing_mechanisms():
     ]
     offenders = []
     for py_file in _python_files(governance_path):
+        if py_file == _APPROVED_ADAPTER_PATH:
+            continue
         for line in _import_lines(py_file.read_text(encoding="utf-8")):
             for forbidden in forbidden_substrings:
                 if forbidden in line:
                     offenders.append(f"{py_file.relative_to(REPO_ROOT)}: {line.strip()}")
     assert not offenders, "backend.governance must stay decoupled: " + "; ".join(offenders)
+
+
+def test_only_the_approved_adapter_imports_an_existing_mechanism():
+    """The Stage 5 adapter exception is exactly one file. No other
+    file under backend/governance/adapters/ (or anywhere else in the
+    package) may import from an existing mechanism."""
+    adapters_path = REPO_ROOT / "backend" / "governance" / "adapters"
+    forbidden_substrings = [
+        "backend.production_validation",
+        "backend.joints",
+        "backend.app",
+        "backend.vdi2230_core",
+        "backend.calculation_engine",
+        "backend.engineering_core",
+        "backend.standards",
+        "backend.api.routes",
+    ]
+    offenders = []
+    for py_file in _python_files(adapters_path):
+        if py_file == _APPROVED_ADAPTER_PATH:
+            continue
+        for line in _import_lines(py_file.read_text(encoding="utf-8")):
+            for forbidden in forbidden_substrings:
+                if forbidden in line:
+                    offenders.append(f"{py_file.relative_to(REPO_ROOT)}: {line.strip()}")
+            if "backend.library" in line:
+                offenders.append(f"{py_file.relative_to(REPO_ROOT)}: {line.strip()}")
+    assert not offenders, (
+        "only adapters/washer_resolution.py may import an existing mechanism: "
+        + "; ".join(offenders)
+    )
+
+
+def test_approved_adapter_only_imports_washer_resolution_modules():
+    """Narrower still: the one approved adapter file may only reach
+    into ``backend.library.washer_resolution*`` -- not production
+    validation, joints, app.py, or any other washer library module it
+    doesn't need."""
+    text = _APPROVED_ADAPTER_PATH.read_text(encoding="utf-8")
+    outside_imports = [
+        line.strip()
+        for line in _import_lines(text)
+        if "backend" in line and "backend.governance" not in line
+    ]
+    for line in outside_imports:
+        assert "washer_resolution" in line, f"unexpected external import: {line}"
+    assert any("backend.library" in line for line in outside_imports)
+
+
+def test_approved_adapter_never_imports_governance_store_or_service():
+    """The adapter must be read-only with respect to the governance
+    event store too -- it has no way to append a governance event."""
+    text = _APPROVED_ADAPTER_PATH.read_text(encoding="utf-8")
+    for line in _import_lines(text):
+        assert "governance.store" not in line
+        assert "governance.service" not in line
+    assert "store.append(" not in text
+    assert "FileGovernanceEventStore(" not in text
 
 
 def test_governance_api_only_imports_the_approved_auth_dependency():
@@ -192,6 +263,25 @@ def test_governance_package_has_no_default_data_directory():
         "backend/governance/data/ must not exist -- the store's storage "
         "path is always caller-supplied, never a shipped default."
     )
+
+
+def test_adapters_expose_no_mutation_or_persistence_methods():
+    """Stage 5 rule: 'Do not expose mutation, transition or
+    persistence methods through adapters.' Proxy-checked by scanning
+    for the verbs a mutation/transition/persistence API would use."""
+    adapters_path = REPO_ROOT / "backend" / "governance" / "adapters"
+    forbidden_defs = (
+        "def submit_", "def approve_", "def reject_", "def activate_",
+        "def supersede_", "def archive_", "def resolve_", "def waive_",
+        "def append(", "def write(", "def save(", "def delete(", "def update(",
+    )
+    offenders = []
+    for py_file in _python_files(adapters_path):
+        text = py_file.read_text(encoding="utf-8")
+        for forbidden in forbidden_defs:
+            if forbidden in text:
+                offenders.append(f"{py_file.relative_to(REPO_ROOT)} defines {forbidden}")
+    assert not offenders, "adapters must be read-only: " + "; ".join(offenders)
 
 
 def test_governance_api_defines_only_the_nine_approved_write_routes_and_two_read_routes():

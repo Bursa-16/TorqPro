@@ -78,7 +78,7 @@ function buildExtractedSource() {
 // from tests/js/harness_common.js (Faz 2.8.10 Stage 3).
 // ---------------------------------------------------------------
 const { makeElement, makeLocalStorage, buildDom, createChecker } = require('./harness_common');
-const { check, checkIncludes, checkNotIncludes, summary } = createChecker();
+const { check, checkIncludes, checkNotIncludes, recordFailure, summary } = createChecker();
 
 function newContext(extractedSource, rawHtml, apiRequestImpl, activePageId) {
   const byId = {};
@@ -180,7 +180,7 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
 // ---------------------------------------------------------------
 // 1. Materials table rendering (no calculation, display-only)
 // ---------------------------------------------------------------
-(function testMaterialsTableRendersAllRecords() {
+async function testMaterialsTableRendersAllRecords() {
   const ctx = newContext(EXTRACTED, HTML);
   ctx.byId['mi-materials-table'] = makeElement('mi-materials-table');
   vm.runInContext('__setMiMaterials(' + JSON.stringify(fakeMaterialsList().materials) + ')', ctx.context);
@@ -189,20 +189,20 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
   checkIncludes('materials table includes Steel id', html, 'MAT-STEEL');
   checkIncludes('materials table includes Titanium id', html, 'MAT-TITANIUM');
   checkIncludes('materials table includes validation_status value', html, 'reference_only');
-})();
+}
 
-(function testMaterialsTableEmptyIsSafe() {
+async function testMaterialsTableEmptyIsSafe() {
   const ctx = newContext(EXTRACTED, HTML);
   ctx.byId['mi-materials-table'] = makeElement('mi-materials-table');
   vm.runInContext('miRenderMaterialsTable()', ctx.context);
   check('empty materials list renders nothing rather than throwing', ctx.byId['mi-materials-table'].innerHTML === '');
-})();
+}
 
 // ---------------------------------------------------------------
 // 2. Requirement payload construction: empty fields omit no filter,
 //    non-empty fields produce correctly-typed values
 // ---------------------------------------------------------------
-(function testRequirementPayloadAllEmpty() {
+async function testRequirementPayloadAllEmpty() {
   const ctx = newContext(EXTRACTED, HTML);
   ['mi-min-rp02', 'mi-min-rm', 'mi-min-e', 'mi-material-family'].forEach((id) => { ctx.byId[id] = makeElement(id); });
   const payload = vm.runInContext('miBuildRequirementPayload()', ctx.context);
@@ -210,9 +210,9 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
   check('empty min_rm_mpa is null', payload.min_rm_mpa === null);
   check('empty min_elastic_modulus_mpa is null', payload.min_elastic_modulus_mpa === null);
   check('empty material_family is null, not empty string', payload.material_family === null);
-})();
+}
 
-(function testRequirementPayloadNumericConversion() {
+async function testRequirementPayloadNumericConversion() {
   const ctx = newContext(EXTRACTED, HTML);
   ['mi-min-rp02', 'mi-min-rm', 'mi-min-e', 'mi-material-family'].forEach((id) => { ctx.byId[id] = makeElement(id); });
   ctx.byId['mi-min-rp02'].value = '400';
@@ -220,20 +220,20 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
   const payload = vm.runInContext('miBuildRequirementPayload()', ctx.context);
   check('min_rp02_mpa converted to a number', typeof payload.min_rp02_mpa === 'number' && payload.min_rp02_mpa === 400);
   check('material_family is trimmed', payload.material_family === 'Titanium');
-})();
+}
 
-(function testRequirementPayloadIncludesCurrentLang() {
+async function testRequirementPayloadIncludesCurrentLang() {
   const ctx = newContext(EXTRACTED, HTML);
   ['mi-min-rp02', 'mi-min-rm', 'mi-min-e', 'mi-material-family'].forEach((id) => { ctx.byId[id] = makeElement(id); });
   const payload = vm.runInContext('miBuildRequirementPayload()', ctx.context);
   check('payload lang defaults to tr', payload.lang === 'tr');
-})();
+}
 
 // ---------------------------------------------------------------
 // 3. Recommendation flow: loading state, success rendering, error
 //    handling, no client-side ranking/guessing
 // ---------------------------------------------------------------
-(function testRecommendCallsCorrectEndpointAndMethod() {
+async function testRecommendCallsCorrectEndpointAndMethod() {
   const calls = [];
   const ctx = newContext(EXTRACTED, HTML, async (p, opts) => { calls.push({ path: p, opts }); return fakeRecommendationResult(); });
   ['mi-min-rp02', 'mi-min-rm', 'mi-min-e', 'mi-material-family', 'mi-recommend-btn'].forEach((id) => { ctx.byId[id] = makeElement(id); });
@@ -244,9 +244,9 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
     check('used POST', calls[0].opts.method === 'POST');
     check('button re-enabled after completion', ctx.byId['mi-recommend-btn'].disabled === false);
   });
-})();
+}
 
-(function testRecommendRendersReadinessAndSignOff() {
+async function testRecommendRendersReadinessAndSignOff() {
   const ctx = newContext(EXTRACTED, HTML, async () => fakeRecommendationResult());
   ctx.byId['mi-recommendation-result'] = makeElement('mi-recommendation-result');
   vm.runInContext('miRenderRecommendation(' + JSON.stringify(fakeRecommendationResult()) + ')', ctx.context);
@@ -254,9 +254,9 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
   checkIncludes('readiness level rendered', html, 'comparison_only');
   checkIncludes('sign-off notice always rendered', html, 'Üretimde kullanılmadan önce mühendislik onayı zorunludur.');
   checkIncludes('blocking reason rendered (explains, does not guess)', html, 'beklemede');
-})();
+}
 
-(function testRecommendNeverRendersEngineeringOrProductionReady() {
+async function testRecommendNeverRendersEngineeringOrProductionReady() {
   // Structural guard mirroring the backend invariant: the render
   // function itself does not special-case or upgrade a level -- it
   // only displays what the backend sent, and the fixture proves the
@@ -268,18 +268,18 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
   checkNotIncludes('never claims engineering_recommendation_ready', html, 'engineering_recommendation_ready');
   checkNotIncludes('never claims production_recommendation_ready', html, 'production_recommendation_ready');
   checkIncludes('states data_insufficient plainly', html, 'data_insufficient');
-})();
+}
 
-(function testRecommendNoCandidatesShowsExplanationNotBlank() {
+async function testRecommendNoCandidatesShowsExplanationNotBlank() {
   const ctx = newContext(EXTRACTED, HTML);
   ctx.byId['mi-recommendation-result'] = makeElement('mi-recommendation-result');
   vm.runInContext('miRenderRecommendation(' + JSON.stringify(fakeInsufficientResult()) + ')', ctx.context);
   const html = ctx.byId['mi-recommendation-result'].innerHTML;
   check('no-candidates case is not a blank panel', html.length > 0);
   checkIncludes('explains why no candidates (TR)', html, 'bulunamadı');
-})();
+}
 
-(function testRecommendApiErrorHandledGracefully() {
+async function testRecommendApiErrorHandledGracefully() {
   const ctx = newContext(EXTRACTED, HTML, async () => { throw new Error('network down'); });
   ['mi-min-rp02', 'mi-min-rm', 'mi-min-e', 'mi-material-family', 'mi-recommend-btn'].forEach((id) => { ctx.byId[id] = makeElement(id); });
   ctx.byId['mi-recommendation-result'] = makeElement('mi-recommendation-result');
@@ -287,9 +287,9 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
     checkIncludes('error message surfaced to user', ctx.byId['mi-recommendation-result'].innerHTML, 'network down');
     check('button re-enabled after error', ctx.byId['mi-recommend-btn'].disabled === false);
   });
-})();
+}
 
-(function testRecommendationRenderingComputesNoNewNumber() {
+async function testRecommendationRenderingComputesNoNewNumber() {
   // The frontend must never compute its own margin/ranking value --
   // every numeric field displayed must come verbatim from the fixture
   // response, not be derived client-side.
@@ -299,12 +299,12 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
   vm.runInContext('miRenderRecommendation(' + JSON.stringify(fixture) + ')', ctx.context);
   const html = ctx.byId['mi-recommendation-result'].innerHTML;
   checkIncludes('server-supplied margin ratio rendered verbatim', html, String(fixture.candidates[0].requirement_margin_ratio));
-})();
+}
 
 // ---------------------------------------------------------------
 // 4. Formula validation panel: read-only display
 // ---------------------------------------------------------------
-(function testFormulaValidationCallsCorrectEndpoint() {
+async function testFormulaValidationCallsCorrectEndpoint() {
   const calls = [];
   const ctx = newContext(EXTRACTED, HTML, async (p) => { calls.push(p); return fakeFormulaValidationReport(); });
   ctx.byId['mi-formula-validation-result'] = makeElement('mi-formula-validation-result');
@@ -312,9 +312,9 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
     check('exactly one API call made', calls.length === 1);
     check('called the formula-validation endpoint with lang', calls[0].indexOf('/api/engineering/formula-validation?lang=') === 0);
   });
-})();
+}
 
-(function testFormulaValidationRendersApprovedCount() {
+async function testFormulaValidationRendersApprovedCount() {
   const calls = [];
   const ctx = newContext(EXTRACTED, HTML, async () => fakeFormulaValidationReport());
   ctx.byId['mi-formula-validation-result'] = makeElement('mi-formula-validation-result');
@@ -324,20 +324,20 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
     checkIncludes('PROVISIONAL entry rendered', html, 'PROVISIONAL');
     checkIncludes('APPROVED entry rendered', html, 'APPROVED');
   });
-})();
+}
 
-(function testFormulaValidationApiErrorHandledGracefully() {
+async function testFormulaValidationApiErrorHandledGracefully() {
   const ctx = newContext(EXTRACTED, HTML, async () => { throw new Error('formula service down'); });
   ctx.byId['mi-formula-validation-result'] = makeElement('mi-formula-validation-result');
   return vm.runInContext('miLoadFormulaValidation()', ctx.context).then(() => {
     checkIncludes('formula validation error surfaced', ctx.byId['mi-formula-validation-result'].innerHTML, 'formula service down');
   });
-})();
+}
 
 // ---------------------------------------------------------------
 // 5. TR/EN live re-render without refetch of static labels
 // ---------------------------------------------------------------
-(function testLanguageSwitchRerendersMaterialsTableWithoutRefetch() {
+async function testLanguageSwitchRerendersMaterialsTableWithoutRefetch() {
   let apiCallCount = 0;
   const ctx = newContext(EXTRACTED, HTML, async () => { apiCallCount++; return fakeMaterialsList(); }, null);
   ctx.byId['mi-materials-table'] = makeElement('mi-materials-table');
@@ -346,47 +346,101 @@ const { source: EXTRACTED, rawHtml: HTML } = buildExtractedSource();
   vm.runInContext("setLanguage('en')", ctx.context);
   check('materials table re-render does not call the API', apiCallCount === 0);
   check('language switch keeps material data intact', ctx.byId['mi-materials-table'].innerHTML.indexOf('MAT-STEEL') !== -1);
-})();
+}
 
-(function testLanguageSwitchRefetchesFormulaValidationOnActivePage() {
+async function testLanguageSwitchRefetchesFormulaValidationOnActivePage() {
   const calls = [];
   const ctx = newContext(EXTRACTED, HTML, async (p) => { calls.push(p); return fakeFormulaValidationReport(); }, 'materialintelligence');
   ctx.byId['mi-formula-validation-result'] = makeElement('mi-formula-validation-result');
   vm.runInContext("setLanguage('en')", ctx.context);
   check('setLanguage triggers a re-fetch of language-dependent formula validation notices', calls.length >= 1);
-})();
+}
 
-(function testLanguageSwitchDoesNotRefetchWhenPageNotActive() {
+async function testLanguageSwitchDoesNotRefetchWhenPageNotActive() {
   const calls = [];
   const ctx = newContext(EXTRACTED, HTML, async (p) => { calls.push(p); return fakeFormulaValidationReport(); }, null);
   vm.runInContext("setLanguage('en')", ctx.context);
   check('no refetch when Material Intelligence page is not active', calls.length === 0);
-})();
+}
 
 // ---------------------------------------------------------------
 // 6. Sidebar / page presence and static translation coverage
 // ---------------------------------------------------------------
-(function testSidebarAndPageMarkupPresent() {
+async function testSidebarAndPageMarkupPresent() {
   check("sidebar item present", HTML.indexOf("showPage('materialintelligence')") !== -1);
   check('page container present', HTML.indexOf('id="page-materialintelligence"') !== -1);
-})();
+}
 
-(function testStaticTranslationApplied() {
+async function testStaticTranslationApplied() {
   const ctx = newContext(EXTRACTED, HTML);
   vm.runInContext("applyStaticTranslations()", ctx.context);
   const dataI18nEls = ctx.documentStub.querySelectorAll('[data-i18n]');
   const miEls = dataI18nEls.filter((el) => el.getAttribute('data-i18n').indexOf('mi.') === 0);
   check('at least one mi.* data-i18n element found', miEls.length > 0);
   check('every mi.* element received non-empty translated text', miEls.every((el) => el.textContent && el.textContent.length > 0));
-})();
+}
 
 // =================================================================
-{
+// Faz 2.8.11 Stage 5: this harness's 19 scenarios were previously
+// invoked as bare, unawaited top-level IIFEs
+// (`(function testX(){...})()`). Several return a Promise (any
+// scenario that awaits `vm.runInContext('miRecommend()', ...)` or
+// similar, via `.then(...)`), and nothing awaited those promises --
+// the synchronous summary/process.exit() block below ran immediately
+// after the last IIFE *call* returned (not after its promise
+// settled), so those scenarios' check() calls, sitting inside a
+// `.then()` callback, had not run yet. Node's event loop only gets a
+// chance to run a settled microtask *between* synchronous
+// statements, and `process.exit()` terminates immediately -- so
+// those assertions could be skipped entirely while the harness still
+// printed a "clean" result. This mirrors the exact defect already
+// fixed in tests/js/run_washer_resolution_report_tests.js and
+// tests/js/run_governance_workspace_tests.js; this file adopts the
+// same fix: every scenario is now `async function testX() {...}`,
+// collected below, and awaited one at a time inside `main()`.
+const ALL_TESTS = [
+  testMaterialsTableRendersAllRecords,
+  testMaterialsTableEmptyIsSafe,
+  testRequirementPayloadAllEmpty,
+  testRequirementPayloadNumericConversion,
+  testRequirementPayloadIncludesCurrentLang,
+  testRecommendCallsCorrectEndpointAndMethod,
+  testRecommendRendersReadinessAndSignOff,
+  testRecommendNeverRendersEngineeringOrProductionReady,
+  testRecommendNoCandidatesShowsExplanationNotBlank,
+  testRecommendApiErrorHandledGracefully,
+  testRecommendationRenderingComputesNoNewNumber,
+  testFormulaValidationCallsCorrectEndpoint,
+  testFormulaValidationRendersApprovedCount,
+  testFormulaValidationApiErrorHandledGracefully,
+  testLanguageSwitchRerendersMaterialsTableWithoutRefetch,
+  testLanguageSwitchRefetchesFormulaValidationOnActivePage,
+  testLanguageSwitchDoesNotRefetchWhenPageNotActive,
+  testSidebarAndPageMarkupPresent,
+  testStaticTranslationApplied,
+];
+
+async function main() {
+  for (const testFn of ALL_TESTS) {
+    try {
+      await testFn();
+    } catch (err) {
+      const label = testFn.name + ' (threw)';
+      recordFailure(label);
+      console.log('FAIL: ' + label + ' -- ' + (err && err.stack ? err.stack : String(err)));
+    }
+  }
   const { pass, fail, failures } = summary();
   console.log((pass + fail) + ' assertions, ' + pass + ' passed, ' + fail + ' failed');
   if (fail > 0) {
     console.log('Failures:\n  - ' + failures.join('\n  - '));
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
-  process.exit(0);
+  process.exitCode = 0;
 }
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

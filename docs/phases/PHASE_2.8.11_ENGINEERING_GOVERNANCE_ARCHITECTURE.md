@@ -1,7 +1,11 @@
 # Phase 2.8.11 — Engineering Governance Architecture and Decision
 Workflow Standardization (Stage 1: Architecture & Documentation)
 
-- Status: Stage 1 delivered, 2026-07-30. Stages 2–5 not started.
+- Status: Stage 1 delivered, 2026-07-30. **This phase's
+  implementation continued through Stage 5 and is now complete** —
+  see `docs/phases/PHASE_2.8.11_COMPLETION_REPORT_TR_EN.md` for the
+  full, bilingual final report covering Stages 1–5. This file is kept
+  unmodified below as the original Stage 1 record.
 - ADR: `docs/adr/ADR-0014-engineering-governance-architecture.md`
 
 ## Why this phase exists

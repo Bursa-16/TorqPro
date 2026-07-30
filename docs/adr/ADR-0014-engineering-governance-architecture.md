@@ -1,8 +1,13 @@
 # Engineering Governance Architecture: Canonical Vocabulary and
 Standardization Plan for Review, Approval, Revision and Decision
-Mechanisms (Faz 2.8.11, Stage 1)
+Mechanisms (Faz 2.8.11)
 
-- Status: Accepted (Stage 1 — documentation only; no runtime change)
+- Status: Accepted and implemented (Stages 1–5 complete as of
+  2026-07-30; see `docs/phases/PHASE_2.8.11_COMPLETION_REPORT_TR_EN.md`
+  for the full implementation report). This document itself is the
+  Stage 1 canonical model; it is left unmodified below except for
+  this status line and the "Future-stage plan" section, which now
+  records what was actually delivered in Stages 2–5.
 - Date: 2026-07-30
 
 ## Context
@@ -514,16 +519,18 @@ project's standing delivery protocol (`docs/12_CLAUDE_CONTEXT.md`,
   point rather than a canonical state, which future stages must
   remember to design for individually rather than assuming a single
   shared enum value covers it.
-- **Technical debt carried forward (not fixed in this stage):** a
-  pre-existing, unrelated defect in
+- **Technical debt, carried forward at Stage 1, resolved at Stage 5:**
+  a pre-existing, unrelated defect in
   `tests/js/run_material_intelligence_tests.js` (Faz 2.8.8) — its
-  asynchronous test scenarios are not awaited before the harness
-  process exits, so their assertions never actually run even though
-  the harness reports a clean result — was first documented in
+  asynchronous test scenarios were not awaited before the harness
+  process exited, so their assertions never actually ran even though
+  the harness reported a clean result — was first documented in
   ADR-0013's "Consequences" section and `docs/11_PRODUCT_BACKLOG.md`
-  §12B. It does not block this stage's documentation validation and
-  is not touched here; it is re-recorded as an open item below to
-  keep it discoverable from this ADR as well.
+  §12B. It did not block Stage 1's documentation validation and was
+  not touched at that point; it was confirmed and fixed at Stage 5
+  (narrowly scoped, test-file-only, no production code touched, with
+  a regression-guard test and a deliberate-failure proof) — see
+  `docs/phases/PHASE_2.8.11_COMPLETION_REPORT_TR_EN.md` Sec. 5.
 - **Stage 1 does not claim a shared governance workflow
   implementation exists.** No code was written. `backend/`,
   `frontend/`, and `tests/` are unchanged by this phase; only `docs/`
@@ -556,7 +563,22 @@ project's standing delivery protocol (`docs/12_CLAUDE_CONTEXT.md`,
   suite pass → patch + bundle + SHA256SUMS verified on an independent
   clean clone).
 
-Each future stage requires its own scoping approval before work
-begins, per the project's standing "plan before execution" rule; this
-ADR authorizes the *model*, not automatic progression through Stages
-2–5.
+**Delivered vs. deferred (recorded 2026-07-30, after Stage 5):**
+Stages 2–4 were delivered exactly as scoped above. Stage 5 was
+delivered narrowly: only the washer resolution adapter was built
+(read-only, all 76 real records validated, 71 exact + 5 explicitly
+unsupported mappings); Production Validation, the legacy calculation-
+revision workflow, and joints were deliberately not adapted in this
+stage, since each requires a live database connection this package's
+"no new dependency cycle" constraint does not yet have a settled
+pattern for — see
+`docs/phases/PHASE_2.8.11_COMPLETION_REPORT_TR_EN.md` Sec. 5 for the
+full reasoning and the follow-up scope this leaves for a future,
+separately-approved phase. No mechanism's runtime data was migrated;
+no field was renamed; every one of ADR-0014's compatibility
+guarantees above held throughout.
+
+Each stage required its own scoping approval before work began, per
+the project's standing "plan before execution" rule; this ADR
+authorized the *model*, and each stage's own scoping message
+authorized that stage's implementation.
