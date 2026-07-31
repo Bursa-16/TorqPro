@@ -368,6 +368,57 @@ files across Stages 5/2/4.2 (ADR-0015's established pattern extended,
 not silently loosened) — the widening is documented, tested, and the
 allowlist remains closed and exact.
 
+## 12F. Faz 2.8.13 – Governance Workspace Completion (TR/EN)
+
+**Status: Complete (Stages 1–5), delivered 2026-07-31.** See
+`docs/phases/PHASE_2.8.13_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md`
+and `docs/phases/PHASE_2.8.13_COMPLETION_REPORT.md` for full detail.
+
+Closed a single, evidence-based visibility gap identified in the
+approved pre-phase repository analysis: the Faz 2.8.12 Stage 4.2
+`joint_revision` read-only governance projection adapter existed,
+was tested, and was import-safety-verified, but had zero production
+consumers. This phase made it reachable through one new read-only API
+route and a minimal, additive frontend extension — no new governance
+capability, no new projection logic, no new source of truth.
+
+**Stage 1 delivered** (docs only): the scope-lock and integration
+contract, bilingual EN/TR — API contract, frontend contract, error
+mapping, test contract, allowed/protected files, non-goals, five-stage
+plan.
+
+**Stage 2 delivered**: `GET /api/governance/joint-revision/{revision_id}`,
+calling the existing `project_joint_revision()` unmodified;
+`supported`/`unsupported_status`/`invalid_source_record`/
+`source_unavailable` → 200, `not_found` → 404; no store dependency.
+Corrected `backend/governance/adapters/__init__.py`'s stale docstring/
+`__all__` (accurate as of Faz 2.8.11 Stage 5 only, not updated through
+Faz 2.8.12 Stage 2/3). 20 new backend tests.
+
+**Stage 3 delivered**: an additive "Joint Revision Projection
+(read-only)" card inside the existing governance workspace — no new
+page, no write action, all five outcomes rendered from the API's own
+fields, no second status-mapping table. 16 new `gov.jr.*` keys, full
+TR/EN parity. 13 new JS harness scenarios (98/98 assertions). Fixed
+one apostrophe-quoting bug and corrected one stale hardcoded key-count
+constant, both in the pre-existing
+`tests/test_faz_2_8_11_stage4_frontend.py`, made obsolete directly by
+the required new keys.
+
+**Stage 4 delivered** (verification only, no commit): full
+architectural-boundary verification (15 checks), source-data and
+governance-event-store integrity verification, import-order
+verification in both directions, real-request-path verification via
+the live OpenAPI schema, and an independent clean-clone reproduction
+— no regression found.
+
+**No existing table, ledger, API endpoint, enum, or transition graph
+was modified. `backend/governance/adapters/joint_revision.py` and
+`backend/joints/` are byte-identical to their pre-phase state.** Full
+suite: 1871/1871 (1851 baseline + 20 new). Governance suite: 253/253
+(233 baseline + 20 new). All 6 JS harnesses passing. Quality gate
+6/6 PASSED.
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.

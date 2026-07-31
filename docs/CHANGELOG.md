@@ -269,3 +269,54 @@
   PASSED.
 - Documented in
   `docs/phases/PHASE_2.8.12_STAGE4_2_JOINT_REVISION_READ_ONLY_ADAPTER.md`.
+
+## Faz 2.8.13 — Governance Workspace Completion — 2026-07-31
+
+- Added exactly one new route,
+  `GET /api/governance/joint-revision/{revision_id}`, exposing the
+  existing, previously-unwired Faz 2.8.12 Stage 4.2
+  `project_joint_revision()` adapter — unmodified. Outcome→HTTP-status
+  mapping: `supported`/`unsupported_status`/`invalid_source_record`/
+  `source_unavailable` → 200 (all legitimate, already-classified
+  adapter results, visible in the response body); `not_found` → 404.
+  No `try/except` in the handler (`project_joint_revision` never
+  raises); no governance-store dependency (the route never reads or
+  writes governance state).
+- Corrected `backend/governance/adapters/__init__.py`'s stale Faz
+  2.8.11-era docstring/`__all__`, which had gone stale since Faz
+  2.8.12 Stage 2/3 (it still claimed "no adapter here writes to the
+  governance event store" and omitted three newer adapter files). Now
+  accurately distinguishes read-only source projection adapters,
+  controlled governance-event synchronization adapters, and
+  reconciliation utilities; exports `joint_revision`'s stable public
+  symbols (empirically verified safe — no circular-import risk).
+- Added a minimal, additive "Joint Revision Projection (read-only)"
+  card inside the existing generic governance workspace
+  (`frontend/index.html`) — a revision-ID input, a lookup button, and
+  a result area rendering all five real outcomes directly from the
+  API's own fields (no second status-mapping table). No new
+  standalone page, no write action. 16 new `gov.jr.*` translation
+  keys, full TR/EN parity.
+- 20 new backend tests (`tests/governance/test_joint_revision_api.py`,
+  16; 4 focused additions to `tests/governance/test_compatibility.py`)
+  and 13 new frontend scenarios
+  (`tests/js/run_governance_workspace_tests.js`, 98/98 assertions).
+  Corrected one genuine pre-existing-file consequence: an apostrophe
+  forced a double-quoted JS string, which broke
+  `tests/test_faz_2_8_11_stage4_frontend.py`'s single-quote-only
+  key/value extraction regex; fixed the quoting and updated that
+  file's stale hardcoded gov.*/`sidebar.governance` key-count constant
+  (53 → 69), made obsolete directly by the required new keys.
+- Full suite: 1871/1871 passing (1851 baseline + 20 new). Governance
+  suite: 253/253 (233 baseline + 20 new). All 6 JS harnesses passing.
+  flake8/compileall/`git diff --check` clean; quality gate PASSED
+  (6/6). Full architectural-boundary and integrity verification
+  (Stage 4): `backend/governance/adapters/joint_revision.py` and
+  `backend/joints/` byte-identical to baseline; no new write route,
+  governance event, database table, lifecycle transition, or
+  ownership-registry entry; deferred-import mitigation re-verified
+  under the new call path with no circular-import error; independent
+  clean-clone reproduction confirmed identical results.
+- Documented in
+  `docs/phases/PHASE_2.8.13_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md`
+  and `docs/phases/PHASE_2.8.13_COMPLETION_REPORT.md`.
