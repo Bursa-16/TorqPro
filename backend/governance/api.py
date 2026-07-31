@@ -69,7 +69,11 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 from backend.api.dependencies import user
 from backend.governance import ownership
 from backend.governance import service as svc
-from backend.governance.adapters.joint_revision import ProjectionOutcome, project_joint_revision
+from backend.governance.adapters.joint_revision import (
+    ProjectionOutcome,
+    project_joint_revision,
+    project_joint_revisions_bulk,
+)
 from backend.governance.enums import LifecycleGroup
 from backend.governance.events import GovernanceEvent
 from backend.governance.exceptions import (
@@ -388,6 +392,54 @@ def governance_joint_revision(revision_id: int, u=Depends(user)):
     projection = project_joint_revision(revision_id)
     status_code = _JOINT_REVISION_OUTCOME_STATUS[projection.outcome]
     return JSONResponse(status_code=status_code, content=projection.model_dump(mode="json"))
+
+
+@router.get("/joint-revisions")
+def governance_joint_revisions_bulk(joint_id: Optional[int] = None, u=Depends(user)):
+    """Faz 2.8.14 Stage 3: read-only, additive bulk exposure of the
+    existing, Faz 2.8.14 Stage 2 ``project_joint_revisions_bulk``
+    adapter function -- the Phase 2.8.14 Stage 1 contract's one
+    approved new route
+    (``docs/phases/PHASE_2.8.14_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md``,
+    Section 10).
+
+    Distinct static path segment (``joint-revisions``, plural) from
+    the existing ``joint-revision/{revision_id}`` route above
+    (singular) -- Starlette matches on exact literal segment text, so
+    the two never collide regardless of declaration order; this route
+    is placed directly after the single-record route purely for
+    reader locality (both are "compatibility projection endpoints"),
+    not because ordering affects matching here.
+
+    This handler adds no mapping, mutation, or persistence logic of
+    its own: it calls the bulk adapter function exactly once and
+    returns its existing, already-serializable
+    ``JointRevisionProjection`` list as a bare JSON array -- no
+    wrapper object, no pagination metadata, matching the Stage 1
+    contract's explicit "no envelope" decision. Always ``200`` for a
+    well-formed request: an empty result is a legitimate, non-error
+    outcome (empty list), not a ``404`` -- unlike the single-record
+    route above, whose ``404`` means "this specific id does not
+    exist," a concept that does not apply to a list endpoint.
+    ``joint_id`` is typed ``Optional[int]``, so a non-integer query
+    value produces FastAPI's own standard ``422`` validation response
+    with no custom validation logic added here.
+
+    ``project_joint_revisions_bulk`` is documented and tested to never
+    raise (mirrors ``project_joint_revision``'s own fail-closed
+    design, returning ``[]`` on any internal read failure rather than
+    propagating an exception), so this handler deliberately has no
+    ``try/except`` of its own -- adding one would risk reintroducing
+    exactly the exception-message/traceback leakage the adapter was
+    built to prevent, for no benefit.
+
+    No governance event store dependency is injected here (unlike
+    every write route below): this endpoint never reads from or
+    writes to the governance event store, so it has none to depend
+    on.
+    """
+    projections = project_joint_revisions_bulk(joint_id)
+    return [p.model_dump(mode="json") for p in projections]
 
 
 # ---------------------------------------------------------------------

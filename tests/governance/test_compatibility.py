@@ -382,12 +382,13 @@ def test_read_only_adapter_exposes_no_mutation_or_persistence_methods():
     assert not offenders, "read-only adapter must not define: " + ", ".join(offenders)
 
 
-def test_governance_api_defines_only_the_nine_approved_write_routes_and_three_read_routes():
-    """Stage 4 scope guard, extended by Faz 2.8.13 Stage 2: exactly
-    the approved endpoint set exists under backend/governance/api.py
-    -- no extra route was added, and none of the nine write routes or
-    three read routes (two generic + the new joint-revision
-    projection route) is missing."""
+def test_governance_api_defines_only_the_nine_approved_write_routes_and_four_read_routes():
+    """Stage 4 scope guard, extended by Faz 2.8.13 Stage 2 and Faz
+    2.8.14 Stage 3: exactly the approved endpoint set exists under
+    backend/governance/api.py -- no extra route was added, and none
+    of the nine write routes or four read routes (two generic + the
+    single-record joint-revision projection route + the new bulk
+    joint-revisions projection route) is missing."""
     from backend.governance.api import router
 
     paths = sorted({route.path for route in router.routes})
@@ -396,6 +397,7 @@ def test_governance_api_defines_only_the_nine_approved_write_routes_and_three_re
             "/api/governance/{aggregate_id}/history",
             "/api/governance/{aggregate_id}/status",
             "/api/governance/joint-revision/{revision_id}",
+            "/api/governance/joint-revisions",
             "/api/governance/review/{aggregate_id}/submit",
             "/api/governance/review/{aggregate_id}/approve",
             "/api/governance/review/{aggregate_id}/reject",
@@ -488,6 +490,127 @@ def test_joint_revision_route_handler_calls_no_governance_write_or_persistence_f
     assert not offenders, (
         "joint-revision route handler references a governance write/persistence "
         f"surface: {offenders}"
+    )
+
+
+# ---------------------------------------------------------------------
+# Faz 2.8.14 Stage 3 -- joint revisions bulk route (additive, read-only)
+# ---------------------------------------------------------------------
+
+
+def test_joint_revisions_bulk_route_is_get_only():
+    """The new bulk route accepts exactly ``GET`` -- no ``POST``,
+    ``PUT``, ``PATCH``, or ``DELETE`` was introduced for it, matching
+    the approved Stage 1 contract's "no mutation" rule."""
+    from backend.governance.api import router
+
+    bulk_routes = [
+        route for route in router.routes if route.path == "/api/governance/joint-revisions"
+    ]
+    assert len(bulk_routes) == 1
+    assert bulk_routes[0].methods == {"GET"}
+
+
+def test_no_write_route_exists_for_joint_revisions_bulk():
+    """Restated, route-specific guard (the whole-router substring
+    check above already covers this by construction, since
+    'joint-revision' is a substring of 'joint-revisions', but this
+    test proves it directly against the exact bulk path rather than
+    relying on that substring relationship)."""
+    from backend.governance.api import router
+
+    mutating_methods = {"POST", "PUT", "PATCH", "DELETE"}
+    bulk_routes = [
+        route for route in router.routes if route.path == "/api/governance/joint-revisions"
+    ]
+    assert bulk_routes and not (bulk_routes[0].methods & mutating_methods)
+
+
+def test_joint_revisions_bulk_route_handler_calls_the_bulk_adapter():
+    """AST-level proof that the handler calls
+    ``project_joint_revisions_bulk`` -- the one approved adapter
+    function for this route -- rather than reimplementing bulk
+    projection logic inline."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    tree = _parse(api_path)
+
+    handler = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "governance_joint_revisions_bulk"
+    )
+    called_names = {
+        inner.func.id
+        for inner in ast.walk(handler)
+        if isinstance(inner, ast.Call) and isinstance(inner.func, ast.Name)
+    }
+    assert "project_joint_revisions_bulk" in called_names
+
+
+def test_joint_revisions_bulk_route_handler_never_references_joints_service_directly():
+    """AST-based guard: the handler must not import or reference
+    ``backend.joints`` / ``joints_svc`` / ``joint_service`` directly --
+    it may only reach the source through the approved
+    ``project_joint_revisions_bulk`` adapter function, never bypass it
+    to call the source service module itself."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    tree = _parse(api_path)
+
+    handler = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "governance_joint_revisions_bulk"
+    )
+    source = ast.get_source_segment(api_path.read_text(encoding="utf-8"), handler) or ""
+    for forbidden in ("joints_svc", "joint_service", "backend.joints", "list_joint_revisions("):
+        assert forbidden not in source, (
+            f"bulk route handler references forbidden name: {forbidden!r}"
+        )
+
+
+def test_joint_revisions_bulk_route_handler_calls_no_governance_write_or_persistence_function():
+    """Same write/persistence-surface guard as the single-record route
+    handler test above, applied to the new bulk route handler."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    tree = _parse(api_path)
+
+    handler = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "governance_joint_revisions_bulk"
+    )
+    source = ast.get_source_segment(api_path.read_text(encoding="utf-8"), handler) or ""
+    forbidden_substrings = (
+        "svc.",
+        "store.append",
+        "FileGovernanceEventStore(",
+        "get_governance_store",
+        "resolve_governance_store",
+        "GovernanceEvent(",
+    )
+    offenders = [forbidden for forbidden in forbidden_substrings if forbidden in source]
+    assert not offenders, (
+        "joint-revisions bulk route handler references a governance write/persistence "
+        f"surface: {offenders}"
+    )
+
+
+def test_api_module_defines_no_second_outcome_status_mapping():
+    """Only one outcome->HTTP-status mapping dictionary
+    (`_JOINT_REVISION_OUTCOME_STATUS`) may exist in this file -- the
+    new bulk route must not define a second one, since it always
+    returns 200 for a well-formed request and therefore needs none."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    tree = _parse(api_path)
+    dict_assignments = [
+        node.target.id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.value, ast.Dict)
+        and isinstance(node.target, ast.Name)
+    ]
+    assert dict_assignments == ["_JOINT_REVISION_OUTCOME_STATUS"], (
+        f"expected exactly one outcome-status mapping, found: {dict_assignments}"
     )
 
 
