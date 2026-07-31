@@ -53,6 +53,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from backend.api.dependencies import user
+from backend.governance import ownership
 from backend.governance import service as svc
 from backend.governance.enums import LifecycleGroup
 from backend.governance.events import GovernanceEvent
@@ -76,20 +77,43 @@ router = APIRouter(prefix="/api/governance", tags=["governance"])
 GOVERNANCE_EVENT_STORE_PATH_ENV = "TORQPRO_GOVERNANCE_EVENT_STORE_PATH"
 
 
+def resolve_governance_store() -> Optional[GovernanceEventStore]:
+    """Non-raising resolution of the governance event store from
+    :data:`GOVERNANCE_EVENT_STORE_PATH_ENV`, read lazily at call time
+    (not import time). Returns ``None`` if the variable is unset or
+    blank -- "not configured" is a normal, expected outcome for this
+    function, never an exception.
+
+    This is the single source of governance-store resolution logic,
+    reused by :func:`get_governance_store` (the FastAPI dependency,
+    which raises 503 on ``None``) and, since Faz 2.8.12 Stage 3, by
+    the washer resolution decide endpoint's best-effort governance
+    synchronization call (which passes ``None`` straight through to
+    :func:`~backend.governance.adapters.washer_resolution_sync.
+    sync_washer_decision`, classified
+    ``governance_store_unconfigured`` -- never an error). No new
+    environment variable is introduced; no production store is ever
+    auto-created."""
+    raw_path = os.environ.get(GOVERNANCE_EVENT_STORE_PATH_ENV, "")
+    if not raw_path.strip():
+        return None
+    return FileGovernanceEventStore(Path(raw_path))
+
+
 def get_governance_store() -> GovernanceEventStore:
     """FastAPI dependency: resolve the governance event store lazily,
-    per request, from :data:`GOVERNANCE_EVENT_STORE_PATH_ENV`. Reading
-    the environment variable at call time (not at import time) is
-    what makes this overridable/injectable in tests via
+    per request, via :func:`resolve_governance_store`. Reading the
+    environment variable at call time (not at import time) is what
+    makes this overridable/injectable in tests via
     ``app.dependency_overrides``.
 
     Raises a 503 with a generic message (no filesystem path) if the
     variable is unset or blank -- this is a configuration problem,
     not a client error, so it is intentionally not a 4xx."""
-    raw_path = os.environ.get(GOVERNANCE_EVENT_STORE_PATH_ENV, "")
-    if not raw_path.strip():
+    store = resolve_governance_store()
+    if store is None:
         raise HTTPException(503, "Governance event store yapılandırılmamış.")
-    return FileGovernanceEventStore(Path(raw_path))
+    return store
 
 
 # ---------------------------------------------------------------------
@@ -172,7 +196,29 @@ def _run_command(fn, /, **kwargs):
     """Call one Stage 3 command function and map its exceptions to
     the approved HTTP status codes. This is the *only* place that
     exception-to-status mapping happens -- every route below reuses
-    it, so no route hand-rolls its own mapping."""
+    it, so no route hand-rolls its own mapping.
+
+    Faz 2.8.12 Stage 2 aggregate-ownership guard: this is also the
+    single choke point shared by all nine write endpoints, so it is
+    the one place the ownership check
+    (:func:`backend.governance.ownership.is_externally_owned`) needs
+    to live -- no per-route duplication. An externally-owned
+    ``aggregate_type`` (e.g. ``"washer_resolution"``) is rejected
+    with the same 409 conflict convention every other write-rejection
+    in this module already uses, *before* ``fn`` is ever called, so
+    no governance event is written and no Stage 3 service function
+    runs. This check only applies to the generic HTTP surface: an
+    internal, in-process caller (e.g. a future
+    ``backend.governance.adapters.washer_resolution_sync`` call) never
+    goes through this function's HTTP request path and is unaffected.
+    """
+    aggregate_type = kwargs.get("aggregate_type")
+    if aggregate_type is not None and ownership.is_externally_owned(aggregate_type):
+        raise HTTPException(
+            409,
+            f"aggregate_type '{aggregate_type}' is owned by another mechanism; "
+            "writes must go through that mechanism's own synchronization path.",
+        )
     try:
         event, created = fn(**kwargs)
     except InvalidTransitionError as exc:
@@ -484,4 +530,9 @@ def governance_resolution_waive(
     )
 
 
-__all__ = ["router", "get_governance_store", "GOVERNANCE_EVENT_STORE_PATH_ENV"]
+__all__ = [
+    "router",
+    "get_governance_store",
+    "resolve_governance_store",
+    "GOVERNANCE_EVENT_STORE_PATH_ENV",
+]

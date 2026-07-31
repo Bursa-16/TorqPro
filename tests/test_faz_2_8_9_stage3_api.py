@@ -541,3 +541,173 @@ class TestRealDataUnaffected:
         counts = wr.count_by_status()
         assert counts[wr.WasherResolutionStatus.OPEN.value] == 71
         assert counts[wr.WasherResolutionStatus.BLOCKED_AUTHORITATIVE_SOURCE.value] == 5
+
+
+# ---------------------------------------------------------------------
+# Faz 2.8.12 Stage 3 -- best-effort governance synchronization on the
+# real decide endpoint. Every test here isolates BOTH the washer
+# decision ledger (via isolated_ledger) AND the governance event store
+# (via a per-test TORQPRO_GOVERNANCE_EVENT_STORE_PATH monkeypatch) --
+# never the real, committed governance data (there is none by default)
+# and never the real washer files.
+# ---------------------------------------------------------------------
+
+
+@pytest.fixture()
+def governance_store_path(tmp_path, monkeypatch):
+    """Points TORQPRO_GOVERNANCE_EVENT_STORE_PATH at an isolated
+    temp file for the duration of one test. Unset by default in this
+    file's other tests (monkeypatch auto-reverts), matching the
+    default, unconfigured production deployment."""
+    path = tmp_path / "governance_events.json"
+    monkeypatch.setenv("TORQPRO_GOVERNANCE_EVENT_STORE_PATH", str(path))
+    return path
+
+
+def _governance_events(path):
+    from backend.governance.store import FileGovernanceEventStore
+
+    return FileGovernanceEventStore(path).all_events()
+
+
+class TestGovernanceSyncOnDecideEndpoint:
+    def test_terminal_decision_writes_one_governance_event_when_configured(
+        self, isolated_ledger, auth_headers, governance_store_path
+    ):
+        r = client.post(
+            f"/api/library/washers/resolutions/{OPEN_RESOLUTION_ID}/decide",
+            json=_decide_payload(new_status="resolved", idempotency_key="gov-sync-key-1"),
+            headers=auth_headers,
+        )
+        assert r.status_code == 200, r.text
+
+        events = _governance_events(governance_store_path)
+        assert len(events) == 1
+        event = events[0]
+        assert event.aggregate_id == OPEN_RESOLUTION_ID
+        assert event.aggregate_type == "washer_resolution"
+        assert event.new_status == "resolved"
+        assert event.idempotency_key == "washer-sync:gov-sync-key-1"
+
+    def test_open_or_under_review_decision_writes_no_governance_event(
+        self, isolated_ledger, auth_headers, governance_store_path
+    ):
+        r = client.post(
+            f"/api/library/washers/resolutions/{OPEN_RESOLUTION_ID}/decide",
+            json=_decide_payload(new_status="under_review", idempotency_key="gov-sync-key-2"),
+            headers=auth_headers,
+        )
+        assert r.status_code == 200, r.text
+        assert _governance_events(governance_store_path) == []
+
+    def test_response_schema_unchanged_when_governance_configured(
+        self, isolated_ledger, auth_headers, governance_store_path
+    ):
+        """The public response must contain exactly the same two top-
+        level keys as before Stage 3 -- no governance field is added
+        to it."""
+        r = client.post(
+            f"/api/library/washers/resolutions/{OPEN_RESOLUTION_ID}/decide",
+            json=_decide_payload(new_status="resolved", idempotency_key="gov-sync-key-3"),
+            headers=auth_headers,
+        )
+        assert r.status_code == 200
+        assert set(r.json().keys()) == {"decision", "created"}
+
+    def test_decide_succeeds_when_governance_store_unconfigured(
+        self, isolated_ledger, auth_headers, monkeypatch
+    ):
+        """Default deployment state (no isolated governance_store_path
+        fixture applied): the washer decision must succeed exactly as
+        it did before Stage 3 existed."""
+        monkeypatch.delenv("TORQPRO_GOVERNANCE_EVENT_STORE_PATH", raising=False)
+        r = client.post(
+            f"/api/library/washers/resolutions/{OPEN_RESOLUTION_ID}/decide",
+            json=_decide_payload(new_status="resolved", idempotency_key="gov-sync-key-4"),
+            headers=auth_headers,
+        )
+        assert r.status_code == 200, r.text
+        assert r.json()["decision"]["resolution_id"] == OPEN_RESOLUTION_ID
+
+    def test_decide_succeeds_when_governance_sync_raises_unexpectedly(
+        self, isolated_ledger, auth_headers, governance_store_path, monkeypatch
+    ):
+        """Even a defect inside the governance sync call path itself
+        (simulated here) must never affect the washer response --
+        the outermost try/except in the endpoint is the final safety
+        net, independent of sync_washer_decision's own internal
+        never-raise guarantee."""
+        import backend.governance.adapters.washer_resolution_sync as sync_mod
+
+        def _boom(*args, **kwargs):
+            raise RuntimeError("simulated governance sync defect")
+
+        monkeypatch.setattr(sync_mod, "sync_washer_decision_and_log", _boom)
+
+        r = client.post(
+            f"/api/library/washers/resolutions/{OPEN_RESOLUTION_ID}/decide",
+            json=_decide_payload(new_status="resolved", idempotency_key="gov-sync-key-5"),
+            headers=auth_headers,
+        )
+        assert r.status_code == 200, r.text
+        assert r.json()["decision"]["resolution_id"] == OPEN_RESOLUTION_ID
+
+    def test_repeated_terminal_decision_does_not_duplicate_governance_event(
+        self, isolated_ledger, auth_headers, governance_store_path
+    ):
+        payload = _decide_payload(new_status="resolved", idempotency_key="gov-sync-key-6")
+        r1 = client.post(
+            f"/api/library/washers/resolutions/{OPEN_RESOLUTION_ID}/decide",
+            json=payload,
+            headers=auth_headers,
+        )
+        r2 = client.post(
+            f"/api/library/washers/resolutions/{OPEN_RESOLUTION_ID}/decide",
+            json=payload,
+            headers=auth_headers,
+        )
+        assert r1.status_code == 200 and r2.status_code == 200
+        assert r1.json()["decision"] == r2.json()["decision"]
+        assert r2.json()["created"] is False
+        assert len(_governance_events(governance_store_path)) == 1
+
+    def test_source_and_decision_ledgers_untouched_by_governance_sync(
+        self, isolated_ledger, auth_headers, governance_store_path
+    ):
+        client.post(
+            f"/api/library/washers/resolutions/{OPEN_RESOLUTION_ID}/decide",
+            json=_decide_payload(new_status="resolved", idempotency_key="gov-sync-key-7"),
+            headers=auth_headers,
+        )
+        wr.reload()
+        record = wr.get_washer_resolution(OPEN_RESOLUTION_ID)
+        assert record.resolution_status == wr.WasherResolutionStatus.OPEN
+
+    def test_governance_event_recoverable_via_reconciliation_after_unconfigured_decide(
+        self, isolated_ledger, auth_headers, tmp_path, monkeypatch
+    ):
+        """Process-gap equivalent (ADR-0015 failure/recovery
+        semantics): a washer decision recorded while the governance
+        store was unconfigured has no governance event yet; a later
+        reconciliation run, once a store is configured, must recover
+        it without any special-casing."""
+        monkeypatch.delenv("TORQPRO_GOVERNANCE_EVENT_STORE_PATH", raising=False)
+        r = client.post(
+            f"/api/library/washers/resolutions/{OPEN_RESOLUTION_ID}/decide",
+            json=_decide_payload(new_status="rejected", idempotency_key="gov-sync-key-8"),
+            headers=auth_headers,
+        )
+        assert r.status_code == 200, r.text
+
+        from backend.governance.adapters.washer_resolution_reconciliation import reconcile
+        from backend.governance.store import FileGovernanceEventStore
+
+        store_path = tmp_path / "recovery_events.json"
+        governance_store = FileGovernanceEventStore(store_path)
+        report = reconcile(governance_store, dry_run=False)
+
+        assert report.counters["synchronized"] == 1
+        events = governance_store.all_events()
+        assert len(events) == 1
+        assert events[0].aggregate_id == OPEN_RESOLUTION_ID
+        assert events[0].new_status == "rejected"

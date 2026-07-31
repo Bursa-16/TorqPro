@@ -110,3 +110,162 @@
 - Documented in
   `docs/phases/PHASE_2.8.11_COMPLETION_REPORT_TR_EN.md` (bilingual
   final phase report).
+
+## Faz 2.8.12 Stage 2 — 2026-07-30
+
+- Washer Resolution Integration Contract: additive write-path
+  synchronization from the Faz 2.8.9 washer resolution decision
+  workflow onto the Faz 2.8.11 governance event store, per
+  `docs/adr/ADR-0015-washer-resolution-governance-integration.md`
+  ("authoritative-write-then-synchronous-best-effort-sync" +
+  mandatory idempotent reconciliation). **Not yet wired to the
+  production washer API** — that connection is Stage 3.
+- Added `backend/governance/ownership.py`: a closed, additive
+  aggregate-type registry (`"washer_resolution"` today) and a guard
+  applied at the single choke point shared by all nine generic
+  governance HTTP write endpoints (`backend/governance/api.py`'s
+  `_run_command`) — rejects writes to an externally-owned
+  `aggregate_type` with `409`, using the module's existing
+  conflict-response convention. Read endpoints and internal
+  (in-process) governance service calls are unaffected.
+- Added `backend/governance/adapters/washer_resolution_sync.py`:
+  `sync_washer_decision()` — a never-raising, deterministically
+  classified (`synchronized`/`already_synchronized`/
+  `would_synchronize`/`skipped_open`/`not_representable`/
+  `governance_store_unconfigured`/`failed`) synchronization of one
+  washer resolution decision onto a governance event. Reuses the
+  existing Stage 5 adapter's `_STATUS_MAP` as the single canonical
+  mapping source (derives, never redefines, the three syncable
+  statuses: `resolved→RESOLVED`, `accepted_as_is→WAIVED`,
+  `rejected→REJECTED`). `under_review` and
+  `blocked_authoritative_source` are never synchronized and never
+  guessed. Global governance decision_id/idempotency_key uniqueness
+  (verified, not aggregate-scoped) is protected by a namespaced
+  `washer-sync:` idempotency key plus explicit pre-write consistency
+  verification against any pre-existing same-key event.
+- Added `backend/governance/adapters/washer_resolution_reconciliation.py`:
+  `reconcile()` — deterministic, idempotent, read-only-over-washer
+  batch reconciliation reusing `sync_washer_decision()` for every
+  record (no second, independently-written transition/mapping
+  logic). Deterministic counters
+  (`scanned`/`eligible`/`synchronized`/`already_synchronized`/
+  `would_synchronize`/`not_representable`/`skipped_open`/`failed`/
+  `governance_store_unconfigured`) with a tested invariant. Dry-run
+  supported; never writes to any washer file.
+- Added `tools/run_washer_governance_reconciliation.py`: explicitly
+  invoked CLI (dry-run by default; `--apply` to write), deterministic
+  JSON report, no filesystem path or environment-variable value ever
+  printed.
+- 108 new tests (21 sync + 10 reconciliation + 6 CLI + 9 API
+  ownership-guard + 9 ownership-registry + 20 compatibility, net of
+  2 compatibility tests renamed/replaced — see
+  `docs/phases/PHASE_2.8.12_STAGE2_INTEGRATION_CONTRACT.md` for the
+  exact count). `tests/governance/test_compatibility.py` updated
+  (not weakened) to reflect ADR-0015's explicit 3-file
+  mechanism-import allowlist (previously 1), with new AST-based
+  boundary tests proving the two new files write exclusively through
+  the existing, unmodified `backend.governance.service` command
+  functions and never duplicate the canonical status mapping or
+  transition logic.
+- `backend/app.py` and every washer production module
+  (`washer_resolution_service.py`,
+  `washer_resolution_decisions.py`,
+  `washer_resolution_decisions_store.py`) are unchanged. The
+  immutable washer resolution ledger and the washer decision store
+  are unchanged (SHA256-verified before/after).
+- Full suite: 1814/1814 passing (1759 baseline + 55 net new).
+  Governance suite: 204/204. All 6 JS harnesses unchanged
+  (44/58/1097/45/40/32). flake8/compileall/`git diff --check` clean.
+- Documented in
+  `docs/phases/PHASE_2.8.12_STAGE2_INTEGRATION_CONTRACT.md`.
+
+## Faz 2.8.12 Stage 3 — 2026-07-30
+
+- Washer Controlled Write Integration: wired Stage 2's
+  `sync_washer_decision` into the real washer decide endpoint (`POST
+  /api/library/washers/resolutions/{resolution_id}/decide`),
+  immediately after the authoritative washer decision succeeds. The
+  washer decision store remains the sole authority; governance
+  synchronization is synchronous, best-effort, and provably cannot
+  alter the washer response (tested by monkeypatching the sync call
+  itself to raise).
+- Added `sync_washer_decision_and_log` and `resolve_governance_store`
+  (Stage 2 files, additive functions) — safe structured logging via
+  the project's existing `logging.getLogger("torqpro")`, never a new
+  logging framework; log lines never contain filesystem paths,
+  environment-variable values, credentials, tracebacks, or the
+  decision's own free-text fields (tested).
+- Public API contract unchanged and verified: same URL, request
+  schema, response schema (`{"decision", "created"}` — no governance
+  field added), success status code, and error mapping. No second
+  idempotency mechanism was introduced at the HTTP layer.
+- `backend/app.py`'s governance-import allowlist
+  (`tests/governance/test_compatibility.py`) widened from 1 to 3
+  approved lines (Stage 4's router mount + Stage 3's two sync-call-
+  site imports) — documented, tested, closed. No ADR amendment
+  required (routine implementation of the pattern ADR-0015 already
+  formalized).
+- 13 new integration/failure-isolation tests (8 API-level in
+  `tests/test_faz_2_8_9_stage3_api.py::TestGovernanceSyncOnDecideEndpoint`
+  + 4 logging-safety unit tests + 1 compatibility inverse-check),
+  reusing Stage 2's own adapter test coverage rather than duplicating
+  it.
+- `backend/library/washer_resolution_service.py`,
+  `washer_resolution_decisions.py`,
+  `washer_resolution_decisions_store.py`, the immutable washer
+  resolution ledger, and the washer decision store are unchanged
+  (SHA256-verified before/after).
+- Full suite: 1827/1827 passing. Governance suite: 209/209. All 6 JS
+  harnesses unchanged. flake8/compileall/`git diff --check` clean
+  (flake8 scoped per the project's own established convention — see
+  `tools/run_quality_gate.py`'s docstring on pre-existing,
+  out-of-scope style debt).
+- Documented in
+  `docs/phases/PHASE_2.8.12_STAGE3_CONTROLLED_WRITE_INTEGRATION.md`.
+
+## Faz 2.8.12 Stage 4.1 — 2026-07-30 (spike, no production code)
+
+- Isolated proof-of-concept (disposable clone, deleted after use)
+  empirically confirmed a real, deterministic circular import: any
+  governance file importing `backend.joints.service` at module level
+  crashes with `ImportError: cannot import name 'router' from
+  partially initialized module 'backend.governance.api'` if something
+  imports `backend.governance.api` directly before `backend.app` has
+  been loaded. Confirmed the established mitigation already used by
+  `backend/api/dependencies.py` (deferred/function-body import)
+  resolves it in every tested order, including clean `__pycache__`
+  and `importlib.reload`.
+
+## Faz 2.8.12 Stage 4.2 — 2026-07-30
+
+- Added `backend/governance/adapters/joint_revision.py`: a read-only
+  compatibility adapter projecting `joint_revisions.status` onto
+  canonical governance `ReviewStatus` (`draft→DRAFT`,
+  `review→UNDER_REVIEW`, `approved→APPROVED`,
+  `rejected→REJECTED`) — the exact Stage 4.1-mitigated deferred-import
+  pattern for `backend.joints.service`; `backend.joints.exceptions`/
+  `schema` (zero `backend.app` dependency, verified) imported safely
+  at module level. `joints.status`→`PublicationStatus`, Production
+  Validation, and Legacy Calculation Revisions remain explicitly out
+  of scope (Stage 4 assessment: NO-GO this phase).
+- New `ProjectionOutcome` vocabulary (`supported`/`not_found`/
+  `unsupported_status`/`invalid_source_record`/`source_unavailable`)
+  — deliberately not washer's `MappingQuality`, since joint revisions
+  have no partial-mapping case today.
+- Mechanism-import allowlist widened from 3 to 4 approved files
+  (ADR-0015's established pattern, extended); two new AST-based tests
+  mechanically prove `backend.joints.service` is imported only inside
+  a function body, plus 3 subprocess-based clean-process regression
+  tests (governance.api standalone, adapter standalone, adapter after
+  normal app init) and a reload-safety test.
+- 24 new tests (15 adapter runtime + 9 compatibility/import-order).
+  `backend/joints/`, `backend/production_validation/`, and
+  `backend/app.py` are byte-identical to their pre-Stage-4.2 state
+  (verified via `git diff --quiet`) — no production code, migration,
+  or schema change of any kind.
+- Full suite: 1851/1851 passing. Governance suite: 233/233. Existing
+  joints tests: 9/9 unchanged. All 6 JS harnesses unchanged.
+  flake8/compileall/`git diff --check` clean; existing quality gate
+  PASSED.
+- Documented in
+  `docs/phases/PHASE_2.8.12_STAGE4_2_JOINT_REVISION_READ_ONLY_ADAPTER.md`.

@@ -1739,6 +1739,25 @@ def washer_resolution_decide_endpoint(
         log.exception("washer_resolution_decide_endpoint: unexpected error")
         raise HTTPException(500, "Karar kaydedilirken beklenmeyen bir hata oluştu.")
 
+    # Faz 2.8.12 Stage 3: the washer decision above is already the
+    # complete, successful, authoritative business transaction. This
+    # is a synchronous, best-effort projection onto the governance
+    # event store (ADR-0015) -- it can never fail this request.
+    # sync_washer_decision_and_log() never raises (defensive by
+    # construction; see its own docstring), but the call is still
+    # wrapped so that literally nothing about governance
+    # synchronization -- including an import error -- can ever change
+    # this endpoint's success response.
+    try:
+        from backend.governance.adapters.washer_resolution_sync import (
+            sync_washer_decision_and_log,
+        )
+        from backend.governance.api import resolve_governance_store
+
+        sync_washer_decision_and_log(decision, resolve_governance_store())
+    except Exception:  # noqa: BLE001 - governance sync must never affect this response
+        log.exception("washer_resolution_decide_endpoint: governance sync call failed")
+
     return {
         "decision": decision.model_dump(mode="json"),
         "created": created,
