@@ -419,6 +419,62 @@ suite: 1871/1871 (1851 baseline + 20 new). Governance suite: 253/253
 (233 baseline + 20 new). All 6 JS harnesses passing. Quality gate
 6/6 PASSED.
 
+## 12G. Faz 2.8.14 – Joint Revision Governance Bulk Visibility
+
+**Status: Complete (Stages 1–5), delivered 2026-07-31.** See
+`docs/phases/PHASE_2.8.14_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md`
+and `docs/phases/PHASE_2.8.14_COMPLETION_REPORT.md` for full detail.
+
+Closed a single, evidence-based visibility gap identified as a
+conditional next-phase recommendation in
+`PHASE_2.8.13_COMPLETION_REPORT.md` §16: the Faz 2.8.13 single-record
+`joint_revision` governance lookup required already knowing a
+`revision_id`, with no way to discover or browse joint revisions from
+the governance workspace.
+
+**Main deliverables**: an additive, read-only
+`list_joint_revisions(joint_id=None)` source accessor in
+`backend/joints/service.py`; an additive
+`project_joint_revisions_bulk(joint_id=None)` governance adapter
+function in `backend/governance/adapters/joint_revision.py` that
+reuses the existing canonical `project_joint_revision()` mapping for
+every item (no new status-mapping table); an additive, GET-only
+`GET /api/governance/joint-revisions` API route (optional `joint_id`
+filter, empty result `200 []`, bare JSON array, no pagination); an
+additive "Joint Revision List (read-only)" frontend card inside the
+existing governance workspace, with 11 new `gov.jrlist.*` i18n keys
+(full TR/EN parity).
+
+**Test results**: Full suite 1919/1919 (1871 baseline + 48 new).
+Governance suite 292/292 (253 baseline + 39 new). JS governance
+harness 160/160 (98 baseline + 62 new). TR/EN key parity 6/6. Quality
+gate 6/6 PASSED.
+
+**Completion report**: `docs/phases/PHASE_2.8.14_COMPLETION_REPORT.md`
+
+**Branch**: `feature/faz-2.8.14-joint-revision-bulk-visibility`,
+final Stage 5 HEAD `efc2c9e84cd343628831748362a7ce5e42f01b8f`.
+
+**No new ADR** was added — this phase is a bounded, additive extension
+of the existing `joint_revision` governance projection mechanism
+established by ADR-0014/Faz 2.8.12; it introduces no new mechanism,
+architectural pattern, or governance concept that would warrant a new
+architectural decision record.
+
+**Non-goals** (explicitly deferred, not attempted): washer resolution
+open/blocked record resolution; a governance projection registry;
+a cross-mechanism consistency validator; joint revision
+write-synchronization; pagination/sorting/search/export on the new
+list endpoint; README/VERSION currency.
+
+**Possible next-phase candidates** (none approved by this entry):
+(A) README/VERSION maintenance — small, independent, no precondition;
+(B) joint revision list UX refinements (pagination/sorting/search/
+export) — only if real usage demonstrates an actual need, none shown
+yet; (C) governance projection registry/cross-mechanism validator —
+still premature, no second or third write-integrated mechanism has
+emerged since Faz 2.8.12 Stage 4 deferred it.
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.
