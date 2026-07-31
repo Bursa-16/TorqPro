@@ -72,6 +72,39 @@ def list_joints(project_id: int | None = None) -> list:
     return [_row(r) for r in rows]
 
 
+def list_joint_revisions(joint_id: int | None = None) -> list:
+    """Read-only listing of joint revision records, optionally
+    filtered by ``joint_id`` (Faz 2.8.14 Stage 2 — additive; mirrors
+    :func:`list_joints`'s existing filter/ordering convention exactly,
+    no new convention introduced).
+
+    - Read-only: never inserts, updates, or deletes any row; never
+      calls ``c.commit()``; no side effect of any kind.
+    - Deterministic ordering: results are always returned in ascending
+      revision ``id`` order, the same convention :func:`list_joints`
+      already uses for joints.
+    - Optional filter: ``joint_id=None`` (the default) returns every
+      joint revision record across all joints; a given ``joint_id``
+      restricts the result to that joint's own revisions only.
+    - Empty-list behaviour: an unknown or non-matching ``joint_id``
+      returns ``[]``, never an exception -- this function performs no
+      existence check on ``joint_id``, exactly like
+      ``list_joints(project_id=...)``'s existing behaviour for an
+      unknown ``project_id``.
+    - Every row has the same shape :func:`get_joint_revision` already
+      returns (via the shared ``_row()`` conversion), so a caller that
+      already knows that shape needs no new parsing logic.
+    """
+    with conn() as c:
+        if joint_id is not None:
+            rows = c.execute(
+                "SELECT * FROM joint_revisions WHERE joint_id=? ORDER BY id", (joint_id,)
+            ).fetchall()
+        else:
+            rows = c.execute("SELECT * FROM joint_revisions ORDER BY id").fetchall()
+    return [_row(r) for r in rows]
+
+
 def archive_joint(joint_id: int, actor_id: int | None) -> dict:
     joint = get_joint(joint_id)
     if joint["status"] == "archived":
@@ -188,6 +221,7 @@ __all__ = [
     "create_joint",
     "get_joint",
     "list_joints",
+    "list_joint_revisions",
     "archive_joint",
     "create_joint_revision",
     "get_joint_revision",

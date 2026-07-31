@@ -14,6 +14,7 @@ from backend.app import conn, now_iso
 from backend.governance.adapters.joint_revision import (
     ProjectionOutcome,
     project_joint_revision,
+    project_joint_revisions_bulk,
 )
 from backend.governance.enums import LifecycleGroup, ReviewStatus
 from backend.joints import service as joints_svc
@@ -233,3 +234,85 @@ def test_existing_self_approval_rule_still_enforced_independently_of_governance(
     # Still projectable afterward, still 'review' (unapproved).
     projection = project_joint_revision(revision["id"])
     assert projection.source_status == "review"
+
+
+# ---------------------------------------------------------------------
+# project_joint_revisions_bulk() -- Faz 2.8.14 Stage 2 (additive)
+# ---------------------------------------------------------------------
+
+
+def test_bulk_returns_a_projection_per_revision_across_joints():
+    _, r1 = _make_joint_and_revision("bulk-multi-1")
+    _, r2 = _make_joint_and_revision("bulk-multi-2")
+
+    results = project_joint_revisions_bulk()
+    ids = {p.joint_revision_id for p in results}
+    assert r1["id"] in ids
+    assert r2["id"] in ids
+
+
+def test_bulk_joint_id_filter_is_forwarded_to_the_source_accessor():
+    joint, revision = _make_joint_and_revision("bulk-filter")
+    joints_svc.create_joint_revision(joint["id"], {}, "second", 1)
+    other_joint, other_revision = _make_joint_and_revision("bulk-filter-other")
+
+    results = project_joint_revisions_bulk(joint["id"])
+    ids = {p.joint_revision_id for p in results}
+    assert revision["id"] in ids
+    assert other_revision["id"] not in ids
+
+
+def test_bulk_preserves_the_source_accessors_ascending_id_ordering():
+    joint, r1 = _make_joint_and_revision("bulk-order")
+    r2 = joints_svc.create_joint_revision(joint["id"], {}, "second", 1)
+    r3 = joints_svc.create_joint_revision(joint["id"], {}, "third", 1)
+
+    results = project_joint_revisions_bulk(joint["id"])
+    result_ids = [p.joint_revision_id for p in results]
+    assert result_ids == sorted(result_ids)
+    assert result_ids == [r1["id"], r2["id"], r3["id"]]
+
+
+def test_bulk_empty_source_result_returns_empty_projection_list():
+    results = project_joint_revisions_bulk(999999999)
+    assert results == []
+
+
+def test_bulk_each_item_matches_the_canonical_single_projection():
+    """The bulk function must not define any mapping of its own -- each
+    item's outcome/status must be identical to what the canonical
+    single-record function would independently produce for the same id."""
+    joint, revision = _make_joint_and_revision("bulk-canonical")
+    joints_svc.submit_joint_revision(revision["id"], 1)
+
+    bulk_results = project_joint_revisions_bulk(joint["id"])
+    bulk_item = [p for p in bulk_results if p.joint_revision_id == revision["id"]][0]
+    single_result = project_joint_revision(revision["id"])
+    assert bulk_item == single_result
+
+
+def test_bulk_source_read_failure_is_empty_list_not_a_raw_exception(monkeypatch):
+    import backend.joints.service as joints_service_module
+
+    def _boom(joint_id=None):
+        raise RuntimeError("simulated sqlite3.OperationalError: disk I/O error at /secret/path")
+
+    monkeypatch.setattr(joints_service_module, "list_joint_revisions", _boom)
+
+    results = project_joint_revisions_bulk()
+    assert results == []
+
+
+def test_bulk_never_raises_for_any_joint_id_input():
+    for bad_joint_id in (-1, 0, 999999999):
+        results = project_joint_revisions_bulk(bad_joint_id)
+        assert isinstance(results, list)
+
+
+def test_bulk_does_not_mutate_any_source_revision():
+    joint, revision = _make_joint_and_revision("bulk-immutable")
+    before = joints_svc.get_joint_revision(revision["id"])
+    project_joint_revisions_bulk(joint["id"])
+    project_joint_revisions_bulk()
+    after = joints_svc.get_joint_revision(revision["id"])
+    assert before == after

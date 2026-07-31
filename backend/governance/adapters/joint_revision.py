@@ -222,9 +222,58 @@ def project_joint_revision(revision_id: int) -> JointRevisionProjection:
     )
 
 
+def project_joint_revisions_bulk(joint_id: Optional[int] = None) -> list[JointRevisionProjection]:
+    """Faz 2.8.14 Stage 2: read-only, additive bulk counterpart to
+    :func:`project_joint_revision` -- projects every joint revision
+    (optionally filtered by ``joint_id``) onto the same canonical
+    governance vocabulary, one :class:`JointRevisionProjection` per
+    source record.
+
+    Source of ids: :func:`backend.joints.service.list_joint_revisions`
+    (Faz 2.8.14 Stage 2 accessor), obtained through the same
+    :func:`_joints_service` deferred-import helper already used by
+    :func:`project_joint_revision` -- no new import pattern, no
+    module-level ``backend.joints.service`` reference is introduced
+    by this function.
+
+    Mapping: this function defines **no mapping logic of its own**.
+    Each id returned by ``list_joint_revisions`` is passed straight
+    through the existing, already-tested :func:`project_joint_revision`
+    -- the single canonical mapping this package uses, unchanged,
+    unduplicated, un-copied. This is a deliberate N+1 read pattern
+    (one extra query per revision beyond the initial listing query),
+    accepted in the Faz 2.8.14 Stage 1 contract because this phase
+    introduces no pagination and the current dataset is small; it is
+    not an oversight and not something this stage's scope permits
+    optimizing away.
+
+    Ordering: preserved exactly as returned by ``list_joint_revisions``
+    (ascending revision ``id``) -- this function performs no
+    re-sorting of its own.
+
+    Never writes anywhere: no governance event, no source-table
+    mutation, no persistence of any kind. An empty source result
+    (unknown ``joint_id`` or an empty table) returns ``[]``, not an
+    exception -- matching ``list_joint_revisions``'s own empty-list
+    behaviour.
+    """
+    try:
+        joint_service = _joints_service()
+    except Exception:  # noqa: BLE001 - mirrors project_joint_revision's own fail-closed path
+        return []
+
+    try:
+        revisions = joint_service.list_joint_revisions(joint_id)
+    except Exception:  # noqa: BLE001 - sqlite3.Error and any other read-path failure
+        return []
+
+    return [project_joint_revision(record["id"]) for record in revisions]
+
+
 __all__ = [
     "SOURCE_SYSTEM",
     "ProjectionOutcome",
     "JointRevisionProjection",
     "project_joint_revision",
+    "project_joint_revisions_bulk",
 ]

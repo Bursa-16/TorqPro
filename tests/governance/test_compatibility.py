@@ -865,6 +865,124 @@ def test_joint_revision_adapter_has_no_raw_sql():
         assert forbidden not in text, f"unexpected raw-SQL-shaped text: {forbidden!r}"
 
 
+# ---------------------------------------------------------------------
+# Faz 2.8.14 Stage 2 -- joint revision bulk projection (additive).
+#
+# The bulk function shares the same file (and therefore the same
+# module-level-import, mutation-method, and no-raw-SQL guards above,
+# which already scan the whole file), but it has its own, narrower
+# guarantee worth checking explicitly: it must define no new status
+# mapping of its own and must route every item through the existing
+# canonical `project_joint_revision` call, never reimplement its
+# logic.
+# ---------------------------------------------------------------------
+
+
+def test_joint_revision_bulk_function_defines_no_second_status_mapping():
+    """Only one status-mapping dictionary (`_STATUS_MAP`) may exist in
+    this file -- the bulk function must not define a second one under
+    any name."""
+    tree = _parse(_JOINT_REVISION_ADAPTER_PATH)
+    dict_assignments = [
+        node.targets[0].id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign)
+        and isinstance(node.value, ast.Dict)
+        and len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+    ] + [
+        node.target.id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.value, ast.Dict)
+        and isinstance(node.target, ast.Name)
+    ]
+    assert dict_assignments == ["_STATUS_MAP"], (
+        f"expected exactly one module-level dict assignment (_STATUS_MAP), "
+        f"found: {dict_assignments}"
+    )
+
+
+def test_joint_revision_bulk_function_calls_the_canonical_single_projection():
+    """AST-level proof that `project_joint_revisions_bulk` routes each
+    item through the existing `project_joint_revision` call rather
+    than reimplementing status-mapping logic inline."""
+    tree = _parse(_JOINT_REVISION_ADAPTER_PATH)
+    bulk_func = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "project_joint_revisions_bulk"
+    )
+    called_names = {
+        inner.func.id
+        for inner in ast.walk(bulk_func)
+        if isinstance(inner, ast.Call) and isinstance(inner.func, ast.Name)
+    }
+    assert "project_joint_revision" in called_names
+
+
+def test_joint_revision_bulk_function_calls_list_joint_revisions_not_get_joint_revision_only():
+    """The bulk function must source its ids from the new
+    `list_joint_revisions` accessor (via the shared `_joints_service()`
+    helper) -- not invent its own per-joint iteration or reach for a
+    different, unapproved source accessor."""
+    text = _JOINT_REVISION_ADAPTER_PATH.read_text(encoding="utf-8")
+    bulk_start = text.index("def project_joint_revisions_bulk")
+    bulk_body = text[bulk_start:]
+    assert "list_joint_revisions(" in bulk_body
+    assert "_joints_service()" in bulk_body
+
+
+def test_joint_revision_bulk_function_exposes_no_mutation_or_persistence_call():
+    """Same read-only guarantee as the single-record adapter function,
+    checked directly against the bulk function's own body via AST
+    (not a whole-file substring scan) -- it must not call any store/
+    governance-write function."""
+    tree = _parse(_JOINT_REVISION_ADAPTER_PATH)
+    bulk_func = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "project_joint_revisions_bulk"
+    )
+    forbidden_calls = {"append", "save", "delete", "update", "commit"}
+    called_names = {
+        inner.func.attr
+        for inner in ast.walk(bulk_func)
+        if isinstance(inner, ast.Call) and isinstance(inner.func, ast.Attribute)
+    }
+    offenders = called_names & forbidden_calls
+    assert not offenders, f"bulk function calls forbidden methods: {offenders}"
+
+
+def test_joint_revision_bulk_function_importable_and_callable_in_a_clean_process(tmp_path):
+    """Same clean-process regression guard as the single-record
+    function (Faz 2.8.12 Stage 4.1), extended to the new bulk
+    function -- the deferred-import mitigation must hold for it too."""
+    import os
+    import subprocess
+    import sys
+
+    env = dict(os.environ)
+    env["TORQPRO_SECRET_KEY"] = "x" * 64
+    env["TORQPRO_DB_PATH"] = str(tmp_path / "clean_process_bulk.db")
+    script = (
+        "import sys; assert 'backend.app' not in sys.modules; "
+        "from backend.governance.adapters.joint_revision import project_joint_revisions_bulk; "
+        "result = project_joint_revisions_bulk(); "
+        "print('OK', isinstance(result, list))"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=str(REPO_ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "OK True" in result.stdout
+
+
 def test_governance_api_importable_in_a_clean_process():
     """Faz 2.8.12 Stage 4.1's proven risk, re-verified as a
     regression guard: importing ``backend.governance.api`` directly,
