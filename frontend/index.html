@@ -1231,6 +1231,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   </div>
 
   <div class="card">
+    <div class="card-title" data-i18n="gov.jrlist.section_title">Joint Revision List (read-only)</div>
+    <div class="card-sub" data-i18n="gov.jrlist.section_sub">Read-only bulk view of joint revision compatibility projections, optionally filtered by joint ID (Faz 2.8.14 Stage 4). Never edits, approves, rejects or resolves anything.</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label" data-i18n="gov.jrlist.joint_id_label">Joint ID (optional)</label><input class="form-input" id="gov_jrlist_joint_id" data-i18n-placeholder="gov.jrlist.joint_id_placeholder" placeholder="Leave empty to list all revisions"></div>
+      <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="govLoadJointRevisions()" data-i18n="gov.jrlist.load_button">List</button></div>
+    </div>
+    <div id="gov-jrlist-result"></div>
+  </div>
+
+  <div class="card">
     <div class="card-title" data-i18n="gov.command_title">Record a Decision</div>
     <div class="form-row3">
       <div class="form-group"><label class="form-label" data-i18n="gov.action_label">Action</label><select class="form-input" id="gov_action" onchange="govOnActionChange()"></select></div>
@@ -3278,6 +3288,17 @@ const I18N = {
     'gov.jr.outcome.invalid_source_record': 'Invalid source record (record exists, malformed)',
     'gov.jr.outcome.source_unavailable': 'Source data unavailable',
     'gov.jr.outcome.not_found': 'Not found',
+    'gov.jrlist.section_title': 'Joint Revision List (read-only)',
+    'gov.jrlist.section_sub': 'Read-only bulk view of joint revision compatibility projections, optionally filtered by joint ID (Faz 2.8.14 Stage 4). Never edits, approves, rejects or resolves anything.',
+    'gov.jrlist.joint_id_label': 'Joint ID (optional)',
+    'gov.jrlist.joint_id_placeholder': 'Leave empty to list all revisions',
+    'gov.jrlist.load_button': 'List',
+    'gov.jrlist.empty_state': 'No joint revisions found.',
+    'gov.jrlist.invalid_joint_id': 'Joint ID must be a whole number, or leave it empty to list all revisions.',
+    'gov.jrlist.network_error': 'Listing failed unexpectedly; please try again.',
+    'gov.jrlist.result_count_prefix': 'Results: ',
+    'gov.jrlist.col_revision_id': 'Revision ID',
+    'gov.jrlist.col_reason': 'Reason',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -4800,6 +4821,17 @@ const I18N = {
     'gov.jr.outcome.invalid_source_record': 'Geçersiz kaynak kaydı (kayıt var, hatalı biçimlendirilmiş)',
     'gov.jr.outcome.source_unavailable': 'Kaynak verisi kullanılamıyor',
     'gov.jr.outcome.not_found': 'Bulunamadı',
+    'gov.jrlist.section_title': 'Joint Revision Listesi (salt-okunur)',
+    'gov.jrlist.section_sub': 'Joint revision uyumluluk projeksiyonlarının, opsiyonel olarak joint ID ile filtrelenebilen, salt-okunur toplu görünümü (Faz 2.8.14 Stage 4). Hiçbir şeyi düzenlemez, onaylamaz, reddetmez veya çözümlemez.',
+    'gov.jrlist.joint_id_label': 'Joint ID (opsiyonel)',
+    'gov.jrlist.joint_id_placeholder': 'Tüm revizyonları listelemek için boş bırakın',
+    'gov.jrlist.load_button': 'Listele',
+    'gov.jrlist.empty_state': 'Hiçbir joint revision bulunamadı.',
+    'gov.jrlist.invalid_joint_id': 'Joint ID bir tam sayı olmalı, ya da tüm revizyonları listelemek için boş bırakın.',
+    'gov.jrlist.network_error': 'Listeleme beklenmedik şekilde başarısız oldu; lütfen tekrar deneyin.',
+    'gov.jrlist.result_count_prefix': 'Sonuç: ',
+    'gov.jrlist.col_revision_id': 'Revizyon ID',
+    'gov.jrlist.col_reason': 'Neden',
   },
 };
 
@@ -7953,6 +7985,7 @@ function govReapplyLanguage() {
   if (GOV_LAST_STATUS) govRenderStatus(GOV_LAST_STATUS);
   if (GOV_LAST_HISTORY) govRenderHistory(GOV_LAST_HISTORY);
   if (GOV_JR_LAST_RESULT) govRenderJointRevisionResult(GOV_JR_LAST_RESULT);
+  if (GOV_JRLIST_LAST_RESULT) govRenderJointRevisionList(GOV_JRLIST_LAST_RESULT);
 }
 
 // ========== JOINT REVISION PROJECTION (Faz 2.8.13 Stage 3) ==========
@@ -8074,6 +8107,121 @@ async function govLoadJointRevision() {
     }
     if (kind === 'auth') { govRenderJointRevisionMessage('auth', t('gov.auth_error')); return; }
     govRenderJointRevisionMessage('network', t('gov.jr.network_error'));
+  }
+}
+
+// ========== JOINT REVISION LIST (Faz 2.8.14 Stage 4) ==========
+// Read-only, additive bulk extension of the joint revision projection
+// section above: lists every joint revision projection (optionally
+// filtered by joint_id) through the Faz 2.8.14 Stage 3 read-only
+// bulk route (GET /api/governance/joint-revisions), reusing
+// apiRequest(), govEsc(), govStatusLabel(), govGroupLabel() and
+// govJrOutcomeLabel() from the section above -- no second status/
+// outcome mapping is defined here, every label reuses the existing
+// gov.jr.* keys and helpers. No write action of any kind is ever
+// issued from this section. Backend order (ascending revision id,
+// Faz 2.8.14 Stage 2/3 contract) is preserved exactly as received;
+// this section never re-sorts, paginates, or filters client-side.
+
+let GOV_JRLIST_LAST_RESULT = null;
+
+function govRenderJointRevisionListLoading() {
+  const el = document.getElementById('gov-jrlist-result');
+  if (el) el.innerHTML = `<div class="fc-muted">${govEsc(t('gov.loading'))}</div>`;
+}
+
+function govRenderJointRevisionListMessage(kind, text) {
+  const el = document.getElementById('gov-jrlist-result');
+  if (!el) return;
+  const cls = kind === 'network' ? 'alert alert-danger' : 'fc-muted';
+  el.innerHTML = `<div class="${cls}">${govEsc(text)}</div>`;
+}
+
+function govRenderJointRevisionListError(text) {
+  govRenderJointRevisionListMessage('network', text);
+}
+
+function govRenderJointRevisionListEmpty() {
+  const el = document.getElementById('gov-jrlist-result');
+  if (el) el.innerHTML = `<div class="fc-muted">${govEsc(t('gov.jrlist.empty_state'))}</div>`;
+}
+
+// Well-formedness guard, mirroring govIsWellFormedHistory()/
+// govIsWellFormedStatus()'s existing contract: a malformed item is
+// never partially rendered with a guessed value.
+function govIsWellFormedJointRevisionListItem(item) {
+  return !!item && typeof item === 'object'
+    && (typeof item.joint_revision_id === 'number' || typeof item.joint_revision_id === 'string')
+    && GOV_JR_OUTCOMES.indexOf(item.outcome) !== -1;
+}
+
+function govRenderJointRevisionList(items) {
+  const el = document.getElementById('gov-jrlist-result');
+  if (!el) return;
+  if (!Array.isArray(items) || !items.every(govIsWellFormedJointRevisionListItem)) {
+    govRenderJointRevisionListError(t('gov.jrlist.network_error'));
+    return;
+  }
+  if (items.length === 0) {
+    govRenderJointRevisionListEmpty();
+    return;
+  }
+  GOV_JRLIST_LAST_RESULT = items;
+  const rows = items.map(item => `<tr>` +
+    `<td>${govEsc(item.joint_revision_id)}</td>` +
+    `<td>${govEsc(govJrOutcomeLabel(item.outcome))}</td>` +
+    `<td>${govStatusLabel(item.source_status)}</td>` +
+    `<td>${govStatusLabel(item.canonical_status)}</td>` +
+    `<td>${item.lifecycle_group ? govEsc(govGroupLabel(item.lifecycle_group)) : govStatusLabel(null)}</td>` +
+    `<td>${item.safe_reason ? govEsc(item.safe_reason) : govStatusLabel(null)}</td>` +
+    `</tr>`).join('');
+  el.innerHTML = `<div class="fc-muted" style="margin-bottom:6px">${govEsc(t('gov.jrlist.result_count_prefix'))}${items.length}</div>` +
+    `<table class="table"><thead><tr>` +
+    `<th>${govEsc(t('gov.jrlist.col_revision_id'))}</th>` +
+    `<th>${govEsc(t('gov.jr.outcome_label'))}</th>` +
+    `<th>${govEsc(t('gov.jr.source_status_label'))}</th>` +
+    `<th>${govEsc(t('gov.jr.canonical_status_label'))}</th>` +
+    `<th>${govEsc(t('gov.jr.lifecycle_group_label'))}</th>` +
+    `<th>${govEsc(t('gov.jrlist.col_reason'))}</th>` +
+    `</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// Single place the query string is assembled -- URLSearchParams only,
+// never string concatenation of raw input into the URL. Empty/absent
+// input omits the joint_id parameter entirely (lists all revisions),
+// matching the Faz 2.8.14 Stage 1 contract's "no positivity rule"
+// decision: any parseable integer (including zero/negative) is passed
+// straight through, letting the backend's own empty-list behaviour
+// handle it, rather than inventing a new client-side rule.
+function govJointRevisionListBuildUrl(jointIdRaw) {
+  const params = new URLSearchParams();
+  if (jointIdRaw !== '') params.set('joint_id', jointIdRaw);
+  const qs = params.toString();
+  return '/api/governance/joint-revisions' + (qs ? ('?' + qs) : '');
+}
+
+// In-flight request guard: prevents a fast double-click from
+// interleaving two responses out of order -- minimal protection
+// matching this file's existing convention (no new global request
+// manager introduced).
+let GOV_JRLIST_REQUEST_ID = 0;
+
+async function govLoadJointRevisions() {
+  const idEl = document.getElementById('gov_jrlist_joint_id');
+  const raw = idEl ? idEl.value.trim() : '';
+  if (raw !== '' && !/^-?\d+$/.test(raw)) {
+    govRenderJointRevisionListMessage('validation', t('gov.jrlist.invalid_joint_id'));
+    return;
+  }
+  const requestId = ++GOV_JRLIST_REQUEST_ID;
+  govRenderJointRevisionListLoading();
+  try {
+    const data = await apiRequest(govJointRevisionListBuildUrl(raw));
+    if (requestId !== GOV_JRLIST_REQUEST_ID) return;
+    govRenderJointRevisionList(data);
+  } catch (e) {
+    if (requestId !== GOV_JRLIST_REQUEST_ID) return;
+    govRenderJointRevisionListMessage('network', t('gov.jrlist.network_error'));
   }
 }
 

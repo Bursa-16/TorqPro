@@ -382,12 +382,13 @@ def test_read_only_adapter_exposes_no_mutation_or_persistence_methods():
     assert not offenders, "read-only adapter must not define: " + ", ".join(offenders)
 
 
-def test_governance_api_defines_only_the_nine_approved_write_routes_and_three_read_routes():
-    """Stage 4 scope guard, extended by Faz 2.8.13 Stage 2: exactly
-    the approved endpoint set exists under backend/governance/api.py
-    -- no extra route was added, and none of the nine write routes or
-    three read routes (two generic + the new joint-revision
-    projection route) is missing."""
+def test_governance_api_defines_only_the_nine_approved_write_routes_and_four_read_routes():
+    """Stage 4 scope guard, extended by Faz 2.8.13 Stage 2 and Faz
+    2.8.14 Stage 3: exactly the approved endpoint set exists under
+    backend/governance/api.py -- no extra route was added, and none
+    of the nine write routes or four read routes (two generic + the
+    single-record joint-revision projection route + the new bulk
+    joint-revisions projection route) is missing."""
     from backend.governance.api import router
 
     paths = sorted({route.path for route in router.routes})
@@ -396,6 +397,7 @@ def test_governance_api_defines_only_the_nine_approved_write_routes_and_three_re
             "/api/governance/{aggregate_id}/history",
             "/api/governance/{aggregate_id}/status",
             "/api/governance/joint-revision/{revision_id}",
+            "/api/governance/joint-revisions",
             "/api/governance/review/{aggregate_id}/submit",
             "/api/governance/review/{aggregate_id}/approve",
             "/api/governance/review/{aggregate_id}/reject",
@@ -488,6 +490,127 @@ def test_joint_revision_route_handler_calls_no_governance_write_or_persistence_f
     assert not offenders, (
         "joint-revision route handler references a governance write/persistence "
         f"surface: {offenders}"
+    )
+
+
+# ---------------------------------------------------------------------
+# Faz 2.8.14 Stage 3 -- joint revisions bulk route (additive, read-only)
+# ---------------------------------------------------------------------
+
+
+def test_joint_revisions_bulk_route_is_get_only():
+    """The new bulk route accepts exactly ``GET`` -- no ``POST``,
+    ``PUT``, ``PATCH``, or ``DELETE`` was introduced for it, matching
+    the approved Stage 1 contract's "no mutation" rule."""
+    from backend.governance.api import router
+
+    bulk_routes = [
+        route for route in router.routes if route.path == "/api/governance/joint-revisions"
+    ]
+    assert len(bulk_routes) == 1
+    assert bulk_routes[0].methods == {"GET"}
+
+
+def test_no_write_route_exists_for_joint_revisions_bulk():
+    """Restated, route-specific guard (the whole-router substring
+    check above already covers this by construction, since
+    'joint-revision' is a substring of 'joint-revisions', but this
+    test proves it directly against the exact bulk path rather than
+    relying on that substring relationship)."""
+    from backend.governance.api import router
+
+    mutating_methods = {"POST", "PUT", "PATCH", "DELETE"}
+    bulk_routes = [
+        route for route in router.routes if route.path == "/api/governance/joint-revisions"
+    ]
+    assert bulk_routes and not (bulk_routes[0].methods & mutating_methods)
+
+
+def test_joint_revisions_bulk_route_handler_calls_the_bulk_adapter():
+    """AST-level proof that the handler calls
+    ``project_joint_revisions_bulk`` -- the one approved adapter
+    function for this route -- rather than reimplementing bulk
+    projection logic inline."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    tree = _parse(api_path)
+
+    handler = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "governance_joint_revisions_bulk"
+    )
+    called_names = {
+        inner.func.id
+        for inner in ast.walk(handler)
+        if isinstance(inner, ast.Call) and isinstance(inner.func, ast.Name)
+    }
+    assert "project_joint_revisions_bulk" in called_names
+
+
+def test_joint_revisions_bulk_route_handler_never_references_joints_service_directly():
+    """AST-based guard: the handler must not import or reference
+    ``backend.joints`` / ``joints_svc`` / ``joint_service`` directly --
+    it may only reach the source through the approved
+    ``project_joint_revisions_bulk`` adapter function, never bypass it
+    to call the source service module itself."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    tree = _parse(api_path)
+
+    handler = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "governance_joint_revisions_bulk"
+    )
+    source = ast.get_source_segment(api_path.read_text(encoding="utf-8"), handler) or ""
+    for forbidden in ("joints_svc", "joint_service", "backend.joints", "list_joint_revisions("):
+        assert forbidden not in source, (
+            f"bulk route handler references forbidden name: {forbidden!r}"
+        )
+
+
+def test_joint_revisions_bulk_route_handler_calls_no_governance_write_or_persistence_function():
+    """Same write/persistence-surface guard as the single-record route
+    handler test above, applied to the new bulk route handler."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    tree = _parse(api_path)
+
+    handler = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "governance_joint_revisions_bulk"
+    )
+    source = ast.get_source_segment(api_path.read_text(encoding="utf-8"), handler) or ""
+    forbidden_substrings = (
+        "svc.",
+        "store.append",
+        "FileGovernanceEventStore(",
+        "get_governance_store",
+        "resolve_governance_store",
+        "GovernanceEvent(",
+    )
+    offenders = [forbidden for forbidden in forbidden_substrings if forbidden in source]
+    assert not offenders, (
+        "joint-revisions bulk route handler references a governance write/persistence "
+        f"surface: {offenders}"
+    )
+
+
+def test_api_module_defines_no_second_outcome_status_mapping():
+    """Only one outcome->HTTP-status mapping dictionary
+    (`_JOINT_REVISION_OUTCOME_STATUS`) may exist in this file -- the
+    new bulk route must not define a second one, since it always
+    returns 200 for a well-formed request and therefore needs none."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    tree = _parse(api_path)
+    dict_assignments = [
+        node.target.id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.value, ast.Dict)
+        and isinstance(node.target, ast.Name)
+    ]
+    assert dict_assignments == ["_JOINT_REVISION_OUTCOME_STATUS"], (
+        f"expected exactly one outcome-status mapping, found: {dict_assignments}"
     )
 
 
@@ -863,6 +986,124 @@ def test_joint_revision_adapter_has_no_raw_sql():
     text = _JOINT_REVISION_ADAPTER_PATH.read_text(encoding="utf-8")
     for forbidden in ("SELECT ", "INSERT ", "UPDATE ", "DELETE ", "conn()"):
         assert forbidden not in text, f"unexpected raw-SQL-shaped text: {forbidden!r}"
+
+
+# ---------------------------------------------------------------------
+# Faz 2.8.14 Stage 2 -- joint revision bulk projection (additive).
+#
+# The bulk function shares the same file (and therefore the same
+# module-level-import, mutation-method, and no-raw-SQL guards above,
+# which already scan the whole file), but it has its own, narrower
+# guarantee worth checking explicitly: it must define no new status
+# mapping of its own and must route every item through the existing
+# canonical `project_joint_revision` call, never reimplement its
+# logic.
+# ---------------------------------------------------------------------
+
+
+def test_joint_revision_bulk_function_defines_no_second_status_mapping():
+    """Only one status-mapping dictionary (`_STATUS_MAP`) may exist in
+    this file -- the bulk function must not define a second one under
+    any name."""
+    tree = _parse(_JOINT_REVISION_ADAPTER_PATH)
+    dict_assignments = [
+        node.targets[0].id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Assign)
+        and isinstance(node.value, ast.Dict)
+        and len(node.targets) == 1
+        and isinstance(node.targets[0], ast.Name)
+    ] + [
+        node.target.id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.AnnAssign)
+        and isinstance(node.value, ast.Dict)
+        and isinstance(node.target, ast.Name)
+    ]
+    assert dict_assignments == ["_STATUS_MAP"], (
+        f"expected exactly one module-level dict assignment (_STATUS_MAP), "
+        f"found: {dict_assignments}"
+    )
+
+
+def test_joint_revision_bulk_function_calls_the_canonical_single_projection():
+    """AST-level proof that `project_joint_revisions_bulk` routes each
+    item through the existing `project_joint_revision` call rather
+    than reimplementing status-mapping logic inline."""
+    tree = _parse(_JOINT_REVISION_ADAPTER_PATH)
+    bulk_func = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "project_joint_revisions_bulk"
+    )
+    called_names = {
+        inner.func.id
+        for inner in ast.walk(bulk_func)
+        if isinstance(inner, ast.Call) and isinstance(inner.func, ast.Name)
+    }
+    assert "project_joint_revision" in called_names
+
+
+def test_joint_revision_bulk_function_calls_list_joint_revisions_not_get_joint_revision_only():
+    """The bulk function must source its ids from the new
+    `list_joint_revisions` accessor (via the shared `_joints_service()`
+    helper) -- not invent its own per-joint iteration or reach for a
+    different, unapproved source accessor."""
+    text = _JOINT_REVISION_ADAPTER_PATH.read_text(encoding="utf-8")
+    bulk_start = text.index("def project_joint_revisions_bulk")
+    bulk_body = text[bulk_start:]
+    assert "list_joint_revisions(" in bulk_body
+    assert "_joints_service()" in bulk_body
+
+
+def test_joint_revision_bulk_function_exposes_no_mutation_or_persistence_call():
+    """Same read-only guarantee as the single-record adapter function,
+    checked directly against the bulk function's own body via AST
+    (not a whole-file substring scan) -- it must not call any store/
+    governance-write function."""
+    tree = _parse(_JOINT_REVISION_ADAPTER_PATH)
+    bulk_func = next(
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef) and node.name == "project_joint_revisions_bulk"
+    )
+    forbidden_calls = {"append", "save", "delete", "update", "commit"}
+    called_names = {
+        inner.func.attr
+        for inner in ast.walk(bulk_func)
+        if isinstance(inner, ast.Call) and isinstance(inner.func, ast.Attribute)
+    }
+    offenders = called_names & forbidden_calls
+    assert not offenders, f"bulk function calls forbidden methods: {offenders}"
+
+
+def test_joint_revision_bulk_function_importable_and_callable_in_a_clean_process(tmp_path):
+    """Same clean-process regression guard as the single-record
+    function (Faz 2.8.12 Stage 4.1), extended to the new bulk
+    function -- the deferred-import mitigation must hold for it too."""
+    import os
+    import subprocess
+    import sys
+
+    env = dict(os.environ)
+    env["TORQPRO_SECRET_KEY"] = "x" * 64
+    env["TORQPRO_DB_PATH"] = str(tmp_path / "clean_process_bulk.db")
+    script = (
+        "import sys; assert 'backend.app' not in sys.modules; "
+        "from backend.governance.adapters.joint_revision import project_joint_revisions_bulk; "
+        "result = project_joint_revisions_bulk(); "
+        "print('OK', isinstance(result, list))"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=str(REPO_ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert "OK True" in result.stdout
 
 
 def test_governance_api_importable_in_a_clean_process():

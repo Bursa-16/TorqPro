@@ -61,6 +61,7 @@ from .joint_revision import (
     JointRevisionProjection,
     ProjectionOutcome,
     project_joint_revision,
+    project_joint_revisions_bulk,
 )
 from .washer_resolution import (
     AdapterSourceRecordNotFoundError,
@@ -76,5 +77,6 @@ __all__ = [
     "MappingQuality",
     "ProjectionOutcome",
     "project_joint_revision",
+    "project_joint_revisions_bulk",
     "project_washer_resolution",
 ]
