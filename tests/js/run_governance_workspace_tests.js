@@ -36,8 +36,11 @@ const fs = require('fs');
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const FRONTEND_PATH = path.join(REPO_ROOT, 'frontend', 'index.html');
 
-const CONST_NAMES = ['I18N', 'CURRENT_LANG', 'GOV_ACTIONS', 'GOV_LAST_HISTORY', 'GOV_LAST_STATUS', 'GOV_LAST_ERROR'];
-const MUTABLE_STATE_NAMES = ['GOV_LAST_HISTORY', 'GOV_LAST_STATUS', 'GOV_LAST_ERROR'];
+const CONST_NAMES = [
+  'I18N', 'CURRENT_LANG', 'GOV_ACTIONS', 'GOV_LAST_HISTORY', 'GOV_LAST_STATUS', 'GOV_LAST_ERROR',
+  'GOV_JR_OUTCOMES', 'GOV_JR_LAST_RESULT',
+];
+const MUTABLE_STATE_NAMES = ['GOV_LAST_HISTORY', 'GOV_LAST_STATUS', 'GOV_LAST_ERROR', 'GOV_JR_LAST_RESULT'];
 const FUNCTION_NAMES = [
   't', 'applyStaticTranslations', 'setLanguage',
   'govEsc', 'govGroupLabel', 'govStatusLabel', 'govActionLabel',
@@ -47,6 +50,8 @@ const FUNCTION_NAMES = [
   'govRenderStatus', 'govRenderHistory',
   'govInit', 'govClassifyError', 'govLoad', 'govSubmitCommand',
   'govReapplyLanguage',
+  'govJrOutcomeLabel', 'govRenderJointRevisionLoading', 'govRenderJointRevisionMessage',
+  'govRenderJointRevisionResult', 'govJointRevisionClassifyError', 'govLoadJointRevision',
 ];
 
 function buildExtractedSource() {
@@ -67,6 +72,7 @@ function buildExtractedSource() {
   for (const n of FUNCTION_NAMES) parts.push(extractFunctionDecl(script, n));
   parts.push('function __getGovLastHistory() { return GOV_LAST_HISTORY; }');
   parts.push('function __getGovLastStatus() { return GOV_LAST_STATUS; }');
+  parts.push('function __getGovJrLastResult() { return GOV_JR_LAST_RESULT; }');
   return { source: parts.join('\n\n'), rawScript: script, rawHtml: html };
 }
 
@@ -104,6 +110,7 @@ function primeGovElements(byId) {
     'gov-status-cards', 'gov-history-list', 'gov_action', 'gov_decision_id',
     'gov_idempotency_key', 'gov_occurred_at', 'gov_metadata', 'gov_superseded_by_id',
     'gov-superseded-by-group', 'gov-command-result',
+    'gov_jr_revision_id', 'gov-jr-result',
   ].forEach((id) => { byId[id] = makeElement(id); });
 }
 
@@ -131,6 +138,15 @@ function fakeStatus(overrides) {
     aggregate_id: 'agg-1', aggregate_type: 'calc_revision',
     status: { review: 'under_review', publication: null, resolution: null },
     latest_events: { review: fakeEvent(), publication: null, resolution: null },
+  };
+  return Object.assign({}, base, overrides);
+}
+
+function fakeJointRevisionProjection(overrides) {
+  const base = {
+    source_system: 'joint_revision', joint_revision_id: 1, source_status: 'draft',
+    lifecycle_group: 'review', canonical_status: 'draft', outcome: 'supported',
+    safe_reason: null,
   };
   return Object.assign({}, base, overrides);
 }
@@ -384,6 +400,185 @@ async function testAsyncCallsAreGenuinelyAwaited() {
   check('apiRequest promise resolved after awaiting govLoad()', resolved === true);
 }
 
+// ---------------------------------------------------------------
+// Faz 2.8.13 Stage 3 -- Joint Revision Projection lookup scenarios.
+// ---------------------------------------------------------------
+
+// 25. Lookup elements exist in the real, extracted markup/source.
+async function testJointRevisionLookupElementsExist() {
+  check('revision id input present in markup', HTML.indexOf('id="gov_jr_revision_id"') !== -1);
+  check('lookup button present in markup', HTML.indexOf('govLoadJointRevision()') !== -1);
+  check('result container present in markup', HTML.indexOf('id="gov-jr-result"') !== -1);
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjection());
+  check('govLoadJointRevision is a function in the extracted source', vm.runInContext('typeof govLoadJointRevision', ctx.context) === 'function');
+}
+
+// 26 & 27 & 4. Lookup calls the exact GET route, with the revision id
+// safely URL-encoded, and issues no write method.
+async function testLookupCallsExactGetRouteWithEncodedId() {
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjection(), 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jr_revision_id'].value = 'not an id/needs?encoding';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  check('exactly one apiRequest call', ctx.calls.length === 1);
+  const call = ctx.calls[0];
+  check('called the joint-revision route prefix', call.path.indexOf('/api/governance/joint-revision/') === 0);
+  check('revision id is URL-encoded in the path', call.path === '/api/governance/joint-revision/' + encodeURIComponent('not an id/needs?encoding'));
+  check('raw unencoded id does not appear verbatim in the path', call.path.indexOf('not an id/needs?encoding') === -1);
+  check('no HTTP method option was passed (GET by default)', !call.options || !call.options.method);
+}
+
+// 5. Supported outcome renders the projection fields.
+async function testSupportedOutcomeRendersProjectionFields() {
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjection({
+    joint_revision_id: 42, source_status: 'approved', canonical_status: 'approved', lifecycle_group: 'review',
+  }), 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jr_revision_id'].value = '42';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  const html = ctx.byId['gov-jr-result'].innerHTML;
+  checkIncludes('source status rendered', html, 'approved');
+  checkIncludes('canonical status rendered', html, 'approved');
+  const reviewLabel = vm.runInContext("t('gov.group.review')", ctx.context);
+  checkIncludes('lifecycle group label rendered', html, reviewLabel);
+  const supportedLabel = vm.runInContext("t('gov.jr.outcome.supported')", ctx.context);
+  checkIncludes('supported outcome label rendered', html, supportedLabel);
+  check('result cached for language re-apply', vm.runInContext('__getGovJrLastResult()', ctx.context).outcome === 'supported');
+}
+
+// 6. Unsupported status renders correctly (non-error, self-describing).
+async function testUnsupportedStatusRendersCorrectly() {
+  const projection = fakeJointRevisionProjection({
+    source_status: 'some_future_status', canonical_status: null,
+    outcome: 'unsupported_status', safe_reason: "Source status 'some_future_status' is not in the supported vocabulary.",
+  });
+  const ctx = newContext(EXTRACTED, HTML, async () => projection, 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jr_revision_id'].value = '1';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  const html = ctx.byId['gov-jr-result'].innerHTML;
+  const label = vm.runInContext("t('gov.jr.outcome.unsupported_status')", ctx.context);
+  checkIncludes('unsupported_status label rendered', html, label);
+  checkIncludes('safe_reason text rendered', html, 'some_future_status');
+  checkIncludes('rendered as informational, not error, state', html, 'alert-info');
+}
+
+// 7. Invalid source record renders correctly.
+async function testInvalidSourceRecordRendersCorrectly() {
+  const projection = fakeJointRevisionProjection({
+    source_status: null, canonical_status: null,
+    outcome: 'invalid_source_record', safe_reason: 'Source record is missing a valid status value.',
+  });
+  const ctx = newContext(EXTRACTED, HTML, async () => projection, 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jr_revision_id'].value = '1';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  const html = ctx.byId['gov-jr-result'].innerHTML;
+  const label = vm.runInContext("t('gov.jr.outcome.invalid_source_record')", ctx.context);
+  checkIncludes('invalid_source_record label rendered', html, label);
+  checkIncludes('safe_reason text rendered', html, 'missing a valid status value');
+}
+
+// 8. Source unavailable renders correctly, with no internal detail leaked.
+async function testSourceUnavailableRendersCorrectlyWithoutLeakingDetail() {
+  const projection = fakeJointRevisionProjection({
+    source_status: null, canonical_status: null,
+    outcome: 'source_unavailable', safe_reason: 'Joint revision source data could not be read.',
+  });
+  const ctx = newContext(EXTRACTED, HTML, async () => projection, 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jr_revision_id'].value = '1';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  const html = ctx.byId['gov-jr-result'].innerHTML;
+  const label = vm.runInContext("t('gov.jr.outcome.source_unavailable')", ctx.context);
+  checkIncludes('source_unavailable label rendered', html, label);
+  checkIncludes('safe_reason text rendered', html, 'could not be read');
+  checkNotIncludes('no traceback marker leaked', html, 'Traceback');
+  checkNotIncludes('no sqlite3 module name leaked', html, 'sqlite3');
+  checkNotIncludes('no file path leaked', html, '/home/');
+}
+
+// 9. Not-found (surfaced via apiRequest's thrown-error path, since
+// the real backend 404 body has no `detail` field for apiRequest to
+// surface) renders correctly, distinct from a generic/network error.
+async function testNotFoundRendersCorrectly() {
+  const ctx = newContext(EXTRACTED, HTML, async () => { throw new Error('İstek başarısız'); }, 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jr_revision_id'].value = '999999999';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  const html = ctx.byId['gov-jr-result'].innerHTML;
+  const label = vm.runInContext("t('gov.jr.outcome.not_found')", ctx.context);
+  checkIncludes('not_found label rendered', html, label);
+  const notFoundMsg = vm.runInContext("t('gov.jr.not_found_message')", ctx.context);
+  checkIncludes('not-found message rendered', html, notFoundMsg);
+  check('result cached with not_found outcome', vm.runInContext('__getGovJrLastResult()', ctx.context).outcome === 'not_found');
+}
+
+// 10. Empty input is rejected before any API call is made.
+async function testEmptyInputRejectedBeforeApiCall() {
+  const ctx = newContext(EXTRACTED, HTML, null, 'governance'); // apiRequest throws if called
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jr_revision_id'].value = '   ';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  const expected = vm.runInContext("t('gov.jr.validation_error')", ctx.context);
+  checkIncludes('validation message shown for empty/blank input', ctx.byId['gov-jr-result'].innerHTML, expected);
+}
+
+// 11. A genuine API/network failure is rendered safely (distinct from not_found).
+async function testApiOrNetworkErrorRenderedSafely() {
+  const ctx = newContext(EXTRACTED, HTML, async () => { throw new TypeError('Failed to fetch'); }, 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jr_revision_id'].value = '1';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  const html = ctx.byId['gov-jr-result'].innerHTML;
+  const expected = vm.runInContext("t('gov.jr.network_error')", ctx.context);
+  checkIncludes('generic network-error message shown', html, expected);
+  checkNotIncludes('raw exception message not leaked', html, 'Failed to fetch');
+  checkNotIncludes('no stack trace leaked', html, '\n    at ');
+  checkNotIncludes('not misclassified as not_found', html, vm.runInContext("t('gov.jr.not_found_message')", ctx.context));
+}
+
+// 12. Repeated lookups cleanly replace the prior result (no stacking/append).
+async function testRepeatedLookupsReplacePriorResultCleanly() {
+  let call = 0;
+  const ctx = newContext(EXTRACTED, HTML, async () => {
+    call += 1;
+    return fakeJointRevisionProjection({ joint_revision_id: call, source_status: 'draft' + call, canonical_status: 'draft' });
+  }, 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jr_revision_id'].value = '1';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  const first = ctx.byId['gov-jr-result'].innerHTML;
+  checkIncludes('first result rendered', first, 'draft1');
+  ctx.byId['gov_jr_revision_id'].value = '2';
+  await vm.runInContext('govLoadJointRevision()', ctx.context);
+  const second = ctx.byId['gov-jr-result'].innerHTML;
+  checkIncludes('second result rendered', second, 'draft2');
+  checkNotIncludes('first result no longer present (replaced, not appended)', second, 'draft1');
+}
+
+// 13. No second, invented status-mapping table exists in the extracted
+// source -- rendered values must be the backend's own strings, never
+// re-derived through a local lookup object.
+async function testNoInventedStatusMappingTableExists() {
+  checkNotIncludes('no local joint-revision status-remapping object defined', EXTRACTED, '_JR_STATUS_MAP');
+  checkNotIncludes('no local canonical-status lookup table defined', EXTRACTED, 'JOINT_REVISION_STATUS_MAP');
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjection());
+  check('GOV_JR_OUTCOMES exists only to pick a label key, not a status value', vm.runInContext('GOV_JR_OUTCOMES.length', ctx.context) === 5);
+}
+
+// Additional TR/EN parity spot-check for this stage's own new keys
+// (tests/test_i18n_key_parity.py already covers the whole file's
+// key set generically; this is a narrow, non-duplicative check that
+// this stage's specific additions round-trip correctly).
+async function testJointRevisionTranslationKeysHaveTrAndEnParity() {
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjection());
+  const enKeys = vm.runInContext('Object.keys(I18N.en).filter(k => k.indexOf("gov.jr.") === 0)', ctx.context);
+  const trKeys = vm.runInContext('Object.keys(I18N.tr).filter(k => k.indexOf("gov.jr.") === 0)', ctx.context);
+  check('at least one gov.jr.* key exists', enKeys.length > 0);
+  check('EN and TR define the exact same gov.jr.* key set', JSON.stringify(enKeys.slice().sort()) === JSON.stringify(trKeys.slice().sort()));
+}
+
 const ALL_TESTS = [
   testSidebarAndPageMarkupPresent,
   testRequiredFunctionsExist,
@@ -403,6 +598,18 @@ const ALL_TESTS = [
   testActorAndPreviousStatusNeverSent,
   testLanguageSwitchReappliesGovernanceLabels,
   testAsyncCallsAreGenuinelyAwaited,
+  testJointRevisionLookupElementsExist,
+  testLookupCallsExactGetRouteWithEncodedId,
+  testSupportedOutcomeRendersProjectionFields,
+  testUnsupportedStatusRendersCorrectly,
+  testInvalidSourceRecordRendersCorrectly,
+  testSourceUnavailableRendersCorrectlyWithoutLeakingDetail,
+  testNotFoundRendersCorrectly,
+  testEmptyInputRejectedBeforeApiCall,
+  testApiOrNetworkErrorRenderedSafely,
+  testRepeatedLookupsReplacePriorResultCleanly,
+  testNoInventedStatusMappingTableExists,
+  testJointRevisionTranslationKeysHaveTrAndEnParity,
 ];
 
 // =================================================================

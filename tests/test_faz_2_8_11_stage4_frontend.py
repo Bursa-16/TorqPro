@@ -348,8 +348,8 @@ def test_gov_key_parity_exact_count(frontend_html):
     tr_all = _keys_in_literal(_extract_lang_dict_literal(script, "tr"))
     en_gov = [k for k in en_all if k.startswith("gov.") or k == "sidebar.governance"]
     tr_gov = [k for k in tr_all if k.startswith("gov.") or k == "sidebar.governance"]
-    assert len(en_gov) == len(tr_gov) == 53, (
-        f"expected 53/53 gov.*/sidebar.governance key parity, got "
+    assert len(en_gov) == len(tr_gov) == 69, (
+        f"expected 69/69 gov.*/sidebar.governance key parity, got "
         f"{len(en_gov)} EN / {len(tr_gov)} TR"
     )
     assert len(set(en_gov)) == len(en_gov)
