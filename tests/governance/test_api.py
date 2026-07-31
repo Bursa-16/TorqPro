@@ -480,3 +480,72 @@ def test_response_is_valid_stable_json(client, auth_headers, gov_store):
     parsed1 = json.loads(r1.text)
     parsed2 = json.loads(r2.text)
     assert parsed1 == parsed2
+
+
+# ---------------------------------------------------------------------
+# Faz 2.8.12 Stage 2 -- washer_resolution aggregate-ownership guard.
+#
+# "washer_resolution" was never used as an aggregate_type by any test
+# above (verified before this module was written), so none of the
+# preceding tests are affected by the guard added in
+# backend.governance.api._run_command.
+# ---------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    "path",
+    [
+        "/api/governance/review/washer-1/submit",
+        "/api/governance/review/washer-1/approve",
+        "/api/governance/review/washer-1/reject",
+        "/api/governance/publication/washer-1/archive",
+        "/api/governance/resolution/washer-1/resolve",
+        "/api/governance/resolution/washer-1/reject",
+        "/api/governance/resolution/washer-1/waive",
+    ],
+)
+def test_washer_resolution_aggregate_type_rejected_on_generic_write_endpoints(
+    client, auth_headers, gov_store, path
+):
+    r = client.post(
+        path,
+        json=_submit_body(aggregate_type="washer_resolution"),
+        headers=auth_headers,
+    )
+    assert r.status_code == 409
+    assert "washer_resolution" in r.text
+    # No event was ever written for the rejected request.
+    assert gov_store.events_for_aggregate("washer-1") == []
+
+
+def test_washer_resolution_aggregate_type_still_readable(client, auth_headers, gov_store):
+    """The ownership guard applies only to the nine generic write
+    endpoints -- read endpoints (history/status) remain available for
+    any aggregate_type, including washer_resolution, so events written
+    by the internal synchronization path stay visible."""
+    from backend.governance.service import resolve_resolution
+
+    resolve_resolution(
+        gov_store,
+        aggregate_id="washer-read-1",
+        aggregate_type="washer_resolution",
+        decision_id="DEC-1",
+        idempotency_key="washer-sync:idem-1",
+        actor="ilhan",
+        occurred_at=VALID_TS,
+    )
+    r = client.get(
+        "/api/governance/washer-read-1/history?aggregate_type=washer_resolution",
+        headers=auth_headers,
+    )
+    assert r.status_code == 200
+    assert r.json()["total_events"] == 1
+
+
+def test_other_aggregate_types_unaffected_by_ownership_guard(client, auth_headers, gov_store):
+    r = client.post(
+        "/api/governance/resolution/issue-unaffected/resolve",
+        json=_submit_body(aggregate_type="calc_revision"),
+        headers=auth_headers,
+    )
+    assert r.status_code == 201

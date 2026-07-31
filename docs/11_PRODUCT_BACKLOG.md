@@ -282,6 +282,92 @@ narrow, test-file-only, no-production-code-touched change, with a
 regression-guard assertion-count test and a deliberate-failure proof
 performed before and after the fix.
 
+## 12E. Faz 2.8.12 Stage 2 – Washer Governance Synchronization and
+Reconciliation (TR/EN)
+
+**Status: Stage 2, Stage 3, Stage 4 (assessment), Stage 4.1 (spike),
+and Stage 4.2 (joint revision read-only adapter) complete
+(2026-07-30). Stage 5 not started.**
+
+Controlled adoption of the Faz 2.8.11 governance architecture for the
+one existing mechanism whose decision workflow maps cleanly onto it:
+washer resolution. Scope was corrected during Stage 1 assessment to
+exclude every module without a real, existing decision/approval
+workflow (Material Intelligence, Fastener Assembly Intelligence,
+Recommendation logic, report modules, the Quality Harness, and future
+VDI 2230 extensions) — see
+`docs/adr/ADR-0015-washer-resolution-governance-integration.md` for
+the full rationale.
+
+Delivered this stage:
+
+- `backend/governance/ownership.py` — closed aggregate-type registry
+  + HTTP-only guard (409) preventing the generic governance write
+  endpoints from becoming a second write path for washer-owned
+  aggregates.
+- `backend/governance/adapters/washer_resolution_sync.py` —
+  `sync_washer_decision()`: best-effort, never-raising, deterministic
+  synchronization, reusing the Stage 5 adapter's canonical status
+  mapping (no second mapping table).
+- `backend/governance/adapters/washer_resolution_reconciliation.py` —
+  `reconcile()`: mandatory, idempotent, dry-run-capable batch
+  reconciliation delegating every record to `sync_washer_decision()`.
+- `tools/run_washer_governance_reconciliation.py` — explicitly
+  invoked CLI, dry-run by default.
+- `tests/governance/test_compatibility.py` updated to reflect
+  ADR-0015's 3-file mechanism-import allowlist (was 1), with new
+  AST-based tests proving the write path never bypasses
+  `backend.governance.service` or duplicates its logic.
+
+**Explicitly not done this stage** (Stage 3): wiring
+`sync_washer_decision` into
+`backend.library.washer_resolution_service.decide_resolution` or the
+`POST /api/library/washers/resolutions/{resolution_id}/decide`
+endpoint. `backend/app.py` and every washer production module are
+unchanged.
+
+**Stage 3 delivered** (same day): wired `sync_washer_decision_and_log`
+into the real washer decide endpoint, immediately after the
+authoritative washer decision succeeds. Public API contract
+unchanged and verified (same URL/schema/status/error mapping — no
+governance field added to the response). Safe structured logging via
+the project's existing logger. `backend/app.py`'s governance-import
+allowlist widened from 1 to 3 approved lines (documented, tested).
+Washer production modules and the immutable ledger remain unchanged
+(SHA256-verified). See
+`docs/phases/PHASE_2.8.12_STAGE3_CONTROLLED_WRITE_INTEGRATION.md`.
+
+**Stage 4 delivered** (assessment only, same day): evaluated
+Production Validation, Legacy Calculation Revisions, and Joint
+Revision Lifecycle against the governance architecture. Production
+Validation and Legacy Calculation Revisions: **NO-GO** this phase
+(overlapping review/publication status in one mutable column;
+embedded raw SQL with no service-module boundary, respectively).
+Joint Revision Lifecycle: **conditional GO**, `joint_revisions.status`
+only, pending an isolated circular-import spike.
+
+**Stage 4.1 delivered** (spike, same day): isolated PoC (disposable
+clone, deleted after use) empirically proved a real circular-import
+risk between any governance file and `backend.joints.service`, and
+proved the existing `backend/api/dependencies.py` deferred-import
+pattern mitigates it in every tested order.
+
+**Stage 4.2 delivered** (same day): read-only
+`backend/governance/adapters/joint_revision.py`, projecting
+`joint_revisions.status` onto governance `ReviewStatus` using the
+Stage 4.1-proven deferred-import mitigation. `joints.status`,
+Production Validation, and Legacy Calculation Revisions remain
+untouched. See
+`docs/phases/PHASE_2.8.12_STAGE4_2_JOINT_REVISION_READ_ONLY_ADAPTER.md`.
+
+**No existing table, JSON ledger, API endpoint, enum, or transition
+graph was modified.** The washer resolution ledger and decision store
+are unchanged (SHA256-verified before/after). `backend.governance`'s
+mechanism-import boundary is explicitly widened from 1 to 4 approved
+files across Stages 5/2/4.2 (ADR-0015's established pattern extended,
+not silently loosened) — the widening is documented, tested, and the
+allowlist remains closed and exact.
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.

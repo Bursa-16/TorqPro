@@ -38,6 +38,37 @@ Compatibility strategy (ADR-0014, "Compatibility strategy" and Stage
     TR/EN governance workspace) is where a route would first be
     added; it does not exist yet.
 
+Current compatibility boundary (accurate as of Faz 2.8.12 Stage 4.2;
+ADR-0015 "Compatibility boundary update" is the authoritative source
+-- the paragraph above is the historical Stage 2/3 snapshot, kept
+verbatim; this paragraph reflects what actually holds today):
+
+  - Exactly **four** files are approved to import an existing
+    mechanism (never more, mechanically enforced by
+    ``tests/governance/test_compatibility.py``'s closed allowlist):
+    ``adapters/washer_resolution.py`` (Faz 2.8.11 Stage 5, read-only),
+    ``adapters/washer_resolution_sync.py`` and
+    ``adapters/washer_resolution_reconciliation.py`` (Faz 2.8.12
+    Stage 2, write-path, exclusively via
+    ``backend.governance.service``'s own existing command functions
+    -- never a second, self-invented persistence path), and
+    ``adapters/joint_revision.py`` (Faz 2.8.12 Stage 4.2, read-only,
+    with ``backend.joints.service`` imported only inside a function
+    body -- see that module's own docstring for the proven
+    circular-import rationale). Every other file in this package has
+    zero such imports.
+  - ``backend.app`` now imports this package in **two** places (Faz
+    2.8.12 Stage 3 widened the original single Stage 4 exception):
+    the Stage 4/2.8.11 router mount, and, inside
+    ``washer_resolution_decide_endpoint`` only, two local imports
+    triggering best-effort governance synchronization after the
+    washer decision already succeeded. No other existing mechanism
+    imports this package.
+  - Production Validation, legacy calculation revisions, and
+    ``joints.status``/``PublicationStatus`` remain unintegrated (Faz
+    2.8.12 Stage 4 assessment: NO-GO/out-of-scope -- see
+    ``docs/phases/PHASE_2.8.12_COMPLETION_REPORT.md``).
+
 Submodules:
 
   - :mod:`backend.governance.enums` -- the three canonical status

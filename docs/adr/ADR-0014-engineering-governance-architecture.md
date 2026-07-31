@@ -582,3 +582,19 @@ Each stage required its own scoping approval before work began, per
 the project's standing "plan before execution" rule; this ADR
 authorized the *model*, and each stage's own scoping message
 authorized that stage's implementation.
+
+**Phase 2.8.12 follow-up (recorded 2026-07-30):** the write-path and
+remaining-adapter follow-up scope this ADR left open above was taken
+up in Phase 2.8.12. Washer resolution received a write-path
+integration (ADR-0015). Production Validation and the legacy
+calculation-revision workflow were assessed and returned **NO-GO**
+for this phase (Production Validation's own `status` column mixes
+review- and publication-lifecycle concepts in one mutable field with
+no append-only decision ledger; the legacy workflow has no separate
+service module to adapt against, only SQL embedded directly in
+`backend/app.py` route handlers). Joints received a **narrow,
+read-only** adapter for `joint_revisions.status` only (`ReviewStatus`)
+— `joints.status`/`PublicationStatus` was left unintegrated, since its
+`supersede` transition has no live code path in the source mechanism
+today. See `docs/phases/PHASE_2.8.12_COMPLETION_REPORT.md` for the
+full record.
