@@ -382,10 +382,12 @@ def test_read_only_adapter_exposes_no_mutation_or_persistence_methods():
     assert not offenders, "read-only adapter must not define: " + ", ".join(offenders)
 
 
-def test_governance_api_defines_only_the_nine_approved_write_routes_and_two_read_routes():
-    """Stage 4 scope guard: exactly the approved endpoint set exists
-    under backend/governance/api.py -- no extra route was added, and
-    none of the nine write routes or two read routes is missing."""
+def test_governance_api_defines_only_the_nine_approved_write_routes_and_three_read_routes():
+    """Stage 4 scope guard, extended by Faz 2.8.13 Stage 2: exactly
+    the approved endpoint set exists under backend/governance/api.py
+    -- no extra route was added, and none of the nine write routes or
+    three read routes (two generic + the new joint-revision
+    projection route) is missing."""
     from backend.governance.api import router
 
     paths = sorted({route.path for route in router.routes})
@@ -393,6 +395,7 @@ def test_governance_api_defines_only_the_nine_approved_write_routes_and_two_read
         {
             "/api/governance/{aggregate_id}/history",
             "/api/governance/{aggregate_id}/status",
+            "/api/governance/joint-revision/{revision_id}",
             "/api/governance/review/{aggregate_id}/submit",
             "/api/governance/review/{aggregate_id}/approve",
             "/api/governance/review/{aggregate_id}/reject",
@@ -405,6 +408,87 @@ def test_governance_api_defines_only_the_nine_approved_write_routes_and_two_read
         }
     )
     assert paths == expected
+
+
+def test_joint_revision_route_is_get_only():
+    """Faz 2.8.13 Stage 2 scope guard: the new joint-revision
+    projection route accepts exactly ``GET`` -- no ``POST``,
+    ``PUT``, ``PATCH``, or ``DELETE`` method was introduced for it,
+    matching the approved Stage 1 contract's "no write route" rule."""
+    from backend.governance.api import router
+
+    joint_revision_routes = [
+        route
+        for route in router.routes
+        if route.path == "/api/governance/joint-revision/{revision_id}"
+    ]
+    assert len(joint_revision_routes) == 1
+    assert joint_revision_routes[0].methods == {"GET"}
+
+
+def test_no_write_route_exists_for_joint_revision():
+    """Inverse guard, restated at the whole-router level: no route
+    path under ``/api/governance/`` contains ``joint-revision`` and
+    accepts a mutating HTTP method."""
+    from backend.governance.api import router
+
+    mutating_methods = {"POST", "PUT", "PATCH", "DELETE"}
+    offenders = [
+        (route.path, route.methods)
+        for route in router.routes
+        if "joint-revision" in route.path and (route.methods & mutating_methods)
+    ]
+    assert not offenders, f"unexpected mutating method(s) on a joint-revision route: {offenders}"
+
+
+def test_governance_api_may_import_the_approved_joint_revision_adapter():
+    """Positive check, mirroring the existing approved-import tests
+    for the write-path adapters: ``backend/governance/api.py`` is
+    expected to import ``backend.governance.adapters.joint_revision``
+    at module level -- this is an intra-package import (never a
+    direct import of ``backend.joints`` itself), and is exactly the
+    one new coupling point Faz 2.8.13 Stage 2 approved."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    text = api_path.read_text(encoding="utf-8")
+    assert any(
+        "backend.governance.adapters.joint_revision" in line for line in _import_lines(text)
+    ), "expected backend/governance/api.py to import the approved joint_revision adapter"
+
+
+def test_joint_revision_route_handler_calls_no_governance_write_or_persistence_function():
+    """AST-based guard: the new route handler's own function body
+    must not reference any governance write/persistence surface --
+    no ``svc.<transition function>`` call, no ``store.append``, no
+    ``FileGovernanceEventStore(`` construction, no
+    ``get_governance_store``/``resolve_governance_store`` dependency.
+    This is a narrower, route-specific restatement of the adapter's
+    own "never writes anywhere" guarantee, verifying the handler
+    wrapped around it doesn't add a write path the adapter itself
+    doesn't have."""
+    api_path = REPO_ROOT / "backend" / "governance" / "api.py"
+    tree = _parse(api_path)
+
+    handler = None
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef) and node.name == "governance_joint_revision":
+            handler = node
+            break
+    assert handler is not None, "governance_joint_revision handler not found"
+
+    source = ast.get_source_segment(api_path.read_text(encoding="utf-8"), handler) or ""
+    forbidden_substrings = (
+        "svc.",
+        "store.append",
+        "FileGovernanceEventStore(",
+        "get_governance_store",
+        "resolve_governance_store",
+        "GovernanceEvent(",
+    )
+    offenders = [forbidden for forbidden in forbidden_substrings if forbidden in source]
+    assert not offenders, (
+        "joint-revision route handler references a governance write/persistence "
+        f"surface: {offenders}"
+    )
 
 
 # ---------------------------------------------------------------------

@@ -21,7 +21,21 @@ this module never reads, writes, or imports anything from
 It only reaches into ``backend.api.dependencies`` (for the shared
 ``user`` auth dependency, mirroring
 ``backend/api/routes/production_validation.py``'s existing pattern)
-and ``backend.governance.*``.
+and ``backend.governance.*`` -- including, since Faz 2.8.13 Stage 2,
+``backend.governance.adapters.joint_revision`` (an intra-package
+import; this module still never imports ``backend.joints`` itself,
+only the already-approved adapter that safely does so via its own
+deferred-import pattern).
+
+Faz 2.8.13 Stage 2: one additional read-only endpoint,
+``GET /joint-revision/{revision_id}``, exposes the existing,
+already-approved ``project_joint_revision`` compatibility adapter
+(Faz 2.8.12 Stage 4.2). This handler performs no mapping, mutation,
+or persistence of its own -- see ``governance_joint_revision`` below.
+It does not use ``get_governance_store``/the event store at all: the
+projection it returns is computed on demand from
+``backend.joints.service`` (via the adapter's own deferred import),
+never read from or written to any governance-owned storage.
 
 Store configuration (task item 6): the event store is resolved
 *lazily*, per request, via :func:`get_governance_store`, from the
@@ -55,6 +69,7 @@ from pydantic import BaseModel, ConfigDict, ValidationError
 from backend.api.dependencies import user
 from backend.governance import ownership
 from backend.governance import service as svc
+from backend.governance.adapters.joint_revision import ProjectionOutcome, project_joint_revision
 from backend.governance.enums import LifecycleGroup
 from backend.governance.events import GovernanceEvent
 from backend.governance.exceptions import (
@@ -322,6 +337,57 @@ def governance_status(
             for group, event in latest.items()
         },
     }
+
+
+# ---------------------------------------------------------------------
+# Compatibility projection endpoints -- read-only, mechanism-specific
+# (Faz 2.8.13 Stage 2)
+# ---------------------------------------------------------------------
+
+#: HTTP status for every possible ``project_joint_revision`` outcome.
+#: Only ``not_found`` differs from ``200``: ``unsupported_status``,
+#: ``invalid_source_record``, and ``source_unavailable`` are all
+#: legitimate, already-classified adapter results, not request-
+#: handling failures -- each is returned as ``200`` with the outcome
+#: visible in the response body, exactly like ``supported``, so a
+#: caller can distinguish "record does not exist" (404) from "record
+#: exists but this adapter could not project it" (200, self-
+#: describing). This is the single source of this mapping -- never
+#: duplicated elsewhere in this module or the frontend.
+_JOINT_REVISION_OUTCOME_STATUS: Dict[str, int] = {
+    ProjectionOutcome.SUPPORTED.value: 200,
+    ProjectionOutcome.UNSUPPORTED_STATUS.value: 200,
+    ProjectionOutcome.INVALID_SOURCE_RECORD.value: 200,
+    ProjectionOutcome.SOURCE_UNAVAILABLE.value: 200,
+    ProjectionOutcome.NOT_FOUND.value: 404,
+}
+
+
+@router.get("/joint-revision/{revision_id}")
+def governance_joint_revision(revision_id: int, u=Depends(user)):
+    """Faz 2.8.13 Stage 2: read-only exposure of the existing, Faz
+    2.8.12 Stage 4.2 ``project_joint_revision`` adapter -- the
+    Phase 2.8.13 Stage 1 contract's one approved new route
+    (``docs/phases/PHASE_2.8.13_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md``,
+    Section 5).
+
+    This handler adds no mapping, mutation, or persistence logic of
+    its own: it calls the adapter exactly once and returns its
+    existing, already-serializable ``JointRevisionProjection`` as-is,
+    selecting the HTTP status from
+    :data:`_JOINT_REVISION_OUTCOME_STATUS`. ``project_joint_revision``
+    is documented and tested to never raise, so this handler
+    deliberately has no ``try/except`` around the call -- adding one
+    would risk reintroducing exactly the exception-message/traceback
+    leakage the adapter itself was built to prevent, for no benefit.
+
+    No governance event store dependency is injected here (unlike
+    every route below): this endpoint never reads from or writes to
+    the governance event store, so it has none to depend on.
+    """
+    projection = project_joint_revision(revision_id)
+    status_code = _JOINT_REVISION_OUTCOME_STATUS[projection.outcome]
+    return JSONResponse(status_code=status_code, content=projection.model_dump(mode="json"))
 
 
 # ---------------------------------------------------------------------

@@ -1221,6 +1221,16 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   </div>
 
   <div class="card">
+    <div class="card-title" data-i18n="gov.jr.section_title">Joint Revision Projection (read-only)</div>
+    <div class="card-sub" data-i18n="gov.jr.section_sub">Read-only compatibility view of an existing joint revision's review status (Faz 2.8.13 Stage 3). Never edits, approves, rejects or resolves anything.</div>
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="gov.jr.revision_id_label">Joint Revision ID</label><input class="form-input" id="gov_jr_revision_id"></div>
+      <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="govLoadJointRevision()" data-i18n="gov.jr.lookup_button">Look Up</button></div>
+    </div>
+    <div id="gov-jr-result"></div>
+  </div>
+
+  <div class="card">
     <div class="card-title" data-i18n="gov.command_title">Record a Decision</div>
     <div class="form-row3">
       <div class="form-group"><label class="form-label" data-i18n="gov.action_label">Action</label><select class="form-input" id="gov_action" onchange="govOnActionChange()"></select></div>
@@ -3252,6 +3262,22 @@ const I18N = {
     'gov.col.new_status': 'New Status',
     'gov.col.actor': 'Actor',
     'gov.col.occurred_at': 'Occurred At (UTC)',
+    'gov.jr.section_title': 'Joint Revision Projection (read-only)',
+    'gov.jr.section_sub': 'Read-only compatibility view of an existing joint revision\'s review status (Faz 2.8.13 Stage 3). Never edits, approves, rejects or resolves anything.',
+    'gov.jr.revision_id_label': 'Joint Revision ID',
+    'gov.jr.lookup_button': 'Look Up',
+    'gov.jr.validation_error': 'Enter a joint revision ID.',
+    'gov.jr.network_error': 'Lookup failed unexpectedly; please try again.',
+    'gov.jr.not_found_message': 'No joint revision exists with this id.',
+    'gov.jr.outcome_label': 'Result',
+    'gov.jr.source_status_label': 'Source Status',
+    'gov.jr.canonical_status_label': 'Canonical Status',
+    'gov.jr.lifecycle_group_label': 'Lifecycle Group',
+    'gov.jr.outcome.supported': 'Supported',
+    'gov.jr.outcome.unsupported_status': 'Unsupported status (record exists, not yet in the governance vocabulary)',
+    'gov.jr.outcome.invalid_source_record': 'Invalid source record (record exists, malformed)',
+    'gov.jr.outcome.source_unavailable': 'Source data unavailable',
+    'gov.jr.outcome.not_found': 'Not found',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -4758,6 +4784,22 @@ const I18N = {
     'gov.col.new_status': 'Yeni Durum',
     'gov.col.actor': 'Aktör',
     'gov.col.occurred_at': 'Gerçekleşme Zamanı (UTC)',
+    'gov.jr.section_title': 'Joint Revision Projeksiyonu (salt-okunur)',
+    'gov.jr.section_sub': 'Mevcut bir joint revision kaydının inceleme durumunun salt-okunur uyumluluk görünümü (Faz 2.8.13 Stage 3). Hiçbir şeyi düzenlemez, onaylamaz, reddetmez veya çözümlemez.',
+    'gov.jr.revision_id_label': 'Joint Revision Kimliği',
+    'gov.jr.lookup_button': 'Sorgula',
+    'gov.jr.validation_error': 'Bir joint revision kimliği girin.',
+    'gov.jr.network_error': 'Sorgu beklenmedik şekilde başarısız oldu; lütfen tekrar deneyin.',
+    'gov.jr.not_found_message': 'Bu id ile bir joint revision yok.',
+    'gov.jr.outcome_label': 'Sonuç',
+    'gov.jr.source_status_label': 'Kaynak Durumu',
+    'gov.jr.canonical_status_label': 'Kanonik Durum',
+    'gov.jr.lifecycle_group_label': 'Yaşam Döngüsü Grubu',
+    'gov.jr.outcome.supported': 'Destekleniyor',
+    'gov.jr.outcome.unsupported_status': 'Desteklenmeyen durum (kayıt var, henüz governance sözlüğünde değil)',
+    'gov.jr.outcome.invalid_source_record': 'Geçersiz kaynak kaydı (kayıt var, hatalı biçimlendirilmiş)',
+    'gov.jr.outcome.source_unavailable': 'Kaynak verisi kullanılamıyor',
+    'gov.jr.outcome.not_found': 'Bulunamadı',
   },
 };
 
@@ -7910,6 +7952,129 @@ function govReapplyLanguage() {
   govPopulateActionSelect();
   if (GOV_LAST_STATUS) govRenderStatus(GOV_LAST_STATUS);
   if (GOV_LAST_HISTORY) govRenderHistory(GOV_LAST_HISTORY);
+  if (GOV_JR_LAST_RESULT) govRenderJointRevisionResult(GOV_JR_LAST_RESULT);
+}
+
+// ========== JOINT REVISION PROJECTION (Faz 2.8.13 Stage 3) ==========
+// Read-only, additive extension of the governance workspace above:
+// looks up the existing, Faz 2.8.12 Stage 4.2 joint-revision
+// compatibility projection through the Faz 2.8.13 Stage 2 read-only
+// route (GET /api/governance/joint-revision/{revision_id}), reusing
+// apiRequest() and this file's existing gov* rendering conventions.
+// No second status-mapping table is defined here: every status value
+// shown is the backend's own string, rendered as-is (only the
+// *labels* around it are translated). No write action of any kind is
+// ever issued from this section.
+
+let GOV_JR_LAST_RESULT = null;
+
+//: Every outcome backend.governance.adapters.joint_revision.
+//: ProjectionOutcome can produce, restated here only to pick an i18n
+//: *label* key -- the outcome value itself always comes straight from
+//: the API response, never re-derived.
+const GOV_JR_OUTCOMES = [
+  'supported', 'unsupported_status', 'invalid_source_record', 'source_unavailable', 'not_found',
+];
+
+function govJrOutcomeLabel(outcome) {
+  return GOV_JR_OUTCOMES.indexOf(outcome) !== -1 ? t('gov.jr.outcome.' + outcome) : govEsc(outcome);
+}
+
+function govRenderJointRevisionLoading() {
+  const el = document.getElementById('gov-jr-result');
+  if (el) el.innerHTML = `<div class="fc-muted">${govEsc(t('gov.loading'))}</div>`;
+}
+
+function govRenderJointRevisionMessage(kind, text) {
+  const el = document.getElementById('gov-jr-result');
+  if (!el) return;
+  const cls = kind === 'network' ? 'alert alert-danger' : 'fc-muted';
+  el.innerHTML = `<div class="${cls}">${govEsc(text)}</div>`;
+}
+
+function govRenderJointRevisionResult(data) {
+  const el = document.getElementById('gov-jr-result');
+  if (!el) return;
+  if (!data || typeof data !== 'object' || GOV_JR_OUTCOMES.indexOf(data.outcome) === -1) {
+    govRenderError('malformed');
+    return;
+  }
+  GOV_JR_LAST_RESULT = data;
+  const outcomeLine = `<div class="fc-field-label">${govEsc(t('gov.jr.outcome_label'))}</div>` +
+    `<div class="fc-field-value" style="font-size:16px;font-weight:600">${govEsc(govJrOutcomeLabel(data.outcome))}</div>`;
+  if (data.outcome === 'supported') {
+    el.innerHTML = `<div class="ai-form-grid">` +
+      `<div class="form-group">${outcomeLine}</div>` +
+      `<div class="form-group"><div class="fc-field-label">${govEsc(t('gov.jr.source_status_label'))}</div>` +
+      `<div class="fc-field-value">${govStatusLabel(data.source_status)}</div></div>` +
+      `<div class="form-group"><div class="fc-field-label">${govEsc(t('gov.jr.canonical_status_label'))}</div>` +
+      `<div class="fc-field-value">${govStatusLabel(data.canonical_status)}</div></div>` +
+      `<div class="form-group"><div class="fc-field-label">${govEsc(t('gov.jr.lifecycle_group_label'))}</div>` +
+      `<div class="fc-field-value">${data.lifecycle_group ? govEsc(govGroupLabel(data.lifecycle_group)) : govStatusLabel(null)}</div></div>` +
+      `</div>`;
+    return;
+  }
+  // unsupported_status / invalid_source_record / source_unavailable /
+  // not_found: all legitimate, non-error, already-classified adapter
+  // outcomes (Faz 2.8.13 Stage 1 contract, Section 7) -- rendered as
+  // an informational state, never styled as a request failure. The
+  // backend's own safe_reason text is shown as-is (escaped): the
+  // adapter itself never puts a stack trace, file path, SQL, or
+  // Python class name into safe_reason, so nothing further needs to
+  // be stripped here.
+  el.innerHTML = `<div class="alert alert-info">` + outcomeLine +
+    (data.safe_reason ? `<div class="fc-muted" style="margin-top:6px">${govEsc(data.safe_reason)}</div>` : '') +
+    `</div>`;
+}
+
+function govJointRevisionClassifyError(e) {
+  // A narrower classifier than govClassifyError() above, deliberately
+  // not shared with it: that function's vocabulary is tuned to the
+  // generic aggregate routes' own backend messages (e.g. the
+  // "bulunamadı" substring their 404 `detail` field always contains).
+  // This route's 404 body is the adapter's full JointRevisionProjection
+  // (outcome="not_found") with no `detail` field at all, so
+  // apiRequest() falls back to its own hard-coded generic message
+  // ('İstek başarısız') in exactly and only that case -- a genuine
+  // network failure never reaches that line (fetch() itself throws
+  // first, with a different, browser-supplied message), so this exact
+  // match reliably identifies "record not found" for this one
+  // endpoint without requiring any change to the shared apiRequest()
+  // helper or the backend response shape.
+  const msg = (e && e.message) || '';
+  if (/oturum/i.test(msg)) return 'auth';
+  if (msg === 'İstek başarısız') return 'not_found';
+  return 'network';
+}
+
+async function govLoadJointRevision() {
+  const idEl = document.getElementById('gov_jr_revision_id');
+  const revisionId = idEl ? idEl.value.trim() : '';
+  if (!revisionId) {
+    govRenderJointRevisionMessage('validation', t('gov.jr.validation_error'));
+    return;
+  }
+  govRenderJointRevisionLoading();
+  try {
+    const data = await apiRequest('/api/governance/joint-revision/' + encodeURIComponent(revisionId));
+    govRenderJointRevisionResult(data);
+  } catch (e) {
+    const kind = govJointRevisionClassifyError(e);
+    if (kind === 'not_found') {
+      govRenderJointRevisionResult({
+        source_system: 'joint_revision',
+        joint_revision_id: revisionId,
+        source_status: null,
+        lifecycle_group: null,
+        canonical_status: null,
+        outcome: 'not_found',
+        safe_reason: t('gov.jr.not_found_message'),
+      });
+      return;
+    }
+    if (kind === 'auth') { govRenderJointRevisionMessage('auth', t('gov.auth_error')); return; }
+    govRenderJointRevisionMessage('network', t('gov.jr.network_error'));
+  }
 }
 
 // ========== BAŞLAT ==========

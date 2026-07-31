@@ -76,3 +76,39 @@ Deferred: Stage 5 (final quality/documentation/release pass across
 the whole phase). Production Validation and Legacy Calculation
 Revisions governance integration remain out of scope unless a future,
 separately-scoped phase revisits their source-side architecture.
+
+## Faz 2.8.13 — Governance Workspace Completion
+
+**Complete (Stages 1–5)**, delivered 2026-07-31 — see
+`docs/phases/PHASE_2.8.13_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md`,
+`docs/11_PRODUCT_BACKLOG.md` §12F, and
+`docs/phases/PHASE_2.8.13_COMPLETION_REPORT.md` for full detail.
+
+Closed the one visibility gap identified in the approved pre-phase
+repository analysis: the Faz 2.8.12 Stage 4.2 `joint_revision`
+read-only governance projection adapter existed, was tested, and was
+import-safety-verified, but had zero production consumers. Added
+exactly one new read-only route,
+`GET /api/governance/joint-revision/{revision_id}`, exposing the
+existing adapter unmodified, and a minimal, additive extension of the
+existing generic governance workspace UI — no new page, no write
+action, no second status-mapping table, no new governance capability.
+
+Stage 1 delivered the bilingual scope-lock and integration contract.
+Stage 2 delivered the API route and corrected the governance adapters
+package's stale docstring/exports (accurate only through Faz 2.8.11
+Stage 5, not updated through Faz 2.8.12 Stage 2/3). Stage 3 delivered
+the frontend lookup card with full TR/EN parity, fixing one
+apostrophe-quoting bug and one stale hardcoded key-count constant in
+a pre-existing structural test file along the way. Stage 4 performed
+a full architectural-boundary, integrity, import-order, and
+clean-clone verification pass with no regression found.
+
+`backend/governance/adapters/joint_revision.py` and `backend/joints/`
+remain byte-identical to their pre-phase state. No new database
+table, migration, lifecycle transition, governance event, or
+ownership-registry entry was introduced. Deferred, consistent with
+the approved Stage 1 scope: a governance projection registry, a
+cross-mechanism consistency validator, joint-revision write
+synchronization, and Production Validation/legacy calculation-revision
+governance integration (all previously assessed, not revisited).
