@@ -38,9 +38,12 @@ const FRONTEND_PATH = path.join(REPO_ROOT, 'frontend', 'index.html');
 
 const CONST_NAMES = [
   'I18N', 'CURRENT_LANG', 'GOV_ACTIONS', 'GOV_LAST_HISTORY', 'GOV_LAST_STATUS', 'GOV_LAST_ERROR',
-  'GOV_JR_OUTCOMES', 'GOV_JR_LAST_RESULT',
+  'GOV_JR_OUTCOMES', 'GOV_JR_LAST_RESULT', 'GOV_JRLIST_LAST_RESULT', 'GOV_JRLIST_REQUEST_ID',
 ];
-const MUTABLE_STATE_NAMES = ['GOV_LAST_HISTORY', 'GOV_LAST_STATUS', 'GOV_LAST_ERROR', 'GOV_JR_LAST_RESULT'];
+const MUTABLE_STATE_NAMES = [
+  'GOV_LAST_HISTORY', 'GOV_LAST_STATUS', 'GOV_LAST_ERROR', 'GOV_JR_LAST_RESULT',
+  'GOV_JRLIST_LAST_RESULT', 'GOV_JRLIST_REQUEST_ID',
+];
 const FUNCTION_NAMES = [
   't', 'applyStaticTranslations', 'setLanguage',
   'govEsc', 'govGroupLabel', 'govStatusLabel', 'govActionLabel',
@@ -52,6 +55,10 @@ const FUNCTION_NAMES = [
   'govReapplyLanguage',
   'govJrOutcomeLabel', 'govRenderJointRevisionLoading', 'govRenderJointRevisionMessage',
   'govRenderJointRevisionResult', 'govJointRevisionClassifyError', 'govLoadJointRevision',
+  'govRenderJointRevisionListLoading', 'govRenderJointRevisionListMessage',
+  'govRenderJointRevisionListError', 'govRenderJointRevisionListEmpty',
+  'govIsWellFormedJointRevisionListItem', 'govRenderJointRevisionList',
+  'govJointRevisionListBuildUrl', 'govLoadJointRevisions',
 ];
 
 function buildExtractedSource() {
@@ -73,6 +80,7 @@ function buildExtractedSource() {
   parts.push('function __getGovLastHistory() { return GOV_LAST_HISTORY; }');
   parts.push('function __getGovLastStatus() { return GOV_LAST_STATUS; }');
   parts.push('function __getGovJrLastResult() { return GOV_JR_LAST_RESULT; }');
+  parts.push('function __getGovJrListLastResult() { return GOV_JRLIST_LAST_RESULT; }');
   return { source: parts.join('\n\n'), rawScript: script, rawHtml: html };
 }
 
@@ -98,6 +106,7 @@ function newContext(extractedSource, rawHtml, apiRequestImpl, activePageId) {
     sessionStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
     console: console,
     apiRequest: wrappedApiRequest,
+    URLSearchParams: URLSearchParams,
   };
   const context = vm.createContext(sandbox);
   vm.runInContext(extractedSource, context, { filename: 'gov_extracted.js' });
@@ -111,6 +120,7 @@ function primeGovElements(byId) {
     'gov_idempotency_key', 'gov_occurred_at', 'gov_metadata', 'gov_superseded_by_id',
     'gov-superseded-by-group', 'gov-command-result',
     'gov_jr_revision_id', 'gov-jr-result',
+    'gov_jrlist_joint_id', 'gov-jrlist-result',
   ].forEach((id) => { byId[id] = makeElement(id); });
 }
 
@@ -149,6 +159,10 @@ function fakeJointRevisionProjection(overrides) {
     safe_reason: null,
   };
   return Object.assign({}, base, overrides);
+}
+
+function fakeJointRevisionProjections(overridesList) {
+  return overridesList.map((o) => fakeJointRevisionProjection(o));
 }
 
 // =================================================================
@@ -579,6 +593,229 @@ async function testJointRevisionTranslationKeysHaveTrAndEnParity() {
   check('EN and TR define the exact same gov.jr.* key set', JSON.stringify(enKeys.slice().sort()) === JSON.stringify(trKeys.slice().sort()));
 }
 
+// =================================================================
+// Faz 2.8.14 Stage 4 -- Joint Revision List (bulk, read-only)
+// =================================================================
+
+// 1-3, 5. New card / input / button / result container present in markup.
+async function testJointRevisionListElementsExist() {
+  check('list card title uses i18n key', HTML.indexOf('data-i18n="gov.jrlist.section_title"') !== -1);
+  check('joint id filter input present in markup', HTML.indexOf('id="gov_jrlist_joint_id"') !== -1);
+  check('list button present in markup', HTML.indexOf('govLoadJointRevisions()') !== -1);
+  check('result container present in markup', HTML.indexOf('id="gov-jrlist-result"') !== -1);
+  const ctx = newContext(EXTRACTED, HTML, async () => []);
+  check('govLoadJointRevisions is a function in the extracted source', vm.runInContext('typeof govLoadJointRevisions', ctx.context) === 'function');
+}
+
+// 4. Input is optional -- an empty filter still succeeds and lists all.
+async function testJointIdFilterInputIsOptional() {
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjections([{ joint_revision_id: 1 }]), 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jrlist_joint_id'].value = '';
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  check('exactly one apiRequest call with empty filter', ctx.calls.length === 1);
+  checkIncludes('list rendered despite empty filter', ctx.byId['gov-jrlist-result'].innerHTML, '<table');
+}
+
+// 6 & 7. Endpoint path is exact, and an empty input adds no query parameter.
+async function testEmptyFilterCallsExactRouteWithNoQueryParam() {
+  const ctx = newContext(EXTRACTED, HTML, async () => [], 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jrlist_joint_id'].value = '';
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  check('exactly one apiRequest call', ctx.calls.length === 1);
+  check('route path is exact with no query string', ctx.calls[0].path === '/api/governance/joint-revisions');
+}
+
+// 8 & 9. A filled, valid input adds a safely-built joint_id query parameter.
+async function testFilledFilterAddsJointIdQueryParamSafely() {
+  const ctx = newContext(EXTRACTED, HTML, async () => [], 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jrlist_joint_id'].value = '42';
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  check('exactly one apiRequest call', ctx.calls.length === 1);
+  check('route path includes joint_id=42', ctx.calls[0].path === '/api/governance/joint-revisions?joint_id=42');
+}
+
+// 9 (query-building safety). Negative integers are passed through
+// unmodified (no invented positivity rule); URLSearchParams -- not
+// string concatenation -- performs the encoding.
+async function testNegativeJointIdIsPassedThroughSafely() {
+  const ctx = newContext(EXTRACTED, HTML, async () => [], 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jrlist_joint_id'].value = '-5';
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  check('negative joint_id forwarded exactly', ctx.calls[0].path === '/api/governance/joint-revisions?joint_id=-5');
+}
+
+// 10 & 11. Fetch uses GET, with no request body.
+async function testListFetchIsGetWithNoBody() {
+  const ctx = newContext(EXTRACTED, HTML, async () => [], 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jrlist_joint_id'].value = '1';
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  const opts = ctx.calls[0].options || {};
+  check('no HTTP method option was passed (GET by default)', !opts.method);
+  check('no request body was passed', !opts.body);
+}
+
+// 12 & 13. Backend order is preserved, and every item produces exactly one row.
+async function testListPreservesBackendOrderOneRowPerItem() {
+  const items = fakeJointRevisionProjections([
+    { joint_revision_id: 3 }, { joint_revision_id: 1 }, { joint_revision_id: 2 },
+  ]);
+  const ctx = newContext(EXTRACTED, HTML, async () => items, 'governance');
+  primeGovElements(ctx.byId);
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  const html = ctx.byId['gov-jrlist-result'].innerHTML;
+  // Structural, not a whole-HTML regex: <thead> legitimately contains
+  // its own <tr> for column headers, which must never be counted as a
+  // data row. Isolate <tbody>...</tbody> first, then count <tr> only
+  // within it -- this stays correct regardless of escaped field
+  // content (e.g. a source_status value containing the literal text
+  // "<tr>" is impossible here since govEsc() always HTML-escapes
+  // '<'/'>' before insertion, but isolating tbody first makes the
+  // count structurally correct rather than relying on that fact).
+  const tbodyMatch = /<tbody>([\s\S]*?)<\/tbody>/.exec(html);
+  check('table body present', !!tbodyMatch);
+  const tbodyHtml = tbodyMatch ? tbodyMatch[1] : '';
+  const rowCount = (tbodyHtml.match(/<tr>/g) || []).length;
+  check('exactly one data row per source item (header row excluded)', rowCount === items.length);
+  const posThree = tbodyHtml.indexOf('>3<');
+  const posOne = tbodyHtml.indexOf('>1<');
+  const posTwo = tbodyHtml.indexOf('>2<');
+  check('rendering order matches backend order (3, 1, 2), not re-sorted', posThree !== -1 && posOne !== -1 && posTwo !== -1 && posThree < posOne && posOne < posTwo);
+}
+
+// 14 & 15. Empty array shows the empty state, never an error state.
+async function testEmptyArrayShowsEmptyStateNotError() {
+  const ctx = newContext(EXTRACTED, HTML, async () => [], 'governance');
+  primeGovElements(ctx.byId);
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  const html = ctx.byId['gov-jrlist-result'].innerHTML;
+  const expected = vm.runInContext("t('gov.jrlist.empty_state')", ctx.context);
+  checkIncludes('translated empty-state message shown', html, expected);
+  checkNotIncludes('no <table> tag when there are no items', html, '<table');
+  checkNotIncludes('not rendered as an error state', html, 'alert-danger');
+}
+
+// 16 & 17. Invalid local input is rejected before any fetch, with a
+// translated validation message.
+async function testInvalidInputRejectedBeforeApiCallWithValidationMessage() {
+  const ctx = newContext(EXTRACTED, HTML, null, 'governance'); // apiRequest throws if called
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jrlist_joint_id'].value = 'not-a-number';
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  const expected = vm.runInContext("t('gov.jrlist.invalid_joint_id')", ctx.context);
+  checkIncludes('validation message shown for non-numeric input', ctx.byId['gov-jrlist-result'].innerHTML, expected);
+}
+
+// 18 & 19. A genuine API/network failure renders a safe, translated
+// message with no internal detail leaked.
+async function testListApiErrorRenderedSafelyWithoutLeakingDetail() {
+  const ctx = newContext(EXTRACTED, HTML, async () => {
+    throw new Error('simulated sqlite3.OperationalError: disk I/O error at /secret/path');
+  }, 'governance');
+  primeGovElements(ctx.byId);
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  const html = ctx.byId['gov-jrlist-result'].innerHTML;
+  const expected = vm.runInContext("t('gov.jrlist.network_error')", ctx.context);
+  checkIncludes('generic translated error message shown', html, expected);
+  checkNotIncludes('no internal path leaked', html, '/secret/path');
+  checkNotIncludes('no exception class name leaked', html, 'OperationalError');
+  checkNotIncludes('no stack trace leaked', html, '\n    at ');
+}
+
+// 20. Loading state is shown while the request is in flight.
+async function testListLoadingStateRenders() {
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjections([]));
+  primeGovElements(ctx.byId);
+  vm.runInContext('govRenderJointRevisionListLoading()', ctx.context);
+  const expected = vm.runInContext("t('gov.loading')", ctx.context);
+  checkIncludes('loading message shown', ctx.byId['gov-jrlist-result'].innerHTML, expected);
+}
+
+// 21, 22 & 23. TR and EN both define the new namespace, with identical key sets.
+async function testJointRevisionListTranslationKeysHaveTrAndEnParity() {
+  const ctx = newContext(EXTRACTED, HTML, async () => []);
+  const enKeys = vm.runInContext('Object.keys(I18N.en).filter(k => k.indexOf("gov.jrlist.") === 0)', ctx.context);
+  const trKeys = vm.runInContext('Object.keys(I18N.tr).filter(k => k.indexOf("gov.jrlist.") === 0)', ctx.context);
+  check('at least one gov.jrlist.* EN key exists', enKeys.length > 0);
+  check('at least one gov.jrlist.* TR key exists', trKeys.length > 0);
+  check('EN and TR define the exact same gov.jrlist.* key set', JSON.stringify(enKeys.slice().sort()) === JSON.stringify(trKeys.slice().sort()));
+}
+
+// 24. Column headers use i18n keys, not hardcoded literal text.
+async function testColumnHeadersUseI18nKeys() {
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjections([{ joint_revision_id: 1 }]), 'governance');
+  primeGovElements(ctx.byId);
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  const html = ctx.byId['gov-jrlist-result'].innerHTML;
+  for (const key of ['gov.jrlist.col_revision_id', 'gov.jr.outcome_label', 'gov.jr.source_status_label', 'gov.jr.canonical_status_label', 'gov.jr.lifecycle_group_label', 'gov.jrlist.col_reason']) {
+    const label = vm.runInContext("t('" + key + "')", ctx.context);
+    checkIncludes('column header for ' + key + ' rendered', html, label);
+  }
+}
+
+// 25. API values are safely rendered -- no raw HTML injection from
+// a hostile-looking source_status/safe_reason value.
+async function testApiValuesAreSafelyRendered() {
+  const items = fakeJointRevisionProjections([
+    { joint_revision_id: 1, source_status: '<img src=x onerror=alert(1)>', safe_reason: '<script>evil()</script>' },
+  ]);
+  const ctx = newContext(EXTRACTED, HTML, async () => items, 'governance');
+  primeGovElements(ctx.byId);
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  const html = ctx.byId['gov-jrlist-result'].innerHTML;
+  checkNotIncludes('no raw <img onerror> tag rendered', html, '<img src=x onerror=alert(1)>');
+  checkNotIncludes('no raw <script> tag rendered', html, '<script>evil()</script>');
+  checkIncludes('source_status value HTML-escaped', html, '&lt;img');
+  checkIncludes('safe_reason value HTML-escaped', html, '&lt;script&gt;');
+}
+
+// 26 & 27. Pre-existing single-record and generic governance functions
+// remain present and unmodified by this stage.
+async function testExistingGovernanceFunctionsStillPresent() {
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjection());
+  for (const fn of ['govLoadJointRevision', 'govRenderJointRevisionResult', 'govLoad', 'govRenderHistory', 'govRenderStatus', 'govSubmitCommand']) {
+    check(fn + ' still exists (Stage 4 did not remove or rename it)', vm.runInContext('typeof ' + fn, ctx.context) === 'function');
+  }
+}
+
+// 28 & 29. No mutation endpoint is ever called, and no POST/PUT/PATCH/
+// DELETE method is ever passed, from any code path in this section.
+async function testListNeverCallsMutationEndpointOrWriteMethod() {
+  const ctx = newContext(EXTRACTED, HTML, async () => fakeJointRevisionProjections([{ joint_revision_id: 1 }]), 'governance');
+  primeGovElements(ctx.byId);
+  ctx.byId['gov_jrlist_joint_id'].value = '1';
+  await vm.runInContext('govLoadJointRevisions()', ctx.context);
+  for (const call of ctx.calls) {
+    check('call path is the read-only bulk route', call.path.indexOf('/api/governance/joint-revisions') === 0);
+    check('call has no mutating method', !call.options || !call.options.method || call.options.method === 'GET');
+  }
+  checkNotIncludes('handler source calls no write/submit route builder', EXTRACTED.slice(EXTRACTED.indexOf('function govLoadJointRevisions')), '/review/');
+}
+
+// 30. No invented/nonexistent CSS class is used by the new section --
+// only classes already defined/used elsewhere in frontend/index.html.
+async function testNoInventedCssClassesUsed() {
+  for (const bogus of ['data-table', 'governance-grid', 'joint-revision-list-card']) {
+    checkNotIncludes('bogus class "' + bogus + '" not used', HTML, bogus);
+  }
+  const reused = ['card-title', 'card-sub', 'form-row', 'form-group', 'form-label', 'form-input', 'btn btn-primary', 'table', 'fc-muted', 'alert alert-danger'];
+  for (const cls of reused) {
+    check('reused existing class "' + cls + '" appears elsewhere in the file too', (HTML.match(new RegExp('class="[^"]*\\b' + cls.split(' ')[0] + '\\b', 'g')) || []).length > 1);
+  }
+}
+
+// 31. The extracted source is syntactically valid JavaScript.
+async function testExtractedSourceHasValidSyntax() {
+  let threw = false;
+  try { new vm.Script(EXTRACTED, { filename: 'gov_syntax_check.js' }); }
+  catch (e) { threw = true; console.log('Syntax error: ' + e.message); }
+  check('extracted governance workspace source compiles without a syntax error', !threw);
+}
+
 const ALL_TESTS = [
   testSidebarAndPageMarkupPresent,
   testRequiredFunctionsExist,
@@ -610,6 +847,24 @@ const ALL_TESTS = [
   testRepeatedLookupsReplacePriorResultCleanly,
   testNoInventedStatusMappingTableExists,
   testJointRevisionTranslationKeysHaveTrAndEnParity,
+  testJointRevisionListElementsExist,
+  testJointIdFilterInputIsOptional,
+  testEmptyFilterCallsExactRouteWithNoQueryParam,
+  testFilledFilterAddsJointIdQueryParamSafely,
+  testNegativeJointIdIsPassedThroughSafely,
+  testListFetchIsGetWithNoBody,
+  testListPreservesBackendOrderOneRowPerItem,
+  testEmptyArrayShowsEmptyStateNotError,
+  testInvalidInputRejectedBeforeApiCallWithValidationMessage,
+  testListApiErrorRenderedSafelyWithoutLeakingDetail,
+  testListLoadingStateRenders,
+  testJointRevisionListTranslationKeysHaveTrAndEnParity,
+  testColumnHeadersUseI18nKeys,
+  testApiValuesAreSafelyRendered,
+  testExistingGovernanceFunctionsStillPresent,
+  testListNeverCallsMutationEndpointOrWriteMethod,
+  testNoInventedCssClassesUsed,
+  testExtractedSourceHasValidSyntax,
 ];
 
 // =================================================================
