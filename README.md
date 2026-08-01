@@ -3,89 +3,94 @@
 | Item                          | Value                                         |
 | ----------------------------- | --------------------------------------------- |
 | Product                       | TorqPro                                       |
-| **Current Version**           | **v2.8.14**                                   |
-| **Version Date**              | **31 July 2026**                              |
-| **Current Engineering Focus** | **Joint Revision Governance Bulk Visibility** |
+| **Current Version**           | **v2.8.16**                                   |
+| **Version Date**              | **01 August 2026**                            |
+| **Current Engineering Focus** | **Joint Revision List UX Improvements**       |
 
 ---
 
-# What's New in v2.8.14
+# What's New in v2.8.16
 
-## Joint Revision Governance Bulk Visibility
+## Joint Revision List UX Improvements
 
-Phase **2.8.14** introduces deterministic, additive and read-only visibility for joint revision governance data.
+Phase **2.8.16** adds server-side search, deterministic sorting, pagination, and CSV export to the existing Faz 2.8.14 joint revision governance list — entirely additive, with the pre-existing bare-array endpoint left byte-for-byte unmodified.
 
-This phase extends the existing governance infrastructure without modifying existing engineering libraries, persistence mechanisms, calculation engines or public write paths.
+This phase closes the "pagination / search / export" gap the Faz 2.8.14 completion record explicitly left open, without altering any existing engineering library, persistence mechanism, calculation engine, or public write path.
 
-The implementation provides a complete end-to-end workflow covering:
+The implementation was delivered across six controlled stages, each independently verified and committed:
 
-* Source accessor layer
-* Governance projection layer
-* Read-only API layer
-* Governance workspace frontend integration
-* TR / EN localization support
-* Regression and compatibility validation
+* Stage 1 — backend query foundation (search, sort, pagination, validation)
+* Stage 2 — additive, paginated API endpoint
+* Stage 3 — CSV export endpoint
+* Stage 4 — frontend UX (search, sort, pagination, export controls)
+* Stage 5 — quality-gate integration and i18n hardening
+* Stage 6 — full validation and release documentation
 
 ---
 
 ## Scope
 
-* Added `list_joint_revisions()` source accessor.
-* Added `project_joint_revisions_bulk()` governance adapter.
-* Added `GET /api/governance/joint-revisions`.
-* Added optional `joint_id` filtering.
-* Added deterministic revision ordering.
-* Added frontend governance list integration.
-* Added complete TR / EN support.
-* Added architecture, compatibility and regression tests.
-* Preserved existing engineering libraries, APIs and data sources.
+* Added `query_joint_revision_projections()` / `query_all_joint_revision_projections()` domain query service.
+* Added `GET /api/governance/joint-revisions/query` (paginated, searchable, sortable JSON endpoint).
+* Added `GET /api/governance/joint-revisions/export.csv` (CSV export, UTF-8 with BOM, CSV-injection guarded).
+* Added deterministic, allow-listed search/sort with an explicit tie-breaker.
+* Added frontend search/sort/page-size/pagination/export controls to the existing Joint Revision List card.
+* Added 24 new TR / EN `gov.jrlist.*` translation keys (full parity).
+* Added a dedicated frontend regression harness (`run_joint_revision_list_ux_tests.js`), integrated into the canonical quality gate.
+* Preserved the existing `GET /api/governance/joint-revisions` bare-array endpoint unchanged.
+* Preserved all existing engineering libraries, APIs, and data sources.
 
 ---
 
 # Changed Files
 
 ```text
-backend/joints/service.py
-
-backend/governance/adapters/joint_revision.py
-
-backend/governance/adapters/__init__.py
-
+backend/governance/joint_revision_query.py
+backend/governance/joint_revision_csv.py
 backend/governance/api.py
 
 frontend/index.html
 
-tests/test_joints_foundation.py
-
-tests/governance/adapters/test_joint_revision.py
-
+tests/governance/test_joint_revision_query.py
+tests/governance/test_joint_revision_query_api.py
+tests/governance/test_joint_revision_csv.py
+tests/governance/test_joint_revision_csv_api.py
 tests/governance/test_compatibility.py
 
-tests/governance/test_joint_revision_bulk_api.py
-
+tests/js/run_joint_revision_list_ux_tests.js
 tests/js/run_governance_workspace_tests.js
 
 tests/test_faz_2_8_11_stage4_frontend.py
-
+tests/test_quality_gate_joint_revision_ux.py
 tests/test_version_centralization.py
+
+tools/run_quality_gate.py
+
+docs/11_PRODUCT_BACKLOG.md
+docs/phases/PHASE_2.8.16_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md
+docs/phases/PHASE_2.8.16_STAGE2_API_CONTRACT.md
+docs/phases/PHASE_2.8.16_STAGE3_CSV_EXPORT.md
+docs/phases/PHASE_2.8.16_STAGE4_FRONTEND_UX.md
+docs/phases/PHASE_2.8.16_STAGE5_FRONTEND_QUALITY_INTEGRATION.md
+docs/phases/PHASE_2.8.16_COMPLETION_REPORT.md
 ```
 
 ---
 
 # Validation Results
 
-| Item           | Result                                                |
-| -------------- | ----------------------------------------------------- |
-| Feature Branch | **feature/faz-2.8.14-joint-revision-bulk-visibility** |
-| Feature Commit | **5aa8969**                                           |
-| Working Tree   | Clean                                                 |
-| Quality Gate   | **6 / 6 PASSED**                                      |
+| Item           | Result                                         |
+| -------------- | ----------------------------------------------- |
+| Feature Branch | **feature/faz-2.8.16-joint-revision-list-ux** |
+| Feature Commit | **e5de65b** (final functional commit — Stage 6 adds only version/documentation metadata in the commit immediately following) |
+| Working Tree   | Clean                                          |
+| Quality Gate   | **6 / 6 PASSED**                               |
 
 ---
 
 # Backward Compatibility
 
-Phase 2.8.14 does **not** modify:
+Phase 2.8.16 does **not** modify:
 
 * Existing engineering libraries
 * Existing engineering databases
@@ -93,20 +98,24 @@ Phase 2.8.14 does **not** modify:
 * Existing governance write paths
 * Existing report engine infrastructure
 * Existing VDI 2230 calculations
-* Existing REST API behaviour
+* The existing `GET /api/governance/joint-revisions` bare-array endpoint (response shape, ordering, and query surface all unchanged)
 
-The implementation is fully additive.
+The implementation is fully additive: two new read-only routes were added; no existing route's signature, response shape, or behaviour changed.
 
 ---
 
 # Engineering Notes
 
-The following items are intentionally outside the current scope:
+The following items, previously listed as out of scope for Faz 2.8.14, are now delivered (server-side, per Faz 2.8.16):
 
 * Pagination
-* Client-side sorting
-* Client-side search
-* Export functions
+* Server-side sorting
+* Server-side search
+* CSV export
+
+The following remain intentionally outside the current scope:
+
+* Client-side filtering, sorting, or pagination (all search/sort/pagination stays server-side by design)
 * Bulk mutation operations
 * Approval workflows
 * Governance registry expansion
@@ -121,7 +130,7 @@ Engineering quality is continuously verified using automated validation.
 ## Current Validation Summary
 
 | Validation Area     | Result   |
-| ------------------- | -------- |
+| -------------------- | -------- |
 | Unit Tests          | ✅ Passed |
 | Integration Tests   | ✅ Passed |
 | Governance Tests    | ✅ Passed |
@@ -134,12 +143,13 @@ Engineering quality is continuously verified using automated validation.
 
 # Test Results
 
-| Test Group                 | Result                 |
-| -------------------------- | ---------------------- |
-| Full pytest Suite          | **1919 / 1919 Passed** |
-| Governance Suite           | **292 / 292 Passed**   |
-| Governance JS Harness      | **160 / 160 Passed**   |
-| TR / EN Localization Tests | **6 / 6 Passed**       |
+| Test Group                        | Result                 |
+| ---------------------------------- | ---------------------- |
+| Full pytest Suite                 | **2159 / 2159 Passed** |
+| Governance Suite                  | **517 / 517 Passed**   |
+| Governance Workspace JS Harness   | **160 / 160 Passed**   |
+| Joint Revision List UX JS Harness | **152 / 152 Passed**   |
+| TR / EN Localization Tests        | **6 / 6 Passed**       |
 
 Continuous integration verifies every change before integration into the main branch.
 
@@ -147,8 +157,8 @@ Continuous integration verifies every change before integration into the main br
 
 # Development Status
 
-| Phase            | Description                                   | Status                |
-| ---------------- | --------------------------------------------- | --------------------- |
+| Phase            | Description                                | Status                |
+| ---------------- | -------------------------------------------- | --------------------- |
 | Phase 2.7        | Report Engine                                 | ✅ Completed           |
 | Phase 2.8.1      | Engineering Library Audit                     | ✅ Completed           |
 | Phase 2.8.2      | Thread Geometry Verification                  | ✅ Completed           |
@@ -163,7 +173,9 @@ Continuous integration verifies every change before integration into the main br
 | Phase 2.8.11     | Engineering Governance Architecture           | ✅ Completed           |
 | Phase 2.8.12     | Governance Compatibility Layer                | ✅ Completed           |
 | Phase 2.8.13     | Governance Workspace Integration              | ✅ Completed           |
-| **Phase 2.8.14** | **Joint Revision Governance Bulk Visibility** | ⭐ **Current Version** |
+| Phase 2.8.14     | Joint Revision Governance Bulk Visibility     | ✅ Completed           |
+| Phase 2.8.15     | README / VERSION Maintenance                  | ✅ Completed           |
+| **Phase 2.8.16** | **Joint Revision List UX Improvements**       | ⭐ **Current Version** |
 
 ---
 
@@ -171,7 +183,8 @@ Continuous integration verifies every change before integration into the main br
 
 | Version     | Highlights                                |
 | ----------- | ----------------------------------------- |
-| **v2.8.14** | Joint Revision Governance Bulk Visibility |
+| **v2.8.16** | Joint Revision List UX Improvements       |
+| v2.8.14     | Joint Revision Governance Bulk Visibility |
 | v2.8.13     | Governance Workspace Integration          |
 | v2.8.12     | Governance Compatibility Layer            |
 | v2.8.11     | Engineering Governance Architecture       |
@@ -187,16 +200,16 @@ Continuous integration verifies every change before integration into the main br
 
 ## Current Version
 
-**v2.8.14**
+**v2.8.16**
 
 Current engineering focus:
 
-* Joint revision governance
-* Read-only bulk visibility
-* Governance projections
-* Deterministic revision tracking
-* Frontend governance integration
+* Joint revision search and sorting
+* Server-side pagination
+* CSV export
+* Frontend UX integration
 * TR / EN localization
+* Quality-gate integrated frontend regression testing
 * Compatibility validation
 * Regression testing
 
@@ -206,12 +219,9 @@ Current engineering focus:
 
 Potential future work areas:
 
-* README and documentation maintenance
-* Governance pagination
-* Search and filtering support
-* Export capabilities
 * Governance registry expansion
 * Cross-mechanism validation
-* User experience improvements
+* Joint revision write-path integration
+* Further governance workspace UX refinements
 
 No subsequent phase has been officially approved yet.

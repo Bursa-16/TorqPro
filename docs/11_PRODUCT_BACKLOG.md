@@ -475,6 +475,81 @@ yet; (C) governance projection registry/cross-mechanism validator —
 still premature, no second or third write-integrated mechanism has
 emerged since Faz 2.8.12 Stage 4 deferred it.
 
+## 12H. Faz 2.8.16 – Joint Revision List UX Improvements
+
+**Status: Complete (Stages 1–6), delivered 2026-08-01.** See
+`docs/phases/PHASE_2.8.16_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md`
+through `PHASE_2.8.16_STAGE5_FRONTEND_QUALITY_INTEGRATION.md`, and
+`docs/phases/PHASE_2.8.16_COMPLETION_REPORT.md` for full detail.
+
+Closed candidate (B) from the Faz 2.8.14 completion entry above:
+"joint revision list UX refinements (pagination/sorting/search/
+export)" — explicitly deferred there as "only if real usage
+demonstrates an actual need"; approved and scoped in this phase's own
+Stage 0.
+
+**Main deliverables**: an additive, HTTP-independent
+`query_joint_revision_projections()` / `query_all_joint_revision_projections()`
+domain query service in `backend/governance/joint_revision_query.py`
+(deterministic allow-listed search/sort, explicit tie-breaker,
+pagination validated before any source read); an additive, paginated
+`GET /api/governance/joint-revisions/query` API route reusing that
+service with zero duplicated logic; an additive, HTTP-independent
+`backend/governance/joint_revision_csv.py` CSV export
+serializer/service (fixed column order, UTF-8 with BOM, CSV-injection
+guarded) and its additive `GET /api/governance/joint-revisions/export.csv`
+route; frontend search/sort/page-size/pagination/export controls added
+to the existing Joint Revision List card, with 24 new `gov.jrlist.*`
+i18n keys (full TR/EN parity); a dedicated frontend regression harness
+(`tests/js/run_joint_revision_list_ux_tests.js`, 152 assertions)
+integrated into the canonical quality gate; the former brittle
+exact-count `gov.*` key-parity test replaced with a parity +
+minimum-floor + explicit-required-set contract.
+
+The pre-existing `GET /api/governance/joint-revisions` bare-array
+endpoint (Faz 2.8.14) was never modified — verified unchanged, byte
+for byte, at every stage.
+
+**Test results**: Full suite 2159/2159 (2144 baseline + 15 new Python
+tests; the JS harness assertions are additional and are not counted
+in the pytest total). Governance suite 517/517 (unchanged from Faz
+2.8.16 Stage 3 baseline — no new governance Python tests were added
+in Stages 4–6). Governance workspace JS harness 160/160 (unchanged).
+Joint Revision List UX JS harness 152/152 (new, integrated into the
+canonical quality gate in Stage 5). TR/EN key parity: `gov.*`/
+`sidebar.governance` parity + minimum floor of 104, all 24 Faz 2.8.16
+required keys verified present with real (non-identical, non-empty)
+EN/TR translations. Quality gate 6/6 PASSED (6 JS harnesses in step
+5, up from 5).
+
+**Completion report**: `docs/phases/PHASE_2.8.16_COMPLETION_REPORT.md`
+
+**Branch**: `feature/faz-2.8.16-joint-revision-list-ux`, final Stage 6
+HEAD recorded in the completion report.
+
+**No new ADR** was added — this phase is a bounded, additive
+extension of the existing `joint_revision` governance projection
+mechanism (ADR-0014/Faz 2.8.12, extended by Faz 2.8.14); it
+introduces a new query/export service and two new read-only routes,
+but no new architectural pattern, governance mechanism, or
+cross-cutting concept that would warrant a new architectural decision
+record. See the Stage 6 completion report for the explicit
+evidence-based ADR evaluation.
+
+**Non-goals** (explicitly deferred, not attempted): washer resolution
+open/blocked record resolution; a governance projection registry; a
+cross-mechanism consistency validator; joint revision
+write-synchronization; client-side filtering/sorting/pagination
+(all search/sort/pagination stays server-side by design).
+
+**Possible next-phase candidates** (none approved by this entry):
+(A) governance registry/cross-mechanism validator — still premature,
+no second or third write-integrated mechanism has emerged since Faz
+2.8.12 Stage 4 deferred it; (B) joint revision write-path integration
+— no approved need identified yet; (C) further governance workspace
+UX refinements — only if real usage demonstrates an actual need,
+none shown yet.
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.
