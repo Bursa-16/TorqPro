@@ -602,3 +602,87 @@ def test_query_does_not_mutate_authoritative_joint_revision_data():
     query_joint_revision_projections(joint_id=joint["id"])
     after = _snapshot()
     assert before == after
+
+
+# ---------------------------------------------------------------------
+# Faz 2.8.16 Stage 3 regression tests: query_all_joint_revision_projections
+# (additive; query_joint_revision_projections is refactored to call it
+# internally -- every test above proves that refactor is behavior-
+# preserving; these tests cover the new function's own contract).
+# ---------------------------------------------------------------------
+
+
+def test_query_all_returns_every_filtered_sorted_record_unpaginated(monkeypatch):
+    many = [
+        _projection(i, outcome="supported", source_status="approved") for i in range(1, 251)
+    ]
+    _patch_bulk(monkeypatch, many)
+    result = jrq.query_all_joint_revision_projections()
+    assert len(result) == 250
+    assert len(result) > jrq.MAX_PAGE_SIZE
+
+
+def test_query_all_is_not_capped_at_max_page_size(monkeypatch):
+    many = [_projection(i) for i in range(1, jrq.MAX_PAGE_SIZE + 51)]
+    _patch_bulk(monkeypatch, many)
+    result = jrq.query_all_joint_revision_projections()
+    assert len(result) == jrq.MAX_PAGE_SIZE + 50
+
+
+def test_query_all_applies_search(monkeypatch):
+    _patch_bulk(monkeypatch, _MIXED_SET)
+    result = jrq.query_all_joint_revision_projections(search="approved")
+    assert len(result) == 1
+    assert result[0].joint_revision_id == 1
+
+
+def test_query_all_applies_sort_ascending_and_descending(monkeypatch):
+    projections = [_projection(i) for i in range(1, 6)]
+    _patch_bulk(monkeypatch, projections)
+    asc = jrq.query_all_joint_revision_projections(
+        sort_by="joint_revision_id", sort_order="asc"
+    )
+    desc = jrq.query_all_joint_revision_projections(
+        sort_by="joint_revision_id", sort_order="desc"
+    )
+    assert [p.joint_revision_id for p in asc] == [1, 2, 3, 4, 5]
+    assert [p.joint_revision_id for p in desc] == [5, 4, 3, 2, 1]
+
+
+def test_query_all_applies_joint_id_filter(monkeypatch):
+    calls = _patch_bulk(monkeypatch, [])
+    jrq.query_all_joint_revision_projections(joint_id=77)
+    assert calls["joint_id"] == 77
+
+
+def test_query_all_invalid_sort_by_raises_before_source_read(monkeypatch):
+    calls = _patch_bulk(monkeypatch, [])
+    with pytest.raises(JointRevisionQueryValidationError):
+        jrq.query_all_joint_revision_projections(sort_by="not_a_field")
+    assert calls["n"] == 0
+
+
+def test_query_all_invalid_sort_order_raises(monkeypatch):
+    _patch_bulk(monkeypatch, [])
+    with pytest.raises(JointRevisionQueryValidationError):
+        jrq.query_all_joint_revision_projections(sort_order="sideways")
+
+
+def test_query_all_returns_tuple_type(monkeypatch):
+    _patch_bulk(monkeypatch, _MIXED_SET)
+    result = jrq.query_all_joint_revision_projections()
+    assert isinstance(result, tuple)
+
+
+def test_paginated_query_and_query_all_agree_on_filtered_order(monkeypatch):
+    projections = [_projection(i) for i in range(1, 11)]
+    _patch_bulk(monkeypatch, projections)
+    all_items = jrq.query_all_joint_revision_projections(
+        sort_by="joint_revision_id", sort_order="desc"
+    )
+    paginated = query_joint_revision_projections(
+        sort_by="joint_revision_id", sort_order="desc", page=1, page_size=jrq.MAX_PAGE_SIZE
+    )
+    assert [p.joint_revision_id for p in all_items] == [
+        p.joint_revision_id for p in paginated.items
+    ]

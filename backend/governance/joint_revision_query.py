@@ -281,6 +281,62 @@ def _sorted_projections(
     return value_sorted + null_sorted
 
 
+def query_all_joint_revision_projections(
+    *,
+    joint_id: Optional[int] = None,
+    search: Optional[str] = None,
+    sort_by: str = DEFAULT_SORT_BY,
+    sort_order: str = DEFAULT_SORT_ORDER,
+) -> Tuple[JointRevisionProjection, ...]:
+    """Faz 2.8.16 Stage 3 addition: the same validate -> read ->
+    search -> sort pipeline as :func:`query_joint_revision_projections`,
+    **without pagination** -- every filtered/sorted record is
+    returned, regardless of :data:`MAX_PAGE_SIZE`.
+
+    Added for callers (CSV export) that must never silently truncate
+    a result at ``MAX_PAGE_SIZE`` records -- calling the paginated
+    function with ``page_size=MAX_PAGE_SIZE`` would do exactly that
+    for any dataset larger than the page-size cap, which is not an
+    acceptable substitute for "export every filtered record."
+
+    This function defines no search/sort/validation logic of its own:
+    it calls exactly the same private helpers
+    (:func:`_validate_sort_by`, :func:`_validate_sort_order`,
+    :func:`_normalize_search`, :func:`_matches_search`,
+    :func:`_sorted_projections`) that
+    :func:`query_joint_revision_projections` uses internally --
+    :func:`query_joint_revision_projections` is refactored (Stage 3)
+    to call *this* function for its own validate/read/search/sort
+    step, so the two public functions share one implementation of
+    that pipeline rather than two independently-maintained copies.
+    This is a behavior-preserving refactor: every one of Stage 1's 62
+    existing tests for :func:`query_joint_revision_projections`
+    passes unchanged (see
+    ``tests/governance/test_joint_revision_query.py``), because its
+    public signature, return type, and every documented behavior are
+    unchanged -- only ``page``/``page_size`` validation and the final
+    pagination slice remain in that function's own body.
+
+    Validation (``sort_by``/``sort_order``) happens before any source
+    read, exactly as in the paginated function. ``joint_id`` is
+    forwarded unchanged to
+    :func:`~backend.governance.adapters.joint_revision.project_joint_revisions_bulk`.
+    Read-only: performs no mutation, no governance event, no
+    persistence of any kind.
+    """
+    validated_sort_by = _validate_sort_by(sort_by)
+    validated_sort_order = _validate_sort_order(sort_order)
+    normalized_search = _normalize_search(search)
+
+    projections = project_joint_revisions_bulk(joint_id=joint_id)
+
+    if normalized_search is not None:
+        projections = [p for p in projections if _matches_search(p, normalized_search)]
+
+    sorted_items = _sorted_projections(projections, validated_sort_by, validated_sort_order)
+    return tuple(sorted_items)
+
+
 def query_joint_revision_projections(
     *,
     joint_id: Optional[int] = None,
@@ -316,19 +372,20 @@ def query_joint_revision_projections(
     last available page is not an error -- it returns an empty
     ``items`` tuple with the same, correctly-computed ``total``/
     ``total_pages``.
+
+    Faz 2.8.16 Stage 3: the validate-sort/order -> read -> search ->
+    sort steps are delegated to
+    :func:`query_all_joint_revision_projections` (this function only
+    validates ``page``/``page_size`` and applies the final pagination
+    slice) -- see that function's docstring for why this refactor is
+    behavior-preserving.
     """
     validated_page = _validate_page(page)
     validated_page_size = _validate_page_size(page_size)
-    validated_sort_by = _validate_sort_by(sort_by)
-    validated_sort_order = _validate_sort_order(sort_order)
-    normalized_search = _normalize_search(search)
 
-    projections = project_joint_revisions_bulk(joint_id=joint_id)
-
-    if normalized_search is not None:
-        projections = [p for p in projections if _matches_search(p, normalized_search)]
-
-    sorted_items = _sorted_projections(projections, validated_sort_by, validated_sort_order)
+    sorted_items = query_all_joint_revision_projections(
+        joint_id=joint_id, search=search, sort_by=sort_by, sort_order=sort_order
+    )
 
     total = len(sorted_items)
     total_pages = math.ceil(total / validated_page_size) if total else 0
@@ -357,4 +414,5 @@ __all__ = [
     "JointRevisionQueryValidationError",
     "JointRevisionQueryResult",
     "query_joint_revision_projections",
+    "query_all_joint_revision_projections",
 ]
