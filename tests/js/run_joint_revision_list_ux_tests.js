@@ -957,6 +957,124 @@ async function testLanguageReRenderPreservesState() {
 }
 
 // =================================================================
+// i18n -- additional Stage 5 scenarios (additive; none of the above
+// 136 assertions were modified to add these).
+// =================================================================
+
+async function testReRenderNeverCallsApiRequestOrFetch() {
+  // A pure re-render (what a language switch actually triggers via
+  // govReapplyLanguage()) must never issue a new network request --
+  // it only re-paints already-held state.
+  const ctx = newContext(EXTRACTED, HTML, {});
+  resetState(ctx);
+  vm.runInContext(
+    'govJointRevisionListState.items = ' + JSON.stringify([fakeItem()])
+    + '; govJointRevisionListState.total = 1; govJointRevisionListState.totalPages = 1;',
+    ctx.context,
+  );
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context);
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context);
+  check('re-rendering never calls apiRequest', ctx.apiCalls.length === 0);
+  check('re-rendering never calls fetch', ctx.fetchCalls.length === 0);
+}
+
+async function testReRenderPreservesPageAndSortState() {
+  const ctx = newContext(EXTRACTED, HTML, {});
+  resetState(ctx);
+  vm.runInContext(
+    'govJointRevisionListState.items = ' + JSON.stringify([fakeItem()])
+    + "; govJointRevisionListState.total = 30; govJointRevisionListState.page = 3;"
+    + "govJointRevisionListState.totalPages = 5; govJointRevisionListState.sortBy = 'outcome';"
+    + "govJointRevisionListState.sortOrder = 'desc';",
+    ctx.context,
+  );
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context);
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context);
+  const state = vm.runInContext('govJointRevisionListState', ctx.context);
+  check('page is preserved across a re-render', state.page === 3);
+  check('sortBy is preserved across a re-render', state.sortBy === 'outcome');
+  check('sortOrder is preserved across a re-render', state.sortOrder === 'desc');
+  check('totalPages is preserved across a re-render', state.totalPages === 5);
+}
+
+async function testResultTableIsRebuiltOnReRender() {
+  const ctx = newContext(EXTRACTED, HTML, {});
+  resetState(ctx);
+  vm.runInContext(
+    'govJointRevisionListState.items = ' + JSON.stringify([fakeItem({ joint_revision_id: 55 })])
+    + '; govJointRevisionListState.total = 1; govJointRevisionListState.totalPages = 1;',
+    ctx.context,
+  );
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context);
+  const firstHtml = ctx.byId['gov-jrlist-query-result'].innerHTML;
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context);
+  const secondHtml = ctx.byId['gov-jrlist-query-result'].innerHTML;
+  check('the table is present after each render call (re-render rebuilds it, not stale)', firstHtml.indexOf('<table') !== -1 && secondHtml.indexOf('<table') !== -1);
+  check('the row content is identical across re-renders of the same state (deterministic)', firstHtml === secondHtml);
+}
+
+async function testPageLabelReflectsCurrentTranslationDictionary() {
+  // gov.jrlist.pageOf is looked up fresh via t() on every call --
+  // never cached/frozen from an earlier language -- so a language
+  // switch's re-render always shows the *current* CURRENT_LANG's text.
+  const ctx = newContext(EXTRACTED, HTML, {});
+  resetState(ctx);
+  vm.runInContext('govJointRevisionListState.page = 2; govJointRevisionListState.totalPages = 4;', ctx.context);
+  const trLabel = vm.runInContext('govJointRevisionQueryPageLabel()', ctx.context);
+  vm.runInContext("CURRENT_LANG = 'en';", ctx.context);
+  const enLabel = vm.runInContext('govJointRevisionQueryPageLabel()', ctx.context);
+  check('page label text changes when CURRENT_LANG changes (not frozen from first render)', trLabel !== enLabel);
+  check('the EN page label uses the EN word "Page"', enLabel.indexOf('Page') === 0);
+}
+
+async function testButtonLabelsAreReTranslatedOnReRender() {
+  const ctx = newContext(EXTRACTED, HTML, {});
+  resetState(ctx);
+  vm.runInContext(
+    'govJointRevisionListState.items = ' + JSON.stringify([fakeItem()])
+    + '; govJointRevisionListState.total = 1; govJointRevisionListState.totalPages = 2;',
+    ctx.context,
+  );
+  vm.runInContext("CURRENT_LANG = 'tr';", ctx.context);
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context);
+  const trHtml = ctx.byId['gov-jrlist-query-result'].innerHTML;
+  vm.runInContext("CURRENT_LANG = 'en';", ctx.context);
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context);
+  const enHtml = ctx.byId['gov-jrlist-query-result'].innerHTML;
+  check('Previous/Next button text changes between TR and EN re-renders', trHtml !== enHtml);
+  check('EN render shows the EN "Previous" label', enHtml.indexOf('>Previous<') !== -1);
+}
+
+async function testNoUnresolvedKeyLiteralsInRenderedOutput() {
+  const ctx = newContext(EXTRACTED, HTML, {});
+  resetState(ctx);
+  vm.runInContext(
+    'govJointRevisionListState.items = ' + JSON.stringify([fakeItem({ safe_reason: 'a normal reason' })])
+    + '; govJointRevisionListState.total = 1; govJointRevisionListState.totalPages = 2;',
+    ctx.context,
+  );
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context);
+  const html = ctx.byId['gov-jrlist-query-result'].innerHTML;
+  check('no raw "gov.jrlist." key literal ever leaks into rendered output', html.indexOf('gov.jrlist.') === -1);
+}
+
+async function testNoUnresolvedKeyLiteralInEmptyOrLoadingOrErrorStates() {
+  const ctx = newContext(EXTRACTED, HTML, {});
+  resetState(ctx);
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context); // empty
+  const emptyHtml = ctx.byId['gov-jrlist-query-result'].innerHTML;
+  vm.runInContext('govJointRevisionListState.loading = true;', ctx.context);
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context); // loading
+  const loadingHtml = ctx.byId['gov-jrlist-query-result'].innerHTML;
+  vm.runInContext('govJointRevisionListState.loading = false; govJointRevisionListState.error = "x";', ctx.context);
+  vm.runInContext('govRenderJointRevisionQueryResult()', ctx.context); // error
+  const errorHtml = ctx.byId['gov-jrlist-query-result'].innerHTML;
+  check('empty state has no unresolved key literal', emptyHtml.indexOf('gov.jrlist.') === -1);
+  check('loading state has no unresolved key literal', loadingHtml.indexOf('gov.jrlist.') === -1);
+  check('error state has no unresolved key literal', errorHtml.indexOf('gov.jrlist.') === -1);
+}
+
+// =================================================================
 // Main
 // =================================================================
 
@@ -990,6 +1108,10 @@ const ALL_TESTS = [
   testEventBindingsPresentInMarkup, testNoDuplicateEventBindingAttributesForEachControl,
   testAllUsedGovJrlistKeysExistInEnglish, testAllUsedGovJrlistKeysExistInTurkish,
   testEnAndTrGovJrlistKeySetsMatchExactly, testLanguageReRenderPreservesState,
+  testReRenderNeverCallsApiRequestOrFetch, testReRenderPreservesPageAndSortState,
+  testResultTableIsRebuiltOnReRender, testPageLabelReflectsCurrentTranslationDictionary,
+  testButtonLabelsAreReTranslatedOnReRender, testNoUnresolvedKeyLiteralsInRenderedOutput,
+  testNoUnresolvedKeyLiteralInEmptyOrLoadingOrErrorStates,
 ];
 
 async function main() {
