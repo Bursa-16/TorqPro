@@ -348,8 +348,13 @@ def test_gov_key_parity_exact_count(frontend_html):
     tr_all = _keys_in_literal(_extract_lang_dict_literal(script, "tr"))
     en_gov = [k for k in en_all if k.startswith("gov.") or k == "sidebar.governance"]
     tr_gov = [k for k in tr_all if k.startswith("gov.") or k == "sidebar.governance"]
-    assert len(en_gov) == len(tr_gov) == 80, (
-        f"expected 80/80 gov.*/sidebar.governance key parity, got "
+    # 80 -> 104: Faz 2.8.16 Stage 4 added 24 new gov.jrlist.* keys to
+    # each of EN and TR (search/sort/pagination/export UX), made
+    # obsolete directly by the new keys the Stage 4 UI requires --
+    # same update pattern this constant has followed at each prior
+    # phase that added approved gov.* keys.
+    assert len(en_gov) == len(tr_gov) == 104, (
+        f"expected 104/104 gov.*/sidebar.governance key parity, got "
         f"{len(en_gov)} EN / {len(tr_gov)} TR"
     )
     assert len(set(en_gov)) == len(en_gov)
