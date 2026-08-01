@@ -382,13 +382,15 @@ def test_read_only_adapter_exposes_no_mutation_or_persistence_methods():
     assert not offenders, "read-only adapter must not define: " + ", ".join(offenders)
 
 
-def test_governance_api_defines_only_the_nine_approved_write_routes_and_four_read_routes():
-    """Stage 4 scope guard, extended by Faz 2.8.13 Stage 2 and Faz
-    2.8.14 Stage 3: exactly the approved endpoint set exists under
-    backend/governance/api.py -- no extra route was added, and none
-    of the nine write routes or four read routes (two generic + the
-    single-record joint-revision projection route + the new bulk
-    joint-revisions projection route) is missing."""
+def test_governance_api_defines_only_the_nine_approved_write_routes_and_five_read_routes():
+    """Stage 4 scope guard, extended by Faz 2.8.13 Stage 2, Faz
+    2.8.14 Stage 3, and Faz 2.8.16 Stage 2: exactly the approved
+    endpoint set exists under backend/governance/api.py -- no extra
+    route was added, and none of the nine write routes or five read
+    routes (two generic + the single-record joint-revision projection
+    route + the bulk joint-revisions projection route + the new
+    paginated/searchable/sortable joint-revisions query route) is
+    missing."""
     from backend.governance.api import router
 
     paths = sorted({route.path for route in router.routes})
@@ -398,6 +400,7 @@ def test_governance_api_defines_only_the_nine_approved_write_routes_and_four_rea
             "/api/governance/{aggregate_id}/status",
             "/api/governance/joint-revision/{revision_id}",
             "/api/governance/joint-revisions",
+            "/api/governance/joint-revisions/query",
             "/api/governance/review/{aggregate_id}/submit",
             "/api/governance/review/{aggregate_id}/approve",
             "/api/governance/review/{aggregate_id}/reject",
