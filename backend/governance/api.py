@@ -62,8 +62,8 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, ConfigDict, ValidationError
 
 from backend.api.dependencies import user
@@ -76,6 +76,20 @@ from backend.governance.adapters.joint_revision import (
 )
 from backend.governance.enums import LifecycleGroup
 from backend.governance.events import GovernanceEvent
+from backend.governance.joint_revision_csv import (
+    EXPORT_FILENAME,
+    export_joint_revision_projections_csv,
+)
+from backend.governance.joint_revision_query import (
+    DEFAULT_PAGE,
+    DEFAULT_PAGE_SIZE,
+    DEFAULT_SORT_BY,
+    DEFAULT_SORT_ORDER,
+    MAX_PAGE_SIZE,
+    JointRevisionQueryResult,
+    JointRevisionQueryValidationError,
+    query_joint_revision_projections,
+)
 from backend.governance.exceptions import (
     GovernanceCorruptionError,
     GovernanceDuplicateDecisionError,
@@ -440,6 +454,150 @@ def governance_joint_revisions_bulk(joint_id: Optional[int] = None, u=Depends(us
     """
     projections = project_joint_revisions_bulk(joint_id)
     return [p.model_dump(mode="json") for p in projections]
+
+
+@router.get("/joint-revisions/query", response_model=JointRevisionQueryResult)
+def governance_joint_revisions_query(
+    joint_id: Optional[int] = None,
+    search: Optional[str] = None,
+    sort_by: str = DEFAULT_SORT_BY,
+    sort_order: str = DEFAULT_SORT_ORDER,
+    page: int = Query(default=DEFAULT_PAGE, ge=1),
+    page_size: int = Query(default=DEFAULT_PAGE_SIZE, ge=1, le=MAX_PAGE_SIZE),
+    u=Depends(user),
+) -> JointRevisionQueryResult:
+    """Faz 2.8.16 Stage 2: read-only, additive, paginated counterpart
+    to the bare-array ``GET /joint-revisions`` route above.
+
+    Distinct static path segment (``joint-revisions/query``) -- not a
+    query-string variant of the existing route and not a path
+    parameter, so it cannot collide with either ``/joint-revisions``
+    (bare list) or ``/joint-revision/{revision_id}`` (single-record
+    lookup) regardless of declaration order.
+
+    This handler duplicates no search/sort/pagination logic of its
+    own: every query parameter is passed straight through to the
+    existing Faz 2.8.16 Stage 1 service function,
+    :func:`backend.governance.joint_revision_query.query_joint_revision_projections`,
+    which remains the single source of truth for the ``sort_by``/
+    ``sort_order`` allow-lists and for search/pagination behaviour.
+    The handler body is HTTP orchestration only: parameter passthrough
+    and one exception-to-status mapping.
+
+    Two independent validation layers, by design, not by oversight:
+
+      - ``page``/``page_size`` use FastAPI's own ``Query(ge=..., le=...)``
+        constraints, so an out-of-range value (e.g. ``page=0`` or
+        ``page_size=201``) is rejected by FastAPI itself, in FastAPI's
+        own ``422`` body shape, before this handler ever runs and
+        before the Stage 1 service is ever called.
+      - ``sort_by``/``sort_order`` carry no FastAPI-level constraint
+        (their allow-lists live only in the Stage 1 service, per
+        Stage 1's contract that this module must not redefine them),
+        so an invalid value reaches
+        :func:`query_joint_revision_projections`, which raises
+        :class:`~backend.governance.joint_revision_query.JointRevisionQueryValidationError`
+        -- caught immediately below and mapped to ``HTTPException(422, ...)``,
+        matching this file's existing ``_run_command`` exception-mapping
+        convention (``except SomeError as exc: raise HTTPException(422, str(exc))``).
+
+    Read-only: never writes to the ``joints``/``joint_revisions``
+    tables, never writes a governance event, and (like the bare-array
+    route above) has no governance event store dependency to inject.
+    A source read failure flows through unchanged from the Stage 1
+    service's own existing safe-empty-result contract -- this handler
+    adds no additional ``try/except`` around that case.
+
+    Read-only alternative to ``GET /joint-revisions``: supports
+    search, deterministic sorting, and pagination; the existing
+    bare-array endpoint is unmodified and remains available for any
+    caller that does not need those features.
+    """
+    try:
+        return query_joint_revision_projections(
+            joint_id=joint_id,
+            search=search,
+            sort_by=sort_by,
+            sort_order=sort_order,
+            page=page,
+            page_size=page_size,
+        )
+    except JointRevisionQueryValidationError as exc:
+        raise HTTPException(422, str(exc))
+
+
+@router.get(
+    "/joint-revisions/export.csv",
+    response_class=Response,
+    responses={
+        200: {
+            "description": "CSV export of joint revision governance projections.",
+            "content": {"text/csv": {}},
+        },
+    },
+)
+def governance_joint_revisions_export_csv(
+    joint_id: Optional[int] = None,
+    search: Optional[str] = None,
+    sort_by: str = DEFAULT_SORT_BY,
+    sort_order: str = DEFAULT_SORT_ORDER,
+    u=Depends(user),
+) -> Response:
+    """Faz 2.8.16 Stage 3: read-only, additive CSV export of the same
+    search/sort surface as ``GET /joint-revisions/query`` above --
+    export is deliberately pagination-independent, so ``page``/
+    ``page_size`` are not accepted here at all (an unrecognized query
+    parameter, including these two, is silently ignored by FastAPI --
+    no unknown-query-parameter rejection mechanism exists anywhere
+    else in this codebase for this handler to newly introduce).
+
+    Distinct static path segment (``joint-revisions/export.csv``) --
+    cannot collide with ``/joint-revisions`` or
+    ``/joint-revisions/query`` regardless of declaration order. The
+    ``.csv`` suffix is part of the literal path, not a format
+    negotiation mechanism.
+
+    This handler duplicates no export/search/sort logic of its own:
+    it calls exactly one function,
+    :func:`backend.governance.joint_revision_csv.export_joint_revision_projections_csv`,
+    which itself reuses the Faz 2.8.16 Stage 3
+    ``query_all_joint_revision_projections`` pipeline -- the same
+    validated, allow-listed search/sort behaviour as the ``/query``
+    route above, with pagination removed rather than reimplemented.
+
+    Validation: identical two-layer contract to ``/joint-revisions/query``
+    (see that handler's docstring) minus the ``page``/``page_size``
+    layer, which does not apply here.
+    :class:`~backend.governance.joint_revision_query.JointRevisionQueryValidationError`
+    is mapped to ``HTTPException(422, str(exc))`` -- the same mapping
+    line, not a duplicated error-handling framework.
+
+    Response contract: ``200``, ``Content-Type: text/csv; charset=utf-8``,
+    ``Content-Disposition: attachment; filename="joint-revisions-export.csv"``
+    -- the filename is always this exact, deterministic string,
+    regardless of ``joint_id``/``search``/``sort_by``/``sort_order``
+    (no timestamp, no random suffix, no per-request variation). An
+    empty filtered result still returns ``200`` with a header-only CSV
+    body, never an error.
+
+    Read-only and source-failure-safe, inherited unchanged from the
+    Stage 1/3 pipeline: no mutation, no governance event, no
+    filesystem write (the CSV is built entirely in memory), and a
+    source read failure produces a header-only CSV body rather than a
+    leaked exception or an HTTP 500 -- this handler adds no
+    defensive ``except Exception`` of its own around that case.
+    """
+    try:
+        csv_bytes = export_joint_revision_projections_csv(
+            joint_id=joint_id, search=search, sort_by=sort_by, sort_order=sort_order
+        )
+    except JointRevisionQueryValidationError as exc:
+        raise HTTPException(422, str(exc))
+    return Response(
+        content=csv_bytes,
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{EXPORT_FILENAME}"'},
+    )
 
 
 # ---------------------------------------------------------------------

@@ -72,6 +72,7 @@ JS_HARNESS_FILENAMES: tuple[str, ...] = (
     "run_joint_analysis_tests.js",
     "run_material_intelligence_tests.js",
     "run_washer_resolution_report_tests.js",
+    "run_joint_revision_list_ux_tests.js",
 )
 
 NODE_MISSING_MESSAGE = (

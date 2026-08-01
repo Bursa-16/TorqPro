@@ -342,19 +342,122 @@ def test_translation_key_parity_between_tr_and_en(frontend_html):
     )
 
 
-def test_gov_key_parity_exact_count(frontend_html):
+# Faz 2.8.16 Stage 5: the 24 gov.jrlist.* keys Stage 4 added for the
+# Joint Revision List search/sort/pagination/export UX. Explicit,
+# named set (rather than only an aggregate count) so a future
+# accidental deletion of any one of *these specific* keys is caught
+# directly, independent of how many keys any other phase adds or
+# removes elsewhere in gov.*.
+FAZ_2_8_16_REQUIRED_GOV_JRLIST_KEYS = frozenset({
+    "gov.jrlist.query_section_sub",
+    "gov.jrlist.searchLabel",
+    "gov.jrlist.searchPlaceholder",
+    "gov.jrlist.searchButton",
+    "gov.jrlist.clearButton",
+    "gov.jrlist.sortBy",
+    "gov.jrlist.sortOrder",
+    "gov.jrlist.ascending",
+    "gov.jrlist.descending",
+    "gov.jrlist.pageSize",
+    "gov.jrlist.previous",
+    "gov.jrlist.next",
+    "gov.jrlist.results",
+    "gov.jrlist.pageOf",
+    "gov.jrlist.exportCsv",
+    "gov.jrlist.exporting",
+    "gov.jrlist.loading",
+    "gov.jrlist.empty",
+    "gov.jrlist.error",
+    "gov.jrlist.export_error",
+    "gov.jrlist.sortJointRevisionId",
+    "gov.jrlist.sortSourceStatus",
+    "gov.jrlist.sortCanonicalStatus",
+    "gov.jrlist.sortOutcome",
+})
+
+
+def _gov_key_value_pairs(literal: str) -> dict:
+    return dict(re.findall(r"'([a-zA-Z0-9_.]+)':\s*'((?:[^'\\]|\\.)*)'", literal))
+
+
+def test_gov_key_parity_and_minimum_count(frontend_html):
+    """Faz 2.8.16 Stage 5 revision of the former
+    ``test_gov_key_parity_exact_count``: an exact ``==`` count broke
+    on every single legitimate phase that added an approved gov.* key
+    (Faz 2.8.9, 2.8.11, 2.8.13, 2.8.14, 2.8.16 Stage 4 all had to bump
+    this same literal number), without ever actually distinguishing
+    "a key was legitimately added" from "a key was accidentally
+    deleted and another added, netting the same count" -- the exact
+    total was never the real invariant this test cared about.
+
+    Replaced with the combination that actually encodes the intent:
+    - EN/TR parity (unchanged -- still catches any imbalance).
+    - No duplicate key within either language block (unchanged).
+    - A **floor**, not an exact match: at least as many gov.*/
+      sidebar.governance keys as the last verified count (104, as of
+      Faz 2.8.16 Stage 4) -- catches a *silent bulk deletion* (a
+      regression this test exists to catch) without breaking on the
+      next phase's legitimate additive keys. A genuine deletion of a
+      *specific* required key is caught directly by
+      ``test_faz_2_8_16_required_gov_jrlist_keys_present`` below and
+      by earlier phases' own equivalent guards, not by this floor
+      alone.
+    """
     script = _extract_script(frontend_html)
     en_all = _keys_in_literal(_extract_lang_dict_literal(script, "en"))
     tr_all = _keys_in_literal(_extract_lang_dict_literal(script, "tr"))
     en_gov = [k for k in en_all if k.startswith("gov.") or k == "sidebar.governance"]
     tr_gov = [k for k in tr_all if k.startswith("gov.") or k == "sidebar.governance"]
-    assert len(en_gov) == len(tr_gov) == 80, (
-        f"expected 80/80 gov.*/sidebar.governance key parity, got "
-        f"{len(en_gov)} EN / {len(tr_gov)} TR"
+    assert len(set(en_gov)) == len(en_gov), "duplicate gov.* key defined in the EN dictionary"
+    assert len(set(tr_gov)) == len(tr_gov), "duplicate gov.* key defined in the TR dictionary"
+    assert set(en_gov) == set(tr_gov), (
+        f"gov.*/sidebar.governance key parity broken -- only in en: "
+        f"{sorted(set(en_gov) - set(tr_gov))}, only in tr: {sorted(set(tr_gov) - set(en_gov))}"
     )
-    assert len(set(en_gov)) == len(en_gov)
-    assert len(set(tr_gov)) == len(tr_gov)
-    assert set(en_gov) == set(tr_gov)
+    assert len(en_gov) >= 104, (
+        f"gov.*/sidebar.governance key count dropped below the last verified "
+        f"floor (104, as of Faz 2.8.16 Stage 4) -- got {len(en_gov)}; this floor "
+        f"exists to catch a silent bulk deletion, not to block legitimate "
+        f"additive growth, so it should only ever need raising, never lowering"
+    )
+
+
+def test_faz_2_8_16_required_gov_jrlist_keys_present(frontend_html):
+    script = _extract_script(frontend_html)
+    en_keys = set(_keys_in_literal(_extract_lang_dict_literal(script, "en")))
+    tr_keys = set(_keys_in_literal(_extract_lang_dict_literal(script, "tr")))
+    missing_en = FAZ_2_8_16_REQUIRED_GOV_JRLIST_KEYS - en_keys
+    missing_tr = FAZ_2_8_16_REQUIRED_GOV_JRLIST_KEYS - tr_keys
+    assert not missing_en, f"Faz 2.8.16 required key(s) missing from EN: {sorted(missing_en)}"
+    assert not missing_tr, f"Faz 2.8.16 required key(s) missing from TR: {sorted(missing_tr)}"
+    # The 11 pre-existing gov.jrlist.* keys (Faz 2.8.14) must also
+    # still be present -- Stage 4's own contract required this.
+    pre_existing_jrlist_keys = {k for k in en_keys if k.startswith("gov.jrlist.")} - \
+        FAZ_2_8_16_REQUIRED_GOV_JRLIST_KEYS
+    assert len(pre_existing_jrlist_keys) == 11, (
+        f"expected the 11 pre-existing gov.jrlist.* keys (Faz 2.8.14) to remain "
+        f"untouched alongside the 24 new Faz 2.8.16 keys, found "
+        f"{len(pre_existing_jrlist_keys)}: {sorted(pre_existing_jrlist_keys)}"
+    )
+
+
+def test_faz_2_8_16_required_gov_jrlist_key_values_are_real_translations(frontend_html):
+    script = _extract_script(frontend_html)
+    en_pairs = _gov_key_value_pairs(_extract_lang_dict_literal(script, "en"))
+    tr_pairs = _gov_key_value_pairs(_extract_lang_dict_literal(script, "tr"))
+    for key in FAZ_2_8_16_REQUIRED_GOV_JRLIST_KEYS:
+        en_value = en_pairs.get(key)
+        tr_value = tr_pairs.get(key)
+        assert en_value is not None, f"{key} missing an EN value pair"
+        assert tr_value is not None, f"{key} missing a TR value pair"
+        assert en_value.strip() != "", f"{key} has an empty/whitespace-only EN value"
+        assert tr_value.strip() != "", f"{key} has an empty/whitespace-only TR value"
+        assert en_value != key, f"{key} EN value is the raw key name, not a real translation"
+        assert tr_value != key, f"{key} TR value is the raw key name, not a real translation"
+        assert en_value != tr_value, (
+            f"{key} has an identical EN/TR value ({en_value!r}) -- likely "
+            f"copy-pasted without translating"
+        )
 
 
 def test_no_new_duplicate_translation_keys(frontend_html):

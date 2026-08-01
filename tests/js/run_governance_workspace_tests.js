@@ -39,6 +39,7 @@ const FRONTEND_PATH = path.join(REPO_ROOT, 'frontend', 'index.html');
 const CONST_NAMES = [
   'I18N', 'CURRENT_LANG', 'GOV_ACTIONS', 'GOV_LAST_HISTORY', 'GOV_LAST_STATUS', 'GOV_LAST_ERROR',
   'GOV_JR_OUTCOMES', 'GOV_JR_LAST_RESULT', 'GOV_JRLIST_LAST_RESULT', 'GOV_JRLIST_REQUEST_ID',
+  'govJointRevisionListState',
 ];
 const MUTABLE_STATE_NAMES = [
   'GOV_LAST_HISTORY', 'GOV_LAST_STATUS', 'GOV_LAST_ERROR', 'GOV_JR_LAST_RESULT',
@@ -59,6 +60,8 @@ const FUNCTION_NAMES = [
   'govRenderJointRevisionListError', 'govRenderJointRevisionListEmpty',
   'govIsWellFormedJointRevisionListItem', 'govRenderJointRevisionList',
   'govJointRevisionListBuildUrl', 'govLoadJointRevisions',
+  'govJointRevisionQueryPageLabel', 'govRenderJointRevisionQueryControlsState',
+  'govRenderJointRevisionQueryResult',
 ];
 
 function buildExtractedSource() {
