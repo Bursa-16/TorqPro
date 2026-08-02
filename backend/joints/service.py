@@ -8,6 +8,7 @@ calculation orchestration - those remain out of scope (see ADR 2.5A).
 from __future__ import annotations
 
 import json
+import sqlite3
 
 from backend.app import audit, conn, now_iso
 from backend.joints.exceptions import (
@@ -120,25 +121,136 @@ def archive_joint(joint_id: int, actor_id: int | None) -> dict:
     return _row(row)
 
 
+def _match_existing_idempotent_revision(
+    c, joint_id: int, idempotency_key: str, normalized_snapshot: dict,
+    change_summary: str | None, created_by: int | None,
+) -> dict | None:
+    """Faz 2.8.17 Stage 1 helper: look up any existing revision already
+    recorded under ``(joint_id, idempotency_key)``.
+
+    - No existing row for this key on this joint: returns ``None`` --
+      caller proceeds to create one.
+    - An existing row whose ``(snapshot, change_summary, created_by)``
+      matches the incoming request *semantically* (dict equality on
+      the parsed snapshot, not a raw string/hash comparison, so key
+      order never affects the result): returns that row unchanged --
+      this is a safe retry replay, not a new write.
+    - An existing row whose request differs on any of those three
+      fields: raises :class:`JointRevisionConflictError` -- the same
+      key was reused for a materially different request, which is not
+      idempotency, it is a key collision. The error message never
+      includes the snapshot content, a file path, SQL, or a raw
+      driver exception -- only a fixed, generic sentence.
+    """
+    existing = c.execute(
+        "SELECT * FROM joint_revisions WHERE joint_id=? AND idempotency_key=?",
+        (joint_id, idempotency_key),
+    ).fetchone()
+    if existing is None:
+        return None
+    existing_row = _row(existing)
+    existing_snapshot = json.loads(existing_row["snapshot_json"] or "{}")
+    if (
+        existing_snapshot == normalized_snapshot
+        and existing_row["change_summary"] == change_summary
+        and existing_row["created_by"] == created_by
+    ):
+        return existing_row
+    raise JointRevisionConflictError(
+        "idempotency_key already used for this joint with a different request"
+    )
+
+
 def create_joint_revision(
-    joint_id: int, snapshot: dict, change_summary: str | None, created_by: int | None
+    joint_id: int,
+    snapshot: dict,
+    change_summary: str | None,
+    created_by: int | None,
+    *,
+    idempotency_key: str | None = None,
 ) -> dict:
+    """Create a draft joint revision.
+
+    Faz 2.8.17 Stage 1: ``idempotency_key`` is a new, keyword-only,
+    optional parameter (default ``None``) -- every existing positional
+    call site and test is unaffected, and the ``idempotency_key is
+    None`` path below is byte-for-byte the same behaviour this
+    function always had (one new revision per call, no lookup, no
+    extra column written beyond its NULL default).
+
+    When ``idempotency_key`` is provided, this call becomes a safe
+    retry target: the same ``(joint_id, idempotency_key)`` pair with
+    the same ``(snapshot, change_summary, created_by)`` returns the
+    already-created revision instead of creating a second one (no new
+    revision_no consumed, no second "joint_revision_create" audit
+    entry); the same key with a *different* request raises
+    :class:`JointRevisionConflictError` instead of silently
+    overwriting or silently creating a duplicate. A different
+    ``joint_id`` may reuse the same key freely -- the uniqueness scope
+    is per-joint, matching the partial unique index in
+    ``backend.joints.schema``.
+    """
     joint = get_joint(joint_id)
-    if joint["status"] == "archived":
-        raise JointArchivedError(f"joint {joint_id} is archived")
+    normalized_snapshot = snapshot or {}
+
     with conn() as c:
+        if idempotency_key is not None:
+            existing_row = _match_existing_idempotent_revision(
+                c, joint_id, idempotency_key, normalized_snapshot, change_summary, created_by,
+            )
+            if existing_row is not None:
+                return existing_row
+
+        if joint["status"] == "archived":
+            raise JointArchivedError(f"joint {joint_id} is archived")
+
         rev_no = c.execute(
             "SELECT COALESCE(MAX(revision_no),0)+1 n FROM joint_revisions WHERE joint_id=?",
             (joint_id,),
         ).fetchone()["n"]
         ts = now_iso()
-        c.execute(
-            "INSERT INTO joint_revisions(joint_id,revision_no,status,snapshot_json,change_summary,"
-            "created_by,created_at) VALUES(?,?,'draft',?,?,?,?)",
-            (joint_id, rev_no, json.dumps(snapshot or {}, ensure_ascii=False),
-             change_summary, created_by, ts),
-        )
-        c.commit()
+        snapshot_json = json.dumps(normalized_snapshot, ensure_ascii=False)
+
+        if idempotency_key is None:
+            c.execute(
+                "INSERT INTO joint_revisions(joint_id,revision_no,status,snapshot_json,"
+                "change_summary,created_by,created_at) VALUES(?,?,'draft',?,?,?,?)",
+                (joint_id, rev_no, snapshot_json, change_summary, created_by, ts),
+            )
+            c.commit()
+        else:
+            # Concurrency backstop (Stage 0 Sec. 5): the SELECT above and
+            # this INSERT are not atomic across processes/threads, so a
+            # concurrent writer could win the same (joint_id,
+            # idempotency_key) pair between our lookup and our insert.
+            # The partial unique index (backend.joints.schema) is the
+            # real guarantee; this except clause only translates that
+            # raw sqlite3.IntegrityError into the same safe, generic
+            # JointRevisionConflictError (or a successful replay, if the
+            # concurrent writer's request was semantically identical to
+            # ours) that a non-racing caller already sees above -- a
+            # caller never needs a sqlite-specific except clause of its
+            # own to use this function safely.
+            try:
+                c.execute(
+                    "INSERT INTO joint_revisions(joint_id,revision_no,status,snapshot_json,"
+                    "change_summary,created_by,created_at,idempotency_key) "
+                    "VALUES(?,?,'draft',?,?,?,?,?)",
+                    (joint_id, rev_no, snapshot_json, change_summary, created_by, ts,
+                     idempotency_key),
+                )
+                c.commit()
+            except sqlite3.IntegrityError:
+                c.rollback()
+                existing_row = _match_existing_idempotent_revision(
+                    c, joint_id, idempotency_key, normalized_snapshot, change_summary,
+                    created_by,
+                )
+                if existing_row is not None:
+                    return existing_row
+                raise JointRevisionConflictError(
+                    "joint revision could not be created due to a conflicting write"
+                ) from None
         row = c.execute("SELECT * FROM joint_revisions WHERE id=last_insert_rowid()").fetchone()
     audit(created_by, "joint_revision_create", f"joint={joint_id} rev={rev_no}")
     return _row(row)
