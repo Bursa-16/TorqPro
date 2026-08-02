@@ -58,6 +58,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.dash-kpi-top{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.dash-kpi-secondary{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:900px){.dash-kpi-top{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.dash-kpi-top{grid-template-columns:1fr}.dash-kpi-secondary{grid-template-columns:1fr}}
 .stat{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
 .stat-label{font-size:11px;color:var(--text3);margin-bottom:4px}
 .stat-val{font-size:24px;font-weight:700}
@@ -512,13 +516,16 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
 <div id="page-dashboard" class="page active">
   <div class="section-header"><span class="section-icon">📊</span><div>
     <div class="section-title" data-i18n="dashboard.title">Üretim Tork Kontrol Paneli</div>
-    <div class="section-sub"><span data-i18n="dashboard.today">Bugün</span>: <span id="tarih"></span></div>
+    <div class="section-sub"><span data-i18n="dashboard.today">Bugün</span>: <span id="tarih"></span> · <span style="color:var(--text3)" data-i18n="dashboard.demo_data_note">Örnek/demo veriler — canlı üretim verisine bağlı değildir</span></div>
   </div></div>
-  <div class="grid4" style="margin-bottom:16px">
-    <div class="stat"><div class="stat-label" data-i18n="dashboard.stat_daily_measurement">Günlük Ölçüm</div><div class="stat-val blue">247</div><div class="stat-sub"><span data-i18n="dashboard.stat_daily_measurement_delta">↑ 12 dün'den fazla</span></div></div>
-    <div class="stat"><div class="stat-label" data-i18n="dashboard.stat_ok_rate">OK Oranı</div><div class="stat-val green">98.4%</div><div class="stat-sub"><span data-i18n="dashboard.stat_ok_rate_target">Hedef: ≥97%</span></div></div>
-    <div class="stat"><div class="stat-label" data-i18n="dashboard.stat_nok_records">NOK Kayıt</div><div class="stat-val red">4</div><div class="stat-sub"><span data-i18n="dashboard.stat_nok_records_note">2'si müdahale bekliyor</span></div></div>
-    <div class="stat"><div class="stat-label" data-i18n="dashboard.stat_active_tools">Aktif Sıkıcı</div><div class="stat-val yellow">112</div><div class="stat-sub"><span data-i18n="dashboard.stat_active_tools_note">3 yetenek süresi dolmuş</span></div></div>
+  <div class="dash-kpi-top" style="margin-bottom:12px">
+    <div class="stat" id="kpiDailyTarget"><div class="stat-label" data-i18n="dashboard.stat_daily_target">Günlük Ölçüm Hedefi</div><div class="stat-val blue">260</div><div class="stat-sub"><span data-i18n="dashboard.stat_daily_target_note">Vardiya hedefi</span></div></div>
+    <div class="stat" id="kpiDailyCompleted"><div class="stat-label" data-i18n="dashboard.stat_daily_measurement">Tamamlanan Ölçüm</div><div class="stat-val blue">247</div><div class="stat-sub"><span data-i18n="dashboard.stat_daily_measurement_delta">Kalan: 13 · %95 tamamlandı</span></div></div>
+    <div class="stat" id="kpiActiveTools"><div class="stat-label" data-i18n="dashboard.stat_active_tools">Aktif Vidalayıcı</div><div class="stat-val yellow">112</div><div class="stat-sub"><span data-i18n="dashboard.stat_active_tools_note">3 yetenek süresi dolmuş</span></div></div>
+  </div>
+  <div class="dash-kpi-secondary" style="margin-bottom:16px">
+    <div class="stat" id="kpiOkRate"><div class="stat-label" data-i18n="dashboard.stat_ok_rate">OK Oranı</div><div class="stat-val green">98.4%</div><div class="stat-sub"><span data-i18n="dashboard.stat_ok_rate_target">Hedef: ≥97%</span></div></div>
+    <div class="stat" id="kpiNokRecords"><div class="stat-label" data-i18n="dashboard.stat_nok_records">NOK Kayıt</div><div class="stat-val red">4</div><div class="stat-sub"><span data-i18n="dashboard.stat_nok_records_note">2'si müdahale bekliyor</span></div></div>
   </div>
   <div class="grid2">
     <div class="card">
@@ -1927,13 +1934,16 @@ const I18N = {
     // ---- dashboard ----
     'dashboard.title': 'Production Torque Control Panel',
     'dashboard.today': 'Today',
-    'dashboard.stat_daily_measurement': 'Daily Measurements',
-    'dashboard.stat_daily_measurement_delta': "↑ 12 more than yesterday",
+    'dashboard.demo_data_note': 'Sample/demo data — not connected to live production data',
+    'dashboard.stat_daily_target': 'Daily Measurement Target',
+    'dashboard.stat_daily_target_note': 'Shift target',
+    'dashboard.stat_daily_measurement': 'Completed Measurements',
+    'dashboard.stat_daily_measurement_delta': '13 remaining · 95% complete',
     'dashboard.stat_ok_rate': 'OK Rate',
     'dashboard.stat_ok_rate_target': 'Target: ≥97%',
     'dashboard.stat_nok_records': 'NOK Records',
     'dashboard.stat_nok_records_note': '2 awaiting intervention',
-    'dashboard.stat_active_tools': 'Active Tools',
+    'dashboard.stat_active_tools': 'Active Tightening Devices',
     'dashboard.stat_active_tools_note': '3 capability studies expired',
     'dashboard.class_distribution_title': 'Tightening Class Distribution',
     'dashboard.active_operations': 'Active operations',
@@ -4486,13 +4496,16 @@ const I18N = {
     // ---- dashboard ----
     'dashboard.title': 'Üretim Tork Kontrol Paneli',
     'dashboard.today': 'Bugün',
-    'dashboard.stat_daily_measurement': 'Günlük Ölçüm',
-    'dashboard.stat_daily_measurement_delta': "↑ 12 dün'den fazla",
+    'dashboard.demo_data_note': 'Örnek/demo veriler — canlı üretim verisine bağlı değildir',
+    'dashboard.stat_daily_target': 'Günlük Ölçüm Hedefi',
+    'dashboard.stat_daily_target_note': 'Vardiya hedefi',
+    'dashboard.stat_daily_measurement': 'Tamamlanan Ölçüm',
+    'dashboard.stat_daily_measurement_delta': 'Kalan: 13 · %95 tamamlandı',
     'dashboard.stat_ok_rate': 'OK Oranı',
     'dashboard.stat_ok_rate_target': 'Hedef: ≥97%',
     'dashboard.stat_nok_records': 'NOK Kayıt',
     'dashboard.stat_nok_records_note': "2'si müdahale bekliyor",
-    'dashboard.stat_active_tools': 'Aktif Sıkıcı',
+    'dashboard.stat_active_tools': 'Aktif Vidalayıcı',
     'dashboard.stat_active_tools_note': '3 yetenek süresi dolmuş',
     'dashboard.class_distribution_title': 'Sıkma Sınıfı Dağılımı',
     'dashboard.active_operations': 'Aktif operasyonlar',

@@ -4306,6 +4306,93 @@ async function main() {
       logoutSrc.indexOf("getElementById('topbar-user-info')?.remove()") !== -1);
   }
 
+  // ---- 216. Stage 3: five dashboard KPI labels are present (top row:
+  //           daily target, completed measurements, active tightening
+  //           devices; secondary row: OK rate, NOK count) and translate
+  //           TR <-> EN correctly. ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const kpiKeys = {
+      'dashboard.stat_daily_target': ['Günlük Ölçüm Hedefi', 'Daily Measurement Target'],
+      'dashboard.stat_daily_measurement': ['Tamamlanan Ölçüm', 'Completed Measurements'],
+      'dashboard.stat_active_tools': ['Aktif Vidalayıcı', 'Active Tightening Devices'],
+      'dashboard.stat_ok_rate': ['OK Oranı', 'OK Rate'],
+      'dashboard.stat_nok_records': ['NOK Kayıt', 'NOK Records'],
+    };
+    const els = {};
+    for (const key of Object.keys(kpiKeys)) {
+      els[key] = getByI18nKey(ctx, key);
+      check(key + ' element exists', !!els[key]);
+    }
+    ctx.context.applyStaticTranslations();
+    for (const [key, [trText]] of Object.entries(kpiKeys)) {
+      if (els[key]) checkEqual(key + ' tr text', els[key].textContent, trText);
+    }
+    ctx.context.setLanguage('en');
+    for (const [key, [, enText]] of Object.entries(kpiKeys)) {
+      if (els[key]) checkEqual(key + ' en text', els[key].textContent, enText);
+    }
+  }
+
+  // ---- 217. Stage 3: corrected terminology -- old "Aktif Sıkıcı" text
+  //           is fully gone, "Aktif Vidalayıcı" is present in both the
+  //           markup default and the TR dictionary entry; EN dictionary
+  //           carries the matching translation. ----
+  {
+    check('old "Aktif Sıkıcı" text no longer present anywhere', rawHtml.indexOf('Aktif Sıkıcı') === -1);
+    check('"Aktif Vidalayıcı" text is present', rawHtml.indexOf('Aktif Vidalayıcı') !== -1);
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const i18n = ctx.context.__getI18N();
+    checkEqual('dashboard.stat_active_tools tr dictionary value', i18n.tr['dashboard.stat_active_tools'], 'Aktif Vidalayıcı');
+    checkEqual('dashboard.stat_active_tools en dictionary value', i18n.en['dashboard.stat_active_tools'], 'Active Tightening Devices');
+  }
+
+  // ---- 218. Stage 3: new/changed dashboard KPI keys keep exact TR/EN
+  //           key-set parity (spot-check on top of the whole-dictionary
+  //           parity already guarded by tests/test_i18n_key_parity.py). ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const i18n = ctx.context.__getI18N();
+    for (const key of [
+      'dashboard.demo_data_note', 'dashboard.stat_daily_target', 'dashboard.stat_daily_target_note',
+      'dashboard.stat_daily_measurement', 'dashboard.stat_daily_measurement_delta', 'dashboard.stat_active_tools',
+    ]) {
+      check(key + ' present in EN dictionary', Object.prototype.hasOwnProperty.call(i18n.en, key));
+      check(key + ' present in TR dictionary', Object.prototype.hasOwnProperty.call(i18n.tr, key));
+    }
+  }
+
+  // ---- 219. Stage 3: dashboard DOM ids are unique (no duplicate id
+  //           attribute anywhere in frontend/index.html). ----
+  {
+    const allIds = [...rawHtml.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);
+    const seen = new Set();
+    const dupes = new Set();
+    for (const id of allIds) { if (seen.has(id)) dupes.add(id); seen.add(id); }
+    checkEqual('no duplicate DOM id anywhere in frontend/index.html', dupes.size, 0);
+    for (const id of ['kpiDailyTarget', 'kpiDailyCompleted', 'kpiActiveTools', 'kpiOkRate', 'kpiNokRecords']) {
+      check('KPI element id="' + id + '" exists exactly once', allIds.filter((x) => x === id).length === 1);
+    }
+  }
+
+  // ---- 220. Stage 3: responsive dashboard KPI grid classes exist with
+  //           media-query collapsing, are actually referenced by the
+  //           dashboard markup, and the two pre-existing dashboard
+  //           cards (class distribution, recent NOK) remain present. ----
+  {
+    const styleBlock = rawHtml.match(/<style>([\s\S]*?)<\/style>/)[1];
+    check('.dash-kpi-top rule defined', /\.dash-kpi-top\{[^}]*display:grid/.test(styleBlock));
+    check('.dash-kpi-secondary rule defined', /\.dash-kpi-secondary\{[^}]*display:grid/.test(styleBlock));
+    check('.dash-kpi-top has a tablet-width media-query collapse', /@media\(max-width:900px\)\{\.dash-kpi-top\{grid-template-columns:repeat\(2,1fr\)\}\}/.test(styleBlock));
+    check('.dash-kpi-top and .dash-kpi-secondary both collapse to 1 column on narrow/mobile widths',
+      /@media\(max-width:600px\)\{\.dash-kpi-top\{grid-template-columns:1fr\}\.dash-kpi-secondary\{grid-template-columns:1fr\}\}/.test(styleBlock));
+    const dashboardPageMatch = rawHtml.match(/<div id="page-dashboard" class="page active">[\s\S]*?<\/div>\s*<div class="content">/);
+    check('dashboard markup uses .dash-kpi-top', rawHtml.indexOf('class="dash-kpi-top"') !== -1);
+    check('dashboard markup uses .dash-kpi-secondary', rawHtml.indexOf('class="dash-kpi-secondary"') !== -1);
+    check('existing "Tightening Class Distribution" card key still present', rawHtml.indexOf('data-i18n="dashboard.class_distribution_title"') !== -1);
+    check('existing "Recent NOK Records" card key still present', rawHtml.indexOf('data-i18n="dashboard.recent_nok_title"') !== -1);
+  }
+
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
   if (fail > 0) {
     console.log('Failures: ' + failures.join('; '));
