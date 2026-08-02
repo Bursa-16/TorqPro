@@ -1438,7 +1438,7 @@ def mobile_access_info(u=Depends(user)):
 
 
 @app.get("/api/runtime/status")
-def runtime_status():
+def runtime_status(u=Depends(admin)):
     db_ok=False
     active_count=0
     try:

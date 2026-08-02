@@ -121,7 +121,7 @@ const FUNCTION_NAMES = [
   'exportSystemPackage', 'importSystemPackage', 'loadMigrationHistory',
   'runDiagnostics', 'renderDiagnostics', 'downloadDiagnostics',
   'changeOwnPassword', 'adminCreateUser', 'loadAdminUsers', 'adminUpdateUser', 'adminResetPassword',
-  'loadAudit', 'downloadBackup', 'loadSystemHealth', 'shInfo', 'infoIconHtml',
+  'loadAudit', 'downloadBackup', 'loadSystemHealth', 'shInfo', 'infoIconHtml', 'showPage',
   'scEsc', 'scFmtNum', 'scFmtRange', 'scVerificationLabel', 'loadStrengthClassesWorkspace',
   'scRenderBoltTable', 'scRenderNutTable', 'scPopulateCompatSelectors', 'scCheckCompatibility',
   'scRenderCompatResult', 'scReapplyLanguage',
@@ -318,6 +318,14 @@ function buildDom(rawHtml, byId) {
       if (selector === '[data-i18n]') return dataI18nEls;
       if (selector === '[data-i18n-placeholder]') return placeholderEls;
       if (selector === '.lang-btn') return langBtns;
+      if (selector === '.page') {
+        // Every class="page" element in frontend/index.html has a
+        // matching id="page-XXX" -- mirrors real DOM querySelectorAll
+        // behavior using the same _byId registry getElementById
+        // already maintains, so showPage()'s "clear active from all
+        // other pages" step behaves identically to a real browser.
+        return Object.keys(this._byId).filter((k) => k.startsWith('page-')).map((k) => this._byId[k]);
+      }
       const scoped = /^#([\w-]+)\s+input(:checked|\[type="checkbox"\])?$/.exec(selector);
       if (scoped) {
         const container = this._byId[scoped[1]];
@@ -3127,6 +3135,7 @@ async function main() {
         app: 'TorqPro', version: '3.1', liveness: true, readiness: false, database: 'sqlite', license: 'Pro', active_datasets: 4,
       }));
       ctx.byId['runtimeHealth'] = { innerHTML: '' };
+      ctx.context.CURRENT_ROLE = 'admin';
       if (lang === 'en') ctx.context.setLanguage('en');
       await ctx.context.loadRuntimeHealth();
       return ctx.byId['runtimeHealth'].innerHTML;
@@ -4174,6 +4183,127 @@ async function main() {
     const pageBlockMatch = htmlSrc.match(/<div id="page-strengthclasses"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/div>/);
     check('strength classes page markup uses inline handlers, not addEventListener',
       htmlSrc.indexOf('addEventListener') === -1 || !pageBlockMatch || pageBlockMatch[0].indexOf('addEventListener') === -1);
+  }
+
+  // ---- 211. Stage 2: showPage('admin') / showPage('runtimehealth') by a
+  //           non-admin role must redirect to dashboard with a warning
+  //           alert and must NOT mark the admin/runtimehealth page as
+  //           active -- direct browser-console showPage(...) calls by a
+  //           non-admin session must not display admin content. ----
+  {
+    for (const pageId of ['admin', 'runtimehealth']) {
+      const ctx = newContext(extractedSource, rawHtml, {});
+      ctx.context.CURRENT_ROLE = 'viewer';
+      const pageEl = ctx.documentStub.getElementById('page-' + pageId);
+      const dashEl = ctx.documentStub.getElementById('page-dashboard');
+      ctx.context.showPage(pageId);
+      check('showPage(' + JSON.stringify(pageId) + '): non-admin does not get the page marked active',
+        !pageEl.classList.contains('active'));
+      check('showPage(' + JSON.stringify(pageId) + '): non-admin is redirected to dashboard (marked active)',
+        dashEl.classList.contains('active'));
+      check('showPage(' + JSON.stringify(pageId) + '): non-admin sees a permission-warning alert',
+        ctx.alertCalls.length === 1 && ctx.alertCalls[0].indexOf('yönetici yetkisi') !== -1);
+    }
+  }
+
+  // ---- 212. Stage 2: showPage('admin') / showPage('runtimehealth') by an
+  //           admin role marks the correct page active and triggers the
+  //           expected data loaders (no permission alert). ----
+  {
+    for (const pageId of ['admin', 'runtimehealth']) {
+      const calls = [];
+      const ctx = newContext(extractedSource, rawHtml, {}, async (url) => { calls.push(url); return {}; });
+      ctx.context.CURRENT_ROLE = 'admin';
+      ctx.byId['systemHealthCards'] = { innerHTML: '' };
+      ctx.byId['systemHealthDetail'] = { textContent: '' };
+      ctx.byId['adminUsers'] = { innerHTML: '' };
+      ctx.byId['auditList'] = { innerHTML: '' };
+      ctx.byId['runtimeHealth'] = { innerHTML: '' };
+      const pageEl = ctx.documentStub.getElementById('page-' + pageId);
+      ctx.context.showPage(pageId);
+      await Promise.resolve(); // let the fire-and-forget async loader(s) settle
+      check('showPage(' + JSON.stringify(pageId) + '): admin gets the page marked active',
+        pageEl.classList.contains('active'));
+      check('showPage(' + JSON.stringify(pageId) + '): admin sees no permission-warning alert',
+        ctx.alertCalls.length === 0);
+      check('showPage(' + JSON.stringify(pageId) + '): admin path triggers at least one admin API call',
+        calls.length >= 1);
+    }
+  }
+
+  // ---- 213. Stage 2: loadRuntimeHealth() now carries the same
+  //           CURRENT_ROLE guard as loadSystemHealth() -- a direct
+  //           console call by a non-admin session makes no network
+  //           call at all and leaves the runtimeHealth container
+  //           untouched. ----
+  {
+    let called = false;
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => { called = true; return {}; });
+    ctx.context.CURRENT_ROLE = 'viewer';
+    ctx.byId['runtimeHealth'] = { innerHTML: '' };
+    await ctx.context.loadRuntimeHealth();
+    checkEqual('non-admin loadRuntimeHealth(): apiRequest is never called', called, false);
+    checkEqual('non-admin loadRuntimeHealth(): runtimeHealth container left untouched', ctx.byId['runtimeHealth'].innerHTML, '');
+  }
+  {
+    const runtimeResponse = {
+      app: 'TorqPro', version: '2.8.17', liveness: true, readiness: true,
+      database: 'OK', license: 'ACTIVE', active_datasets: 3,
+    };
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => runtimeResponse);
+    ctx.context.CURRENT_ROLE = 'admin';
+    ctx.byId['runtimeHealth'] = { innerHTML: '' };
+    await ctx.context.loadRuntimeHealth();
+    check('admin loadRuntimeHealth(): renders the fetched status into the container',
+      ctx.byId['runtimeHealth'].innerHTML.indexOf('TorqPro') !== -1);
+  }
+
+  // ---- 214. Stage 2: no sensitive System Health / runtime-status
+  //           endpoint is ever reached by the extracted source when
+  //           CURRENT_ROLE is not 'admin' -- mirrors the existing
+  //           test 197 pattern, extended to /api/runtime/status. ----
+  {
+    let anyCallMade = false;
+    const ctx = newContext(extractedSource, rawHtml, {}, async () => { anyCallMade = true; return {}; });
+    ctx.context.CURRENT_ROLE = 'viewer';
+    ctx.byId['systemHealthCards'] = { innerHTML: '' };
+    ctx.byId['systemHealthDetail'] = { textContent: '' };
+    ctx.byId['runtimeHealth'] = { innerHTML: '' };
+    await ctx.context.loadSystemHealth();
+    await ctx.context.loadRuntimeHealth();
+    checkEqual('non-admin: neither loadSystemHealth() nor loadRuntimeHealth() ever calls the network', anyCallMade, false);
+  }
+
+  // ---- 215. Stage 2: doLogout() clears stale admin/System-Health DOM
+  //           content and resets CURRENT_ROLE -- verified via static
+  //           source inspection (doLogout() is legacy app wiring not
+  //           extracted into the sandbox, same rationale documented at
+  //           the top of this file for showPage/login; the pattern
+  //           mirrors this file's own test 15, which already asserts
+  //           presence/absence of exact source substrings). ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const logoutSrc = extractFunctionDecl(scriptSrc, 'doLogout');
+    check('doLogout() resets CURRENT_ROLE', /CURRENT_ROLE\s*=\s*''/.test(logoutSrc));
+    const nullSafeGuardedIds = ['systemHealthCards', 'systemHealthDetail', 'adminUsers', 'auditList', 'runtimeHealth'];
+    for (const id of nullSafeGuardedIds) {
+      check('doLogout() clears ' + id, logoutSrc.indexOf("getElementById('" + id + "')") !== -1);
+      // Null-safety: the getElementById(...) result must be captured
+      // into a local var and only dereferenced behind an `if(var)`
+      // guard -- never chained directly (e.g. `.innerHTML=` right
+      // after getElementById(...)) -- so a real browser returning
+      // null for a not-yet-rendered/absent element cannot throw.
+      const varMatch = new RegExp("const\\s+(\\w+)\\s*=\\s*document\\.getElementById\\('" + id + "'\\)").exec(logoutSrc);
+      check(id + ': getElementById result captured into a local var', !!varMatch);
+      if (varMatch) {
+        const guardRe = new RegExp('if\\(' + varMatch[1] + '\\)' + varMatch[1] + '\\.');
+        check(id + ': dereference is guarded by if(' + varMatch[1] + ')', guardRe.test(logoutSrc));
+      }
+    }
+    // topbar-user-info already uses optional chaining, an equally
+    // valid null-safe form (no guard variable needed).
+    check("doLogout() removes topbar-user-info null-safely (optional chaining)",
+      logoutSrc.indexOf("getElementById('topbar-user-info')?.remove()") !== -1);
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');

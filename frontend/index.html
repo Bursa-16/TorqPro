@@ -6119,11 +6119,19 @@ function guvenliCikis(){
   }).then(ok => { if (ok) doLogout(); });
 }
 function doLogout(){
-  AUTH_TOKEN='';CURRENT_USER='';
+  AUTH_TOKEN='';CURRENT_USER='';CURRENT_ROLE='';
   sessionStorage.removeItem('torqpro_token');sessionStorage.removeItem('torqpro_user');sessionStorage.removeItem('torqpro_role');
   document.getElementById('mainApp').style.display='none';
   document.getElementById('loginOverlay').style.display='flex';
   document.getElementById('topbar-user-info')?.remove();
+  // Clear any previously-rendered admin / System Health content so a
+  // subsequent lower-privilege session (or direct DOM manipulation)
+  // cannot read stale admin data left over from a prior admin session.
+  const shCards=document.getElementById('systemHealthCards');if(shCards)shCards.innerHTML='';
+  const shDetail=document.getElementById('systemHealthDetail');if(shDetail)shDetail.textContent='';
+  const adminUsersEl=document.getElementById('adminUsers');if(adminUsersEl)adminUsersEl.innerHTML='';
+  const auditListEl=document.getElementById('auditList');if(auditListEl)auditListEl.innerHTML='';
+  const runtimeHealthEl=document.getElementById('runtimeHealth');if(runtimeHealthEl)runtimeHealthEl.innerHTML='';
 }
 
 // ========== ORTAK BİLEŞEN: InfoPopover / StatusHelp ==========
@@ -6218,7 +6226,7 @@ function showPage(id, el) {
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();}if(id==='governance'){govInit();}
+  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();}if(id==='governance'){govInit();}
 }
 
 // ========== FRICTION CONDITION WORKSPACE (Faz 2.6.6) ==========
@@ -7737,6 +7745,7 @@ async function loadCloudReadiness(){
   document.getElementById('cloudChecklist').innerHTML=d.checks.map(c=>`<div class="diag-row"><div>${c.name}</div><div>${c.value??'—'}</div><div><span class="health-dot ${c.ok?'health-ok':'health-bad'}"></span>${c.ok?t('cloud.ready'):t('cloud.missing')}</div></div>`).join('')+`<div class="alert ${d.ready?'alert-success':'alert-warn'}"><strong>${t('cloud.overall_label')}:</strong> ${d.ready?t('cloud.ready_for_deployment'):t('cloud.gaps_must_be_completed')}</div>`;
 }
 async function loadRuntimeHealth(){
+  if(CURRENT_ROLE!=='admin')return;
   const d=await apiRequest('/api/runtime/status');
   document.getElementById('runtimeHealth').innerHTML=`<table class="source-table"><tr><th>${t('runtime.app_label')}</th><td>${d.app}</td></tr><tr><th>${t('runtime.version_label')}</th><td>${d.version}</td></tr><tr><th>${t('runtime.liveness_label')}</th><td>${d.liveness?'OK':t('runtime.error')}</td></tr><tr><th>${t('runtime.readiness_label')}</th><td>${d.readiness?t('runtime.ready'):t('runtime.not_ready')}</td></tr><tr><th>${t('runtime.database_label')}</th><td>${d.database}</td></tr><tr><th>${t('runtime.license_label')}</th><td>${d.license}</td></tr><tr><th>${t('runtime.active_dataset_label')}</th><td>${d.active_datasets}</td></tr></table>`;
 }
