@@ -608,3 +608,172 @@ def test_idempotency_race_recovery_raises_conflict_on_semantic_mismatch(monkeypa
         assert "UNIQUE constraint" not in message
         assert "sqlite3" not in message
         assert "IntegrityError" not in message
+
+
+# ---------------------------------------------------------------------
+# Immutable-revision domain invariants -- Faz 2.8.17 Stage 3.
+#
+# Analysis (see Stage 3 report for the full write-up): grepping every
+# ``UPDATE joint_revisions`` statement in backend/joints/service.py
+# shows exactly three -- submit_joint_revision, approve_joint_revision,
+# reject_joint_revision -- and none of them ever touches
+# snapshot_json or change_summary; only status/timestamp/reviewer
+# columns are written. There is no function anywhere in the current
+# write surface (service layer or the Stage 2 HTTP routes) that could
+# alter the *content* of a revision after it is created, in any
+# status. JointRevisionImmutableError therefore has no reachable
+# trigger condition today -- it is not raised anywhere in
+# backend/joints/service.py -- and this Stage does not invent one:
+# doing so would be a fabricated call site with no real precondition,
+# which the Stage 3 instructions explicitly rule out.
+#
+# The practical form immutability actually takes in this state machine
+# -- "an approved or rejected revision can never transition again" --
+# IS a real, reachable invariant, and it IS already enforced today,
+# just through a different, already-used exception:
+# JointRevisionStateError's existing `status != "review"` /
+# `status != "draft"` guards in submit_joint_revision/
+# approve_joint_revision/reject_joint_revision. That enforcement had
+# no direct test coverage before this Stage for the terminal-state
+# cases (re-approve, reject-after-approve, approve-without-review,
+# etc.) -- only the "submit twice" case was covered
+# (test_only_draft_revision_can_be_submitted). The tests below close
+# that gap and additionally assert the row's *content* is byte-for-
+# byte unchanged across every rejected transition attempt, which is
+# the concrete, testable form of "immutable after approval" this
+# domain actually provides.
+# ---------------------------------------------------------------------
+
+
+def test_cannot_approve_an_already_approved_revision():
+    pid = _make_project("Immutable Reapprove Project")
+    joint = joints_svc.create_joint(pid, "J-IMMUT-REAPPROVE", "Immutable Reapprove Joint", None, 1)
+    rev = joints_svc.create_joint_revision(joint["id"], {"thread": "M10"}, "x", 1)
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    rev = joints_svc.approve_joint_revision(rev["id"], 2)
+    try:
+        joints_svc.approve_joint_revision(rev["id"], 3)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_reject_an_already_approved_revision():
+    pid = _make_project("Immutable Reject After Approve Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IMMUT-REJ-AFTER-APPR", "Immutable Reject After Approve Joint", None, 1
+    )
+    rev = joints_svc.create_joint_revision(joint["id"], {"thread": "M10"}, "x", 1)
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    rev = joints_svc.approve_joint_revision(rev["id"], 2)
+    try:
+        joints_svc.reject_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_approve_a_rejected_revision():
+    pid = _make_project("Immutable Approve After Reject Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IMMUT-APPR-AFTER-REJ", "Immutable Approve After Reject Joint", None, 1
+    )
+    rev = joints_svc.create_joint_revision(joint["id"], {"thread": "M10"}, "x", 1)
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    rev = joints_svc.reject_joint_revision(rev["id"], 2)
+    try:
+        joints_svc.approve_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_reject_an_already_rejected_revision():
+    pid = _make_project("Immutable Re-reject Project")
+    joint = joints_svc.create_joint(pid, "J-IMMUT-REREJECT", "Immutable Re-reject Joint", None, 1)
+    rev = joints_svc.create_joint_revision(joint["id"], {}, "x", 1)
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    rev = joints_svc.reject_joint_revision(rev["id"], 2)
+    try:
+        joints_svc.reject_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_approve_a_draft_revision_without_submitting_first():
+    pid = _make_project("Immutable Approve Draft Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IMMUT-APPR-DRAFT", "Immutable Approve Draft Joint", None, 1
+    )
+    rev = joints_svc.create_joint_revision(joint["id"], {}, "x", 1)
+    try:
+        joints_svc.approve_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_reject_a_draft_revision_without_submitting_first():
+    pid = _make_project("Immutable Reject Draft Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IMMUT-REJ-DRAFT", "Immutable Reject Draft Joint", None, 1
+    )
+    rev = joints_svc.create_joint_revision(joint["id"], {}, "x", 1)
+    try:
+        joints_svc.reject_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_approved_revision_content_is_never_altered_by_rejected_transition_attempts():
+    """Concrete, testable form of 'immutable after approval': the
+    snapshot/change_summary/revision_no/created_by of an approved
+    revision are identical before and after every rejected further
+    transition attempt -- not just the status field."""
+    pid = _make_project("Immutable Content Project")
+    joint = joints_svc.create_joint(pid, "J-IMMUT-CONTENT", "Immutable Content Joint", None, 1)
+    rev = joints_svc.create_joint_revision(
+        joint["id"], {"thread": "M10", "class": "8.8"}, "original summary", 1
+    )
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    approved = joints_svc.approve_joint_revision(rev["id"], 2)
+
+    for attempt in (
+        lambda: joints_svc.approve_joint_revision(approved["id"], 3),
+        lambda: joints_svc.reject_joint_revision(approved["id"], 3),
+    ):
+        try:
+            attempt()
+            assert False, "expected JointRevisionStateError"
+        except JointRevisionStateError:
+            pass
+
+    final = joints_svc.get_joint_revision(approved["id"])
+    assert final["snapshot_json"] == approved["snapshot_json"]
+    assert final["change_summary"] == approved["change_summary"]
+    assert final["revision_no"] == approved["revision_no"]
+    assert final["created_by"] == approved["created_by"]
+    assert final == approved
+
+
+def test_joint_revision_immutable_error_has_no_reachable_raise_site():
+    """Documents the Stage 3 finding as an executable, self-verifying
+    fact rather than only a prose claim: JointRevisionImmutableError is
+    imported and exported by backend.joints.service but never raised
+    anywhere in it. If a future change starts raising it, this
+    assertion -- not just the state-guard tests above -- is the one
+    that will need deliberate updating, making the change visible in
+    review rather than silent."""
+    import inspect
+
+    source = inspect.getsource(joints_svc)
+    assert "raise JointRevisionImmutableError" not in source
+    assert "JointRevisionImmutableError" in joints_svc.__all__
