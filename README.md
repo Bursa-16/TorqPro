@@ -1,125 +1,131 @@
 # Current Version
 
-| Item                          | Value                                         |
-| ----------------------------- | --------------------------------------------- |
-| Product                       | TorqPro                                       |
-| **Current Version**           | **v2.8.16**                                   |
-| **Version Date**              | **01 August 2026**                            |
-| **Current Engineering Focus** | **Joint Revision List UX Improvements**       |
+| Item                          | Value                                                    |
+| ----------------------------- | --------------------------------------------------------- |
+| Product                       | TorqPro                                                    |
+| **Current Version**           | **v2.8.17**                                                |
+| **Version Date**              | **02 August 2026**                                         |
+| **Current Engineering Focus** | **Joint Revision HTTP API & Idempotent Write Exposure**    |
 
 ---
 
-# What's New in v2.8.16
+# What's New in v2.8.17
 
-## Joint Revision List UX Improvements
+## Joint Revision HTTP API & Idempotent Write Exposure
 
-Phase **2.8.16** adds server-side search, deterministic sorting, pagination, and CSV export to the existing Faz 2.8.14 joint revision governance list — entirely additive, with the pre-existing bare-array endpoint left byte-for-byte unmodified.
+Phase **2.8.17** exposes the pre-existing, already-tested `backend.joints.service` domain write layer (Faz 2.5A foundation) over HTTP for the first time, and extends it with idempotent-retry support for revision creation — entirely additive, with every existing Faz 2.8.16 read-only governance endpoint and frontend screen left byte-for-byte unmodified.
 
-This phase closes the "pagination / search / export" gap the Faz 2.8.14 completion record explicitly left open, without altering any existing engineering library, persistence mechanism, calculation engine, or public write path.
+This phase closes the candidate gap the Faz 2.8.16 completion record left open ("joint revision write-path integration"): the joint / joint-revision create -> submit -> approve/reject lifecycle already existed and was fully tested at the service layer (`backend/joints/service.py`), but had no HTTP surface at all.
 
-The implementation was delivered across six controlled stages, each independently verified and committed:
+The implementation was delivered across four controlled stages, each independently verified and committed:
 
-* Stage 1 — backend query foundation (search, sort, pagination, validation)
-* Stage 2 — additive, paginated API endpoint
-* Stage 3 — CSV export endpoint
-* Stage 4 — frontend UX (search, sort, pagination, export controls)
-* Stage 5 — quality-gate integration and i18n hardening
-* Stage 6 — full validation and release documentation
+* Stage 0 — scope and integration contract analysis
+* Stage 1 — persistent idempotency foundation (additive schema column + partial unique index)
+* Stage 2 — HTTP API (8 additive routes)
+* Stage 3 — state-machine immutability regression coverage
 
 ---
 
 ## Scope
 
-* Added `query_joint_revision_projections()` / `query_all_joint_revision_projections()` domain query service.
-* Added `GET /api/governance/joint-revisions/query` (paginated, searchable, sortable JSON endpoint).
-* Added `GET /api/governance/joint-revisions/export.csv` (CSV export, UTF-8 with BOM, CSV-injection guarded).
-* Added deterministic, allow-listed search/sort with an explicit tie-breaker.
-* Added frontend search/sort/page-size/pagination/export controls to the existing Joint Revision List card.
-* Added 24 new TR / EN `gov.jrlist.*` translation keys (full parity).
-* Added a dedicated frontend regression harness (`run_joint_revision_list_ux_tests.js`), integrated into the canonical quality gate.
-* Preserved the existing `GET /api/governance/joint-revisions` bare-array endpoint unchanged.
-* Preserved all existing engineering libraries, APIs, and data sources.
+* Added an additive, nullable `idempotency_key` column to `joint_revisions`, backed by a partial unique index (`ON joint_revisions(joint_id, idempotency_key) WHERE idempotency_key IS NOT NULL`) — pre-existing rows and callers unaffected; multiple `NULL` keys remain unrestricted per joint.
+* Extended `create_joint_revision()` with a keyword-only `idempotency_key` parameter (default `None`); omitting it preserves the exact pre-Stage-1 behaviour.
+* Added deterministic idempotent-replay semantics: the same joint + same key + the same semantic request (snapshot compared as parsed JSON, not raw text, so key order never matters) returns the existing revision instead of creating a duplicate; a mismatched request under the same key raises a conflict instead of silently overwriting.
+* Added a deterministic concurrency backstop: a genuine `sqlite3.IntegrityError` race between the idempotency lookup and the insert is recovered by re-reading and resolving the row the same way a non-racing caller would — the raw driver exception never reaches a caller.
+* Added `backend/api/routes/joints.py`: 8 additive HTTP routes over the existing `backend.joints.service` layer (full list under Routes Added below).
+* Added `backend/joints/schemas.py`: `JointCreate`, `JointRevisionCreate` Pydantic request models.
+* Added domain-exception -> HTTP status mapping (404 / 409 / 400), following the same `_handle()` pattern already established by `backend/api/routes/production_validation.py`.
+* Preserved archived-joint replay semantics: a replay of an already-successful key still returns the existing revision even after the joint is later archived; a genuinely new write against an archived joint is still rejected.
+* Added 8 new domain regression tests closing a pre-existing coverage gap in the approve/reject state machine's terminal-state guards (re-approve, reject-after-approve, approve-without-review, reject-without-review, double-reject), and confirmed a revision's content is never altered once approved.
+* Preserved all existing Faz 2.8.16 governance query/CSV/frontend read-only behaviour, unchanged.
+* No frontend write UI was added in this release (explicitly out of scope).
+
+---
+
+## Routes Added
+
+| Method | Path                                              |
+| ------ | -------------------------------------------------- |
+| POST   | `/api/joints`                                       |
+| GET    | `/api/joints`                                       |
+| GET    | `/api/joints/{joint_id}`                            |
+| POST   | `/api/joints/{joint_id}/revisions`                  |
+| GET    | `/api/joints/revisions/{revision_id}`               |
+| POST   | `/api/joints/revisions/{revision_id}/submit`        |
+| POST   | `/api/joints/revisions/{revision_id}/approve`       |
+| POST   | `/api/joints/revisions/{revision_id}/reject`        |
 
 ---
 
 # Changed Files
 
 ```text
-backend/governance/joint_revision_query.py
-backend/governance/joint_revision_csv.py
-backend/governance/api.py
+backend/joints/schema.py
+backend/joints/service.py
+backend/joints/schemas.py
+backend/api/routes/joints.py
+backend/app.py
 
-frontend/index.html
-
-tests/governance/test_joint_revision_query.py
-tests/governance/test_joint_revision_query_api.py
-tests/governance/test_joint_revision_csv.py
-tests/governance/test_joint_revision_csv_api.py
-tests/governance/test_compatibility.py
-
-tests/js/run_joint_revision_list_ux_tests.js
-tests/js/run_governance_workspace_tests.js
-
-tests/test_faz_2_8_11_stage4_frontend.py
-tests/test_quality_gate_joint_revision_ux.py
+tests/test_joints_foundation.py
+tests/test_joints_api.py
 tests/test_version_centralization.py
 
-tools/run_quality_gate.py
-
 docs/11_PRODUCT_BACKLOG.md
-docs/phases/PHASE_2.8.16_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md
-docs/phases/PHASE_2.8.16_STAGE2_API_CONTRACT.md
-docs/phases/PHASE_2.8.16_STAGE3_CSV_EXPORT.md
-docs/phases/PHASE_2.8.16_STAGE4_FRONTEND_UX.md
-docs/phases/PHASE_2.8.16_STAGE5_FRONTEND_QUALITY_INTEGRATION.md
-docs/phases/PHASE_2.8.16_COMPLETION_REPORT.md
+docs/phases/PHASE_2.8.17_COMPLETION_REPORT.md
+
+VERSION
+README.md
 ```
 
 ---
 
 # Validation Results
 
-| Item           | Result                                         |
-| -------------- | ----------------------------------------------- |
-| Feature Branch | **feature/faz-2.8.16-joint-revision-list-ux** |
-| Feature Commit | **e5de65b** (final functional commit — Stage 6 adds only version/documentation metadata in the commit immediately following) |
-| Working Tree   | Clean                                          |
-| Quality Gate   | **6 / 6 PASSED**                               |
+| Item           | Result                                                                                                          |
+| -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Feature Branch | **feature/faz-2.8.17-joint-revision-http-api**                                                                   |
+| Feature Commit | **4ddb925** (final functional commit — the documentation stage adds only version/documentation metadata in the commit immediately following) |
+| Working Tree   | Clean                                                                                                             |
+| Quality Gate   | **6 / 6 PASSED**                                                                                                   |
 
 ---
 
 # Backward Compatibility
 
-Phase 2.8.16 does **not** modify:
+Phase 2.8.17 does **not** modify:
 
 * Existing engineering libraries
 * Existing engineering databases
 * Existing washer-resolution workflows
-* Existing governance write paths
+* Existing Faz 2.8.16 governance query/CSV read-only routes (response shape, ordering, and query surface all unchanged)
+* Existing Faz 2.8.16 frontend Joint Revision List screen
 * Existing report engine infrastructure
 * Existing VDI 2230 calculations
-* The existing `GET /api/governance/joint-revisions` bare-array endpoint (response shape, ordering, and query surface all unchanged)
+* Existing submit/approve/reject state-machine business logic
 
-The implementation is fully additive: two new read-only routes were added; no existing route's signature, response shape, or behaviour changed.
+The implementation is fully additive: 8 new routes were added; no existing route's signature, response shape, or behaviour changed.
 
 ---
 
 # Engineering Notes
 
-The following items, previously listed as out of scope for Faz 2.8.14, are now delivered (server-side, per Faz 2.8.16):
+The following item, previously listed as a candidate in the Faz 2.8.16 completion entry, is now delivered:
 
-* Pagination
-* Server-side sorting
-* Server-side search
-* CSV export
+* Joint / joint-revision HTTP write access (create, submit, approve, reject) with idempotent, retry-safe revision creation.
 
 The following remain intentionally outside the current scope:
 
-* Client-side filtering, sorting, or pagination (all search/sort/pagination stays server-side by design)
-* Bulk mutation operations
-* Approval workflows
-* Governance registry expansion
-* Cross-mechanism validation
+* Frontend write UI for joints (create, submit, approve, reject screens) — no frontend write UI in this release.
+* `reason` / `source` audit metadata fields.
+* A governance projection registry.
+* Cross-mechanism validation.
+
+**Known limitations** (see completion report for full detail):
+
+* No frontend write UI.
+* No `reason`/`source` audit fields.
+* `JointRevisionImmutableError` has no reachable raise site in the current codebase — the write surface never mutates an approved revision's content, so an artificial `raise` was deliberately not added (see completion report, "JointRevisionImmutableError decision").
+* One additional pre-existing-pattern `E402` lint finding in `backend/app.py`, structurally identical to the two the router-mount section already had (deferred import after `user`/`conn`/`audit` are defined, to avoid a circular import) — not a new category of issue, and no general `app.py` refactor was performed in this phase.
 
 ---
 
@@ -135,7 +141,6 @@ Engineering quality is continuously verified using automated validation.
 | Integration Tests   | ✅ Passed |
 | Governance Tests    | ✅ Passed |
 | REST API            | ✅ Passed |
-| Frontend            | ✅ Passed |
 | Compatibility Tests | ✅ Passed |
 | Quality Gate        | ✅ Passed |
 
@@ -143,13 +148,14 @@ Engineering quality is continuously verified using automated validation.
 
 # Test Results
 
-| Test Group                        | Result                 |
-| ---------------------------------- | ---------------------- |
-| Full pytest Suite                 | **2159 / 2159 Passed** |
-| Governance Suite                  | **517 / 517 Passed**   |
-| Governance Workspace JS Harness   | **160 / 160 Passed**   |
-| Joint Revision List UX JS Harness | **152 / 152 Passed**   |
-| TR / EN Localization Tests        | **6 / 6 Passed**       |
+| Test Group                  | Result                 |
+| ----------------------------- | ---------------------- |
+| Full pytest Suite             | **2201 / 2201 Passed** |
+| Governance Suite              | **517 / 517 Passed**   |
+| Joint-related Tests (all)     | **448 / 448 Passed**   |
+| Joints API Tests              | **19 / 19 Passed**     |
+| Joints Foundation Tests       | **41 / 41 Passed**     |
+| TR / EN Localization Tests    | **6 / 6 Passed**       |
 
 Continuous integration verifies every change before integration into the main branch.
 
@@ -175,24 +181,25 @@ Continuous integration verifies every change before integration into the main br
 | Phase 2.8.13     | Governance Workspace Integration              | ✅ Completed           |
 | Phase 2.8.14     | Joint Revision Governance Bulk Visibility     | ✅ Completed           |
 | Phase 2.8.15     | README / VERSION Maintenance                  | ✅ Completed           |
-| **Phase 2.8.16** | **Joint Revision List UX Improvements**       | ⭐ **Current Version** |
+| Phase 2.8.16     | Joint Revision List UX Improvements           | ✅ Completed           |
+| **Phase 2.8.17** | **Joint Revision HTTP API & Idempotent Write Exposure** | ⭐ **Current Version** |
 
 ---
 
 # Version History
 
-| Version     | Highlights                                |
-| ----------- | ----------------------------------------- |
-| **v2.8.16** | Joint Revision List UX Improvements       |
-| v2.8.14     | Joint Revision Governance Bulk Visibility |
-| v2.8.13     | Governance Workspace Integration          |
-| v2.8.12     | Governance Compatibility Layer            |
-| v2.8.11     | Engineering Governance Architecture       |
-| v2.8.10     | Test Harness & Quality                    |
-| v2.8.9      | Washer Resolution Workflow                |
-| v2.8.8      | Material Intelligence                     |
-| v2.8.7      | Joint Analysis & Torque Optimization      |
-| v2.8.6      | Fastener Assembly Intelligence            |
+| Version     | Highlights                                             |
+| ----------- | --------------------------------------------------------- |
+| **v2.8.17** | Joint Revision HTTP API & Idempotent Write Exposure        |
+| v2.8.16     | Joint Revision List UX Improvements                       |
+| v2.8.14     | Joint Revision Governance Bulk Visibility                 |
+| v2.8.13     | Governance Workspace Integration                          |
+| v2.8.12     | Governance Compatibility Layer                             |
+| v2.8.11     | Engineering Governance Architecture                        |
+| v2.8.10     | Test Harness & Quality                                      |
+| v2.8.9      | Washer Resolution Workflow                                  |
+| v2.8.8      | Material Intelligence                                       |
+| v2.8.7      | Joint Analysis & Torque Optimization                        |
 
 ---
 
@@ -200,18 +207,16 @@ Continuous integration verifies every change before integration into the main br
 
 ## Current Version
 
-**v2.8.16**
+**v2.8.17**
 
 Current engineering focus:
 
-* Joint revision search and sorting
-* Server-side pagination
-* CSV export
-* Frontend UX integration
-* TR / EN localization
-* Quality-gate integrated frontend regression testing
-* Compatibility validation
-* Regression testing
+* Idempotent joint revision write foundation
+* Joint / joint-revision HTTP API (create, submit, approve, reject)
+* Deterministic concurrency (IntegrityError) recovery
+* Archived-joint replay semantics
+* State-machine immutability regression coverage
+* Backward compatibility with all existing Faz 2.8.16 read-only behaviour
 
 ---
 
@@ -219,9 +224,10 @@ Current engineering focus:
 
 Potential future work areas:
 
+* Frontend write UI for joints (create / submit / approve / reject screens)
+* `reason` / `source` audit metadata fields for joint revisions
 * Governance registry expansion
 * Cross-mechanism validation
-* Joint revision write-path integration
 * Further governance workspace UX refinements
 
 No subsequent phase has been officially approved yet.
