@@ -550,6 +550,98 @@ no second or third write-integrated mechanism has emerged since Faz
 UX refinements — only if real usage demonstrates an actual need,
 none shown yet.
 
+## 12I. Faz 2.8.17 – Joint Revision HTTP API & Idempotent Write Exposure
+
+**Status: Complete (Stages 0–3), delivered 2026-08-02.** See
+`docs/phases/PHASE_2.8.17_COMPLETION_REPORT.md` for full detail.
+
+Closed candidate (B) from the Faz 2.8.16 completion entry above:
+"joint revision write-path integration" — approved and scoped in
+this phase's own Stage 0, which found the premise needed correction:
+the write path already existed, fully tested, at the service layer
+(`backend/joints/service.py`, Faz 2.5A); the actual gap was that it
+had no HTTP surface at all. The phase was renamed accordingly to
+"Joint Revision HTTP API & Idempotent Write Exposure".
+
+**Main deliverables**: an additive, nullable `idempotency_key` column
+on `joint_revisions` with a partial unique index
+(`ON joint_revisions(joint_id, idempotency_key) WHERE idempotency_key
+IS NOT NULL`), backfilled onto pre-existing databases via the same
+`PRAGMA table_info` + conditional `ALTER TABLE` idiom already used in
+`backend/app.py::migrate()`; a keyword-only, backward-compatible
+`idempotency_key` parameter on `create_joint_revision()` with
+deterministic semantic-match replay (parsed-JSON snapshot comparison,
+not raw text) and a deterministic `sqlite3.IntegrityError` race
+backstop (verified by a non-threaded, monkeypatch-based test, not a
+flaky concurrency test); `backend/api/routes/joints.py`, 8 additive
+HTTP routes over the existing service layer, following
+`backend/api/routes/production_validation.py`'s established thin-
+adapter pattern (`APIRouter`, `Depends(user)`, central `_handle()`
+exception mapping); `backend/joints/schemas.py`
+(`JointCreate`, `JointRevisionCreate`); 8 new domain regression tests
+closing a pre-existing gap in the approve/reject state machine's
+terminal-state guards.
+
+**JointRevisionImmutableError decision**: analyzed, not artificially
+raised. Every `UPDATE joint_revisions` statement in
+`backend/joints/service.py` was enumerated (three: submit, approve,
+reject) — none touches `snapshot_json`/`change_summary`, so no
+reachable code path could ever trigger this exception. The real,
+reachable form of "immutable after approval" this domain provides is
+already enforced via `JointRevisionStateError`'s existing
+`status != "review"` / `status != "draft"` guards; that enforcement's
+untested terminal-state corners (re-approve, reject-after-approve,
+approve-without-review, double-reject, etc.) are what the 8 new Stage
+3 tests close. `JointRevisionImmutableError` itself remains defined,
+exported, and unused — recorded as a known limitation, not resolved.
+
+**Explicitly out of scope** (repository-evidenced, not attempted):
+frontend write UI for joints (create/submit/approve/reject screens);
+`reason`/`source` audit metadata fields (recorded as a backlog
+candidate below); any new governance registry or write workflow; any
+change to the Faz 2.8.16 read-only query/CSV/frontend behaviour
+(verified unchanged).
+
+**Test results**: Full suite 2201/2201 (2159 Faz-2.8.16 baseline + 42
+new: 21 from Stages 1–2, 8 from Stage 3, plus version-centralization
+test updates counted in the unchanged 9). Governance suite 517/517
+(unchanged — no governance-mechanism code touched). Joint-related
+tests (all) 448/448. Joints API tests 19/19. Joints foundation tests
+41/41 (33 Stage 1–2 + 8 Stage 3). TR/EN key parity 6/6 (unchanged — no
+new translation keys, no frontend touched). Quality gate 6/6 PASSED.
+
+**Completion report**: `docs/phases/PHASE_2.8.17_COMPLETION_REPORT.md`
+
+**Branch**: `feature/faz-2.8.17-joint-revision-http-api`, final
+functional commit `4ddb925719de7a0033817b944a9d1aa19d3c4547` (Stage
+3); the documentation/version commit follows immediately after.
+
+**No new ADR** was added — this phase adds an HTTP adapter layer and
+an additive idempotency column over an already-existing domain
+service and its already-existing SQLite tables (Faz 2.5A); it
+introduces no new persistence mechanism, no new governance concept,
+and no architectural pattern not already established by
+`backend/api/routes/production_validation.py`. The same reasoning the
+Faz 2.8.14/2.8.16 entries already applied to the query/CSV layer
+applies here to the write layer.
+
+**Non-goals** (explicitly deferred, not attempted): frontend write UI
+for joints; `reason`/`source` audit metadata fields; a governance
+projection registry; cross-mechanism validation; an artificial raise
+site for `JointRevisionImmutableError`; any general `backend/app.py`
+refactor (one additional, structurally-identical `E402` finding from
+the new deferred router import was accepted as-is, matching the two
+that `production_validation`/`governance` router mounts already carry
+— see completion report).
+
+**Possible next-phase candidates** (none approved by this entry):
+(A) frontend write UI for joints — no approved need identified yet;
+(B) `reason`/`source` audit metadata fields — recorded as a backlog
+candidate, not scheduled; (C) governance registry/cross-mechanism
+validator — still premature, unchanged from prior entries; (D)
+further governance workspace UX refinements — only if real usage
+demonstrates an actual need, none shown yet.
+
 ## 13. Next approved sprint
 
 **Sprint goal:** Documentation-integrated foundation and safe modularization.

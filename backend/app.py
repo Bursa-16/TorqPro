@@ -1814,4 +1814,13 @@ app.include_router(production_validation_router)
 from backend.governance.api import router as governance_router
 app.include_router(governance_router)
 
+# Faz 2.8.17 Stage 2: joints API module (backend/api/routes/joints.py). Additive only --
+# new routes under /api/joints, nothing existing renamed or removed. Thin HTTP adapter over
+# the pre-existing backend.joints.service domain layer (Faz 2.5A, extended by Faz 2.8.17
+# Stage 1's idempotency support); reuses the same `user` auth dependency as every other
+# endpoint, imported here for the same circular-import-avoidance reason as production_validation
+# and governance above.
+from backend.api.routes.joints import router as joints_router
+app.include_router(joints_router)
+
 app.mount("/",StaticFiles(directory=FRONT,html=True),name="frontend")

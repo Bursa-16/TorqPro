@@ -1,4 +1,9 @@
+import json
 import os
+import sqlite3
+
+from backend.joints import schema as joints_schema
+
 os.environ["TORQPRO_SECRET_KEY"] = "x" * 64
 from backend.app import conn, now_iso
 from backend.joints import service as joints_svc
@@ -6,6 +11,7 @@ from backend.joints.exceptions import (
     JointArchivedError,
     JointCodeConflictError,
     JointNotFoundError,
+    JointRevisionConflictError,
     JointRevisionNotFoundError,
     JointRevisionStateError,
 )
@@ -222,3 +228,552 @@ def test_list_joint_revisions_uses_parameterized_sql_not_string_interpolation():
     # and no unintended row leakage.
     result = joints_svc.list_joint_revisions(-999999999)
     assert result == []
+
+
+# ---------------------------------------------------------------------
+# create_joint_revision(idempotency_key=...) -- Faz 2.8.17 Stage 1
+# (additive, keyword-only; backward-compatible)
+# ---------------------------------------------------------------------
+
+
+def _count_create_audit_entries(joint_id, rev_no):
+    with conn() as c:
+        row = c.execute(
+            "SELECT COUNT(*) n FROM audit_log WHERE action='joint_revision_create' AND detail=?",
+            (f"joint={joint_id} rev={rev_no}",),
+        ).fetchone()
+    return row["n"]
+
+
+def test_idempotency_key_none_preserves_existing_behaviour():
+    """Scenario 1: idempotency_key omitted (default None) -- every call
+    creates a new revision, exactly like before this Stage existed."""
+    pid = _make_project("Idem None Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-NONE", "Idem None Joint", None, None)
+    r1 = joints_svc.create_joint_revision(joint["id"], {"a": 1}, "x", None)
+    r2 = joints_svc.create_joint_revision(joint["id"], {"a": 1}, "x", None)
+    assert r1["id"] != r2["id"]
+    assert r2["revision_no"] == r1["revision_no"] + 1
+    assert r1["idempotency_key"] is None
+    assert r2["idempotency_key"] is None
+
+
+def test_idempotency_replay_same_payload_returns_same_revision():
+    """Scenario 2: same joint + same key + same semantic request ->
+    the already-created revision is returned, not a new one."""
+    pid = _make_project("Idem Replay Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-REPLAY", "Idem Replay Joint", None, 7)
+    first = joints_svc.create_joint_revision(
+        joint["id"], {"thread": "M10"}, "initial", 7, idempotency_key="RETRY-1"
+    )
+    replay = joints_svc.create_joint_revision(
+        joint["id"], {"thread": "M10"}, "initial", 7, idempotency_key="RETRY-1"
+    )
+    assert replay["id"] == first["id"]
+    assert replay["revision_no"] == first["revision_no"]
+
+
+def test_idempotency_replay_does_not_consume_new_revision_number():
+    """Scenario 3: a replay must not advance the per-joint revision_no
+    counter -- the next genuinely new revision continues right after
+    the original, not after a phantom replay-consumed number."""
+    pid = _make_project("Idem RevNo Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-REVNO", "Idem RevNo Joint", None, None)
+    first = joints_svc.create_joint_revision(
+        joint["id"], {}, "r1", None, idempotency_key="RETRY-2"
+    )
+    assert first["revision_no"] == 1
+    joints_svc.create_joint_revision(joint["id"], {}, "r1", None, idempotency_key="RETRY-2")
+    joints_svc.create_joint_revision(joint["id"], {}, "r1", None, idempotency_key="RETRY-2")
+    next_new = joints_svc.create_joint_revision(joint["id"], {}, "r2", None)
+    assert next_new["revision_no"] == 2
+
+
+def test_idempotency_replay_does_not_write_second_audit_entry():
+    """Scenario 4: a replay must not produce a second
+    'joint_revision_create' audit row for the same revision."""
+    pid = _make_project("Idem Audit Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-AUDIT", "Idem Audit Joint", None, None)
+    first = joints_svc.create_joint_revision(
+        joint["id"], {}, "r1", None, idempotency_key="RETRY-3"
+    )
+    assert _count_create_audit_entries(joint["id"], first["revision_no"]) == 1
+    joints_svc.create_joint_revision(joint["id"], {}, "r1", None, idempotency_key="RETRY-3")
+    joints_svc.create_joint_revision(joint["id"], {}, "r1", None, idempotency_key="RETRY-3")
+    assert _count_create_audit_entries(joint["id"], first["revision_no"]) == 1
+
+
+def test_idempotency_same_key_different_snapshot_conflicts():
+    """Scenario 5: same joint + same key + a materially different
+    snapshot is a key collision, not a retry -- must raise
+    JointRevisionConflictError, never silently create or overwrite."""
+    pid = _make_project("Idem Conflict Snapshot Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-CONF-SNAP", "Idem Conflict Snap Joint", None, None)
+    joints_svc.create_joint_revision(
+        joint["id"], {"thread": "M10"}, "r1", None, idempotency_key="RETRY-4"
+    )
+    try:
+        joints_svc.create_joint_revision(
+            joint["id"], {"thread": "M12"}, "r1", None, idempotency_key="RETRY-4"
+        )
+        assert False, "expected JointRevisionConflictError"
+    except JointRevisionConflictError:
+        pass
+
+
+def test_idempotency_same_key_different_change_summary_conflicts():
+    """Scenario 6: same key, same snapshot, different change_summary ->
+    conflict."""
+    pid = _make_project("Idem Conflict Summary Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-CONF-SUM", "Idem Conflict Sum Joint", None, None)
+    joints_svc.create_joint_revision(joint["id"], {}, "first pass", None, idempotency_key="RETRY-5")
+    try:
+        joints_svc.create_joint_revision(
+            joint["id"], {}, "second pass", None, idempotency_key="RETRY-5"
+        )
+        assert False, "expected JointRevisionConflictError"
+    except JointRevisionConflictError:
+        pass
+
+
+def test_idempotency_same_key_different_actor_conflicts():
+    """Scenario 7: same key, same snapshot/summary, different
+    created_by (actor) -> conflict. A retry from a different actor
+    under the same key is not a legitimate replay."""
+    pid = _make_project("Idem Conflict Actor Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IDEM-CONF-ACTOR", "Idem Conflict Actor Joint", None, None
+    )
+    joints_svc.create_joint_revision(joint["id"], {}, "x", 1, idempotency_key="RETRY-6")
+    try:
+        joints_svc.create_joint_revision(joint["id"], {}, "x", 2, idempotency_key="RETRY-6")
+        assert False, "expected JointRevisionConflictError"
+    except JointRevisionConflictError:
+        pass
+
+
+def test_idempotency_same_key_different_joint_is_allowed():
+    """Scenario 8: the same idempotency_key may be reused freely across
+    different joints -- uniqueness is scoped per joint_id."""
+    pid = _make_project("Idem Cross Joint Project")
+    j1 = joints_svc.create_joint(pid, "J-IDEM-CROSS-1", "Idem Cross Joint 1", None, None)
+    j2 = joints_svc.create_joint(pid, "J-IDEM-CROSS-2", "Idem Cross Joint 2", None, None)
+    r1 = joints_svc.create_joint_revision(j1["id"], {}, "x", None, idempotency_key="SHARED-KEY")
+    r2 = joints_svc.create_joint_revision(j2["id"], {}, "x", None, idempotency_key="SHARED-KEY")
+    assert r1["id"] != r2["id"]
+    assert r1["joint_id"] != r2["joint_id"]
+
+
+def test_idempotency_replay_accepts_reordered_snapshot_keys():
+    """Scenario 9: semantic (dict) equality, not raw string/hash
+    equality -- a snapshot with the same keys/values in a different
+    dict insertion order must still be recognised as the same
+    request."""
+    pid = _make_project("Idem Key Order Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-ORDER", "Idem Key Order Joint", None, None)
+    first = joints_svc.create_joint_revision(
+        joint["id"],
+        {"thread": "M10", "class": "8.8", "length_mm": 40},
+        "r1",
+        None,
+        idempotency_key="RETRY-7",
+    )
+    reordered_snapshot = json.loads(
+        '{"length_mm": 40, "thread": "M10", "class": "8.8"}'
+    )
+    replay = joints_svc.create_joint_revision(
+        joint["id"], reordered_snapshot, "r1", None, idempotency_key="RETRY-7"
+    )
+    assert replay["id"] == first["id"]
+
+
+def test_idempotency_pre_existing_records_without_key_are_unaffected():
+    """Scenario 10: revisions created before this Stage (idempotency_key
+    always NULL, i.e. idempotency_key=None calls) remain valid and are
+    never matched or disturbed by later idempotent calls with a real
+    key -- NULL keys are excluded from the lookup/uniqueness scope
+    entirely."""
+    pid = _make_project("Idem Legacy Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-LEGACY", "Idem Legacy Joint", None, None)
+    legacy = joints_svc.create_joint_revision(joint["id"], {}, "legacy", None)
+    assert legacy["idempotency_key"] is None
+    keyed = joints_svc.create_joint_revision(joint["id"], {}, "new", None, idempotency_key="K-1")
+    assert keyed["id"] != legacy["id"]
+    still_there = joints_svc.get_joint_revision(legacy["id"])
+    assert still_there["idempotency_key"] is None
+    assert still_there == legacy
+
+
+def test_idempotency_schema_migration_is_re_runnable():
+    """Scenario 11: re-running backend.joints.schema.migrate() against
+    an already-migrated connection (fresh or previously-upgraded) must
+    not raise -- CREATE TABLE/INDEX IF NOT EXISTS and the conditional
+    ALTER TABLE column check are all idempotent."""
+    with conn() as c:
+        joints_schema.migrate(c)
+        joints_schema.migrate(c)
+        c.commit()
+        cols = [r["name"] for r in c.execute("PRAGMA table_info(joint_revisions)").fetchall()]
+    assert "idempotency_key" in cols
+
+
+def test_idempotency_database_unique_backstop_rejects_direct_duplicate():
+    """Scenario 12: the partial unique index itself (not just the
+    service-layer lookup) rejects a duplicate (joint_id,
+    idempotency_key) pair inserted directly, and allows an unlimited
+    number of NULL idempotency_key rows on the same joint -- proving
+    the DB-level guarantee the service layer relies on as a backstop
+    actually exists."""
+    pid = _make_project("Idem DB Backstop Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-BACKSTOP", "Idem Backstop Joint", None, None)
+    with conn() as c:
+        c.execute(
+            "INSERT INTO joint_revisions(joint_id,revision_no,status,snapshot_json,created_at,"
+            "idempotency_key) VALUES(?,1,'draft','{}',?,?)",
+            (joint["id"], now_iso(), "DB-LEVEL-KEY"),
+        )
+        c.commit()
+        try:
+            c.execute(
+                "INSERT INTO joint_revisions(joint_id,revision_no,status,snapshot_json,created_at,"
+                "idempotency_key) VALUES(?,2,'draft','{}',?,?)",
+                (joint["id"], now_iso(), "DB-LEVEL-KEY"),
+            )
+            c.commit()
+            assert False, "expected sqlite3.IntegrityError from the partial unique index"
+        except sqlite3.IntegrityError:
+            c.rollback()
+        # multiple NULL idempotency_key rows on the same joint remain unrestricted
+        c.execute(
+            "INSERT INTO joint_revisions(joint_id,revision_no,status,snapshot_json,created_at,"
+            "idempotency_key) VALUES(?,3,'draft','{}',?,NULL)",
+            (joint["id"], now_iso()),
+        )
+        c.execute(
+            "INSERT INTO joint_revisions(joint_id,revision_no,status,snapshot_json,created_at,"
+            "idempotency_key) VALUES(?,4,'draft','{}',?,NULL)",
+            (joint["id"], now_iso()),
+        )
+        c.commit()
+
+
+def test_idempotency_conflict_error_never_leaks_snapshot_or_internal_detail():
+    """Scenario 13: a conflict raised for a reused key with a mismatched
+    request must never echo the snapshot content, a file path, SQL
+    text, or a raw driver exception -- only a fixed, generic message
+    (mirrors the same 'never leak internal detail' contract already
+    documented on backend.governance.adapters.joint_revision)."""
+    pid = _make_project("Idem No Leak Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-NOLEAK", "Idem No Leak Joint", None, None)
+    secret_snapshot = {"internal_note": "CONFIDENTIAL-TORQUE-MARGIN-4.2"}
+    joints_svc.create_joint_revision(
+        joint["id"], secret_snapshot, "r1", None, idempotency_key="RETRY-8"
+    )
+    try:
+        joints_svc.create_joint_revision(
+            joint["id"], {"internal_note": "different"}, "r1", None, idempotency_key="RETRY-8"
+        )
+        assert False, "expected JointRevisionConflictError"
+    except JointRevisionConflictError as exc:
+        message = str(exc)
+        assert "CONFIDENTIAL-TORQUE-MARGIN-4.2" not in message
+        assert "sqlite" not in message.lower()
+        assert "/home/" not in message
+        assert ".db" not in message
+
+
+# ---------------------------------------------------------------------
+# Deterministic (non-threaded) exercise of the concurrency backstop --
+# Faz 2.8.17 Stage 2. Simulates the exact race window the "except
+# sqlite3.IntegrityError" branch in create_joint_revision() exists for
+# (a concurrent writer commits the same (joint_id, idempotency_key)
+# row between our own SELECT and our own INSERT) by making the first
+# INSERT that carries idempotency_key raise sqlite3.IntegrityError --
+# the same exception the real partial unique index would raise -- and
+# having a "winning" row already committed through an independent real
+# connection immediately before that. No threads, no timing
+# dependency, no flakiness: the same interleaving happens every run.
+# ---------------------------------------------------------------------
+
+
+class _RacingConnection:
+    """Wraps one real sqlite3 connection (from backend.app.conn()) and
+    intercepts exactly one INSERT -- the first one whose SQL text both
+    starts an INSERT into joint_revisions and carries idempotency_key
+    -- to simulate a concurrent writer winning that row first. Every
+    other call (SELECT, commit, rollback, any other attribute) passes
+    straight through to the real connection, so this only touches the
+    single code path under test."""
+
+    def __init__(self, real_conn_factory, on_first_insert):
+        self._c = real_conn_factory()
+        self._on_first_insert = on_first_insert
+        self._triggered = False
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        return self._c.__exit__(exc_type, exc, tb)
+
+    def __getattr__(self, name):
+        return getattr(self._c, name)
+
+    def execute(self, sql, params=()):
+        if (
+            not self._triggered
+            and sql.strip().startswith("INSERT INTO joint_revisions")
+            and "idempotency_key" in sql
+        ):
+            self._triggered = True
+            self._on_first_insert()
+            raise sqlite3.IntegrityError("simulated unique constraint violation")
+        return self._c.execute(sql, params)
+
+
+def _commit_winning_race_row(joint_id, revision_no, snapshot, change_summary, created_by, key):
+    """Simulates the concurrent writer that "wins" the race: commits a
+    joint_revisions row through its own, independent real connection,
+    entirely separate from the connection under test."""
+    with conn() as winner_c:
+        winner_c.execute(
+            "INSERT INTO joint_revisions(joint_id,revision_no,status,snapshot_json,"
+            "change_summary,created_by,created_at,idempotency_key) "
+            "VALUES(?,?,'draft',?,?,?,?,?)",
+            (
+                joint_id, revision_no, json.dumps(snapshot, ensure_ascii=False),
+                change_summary, created_by, now_iso(), key,
+            ),
+        )
+        winner_c.commit()
+
+
+def test_idempotency_race_recovery_returns_existing_revision_on_semantic_match(monkeypatch):
+    """The race is recovered by returning the concurrent winner's row
+    when our own request is semantically identical to it -- no
+    duplicate, no raised exception, no second audit entry."""
+    pid = _make_project("Idem Race Match Project")
+    joint = joints_svc.create_joint(pid, "J-IDEM-RACE-MATCH", "Idem Race Match Joint", None, 3)
+    winning_snapshot = {"thread": "M12"}
+    winning_change_summary = "winner"
+    winning_actor = 3
+
+    def _on_first_insert():
+        _commit_winning_race_row(
+            joint["id"], 1, winning_snapshot, winning_change_summary, winning_actor, "RACE-KEY-A",
+        )
+
+    monkeypatch.setattr(
+        joints_svc, "conn", lambda: _RacingConnection(conn, _on_first_insert)
+    )
+
+    result = joints_svc.create_joint_revision(
+        joint["id"], winning_snapshot, winning_change_summary, winning_actor,
+        idempotency_key="RACE-KEY-A",
+    )
+    assert result["revision_no"] == 1
+    assert result["change_summary"] == winning_change_summary
+    assert result["created_by"] == winning_actor
+    assert _count_create_audit_entries(joint["id"], 1) == 0  # winner wrote no audit either
+
+
+def test_idempotency_race_recovery_raises_conflict_on_semantic_mismatch(monkeypatch):
+    """The race is recovered by raising JointRevisionConflictError --
+    never the raw sqlite3.IntegrityError -- when our own request
+    differs from the concurrent winner's."""
+    pid = _make_project("Idem Race Mismatch Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IDEM-RACE-MISMATCH", "Idem Race Mismatch Joint", None, 4
+    )
+
+    def _on_first_insert():
+        _commit_winning_race_row(
+            joint["id"], 1, {"thread": "M8"}, "winner-summary", 4, "RACE-KEY-B",
+        )
+
+    monkeypatch.setattr(
+        joints_svc, "conn", lambda: _RacingConnection(conn, _on_first_insert)
+    )
+
+    try:
+        joints_svc.create_joint_revision(
+            joint["id"], {"thread": "M20-DIFFERENT"}, "our-summary", 4,
+            idempotency_key="RACE-KEY-B",
+        )
+        assert False, "expected JointRevisionConflictError, not a raw sqlite3.IntegrityError"
+    except sqlite3.IntegrityError:
+        assert False, "raw sqlite3.IntegrityError leaked out of create_joint_revision()"
+    except JointRevisionConflictError as exc:
+        message = str(exc)
+        assert "UNIQUE constraint" not in message
+        assert "sqlite3" not in message
+        assert "IntegrityError" not in message
+
+
+# ---------------------------------------------------------------------
+# Immutable-revision domain invariants -- Faz 2.8.17 Stage 3.
+#
+# Analysis (see Stage 3 report for the full write-up): grepping every
+# ``UPDATE joint_revisions`` statement in backend/joints/service.py
+# shows exactly three -- submit_joint_revision, approve_joint_revision,
+# reject_joint_revision -- and none of them ever touches
+# snapshot_json or change_summary; only status/timestamp/reviewer
+# columns are written. There is no function anywhere in the current
+# write surface (service layer or the Stage 2 HTTP routes) that could
+# alter the *content* of a revision after it is created, in any
+# status. JointRevisionImmutableError therefore has no reachable
+# trigger condition today -- it is not raised anywhere in
+# backend/joints/service.py -- and this Stage does not invent one:
+# doing so would be a fabricated call site with no real precondition,
+# which the Stage 3 instructions explicitly rule out.
+#
+# The practical form immutability actually takes in this state machine
+# -- "an approved or rejected revision can never transition again" --
+# IS a real, reachable invariant, and it IS already enforced today,
+# just through a different, already-used exception:
+# JointRevisionStateError's existing `status != "review"` /
+# `status != "draft"` guards in submit_joint_revision/
+# approve_joint_revision/reject_joint_revision. That enforcement had
+# no direct test coverage before this Stage for the terminal-state
+# cases (re-approve, reject-after-approve, approve-without-review,
+# etc.) -- only the "submit twice" case was covered
+# (test_only_draft_revision_can_be_submitted). The tests below close
+# that gap and additionally assert the row's *content* is byte-for-
+# byte unchanged across every rejected transition attempt, which is
+# the concrete, testable form of "immutable after approval" this
+# domain actually provides.
+# ---------------------------------------------------------------------
+
+
+def test_cannot_approve_an_already_approved_revision():
+    pid = _make_project("Immutable Reapprove Project")
+    joint = joints_svc.create_joint(pid, "J-IMMUT-REAPPROVE", "Immutable Reapprove Joint", None, 1)
+    rev = joints_svc.create_joint_revision(joint["id"], {"thread": "M10"}, "x", 1)
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    rev = joints_svc.approve_joint_revision(rev["id"], 2)
+    try:
+        joints_svc.approve_joint_revision(rev["id"], 3)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_reject_an_already_approved_revision():
+    pid = _make_project("Immutable Reject After Approve Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IMMUT-REJ-AFTER-APPR", "Immutable Reject After Approve Joint", None, 1
+    )
+    rev = joints_svc.create_joint_revision(joint["id"], {"thread": "M10"}, "x", 1)
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    rev = joints_svc.approve_joint_revision(rev["id"], 2)
+    try:
+        joints_svc.reject_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_approve_a_rejected_revision():
+    pid = _make_project("Immutable Approve After Reject Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IMMUT-APPR-AFTER-REJ", "Immutable Approve After Reject Joint", None, 1
+    )
+    rev = joints_svc.create_joint_revision(joint["id"], {"thread": "M10"}, "x", 1)
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    rev = joints_svc.reject_joint_revision(rev["id"], 2)
+    try:
+        joints_svc.approve_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_reject_an_already_rejected_revision():
+    pid = _make_project("Immutable Re-reject Project")
+    joint = joints_svc.create_joint(pid, "J-IMMUT-REREJECT", "Immutable Re-reject Joint", None, 1)
+    rev = joints_svc.create_joint_revision(joint["id"], {}, "x", 1)
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    rev = joints_svc.reject_joint_revision(rev["id"], 2)
+    try:
+        joints_svc.reject_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_approve_a_draft_revision_without_submitting_first():
+    pid = _make_project("Immutable Approve Draft Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IMMUT-APPR-DRAFT", "Immutable Approve Draft Joint", None, 1
+    )
+    rev = joints_svc.create_joint_revision(joint["id"], {}, "x", 1)
+    try:
+        joints_svc.approve_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_cannot_reject_a_draft_revision_without_submitting_first():
+    pid = _make_project("Immutable Reject Draft Project")
+    joint = joints_svc.create_joint(
+        pid, "J-IMMUT-REJ-DRAFT", "Immutable Reject Draft Joint", None, 1
+    )
+    rev = joints_svc.create_joint_revision(joint["id"], {}, "x", 1)
+    try:
+        joints_svc.reject_joint_revision(rev["id"], 2)
+        assert False, "expected JointRevisionStateError"
+    except JointRevisionStateError:
+        pass
+    assert joints_svc.get_joint_revision(rev["id"]) == rev
+
+
+def test_approved_revision_content_is_never_altered_by_rejected_transition_attempts():
+    """Concrete, testable form of 'immutable after approval': the
+    snapshot/change_summary/revision_no/created_by of an approved
+    revision are identical before and after every rejected further
+    transition attempt -- not just the status field."""
+    pid = _make_project("Immutable Content Project")
+    joint = joints_svc.create_joint(pid, "J-IMMUT-CONTENT", "Immutable Content Joint", None, 1)
+    rev = joints_svc.create_joint_revision(
+        joint["id"], {"thread": "M10", "class": "8.8"}, "original summary", 1
+    )
+    rev = joints_svc.submit_joint_revision(rev["id"], 1)
+    approved = joints_svc.approve_joint_revision(rev["id"], 2)
+
+    for attempt in (
+        lambda: joints_svc.approve_joint_revision(approved["id"], 3),
+        lambda: joints_svc.reject_joint_revision(approved["id"], 3),
+    ):
+        try:
+            attempt()
+            assert False, "expected JointRevisionStateError"
+        except JointRevisionStateError:
+            pass
+
+    final = joints_svc.get_joint_revision(approved["id"])
+    assert final["snapshot_json"] == approved["snapshot_json"]
+    assert final["change_summary"] == approved["change_summary"]
+    assert final["revision_no"] == approved["revision_no"]
+    assert final["created_by"] == approved["created_by"]
+    assert final == approved
+
+
+def test_joint_revision_immutable_error_has_no_reachable_raise_site():
+    """Documents the Stage 3 finding as an executable, self-verifying
+    fact rather than only a prose claim: JointRevisionImmutableError is
+    imported and exported by backend.joints.service but never raised
+    anywhere in it. If a future change starts raising it, this
+    assertion -- not just the state-guard tests above -- is the one
+    that will need deliberate updating, making the change visible in
+    review rather than silent."""
+    import inspect
+
+    source = inspect.getsource(joints_svc)
+    assert "raise JointRevisionImmutableError" not in source
+    assert "JointRevisionImmutableError" in joints_svc.__all__
