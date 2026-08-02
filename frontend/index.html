@@ -307,7 +307,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .dns-result{padding:10px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);margin-top:8px}
 @media(max-width:900px){.wizard-steps{grid-template-columns:1fr 1fr}}
 
-::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:var(--surface)}::-webkit-scrollbar-thumb{background:var(--neutral);border-radius:5px;border:2px solid var(--surface);background-clip:padding-box}::-webkit-scrollbar-thumb:hover{background:var(--text2)}
+html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
 /* FRICTION CONDITION (Faz 2.6.6) */
 .fc-muted{color:var(--text3);font-size:12px}
 .fc-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
@@ -402,17 +403,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 <!-- ANA UYGULAMA -->
 <div class="app" id="mainApp" style="display:none">
 <div class="topbar">
-  <div class="logo">TorqPro <span id="topbar-version">v… · Go-Live Wizard</span></div>
-  <div class="topbar-nav">
-    <button class="nav-btn active" onclick="showNav('dashboard',this)">📊 <span data-i18n="topbar.dashboard">Dashboard</span></button>
-    <button class="nav-btn" onclick="showNav('n01391',this)">⚡ <span data-i18n="topbar.oem_torque_estimate">OEM Tork Öngörüsü</span></button>
-    <button class="nav-btn" onclick="showNav('hizli',this)">🔧 <span data-i18n="topbar.torque_calc">Tork Hesap</span></button>
-    <button class="nav-btn" onclick="showNav('checklist',this)">✅ <span data-i18n="topbar.checklist">Check-List</span></button>
-    <button class="nav-btn" onclick="showNav('yetenek',this)">📈 <span data-i18n="topbar.capability">Yetenek</span></button>
-    <button class="nav-btn" onclick="showNav('problem',this)">⚠️ <span data-i18n="topbar.problem">Problem</span></button>
-    <button class="nav-btn" onclick="showNav('oem',this)">🔍 <span data-i18n="topbar.oem_norm">OEM Norm</span></button>
-    <button class="nav-btn" onclick="showNav('rapor',this)">📄 <span data-i18n="topbar.report">Rapor</span></button>
-  </div>
+  <div class="logo">TorqPro <span id="topbar-version">v…</span></div>
   <div class="topbar-right" id="topbarRight">
     <div class="lang-switch" role="group" aria-label="Language / Dil">
       <button type="button" class="lang-btn" data-lang="tr" onclick="setLanguage('tr')">TR</button>
@@ -432,7 +423,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="sidebar-item" onclick="showPage('vdi',this)"><span class="sidebar-icon">🔬</span> <span data-i18n="sidebar.advanced_analysis">Gelişmiş Analiz</span></div>
   </div>
   <div class="sidebar-section">
-    <div class="sidebar-label" data-i18n="sidebar.section_production">Üretim</div>
+    <div class="sidebar-label" data-i18n="sidebar.section_design_calc">Tasarım / Hesaplama</div>
+    <div class="sidebar-item" onclick="showPage('projects',this)"><span class="sidebar-icon">📁</span> <span data-i18n="sidebar.projects">Projeler</span></div>
+    <div class="sidebar-item" onclick="showPage('revisions',this)"><span class="sidebar-icon">🔁</span> <span data-i18n="sidebar.revisions">Hesap Revizyonları</span></div>
+    <div class="sidebar-item" onclick="showPage('approvals',this)"><span class="sidebar-icon">✍️</span> <span data-i18n="sidebar.approvals_pending">Onay Bekleyenler</span></div>
+    <div class="sidebar-item" onclick="showPage('releasepackage',this)"><span class="sidebar-icon">📦</span> <span data-i18n="sidebar.release_package">Proje Release Paketi</span></div>
+    <div class="sidebar-item" onclick="showPage('traceability',this)"><span class="sidebar-icon">🧾</span> <span data-i18n="sidebar.traceability_matrix">İzlenebilirlik Matrisi</span></div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label" data-i18n="sidebar.section_engineering_analysis">Mühendislik / Analiz</div>
+    <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> <span data-i18n="sidebar.frictioncondition">Friction Condition</span></div>
+    <div class="sidebar-item" onclick="showPage('strengthclasses')"><span class="sidebar-icon">🔗</span> <span data-i18n="sidebar.strengthclasses">Bolt/Nut Strength Classes</span></div>
+    <div class="sidebar-item" onclick="showPage('washerresolution')"><span class="sidebar-icon">🧾</span> <span data-i18n="sidebar.washerresolution">Washer Resolution Report</span></div>
+    <div class="sidebar-item" onclick="showPage('governance')"><span class="sidebar-icon">🗂️</span> <span data-i18n="sidebar.governance">Governance Workspace</span></div>
+    <div class="sidebar-item" onclick="showPage('assemblyintelligence')"><span class="sidebar-icon">🧠</span> <span data-i18n="sidebar.assemblyintelligence">Montaj Zekâsı</span></div>
+    <div class="sidebar-item" onclick="showPage('jointanalysis')"><span class="sidebar-icon">⚙️</span> <span data-i18n="sidebar.jointanalysis">Joint Analysis</span></div>
+    <div class="sidebar-item" onclick="showPage('materialintelligence')"><span class="sidebar-icon">🧬</span> <span data-i18n="sidebar.materialintelligence">Material Intelligence</span></div>
+    <div class="sidebar-item" onclick="showPage('validation',this)"><span class="sidebar-icon">🔎</span> <span data-i18n="sidebar.technical_validation">Teknik Doğrulama</span></div>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-label" data-i18n="sidebar.section_production">Üretim / Kalite</div>
     <div class="sidebar-item" onclick="showPage('checklist',this)"><span class="sidebar-icon">✅</span> <span data-i18n="sidebar.checklist">Check-List</span></div>
     <div class="sidebar-item" onclick="showPage('yetenek',this)"><span class="sidebar-icon">📈</span> <span data-i18n="sidebar.capability">Cm/Cmk Yetenek</span></div>
     <div class="sidebar-item" onclick="showPage('sikici',this)"><span class="sidebar-icon">🔩</span> <span data-i18n="sidebar.tool_tracking">Sıkıcı Takip</span> <span class="sidebar-badge">3</span></div>
@@ -441,19 +451,42 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
   <div class="sidebar-section">
     <div class="sidebar-label" data-i18n="sidebar.section_reference">Referans</div>
     <div class="sidebar-item" onclick="showPage('oem')"><span class="sidebar-icon">🔍</span> <span data-i18n="sidebar.oem_norm_query">OEM Norm Sorgu</span></div>
-    <div class="sidebar-item" onclick="showPage('frictioncondition')"><span class="sidebar-icon">🧪</span> <span data-i18n="sidebar.frictioncondition">Friction Condition</span></div>
-    <div class="sidebar-item" onclick="showPage('strengthclasses')"><span class="sidebar-icon">🔗</span> <span data-i18n="sidebar.strengthclasses">Bolt/Nut Strength Classes</span></div>
-    <div class="sidebar-item" onclick="showPage('washerresolution')"><span class="sidebar-icon">🧾</span> <span data-i18n="sidebar.washerresolution">Washer Resolution Report</span></div>
-    <div class="sidebar-item" onclick="showPage('governance')"><span class="sidebar-icon">🗂️</span> <span data-i18n="sidebar.governance">Governance Workspace</span></div>
-    <div class="sidebar-item" onclick="showPage('assemblyintelligence')"><span class="sidebar-icon">🧠</span> <span data-i18n="sidebar.assemblyintelligence">Montaj Zekâsı</span></div>
-    <div class="sidebar-item" onclick="showPage('jointanalysis')"><span class="sidebar-icon">⚙️</span> <span data-i18n="sidebar.jointanalysis">Joint Analysis</span></div>
-    <div class="sidebar-item" onclick="showPage('materialintelligence')"><span class="sidebar-icon">🧬</span> <span data-i18n="sidebar.materialintelligence">Material Intelligence</span></div>
     <div class="sidebar-item" onclick="showPage('norm')"><span class="sidebar-icon">📋</span> <span data-i18n="sidebar.norm_guide">Norm Rehberi</span></div>
     <div class="sidebar-item" onclick="showPage('fmea')"><span class="sidebar-icon">🧩</span> <span data-i18n="sidebar.fmea_catalog">FMEA Kataloğu</span></div>
+    <div class="sidebar-item" onclick="showPage('mobileaccess',this)"><span class="sidebar-icon">📱</span> <span data-i18n="sidebar.mobile_access">Mobil Erişim</span></div>
+    <div class="sidebar-item" onclick="showPage('rapor',this)"><span class="sidebar-icon">📄</span> <span data-i18n="sidebar.generate_report">Rapor Üret</span></div>
+    <div class="sidebar-item" onclick="showPage('arsiv',this)"><span class="sidebar-icon">🗂️</span> <span data-i18n="sidebar.archive">Arşiv</span></div>
   </div>
   <div class="sidebar-section" id="adminSidebar" style="display:none">
     <div class="sidebar-label" data-i18n="sidebar.section_admin">Yönetim</div>
     <div class="sidebar-item" onclick="showPage('admin',this)"><span class="sidebar-icon">🛡️</span> <span data-i18n="sidebar.admin_panel">Yönetici Paneli</span></div>
+  </div>
+  <div class="sidebar-section" id="dataAdminSidebar" style="display:none">
+    <div class="sidebar-label" data-i18n="sidebar.section_standard_data">Standart Verisi</div>
+    <div class="sidebar-item" onclick="showPage('dataadmin',this)"><span class="sidebar-icon">📥</span> <span data-i18n="sidebar.data_upload_approval">Veri Yükleme & Onay</span></div>
+    <div class="sidebar-item" onclick="showPage('calibration',this)"><span class="sidebar-icon">📐</span> <span data-i18n="sidebar.calibration">Kalibrasyon</span></div>
+  </div>
+  <div class="sidebar-section" id="versionSidebar" style="display:none">
+    <div class="sidebar-label" data-i18n="sidebar.section_data_versions">Veri Sürümleri</div>
+    <div class="sidebar-item" onclick="showPage('versions',this)"><span class="sidebar-icon">🧬</span> <span data-i18n="sidebar.active_data_versions">Aktif Veri Sürümleri</span></div>
+  </div>
+  <div class="sidebar-section" id="qualitySidebar" style="display:none">
+    <div class="sidebar-label" data-i18n="sidebar.section_quality_gate">Kalite Kapısı</div>
+    <div class="sidebar-item" onclick="showPage('qualitygate',this)"><span class="sidebar-icon">✅</span> <span data-i18n="sidebar.data_quality_gate">Veri Kalite Kapısı</span></div>
+    <div class="sidebar-item" onclick="showPage('goldencases',this)"><span class="sidebar-icon">🏆</span> <span data-i18n="sidebar.golden_cases">Altın Senaryolar</span></div>
+    <div class="sidebar-item" onclick="showPage('releasecert',this)"><span class="sidebar-icon">📜</span> <span data-i18n="sidebar.release_cert">Sürüm Sertifikası</span></div>
+  </div>
+  <div class="sidebar-section" id="enterpriseSidebar" style="display:none">
+    <div class="sidebar-label" data-i18n="sidebar.section_enterprise">Kurumsal</div>
+    <div class="sidebar-item" onclick="showPage('organization',this)"><span class="sidebar-icon">🏢</span> <span data-i18n="sidebar.org_settings">Kurum Ayarları</span></div>
+    <div class="sidebar-item" onclick="showPage('license',this)"><span class="sidebar-icon">🔐</span> <span data-i18n="sidebar.license_mgmt">Lisans Yönetimi</span></div>
+    <div class="sidebar-item" onclick="showPage('usage',this)"><span class="sidebar-icon">📊</span> <span data-i18n="sidebar.usage_summary">Kullanım Özeti</span></div>
+  </div>
+  <div class="sidebar-section" id="deploymentSidebar" style="display:none">
+    <div class="sidebar-label" data-i18n="sidebar.section_deployment">Dağıtım ve Destek</div>
+    <div class="sidebar-item" onclick="showPage('deployment',this)"><span class="sidebar-icon">🚀</span> <span data-i18n="sidebar.deployment_profile">Kurulum Profili</span></div>
+    <div class="sidebar-item" onclick="showPage('migration',this)"><span class="sidebar-icon">🔄</span> <span data-i18n="sidebar.data_migration">Veri Taşıma</span></div>
+    <div class="sidebar-item" onclick="showPage('diagnostics',this)"><span class="sidebar-icon">🩺</span> <span data-i18n="sidebar.system_diagnostics">Sistem Tanılama</span></div>
   </div>
   <div class="sidebar-section" id="goliveSidebar" style="display:none">
     <div class="sidebar-label" data-i18n="sidebar.section_golive">İlk Yayın</div>
@@ -464,57 +497,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
     <div class="sidebar-label" data-i18n="sidebar.section_cloud">İnternet Yayını</div>
     <div class="sidebar-item" onclick="showPage('clouddeploy',this)"><span class="sidebar-icon">☁️</span> <span data-i18n="sidebar.secure_deploy">Güvenli Yayın</span></div>
     <div class="sidebar-item" onclick="showPage('runtimehealth',this)"><span class="sidebar-icon">❤️</span> <span data-i18n="sidebar.runtime_health">Canlılık Durumu</span></div>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-label" data-i18n="sidebar.section_mobile">Mobil Erişim</div>
-    <div class="sidebar-item" onclick="showPage('mobileaccess',this)"><span class="sidebar-icon">📱</span> <span data-i18n="sidebar.mobile_access">Mobil Erişim</span></div>
-  </div>
-  <div class="sidebar-section" id="deploymentSidebar" style="display:none">
-    <div class="sidebar-label" data-i18n="sidebar.section_deployment">Dağıtım ve Destek</div>
-    <div class="sidebar-item" onclick="showPage('deployment',this)"><span class="sidebar-icon">🚀</span> <span data-i18n="sidebar.deployment_profile">Kurulum Profili</span></div>
-    <div class="sidebar-item" onclick="showPage('migration',this)"><span class="sidebar-icon">🔄</span> <span data-i18n="sidebar.data_migration">Veri Taşıma</span></div>
-    <div class="sidebar-item" onclick="showPage('diagnostics',this)"><span class="sidebar-icon">🩺</span> <span data-i18n="sidebar.system_diagnostics">Sistem Tanılama</span></div>
-  </div>
-  <div class="sidebar-section" id="enterpriseSidebar" style="display:none">
-    <div class="sidebar-label" data-i18n="sidebar.section_enterprise">Kurumsal</div>
-    <div class="sidebar-item" onclick="showPage('organization',this)"><span class="sidebar-icon">🏢</span> <span data-i18n="sidebar.org_settings">Kurum Ayarları</span></div>
-    <div class="sidebar-item" onclick="showPage('license',this)"><span class="sidebar-icon">🔐</span> <span data-i18n="sidebar.license_mgmt">Lisans Yönetimi</span></div>
-    <div class="sidebar-item" onclick="showPage('usage',this)"><span class="sidebar-icon">📊</span> <span data-i18n="sidebar.usage_summary">Kullanım Özeti</span></div>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-label" data-i18n="sidebar.section_release">Release ve Rapor</div>
-    <div class="sidebar-item" onclick="showPage('releasepackage',this)"><span class="sidebar-icon">📦</span> <span data-i18n="sidebar.release_package">Proje Release Paketi</span></div>
-    <div class="sidebar-item" onclick="showPage('traceability',this)"><span class="sidebar-icon">🧾</span> <span data-i18n="sidebar.traceability_matrix">İzlenebilirlik Matrisi</span></div>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-label" data-i18n="sidebar.section_project">Proje ve Onay</div>
-    <div class="sidebar-item" onclick="showPage('projects',this)"><span class="sidebar-icon">📁</span> <span data-i18n="sidebar.projects">Projeler</span></div>
-    <div class="sidebar-item" onclick="showPage('revisions',this)"><span class="sidebar-icon">🔁</span> <span data-i18n="sidebar.revisions">Hesap Revizyonları</span></div>
-    <div class="sidebar-item" onclick="showPage('approvals',this)"><span class="sidebar-icon">✍️</span> <span data-i18n="sidebar.approvals_pending">Onay Bekleyenler</span></div>
-  </div>
-  <div class="sidebar-section" id="qualitySidebar" style="display:none">
-    <div class="sidebar-label" data-i18n="sidebar.section_quality_gate">Kalite Kapısı</div>
-    <div class="sidebar-item" onclick="showPage('qualitygate',this)"><span class="sidebar-icon">✅</span> <span data-i18n="sidebar.data_quality_gate">Veri Kalite Kapısı</span></div>
-    <div class="sidebar-item" onclick="showPage('goldencases',this)"><span class="sidebar-icon">🏆</span> <span data-i18n="sidebar.golden_cases">Altın Senaryolar</span></div>
-    <div class="sidebar-item" onclick="showPage('releasecert',this)"><span class="sidebar-icon">📜</span> <span data-i18n="sidebar.release_cert">Sürüm Sertifikası</span></div>
-  </div>
-  <div class="sidebar-section" id="versionSidebar" style="display:none">
-    <div class="sidebar-label" data-i18n="sidebar.section_data_versions">Veri Sürümleri</div>
-    <div class="sidebar-item" onclick="showPage('versions',this)"><span class="sidebar-icon">🧬</span> <span data-i18n="sidebar.active_data_versions">Aktif Veri Sürümleri</span></div>
-  </div>
-  <div class="sidebar-section" id="dataAdminSidebar" style="display:none">
-    <div class="sidebar-label" data-i18n="sidebar.section_standard_data">Standart Verisi</div>
-    <div class="sidebar-item" onclick="showPage('dataadmin',this)"><span class="sidebar-icon">📥</span> <span data-i18n="sidebar.data_upload_approval">Veri Yükleme & Onay</span></div>
-    <div class="sidebar-item" onclick="showPage('calibration',this)"><span class="sidebar-icon">📐</span> <span data-i18n="sidebar.calibration">Kalibrasyon</span></div>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-label" data-i18n="sidebar.section_validation">Doğrulama</div>
-    <div class="sidebar-item" onclick="showPage('validation',this)"><span class="sidebar-icon">🔎</span> <span data-i18n="sidebar.technical_validation">Teknik Doğrulama</span></div>
-  </div>
-  <div class="sidebar-section">
-    <div class="sidebar-label" data-i18n="sidebar.section_outputs">Çıktılar</div>
-    <div class="sidebar-item" onclick="showPage('rapor',this)"><span class="sidebar-icon">📄</span> <span data-i18n="sidebar.generate_report">Rapor Üret</span></div>
-    <div class="sidebar-item" onclick="showPage('arsiv',this)"><span class="sidebar-icon">🗂️</span> <span data-i18n="sidebar.archive">Arşiv</span></div>
   </div>
   <div class="sidebar-exit">
     <div class="sidebar-item" style="color:var(--danger)" onclick="guvenliCikis()">
@@ -1768,7 +1750,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
       const loginVersionEl = document.getElementById('login-version');
       if (loginVersionEl) loginVersionEl.textContent = 'v' + v;
       const topbarVersionEl = document.getElementById('topbar-version');
-      if (topbarVersionEl) topbarVersionEl.textContent = 'v' + v + ' · Go-Live Wizard';
+      if (topbarVersionEl) topbarVersionEl.textContent = 'v' + v;
     }
   } catch (e) { /* version display is non-critical; fail silently */ }
 })();
@@ -1886,14 +1868,6 @@ const I18N = {
     'login.footer': 'Demo version — unauthorized access is prohibited',
 
     // ---- topbar ----
-    'topbar.dashboard': 'Dashboard',
-    'topbar.oem_torque_estimate': 'OEM Torque Estimate',
-    'topbar.torque_calc': 'Torque Calc',
-    'topbar.checklist': 'Check-List',
-    'topbar.capability': 'Capability',
-    'topbar.problem': 'Problem',
-    'topbar.oem_norm': 'OEM Norm',
-    'topbar.report': 'Report',
     'topbar.system_active': '● System Active',
 
     // ---- sidebar ----
@@ -1902,11 +1876,13 @@ const I18N = {
     'sidebar.sample_torque_study': 'Sample Torque Study',
     'sidebar.torque_calc': 'Torque Calc',
     'sidebar.advanced_analysis': 'Advanced Analysis',
-    'sidebar.section_production': 'Production',
+    'sidebar.section_design_calc': 'Design / Calculation',
+    'sidebar.section_production': 'Production / Quality',
     'sidebar.checklist': 'Check-List',
     'sidebar.capability': 'Cp/Cpk Capability',
     'sidebar.tool_tracking': 'Tool Tracking',
     'sidebar.problem_management': 'Problem Management',
+    'sidebar.section_engineering_analysis': 'Engineering / Analysis',
     'sidebar.section_reference': 'Reference',
     'sidebar.oem_norm_query': 'OEM Norm Query',
     'sidebar.norm_guide': 'Norm Guide',
@@ -1919,7 +1895,6 @@ const I18N = {
     'sidebar.section_cloud': 'Cloud Deployment',
     'sidebar.secure_deploy': 'Secure Deploy',
     'sidebar.runtime_health': 'Runtime Health',
-    'sidebar.section_mobile': 'Mobile Access',
     'sidebar.mobile_access': 'Mobile Access',
     'sidebar.section_deployment': 'Deployment & Support',
     'sidebar.deployment_profile': 'Deployment Profile',
@@ -1929,10 +1904,8 @@ const I18N = {
     'sidebar.org_settings': 'Organization Settings',
     'sidebar.license_mgmt': 'License Management',
     'sidebar.usage_summary': 'Usage Summary',
-    'sidebar.section_release': 'Release & Report',
     'sidebar.release_package': 'Project Release Package',
     'sidebar.traceability_matrix': 'Traceability Matrix',
-    'sidebar.section_project': 'Project & Approval',
     'sidebar.projects': 'Projects',
     'sidebar.revisions': 'Calculation Revisions',
     'sidebar.approvals_pending': 'Pending Approvals',
@@ -1945,9 +1918,7 @@ const I18N = {
     'sidebar.section_standard_data': 'Standards Data',
     'sidebar.data_upload_approval': 'Data Upload & Approval',
     'sidebar.calibration': 'Calibration',
-    'sidebar.section_validation': 'Validation',
     'sidebar.technical_validation': 'Technical Validation',
-    'sidebar.section_outputs': 'Outputs',
     'sidebar.generate_report': 'Generate Report',
     'sidebar.archive': 'Archive',
     'sidebar.secure_logout': 'Secure Logout',
@@ -4456,14 +4427,6 @@ const I18N = {
     'login.footer': 'Demo sürümü — yetkisiz erişim yasaktır',
 
     // ---- topbar ----
-    'topbar.dashboard': 'Dashboard',
-    'topbar.oem_torque_estimate': 'OEM Tork Öngörüsü',
-    'topbar.torque_calc': 'Tork Hesap',
-    'topbar.checklist': 'Check-List',
-    'topbar.capability': 'Yetenek',
-    'topbar.problem': 'Problem',
-    'topbar.oem_norm': 'OEM Norm',
-    'topbar.report': 'Rapor',
     'topbar.system_active': '● Sistem Aktif',
 
     // ---- sidebar ----
@@ -4472,11 +4435,13 @@ const I18N = {
     'sidebar.sample_torque_study': 'Örnek Tork Çalışması',
     'sidebar.torque_calc': 'Tork Hesap',
     'sidebar.advanced_analysis': 'Gelişmiş Analiz',
-    'sidebar.section_production': 'Üretim',
+    'sidebar.section_design_calc': 'Tasarım / Hesaplama',
+    'sidebar.section_production': 'Üretim / Kalite',
     'sidebar.checklist': 'Check-List',
     'sidebar.capability': 'Cm/Cmk Yetenek',
     'sidebar.tool_tracking': 'Sıkıcı Takip',
     'sidebar.problem_management': 'Problem Yönetimi',
+    'sidebar.section_engineering_analysis': 'Mühendislik / Analiz',
     'sidebar.section_reference': 'Referans',
     'sidebar.oem_norm_query': 'OEM Norm Sorgu',
     'sidebar.norm_guide': 'Norm Rehberi',
@@ -4489,7 +4454,6 @@ const I18N = {
     'sidebar.section_cloud': 'İnternet Yayını',
     'sidebar.secure_deploy': 'Güvenli Yayın',
     'sidebar.runtime_health': 'Canlılık Durumu',
-    'sidebar.section_mobile': 'Mobil Erişim',
     'sidebar.mobile_access': 'Mobil Erişim',
     'sidebar.section_deployment': 'Dağıtım ve Destek',
     'sidebar.deployment_profile': 'Kurulum Profili',
@@ -4499,10 +4463,8 @@ const I18N = {
     'sidebar.org_settings': 'Kurum Ayarları',
     'sidebar.license_mgmt': 'Lisans Yönetimi',
     'sidebar.usage_summary': 'Kullanım Özeti',
-    'sidebar.section_release': 'Release ve Rapor',
     'sidebar.release_package': 'Proje Release Paketi',
     'sidebar.traceability_matrix': 'İzlenebilirlik Matrisi',
-    'sidebar.section_project': 'Proje ve Onay',
     'sidebar.projects': 'Projeler',
     'sidebar.revisions': 'Hesap Revizyonları',
     'sidebar.approvals_pending': 'Onay Bekleyenler',
@@ -4515,9 +4477,7 @@ const I18N = {
     'sidebar.section_standard_data': 'Standart Verisi',
     'sidebar.data_upload_approval': 'Veri Yükleme & Onay',
     'sidebar.calibration': 'Kalibrasyon',
-    'sidebar.section_validation': 'Doğrulama',
     'sidebar.technical_validation': 'Teknik Doğrulama',
-    'sidebar.section_outputs': 'Çıktılar',
     'sidebar.generate_report': 'Rapor Üret',
     'sidebar.archive': 'Arşiv',
     'sidebar.secure_logout': 'Güvenli Çıkış',

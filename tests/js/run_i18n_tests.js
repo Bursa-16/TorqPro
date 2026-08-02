@@ -661,19 +661,32 @@ async function main() {
     checkEqual('login username placeholder switches to en', userPh.placeholder, 'Your username');
   }
 
-  // ---- 15. Topbar nav items + system-active pill translate ----
+  // ---- 15. Topbar simplified (Stage 1): duplicate nav removed, system-active pill still translates ----
   {
     const ctx = newContext(extractedSource, rawHtml, {});
+    // The old topbar.dashboard / topbar.report nav buttons called
+    // showNav(), a function that was never defined anywhere in the
+    // codebase (dead/non-functional duplicate navigation). Stage 1
+    // removed them; assert they are gone rather than asserting they
+    // exist, per the approved topbar-simplification UI change.
     const dashEl = getByI18nKey(ctx, 'topbar.dashboard');
     const reportEl = getByI18nKey(ctx, 'topbar.report');
+    check('topbar.dashboard element no longer exists (dead duplicate nav removed)', !dashEl);
+    check('topbar.report element no longer exists (dead duplicate nav removed)', !reportEl);
+    check('showNav( call no longer present anywhere in frontend/index.html', rawHtml.indexOf('showNav(') === -1);
+    check('"Go-Live Wizard" string no longer present beside the version', rawHtml.indexOf('Go-Live Wizard') === -1);
+
+    // The same former topbar destinations must remain reachable from
+    // the sidebar via the existing, working showPage() handler.
+    const sidebarDashEl = getByI18nKey(ctx, 'sidebar.dashboard');
+    const sidebarReportEl = getByI18nKey(ctx, 'sidebar.generate_report');
+    check('sidebar.dashboard element exists (dashboard reachable from sidebar)', !!sidebarDashEl);
+    check('sidebar.generate_report element exists (report reachable from sidebar)', !!sidebarReportEl);
+
     const activeEl = getByI18nKey(ctx, 'topbar.system_active');
-    check('topbar.dashboard element exists', !!dashEl);
-    check('topbar.report element exists', !!reportEl);
     check('topbar.system_active element exists', !!activeEl);
     ctx.context.applyStaticTranslations();
-    checkEqual('topbar report label tr by default', reportEl.textContent, 'Rapor');
     ctx.context.setLanguage('en');
-    checkEqual('topbar report label switches to en', reportEl.textContent, 'Report');
     checkEqual('topbar system-active pill switches to en', activeEl.textContent, '● System Active');
   }
 
