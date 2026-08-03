@@ -83,6 +83,7 @@ const CONST_NAMES = [
   'DEPLOY_TYPE_LABEL_KEY', 'DEPLOY_BACKUP_LABEL_KEY', 'DEPLOY_CHANNEL_LABEL_KEY', 'LAST_DIAGNOSTICS',
   'THRESHOLD_TBD_KEY', 'SYSTEM_HEALTH_HELP', 'INFO_ICON_SEQ', 'AUTH_TOKEN',
   'SC_BOLTS', 'SC_NUTS', 'SC_LOADED', 'SC_STATUS_META',
+  'DASH_CLASS_POINT_META', 'DASH_CLASS_EQUIPMENT', 'DASH_EQUIPMENT_STATUS_PILL', 'DASH_EQUIPMENT_STATUS_KEY',
 ];
 // These are mutable workspace state in the real frontend (declared
 // with `let` there -- and stay `let` in frontend/index.html; this
@@ -125,6 +126,7 @@ const FUNCTION_NAMES = [
   'scEsc', 'scFmtNum', 'scFmtRange', 'scVerificationLabel', 'loadStrengthClassesWorkspace',
   'scRenderBoltTable', 'scRenderNutTable', 'scPopulateCompatSelectors', 'scCheckCompatibility',
   'scRenderCompatResult', 'scReapplyLanguage',
+  'escHtml', 'renderClassEquipmentRows',
 ];
 
 function extractStatementAfter(script, anchorRegex, statementRegex) {
@@ -189,6 +191,7 @@ function buildExtractedSource() {
   parts.push('function __getFmea() { return FMEA; }');
   parts.push('function __getSystemHealthHelp() { return SYSTEM_HEALTH_HELP; }');
   parts.push('function __getIsh() { return ISH; }');
+  parts.push('function __getDashClassEquipment() { return { meta: DASH_CLASS_POINT_META, equipment: DASH_CLASS_EQUIPMENT, statusPill: DASH_EQUIPMENT_STATUS_PILL, statusKey: DASH_EQUIPMENT_STATUS_KEY }; }');
   return { source: parts.join('\n\n'), rawHtml: html };
 }
 
@@ -4391,6 +4394,188 @@ async function main() {
     check('dashboard markup uses .dash-kpi-secondary', rawHtml.indexOf('class="dash-kpi-secondary"') !== -1);
     check('existing "Tightening Class Distribution" card key still present', rawHtml.indexOf('data-i18n="dashboard.class_distribution_title"') !== -1);
     check('existing "Recent NOK Records" card key still present', rawHtml.indexOf('data-i18n="dashboard.recent_nok_title"') !== -1);
+  }
+
+  // ---- 221. Stage 4: shared data structure covers all four displayed
+  //           classes (A/B/C/D) -- not hardcoded only for Class A. ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const { meta, equipment } = ctx.context.__getDashClassEquipment();
+    for (const cls of ['A', 'B', 'C', 'D']) {
+      check('DASH_CLASS_POINT_META has an entry for class ' + cls, !!meta[cls]);
+      check('DASH_CLASS_EQUIPMENT has an entry for class ' + cls, Array.isArray(equipment[cls]));
+    }
+    // Every equipment record across every class has the minimum
+    // required fields (identifier, model/name, status).
+    let allRecordsValid = true;
+    for (const cls of Object.keys(equipment)) {
+      for (const eq of equipment[cls]) {
+        if (!eq.id || !eq.model || !eq.status) allRecordsValid = false;
+      }
+    }
+    check('every equipment record has id, model, and status', allRecordsValid);
+  }
+
+  // ---- 222. Stage 4: renderClassEquipmentRows (shared render function,
+  //           DOM-free -- returns an HTML string) renders Class A vs
+  //           Class B with different content, matches the actual list
+  //           length (not the unrelated point-count), and shows the
+  //           "no equipment found" state for an empty/undefined class. ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.applyStaticTranslations();
+    const { equipment } = ctx.context.__getDashClassEquipment();
+    const htmlA = ctx.context.renderClassEquipmentRows(equipment.A);
+    const htmlB = ctx.context.renderClassEquipmentRows(equipment.B);
+    check('Class A equipment ids appear in its rendered rows', htmlA.indexOf('G301') !== -1 && htmlA.indexOf('S1901') !== -1);
+    check('Class B equipment ids appear in its rendered rows', htmlB.indexOf('S1823') !== -1 && htmlB.indexOf('ST22') !== -1);
+    check('Class A rendering does not include Class B equipment', htmlA.indexOf('S1823') === -1);
+    check('rendered row count for Class A matches DASH_CLASS_EQUIPMENT.A.length (3, not the 18-point total)',
+      (htmlA.match(/<tr>/g) || []).length - 1 === equipment.A.length); // -1 for the header <tr>
+
+    // Undefined/unclassified class (not present in the data structure)
+    // and an explicitly empty class both fall back to the shared
+    // "no equipment found" state -- same function, no special-cased
+    // Class-A-only logic.
+    const htmlUndefined = ctx.context.renderClassEquipmentRows(equipment.U);
+    const htmlEmpty = ctx.context.renderClassEquipmentRows([]);
+    check('undefined class renders the no-equipment-found state', htmlUndefined.indexOf('Ekipman bulunamadı') !== -1);
+    check('explicitly empty class renders the no-equipment-found state', htmlEmpty.indexOf('Ekipman bulunamadı') !== -1);
+    check('no-equipment-found state does not render a table', htmlEmpty.indexOf('<table') === -1);
+  }
+
+  // ---- 223. Stage 4: security -- escHtml() actually escapes, and
+  //           renderClassEquipmentRows() never inserts raw equipment
+  //           text into the returned HTML string. ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    checkEqual('escHtml escapes angle brackets and quotes',
+      ctx.context.escHtml('<img src=x onerror=alert(1)>\'"&'),
+      '&lt;img src=x onerror=alert(1)&gt;&#39;&quot;&amp;');
+    checkEqual('escHtml handles null/undefined safely', ctx.context.escHtml(null), '');
+    const maliciousList = [{ id: '<script>alert(1)</script>', model: '"><b>x</b>', status: 'ok' }];
+    const html = ctx.context.renderClassEquipmentRows(maliciousList);
+    check('malicious equipment id is not inserted as raw HTML', html.indexOf('<script>alert(1)</script>') === -1);
+    check('malicious equipment id appears escaped instead', html.indexOf('&lt;script&gt;') !== -1);
+    check('malicious equipment model is not inserted as raw HTML', html.indexOf('"><b>x</b>') === -1);
+  }
+
+  // ---- 224. Stage 4: i18n -- every new visible label used by the
+  //           equipment modal exists with TR/EN parity and reuses
+  //           dashboard.th_status rather than duplicating a new
+  //           "status" concept. ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const i18n = ctx.context.__getI18N();
+    for (const key of [
+      'dashboard.equipment_list_title', 'dashboard.equipment_count_label', 'dashboard.equipment_id_label',
+      'dashboard.equipment_model_label', 'dashboard.equipment_close', 'dashboard.equipment_none_found',
+      'dashboard.equipment_sample_note', 'dashboard.equipment_shown_count', 'dashboard.equipment_status_ok',
+      'dashboard.equipment_status_check', 'dashboard.equipment_status_insufficient', 'dashboard.equipment_status_expired',
+    ]) {
+      check(key + ' present in EN dictionary', Object.prototype.hasOwnProperty.call(i18n.en, key));
+      check(key + ' present in TR dictionary', Object.prototype.hasOwnProperty.call(i18n.tr, key));
+    }
+    check('equipment modal reuses dashboard.th_status instead of a duplicate key',
+      rawHtml.indexOf("t('dashboard.th_status')") !== -1);
+  }
+
+  // ---- 225. Stage 4: structure -- every displayed class row is a
+  //           real, unique, interactive <button> (keyboard-accessible
+  //           by default; no visually-clickable-div-only pattern). ----
+  {
+    const styleBlock = rawHtml.match(/<style>([\s\S]*?)<\/style>/)[1];
+    check('.class-row-btn rule defined (visible interactivity styling)', /\.class-row-btn\{/.test(styleBlock));
+    check('.class-row-btn has a visible focus indicator', /\.class-row-btn:hover,\.class-row-btn:focus-visible\{[^}]*outline/.test(styleBlock));
+    for (const cls of ['A', 'B', 'C', 'D']) {
+      const re = new RegExp('<button type="button" class="class-row-btn" onclick="openClassEquipmentModal\\(\'' + cls + '\', this\\)"');
+      check('Class ' + cls + ' row is a real <button> wired to openClassEquipmentModal', re.test(rawHtml));
+    }
+    check('exactly four class-row-btn buttons exist (A/B/C/D, not hardcoded to just one)',
+      (rawHtml.match(/class="class-row-btn"/g) || []).length === 4);
+  }
+
+  // ---- 226. Stage 4: modal structure & behavior -- verified via
+  //           static source inspection. openClassEquipmentModal /
+  //           closeClassEquipmentModal use document.createElement,
+  //           document.body.appendChild, and .focus(), none of which
+  //           this harness's DOM stub implements (it has no
+  //           createElement/body/focus support at all -- a structural
+  //           gap unlike the narrow querySelectorAll('.page') case
+  //           fixed in Stage 2), so behavior is proven by inspecting
+  //           the actual extracted function source rather than by
+  //           executing it in the sandbox. Mirrors this file's
+  //           existing doLogout() static-inspection test. ----
+  {
+    const scriptSrc = rawHtml.match(/<script>([\s\S]*)<\/script>/)[1];
+    const openSrc = extractFunctionDecl(scriptSrc, 'openClassEquipmentModal');
+    const closeSrc = extractFunctionDecl(scriptSrc, 'closeClassEquipmentModal');
+
+    check('modal has dialog semantics (role="dialog")', openSrc.indexOf('role="dialog"') !== -1);
+    check('modal has aria-modal="true"', openSrc.indexOf('aria-modal="true"') !== -1);
+    check('modal is labelled via aria-labelledby', openSrc.indexOf('aria-labelledby="classEquipmentModalTitle"') !== -1);
+    check('modal provides a close button (data-role="close")', openSrc.indexOf('data-role="close"') !== -1);
+    check('close button click is wired to closeClassEquipmentModal', openSrc.indexOf('closeClassEquipmentModal()') !== -1);
+    check('Escape key is wired to close the modal', /key === 'Escape'[\s\S]{0,40}closeClassEquipmentModal\(\)/.test(openSrc));
+    check('clicking the overlay backdrop closes the modal', /e\.target === overlay[\s\S]{0,40}closeClassEquipmentModal\(\)/.test(openSrc));
+    check('focus moves to the close button on open', /data-role="close"[^\n]*\)\.focus\(\)/.test(openSrc));
+    const cleanupCallIdx = openSrc.indexOf('closeClassEquipmentModal();');
+    const overlayCreateIdx = openSrc.indexOf('document.createElement');
+    check('any existing modal is removed before a new one opens (repeated open/close cannot duplicate content)',
+      cleanupCallIdx !== -1 && overlayCreateIdx !== -1 && cleanupCallIdx < overlayCreateIdx);
+
+    check('close() removes the overlay from the DOM', closeSrc.indexOf('overlay.remove()') !== -1);
+    check('close() removes the Escape keydown listener (no leaked listeners across repeated open/close)',
+      closeSrc.indexOf('document.removeEventListener') !== -1);
+    check('close() restores focus to the triggering class-row button', /dashEquipmentModalTrigger\.focus\(\)/.test(closeSrc));
+    check('close() is null-safe when no modal is currently open', /if\s*\(\s*!overlay\s*\)\s*return;/.test(closeSrc));
+
+    // Every dynamic equipment/class field interpolated into the modal
+    // markup goes through escHtml(...) -- no raw ${...} interpolation
+    // of equipment- or class-derived text.
+    for (const expr of ['className', 'pointCount']) {
+      check('modal header escapes ' + expr + ' via escHtml()', openSrc.indexOf('escHtml(' + expr + ')') !== -1);
+    }
+    check('modal never interpolates className without escHtml', !/\$\{className\}/.test(openSrc));
+    check('modal never interpolates pointCount without escHtml', !/\$\{pointCount\}/.test(openSrc));
+  }
+
+  // ---- 227. Stage 4: regression -- the five Stage 3 dashboard KPI
+  //           cards, the demo-data notice, and both pre-existing
+  //           dashboard cards (class distribution, recent NOK) all
+  //           remain present and unaffected by the drill-down change. ----
+  {
+    for (const id of ['kpiDailyTarget', 'kpiDailyCompleted', 'kpiActiveTools', 'kpiOkRate', 'kpiNokRecords']) {
+      check('Stage 3 KPI element id="' + id + '" still present', rawHtml.indexOf('id="' + id + '"') !== -1);
+    }
+    check('dashboard demo-data notice key still present', rawHtml.indexOf('data-i18n="dashboard.demo_data_note"') !== -1);
+    check('Tightening Class Distribution card title key still present', rawHtml.indexOf('data-i18n="dashboard.class_distribution_title"') !== -1);
+    check('Recent NOK Records card title key still present', rawHtml.indexOf('data-i18n="dashboard.recent_nok_title"') !== -1);
+  }
+
+  // ---- 228. Stage 4: regression -- no duplicate DOM ids anywhere in
+  //           frontend/index.html after the drill-down markup/JS
+  //           additions. ----
+  {
+    const allIds = [...rawHtml.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);
+    const seen = new Set();
+    const dupes = new Set();
+    for (const id of allIds) { if (seen.has(id)) dupes.add(id); seen.add(id); }
+    checkEqual('no duplicate DOM id anywhere in frontend/index.html', dupes.size, 0);
+  }
+
+  // ---- 229. Stage 4: regression -- Stage 2 admin-authorization
+  //           behavior (showPage guard, loadRuntimeHealth guard,
+  //           doLogout stale-content clearing) is unchanged by this
+  //           stage's edits. ----
+  {
+    const ctx = newContext(extractedSource, rawHtml, {});
+    ctx.context.CURRENT_ROLE = 'viewer';
+    const pageEl = ctx.documentStub.getElementById('page-admin');
+    const dashEl = ctx.documentStub.getElementById('page-dashboard');
+    ctx.context.showPage('admin');
+    check('Stage 2 regression: non-admin showPage(\'admin\') still does not mark it active', !pageEl.classList.contains('active'));
+    check('Stage 2 regression: non-admin showPage(\'admin\') still redirects to dashboard', dashEl.classList.contains('active'));
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');

@@ -132,6 +132,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .confirm-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px}
 .confirm-body{font-size:12px;color:var(--text2);margin-bottom:16px}
 .confirm-actions{display:flex;justify-content:flex-end;gap:8px}
+.equip-modal-box{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:22px 24px;width:520px;max-width:92vw;max-height:82vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.equip-modal-sub{font-size:12px;color:var(--text3);margin-bottom:14px}
+.class-row-btn{all:unset;display:block;box-sizing:border-box;width:100%;cursor:pointer;text-align:left;font:inherit;color:inherit;border-radius:6px;padding:4px 6px;margin:-4px -6px 6px -6px}
+.class-row-btn:last-child{margin-bottom:-4px}
+.class-row-btn:hover,.class-row-btn:focus-visible{background:var(--surface2);outline:2px solid var(--accent);outline-offset:1px}
 .section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .section-icon{font-size:20px}
 .section-title{font-size:16px;font-weight:600}
@@ -531,10 +536,10 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
     <div class="card">
       <div class="card-title" data-i18n="dashboard.class_distribution_title">Sıkma Sınıfı Dağılımı</div>
       <div class="card-sub"><span data-i18n="dashboard.active_operations">Aktif operasyonlar</span> <span class="norm-badge" data-i18n="dashboard.per_sample_norm">Örnek norma göre</span></div>
-      <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_a">Sınıf A — Kritik Güvenlik</span><span style="color:var(--danger)"><span data-i18n="dashboard.point_count_18">18 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:23%;background:var(--danger)"></div></div></div>
-      <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_b">Sınıf B — Önemli</span><span style="color:var(--warning)"><span data-i18n="dashboard.point_count_34">34 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:44%;background:var(--warning)"></div></div></div>
-      <div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_c">Sınıf C — Standart</span><span style="color:var(--accent2)"><span data-i18n="dashboard.point_count_21">21 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:27%;background:var(--accent)"></div></div></div>
-      <div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_d">Sınıf D — Genel</span><span style="color:var(--success)"><span data-i18n="dashboard.point_count_5">5 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:6%;background:var(--success)"></div></div></div>
+      <button type="button" class="class-row-btn" onclick="openClassEquipmentModal('A', this)" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_a">Sınıf A — Kritik Güvenlik</span><span style="color:var(--danger)"><span data-i18n="dashboard.point_count_18">18 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:23%;background:var(--danger)"></div></div></button>
+      <button type="button" class="class-row-btn" onclick="openClassEquipmentModal('B', this)" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_b">Sınıf B — Önemli</span><span style="color:var(--warning)"><span data-i18n="dashboard.point_count_34">34 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:44%;background:var(--warning)"></div></div></button>
+      <button type="button" class="class-row-btn" onclick="openClassEquipmentModal('C', this)" style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_c">Sınıf C — Standart</span><span style="color:var(--accent2)"><span data-i18n="dashboard.point_count_21">21 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:27%;background:var(--accent)"></div></div></button>
+      <button type="button" class="class-row-btn" onclick="openClassEquipmentModal('D', this)"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span data-i18n="dashboard.class_d">Sınıf D — Genel</span><span style="color:var(--success)"><span data-i18n="dashboard.point_count_5">5 nokta</span></span></div><div class="progress-bar"><div class="progress-fill" style="width:6%;background:var(--success)"></div></div></button>
     </div>
     <div class="card">
       <div class="card-title" data-i18n="dashboard.recent_nok_title">Son NOK Kayıtlar</div><div class="card-sub" data-i18n="dashboard.recent_nok_sub">Müdahale gerektiren ölçümler</div>
@@ -1945,6 +1950,18 @@ const I18N = {
     'dashboard.stat_nok_records_note': '2 awaiting intervention',
     'dashboard.stat_active_tools': 'Active Tightening Devices',
     'dashboard.stat_active_tools_note': '3 capability studies expired',
+    'dashboard.equipment_list_title': 'Equipment List',
+    'dashboard.equipment_count_label': 'Equipment Count',
+    'dashboard.equipment_id_label': 'Equipment ID',
+    'dashboard.equipment_model_label': 'Equipment / Model',
+    'dashboard.equipment_close': 'Close',
+    'dashboard.equipment_none_found': 'No equipment found.',
+    'dashboard.equipment_sample_note': 'Sample equipment data — this count does not match the class\'s measurement-point total.',
+    'dashboard.equipment_shown_count': '{n} record(s) shown',
+    'dashboard.equipment_status_ok': 'OK',
+    'dashboard.equipment_status_check': 'Check',
+    'dashboard.equipment_status_insufficient': 'Insufficient',
+    'dashboard.equipment_status_expired': 'Expired',
     'dashboard.class_distribution_title': 'Tightening Class Distribution',
     'dashboard.active_operations': 'Active operations',
     'dashboard.per_sample_norm': 'Per sample norm',
@@ -4507,6 +4524,18 @@ const I18N = {
     'dashboard.stat_nok_records_note': "2'si müdahale bekliyor",
     'dashboard.stat_active_tools': 'Aktif Vidalayıcı',
     'dashboard.stat_active_tools_note': '3 yetenek süresi dolmuş',
+    'dashboard.equipment_list_title': 'Ekipman Listesi',
+    'dashboard.equipment_count_label': 'Ekipman Sayısı',
+    'dashboard.equipment_id_label': 'Ekipman Kimliği',
+    'dashboard.equipment_model_label': 'Ekipman / Model',
+    'dashboard.equipment_close': 'Kapat',
+    'dashboard.equipment_none_found': 'Ekipman bulunamadı.',
+    'dashboard.equipment_sample_note': 'Örnek ekipman verisi — bu sayı, sınıfın ölçüm noktası toplamıyla aynı değildir.',
+    'dashboard.equipment_shown_count': '{n} kayıt gösteriliyor',
+    'dashboard.equipment_status_ok': 'OK',
+    'dashboard.equipment_status_check': 'Kontrol',
+    'dashboard.equipment_status_insufficient': 'Yetersiz',
+    'dashboard.equipment_status_expired': 'Süresi Dolmuş',
     'dashboard.class_distribution_title': 'Sıkma Sınıfı Dağılımı',
     'dashboard.active_operations': 'Aktif operasyonlar',
     'dashboard.per_sample_norm': 'Örnek norma göre',
@@ -6231,6 +6260,103 @@ function confirmDialog(opts){
     document.addEventListener('keydown', onKey);
     overlay.querySelector('[data-role="confirm"]').focus();
   });
+}
+
+// ========== TIGHTENING CLASS EQUIPMENT DRILL-DOWN (Faz Stage 4) ==========
+// Data-source note: no backend endpoint, frontend state object, or
+// calibration dataset holds real equipment records (confirmed by
+// inspection). The only equipment-like data anywhere in the app is
+// the static demo inventory on the Sıkıcı Takip Listesi page
+// (page-sikici), which itself is hardcoded sample data. This shared
+// structure reuses those same real B/C demo rows and extends the
+// same style/vocabulary for A/D (which had no rows there). Point
+// counts below intentionally match the existing dashboard.class_*/
+// dashboard.point_count_* keys already rendered on the dashboard --
+// they represent measurement POINTS per class, not equipment counts,
+// and are kept distinct in the modal to avoid implying the sample
+// equipment list is exhaustive.
+function escHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[c]));
+}
+const DASH_CLASS_POINT_META = {
+  A: { labelKey: 'dashboard.class_a', pointCountKey: 'dashboard.point_count_18' },
+  B: { labelKey: 'dashboard.class_b', pointCountKey: 'dashboard.point_count_34' },
+  C: { labelKey: 'dashboard.class_c', pointCountKey: 'dashboard.point_count_21' },
+  D: { labelKey: 'dashboard.class_d', pointCountKey: 'dashboard.point_count_5' },
+};
+const DASH_CLASS_EQUIPMENT = {
+  A: [
+    { id: 'G301', model: 'EXACT 20', status: 'ok' },
+    { id: 'S1901', model: 'SEC EXACT', status: 'ok' },
+  ],
+  B: [
+    { id: 'S1823', model: 'SEC EXACT', status: 'check' },
+    { id: 'ST22', model: 'SEC EXACT', status: 'expired' },
+  ],
+  C: [
+    { id: 'G278', model: 'EXACT 12', status: 'ok' },
+    { id: 'S1109', model: 'EXACT 15', status: 'insufficient' },
+  ],
+  D: [
+    { id: 'G450', model: 'EXACT 8', status: 'ok' },
+  ],
+};
+const DASH_EQUIPMENT_STATUS_PILL = { ok: 'pill-ok', check: 'pill-warn', insufficient: 'pill-nok', expired: 'pill-nok' };
+const DASH_EQUIPMENT_STATUS_KEY = {
+  ok: 'dashboard.equipment_status_ok', check: 'dashboard.equipment_status_check',
+  insufficient: 'dashboard.equipment_status_insufficient', expired: 'dashboard.equipment_status_expired',
+};
+function renderClassEquipmentRows(list) {
+  if (!list || list.length === 0) {
+    return `<div class="confirm-body" style="margin-top:8px">${escHtml(t('dashboard.equipment_none_found'))}</div>`;
+  }
+  const rows = list.map((eq) => `<tr>
+      <td>${escHtml(eq.id)}</td>
+      <td>${escHtml(eq.model)}</td>
+      <td><span class="pill ${DASH_EQUIPMENT_STATUS_PILL[eq.status] || 'pill-warn'}">${escHtml(t(DASH_EQUIPMENT_STATUS_KEY[eq.status] || 'dashboard.equipment_status_check'))}</span></td>
+    </tr>`).join('');
+  return `<table class="table" style="margin-top:8px">
+      <tr><th>${escHtml(t('dashboard.equipment_id_label'))}</th><th>${escHtml(t('dashboard.equipment_model_label'))}</th><th>${escHtml(t('dashboard.th_status'))}</th></tr>
+      ${rows}
+    </table>`;
+}
+let dashEquipmentModalTrigger = null;
+function openClassEquipmentModal(classId, triggerEl) {
+  closeClassEquipmentModal();
+  const meta = DASH_CLASS_POINT_META[classId] || { labelKey: null, pointCountKey: null };
+  const list = DASH_CLASS_EQUIPMENT[classId] || [];
+  const className = meta.labelKey ? t(meta.labelKey) : classId;
+  const pointCount = meta.pointCountKey ? t(meta.pointCountKey) : '';
+  dashEquipmentModalTrigger = triggerEl || null;
+  const overlay = document.createElement('div');
+  overlay.id = 'classEquipmentModalOverlay';
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="equip-modal-box" role="dialog" aria-modal="true" aria-labelledby="classEquipmentModalTitle">
+      <div class="confirm-title" id="classEquipmentModalTitle">${escHtml(t('dashboard.equipment_list_title'))} — ${escHtml(className)}</div>
+      <div class="equip-modal-sub">${escHtml(t('dashboard.equipment_count_label'))}: ${escHtml(pointCount)} · ${escHtml(t('dashboard.equipment_shown_count').replace('{n}', String(list.length)))}</div>
+      <div class="equip-modal-sub">${escHtml(t('dashboard.equipment_sample_note'))}</div>
+      ${renderClassEquipmentRows(list)}
+      <div class="confirm-actions" style="margin-top:16px">
+        <button type="button" class="btn btn-secondary btn-sm" data-role="close">${escHtml(t('dashboard.equipment_close'))}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  const onKey = (e) => { if (e.key === 'Escape') closeClassEquipmentModal(); };
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeClassEquipmentModal(); });
+  overlay.querySelector('[data-role="close"]').addEventListener('click', () => closeClassEquipmentModal());
+  overlay._onKey = onKey;
+  document.addEventListener('keydown', onKey);
+  overlay.querySelector('[data-role="close"]').focus();
+}
+function closeClassEquipmentModal() {
+  const overlay = document.getElementById('classEquipmentModalOverlay');
+  if (!overlay) return;
+  if (overlay._onKey) document.removeEventListener('keydown', overlay._onKey);
+  overlay.remove();
+  if (dashEquipmentModalTrigger) { dashEquipmentModalTrigger.focus(); dashEquipmentModalTrigger = null; }
 }
 
 // ========== SAYFA YÖNETİMİ ==========
