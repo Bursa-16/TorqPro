@@ -1196,6 +1196,52 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
     <div id="wrr-detail-status" class="fc-muted"></div>
     <div id="wrr-detail-content" style="display:none"></div>
   </div>
+
+  <!-- Faz 2.8.19 Stage 3: additive decision-entry form. Submits only
+       the values the user types into the existing, already-tested
+       POST /{resolution_id}/decide endpoint (Faz 2.8.9). No status,
+       evidence, or confidence value is ever inferred, suggested, or
+       computed here -- the user supplies all of it. Shown only after
+       a detail record has loaded successfully; disabled (not
+       bypassed) for blocked/terminal records per the backend's own
+       is_blocked / is_terminal fields. -->
+  <div class="card" id="wrr-decision-form-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.decide.title">Record a Decision</div>
+    <div class="card-sub" data-i18n="wrr.decide.subtitle">Submits the decision and evidence you provide to the existing washer resolution decision workflow. Nothing here is inferred, suggested, or generated automatically.</div>
+    <div id="wrr-decide-blocked-notice" class="alert alert-warning" style="display:none" data-i18n="wrr.decide.blocked_notice">This record is blocked_authoritative_source. The backend does not permit a decision on it through this workflow; the form is disabled.</div>
+    <div id="wrr-decide-terminal-notice" class="alert alert-info" style="display:none" data-i18n="wrr.decide.terminal_notice">This record's effective status is already terminal (resolved, accepted-as-is, or rejected). The backend does not permit a further decision; the form is disabled.</div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.new_status_label">New Status</label>
+      <select class="form-select" id="wrr-decide-new-status"><option value="" data-i18n="wrr.decide.select_placeholder">-- select --</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.resolution_note_label">Resolution Note</label>
+      <textarea class="form-input" id="wrr-decide-resolution-note" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.evidence_reference_label">Evidence Reference</label>
+      <textarea class="form-input" id="wrr-decide-evidence-reference" rows="2"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.resolved_by_label">Resolved By</label>
+      <input class="form-input" id="wrr-decide-resolved-by">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.confidence_level_label">Confidence Level (optional)</label>
+      <select class="form-select" id="wrr-decide-confidence-level">
+        <option value="" data-i18n="wrr.decide.confidence_none">-- none --</option>
+        <option value="1">G1</option>
+        <option value="2">G2</option>
+        <option value="3">G3</option>
+        <option value="4">G4</option>
+      </select>
+    </div>
+    <div id="wrr-decide-validation-error" class="alert alert-danger" style="display:none"></div>
+    <div id="wrr-decide-status" class="fc-muted"></div>
+    <div class="form-group" style="display:flex;align-items:flex-end">
+      <button class="btn btn-primary" id="wrr-decide-submit-btn" onclick="wrrSubmitDecision()" data-i18n="wrr.decide.submit_button">Submit Decision</button>
+    </div>
+  </div>
 </div>
 
 <div id="page-governance" class="page">
@@ -3296,6 +3342,23 @@ const I18N = {
     'wrr.bool.yes': 'Yes',
     'wrr.bool.no': 'No',
 
+    // Faz 2.8.19 Stage 3: Decision Entry Form (additive).
+    'wrr.decide.title': 'Record a Decision',
+    'wrr.decide.subtitle': 'Submits the decision and evidence you provide to the existing washer resolution decision workflow. Nothing here is inferred, suggested, or generated automatically.',
+    'wrr.decide.blocked_notice': 'This record is blocked_authoritative_source. The backend does not permit a decision on it through this workflow; the form is disabled.',
+    'wrr.decide.terminal_notice': 'This record\'s effective status is already terminal (resolved, accepted-as-is, or rejected). The backend does not permit a further decision; the form is disabled.',
+    'wrr.decide.select_placeholder': '-- select --',
+    'wrr.decide.new_status_label': 'New Status',
+    'wrr.decide.resolution_note_label': 'Resolution Note',
+    'wrr.decide.evidence_reference_label': 'Evidence Reference',
+    'wrr.decide.resolved_by_label': 'Resolved By',
+    'wrr.decide.confidence_level_label': 'Confidence Level (optional)',
+    'wrr.decide.confidence_none': '-- none --',
+    'wrr.decide.submit_button': 'Submit Decision',
+    'wrr.decide.submitting': 'Submitting...',
+    'wrr.decide.success': 'Decision recorded.',
+    'wrr.decide.validation_error_prefix': 'Please fill in: ',
+
     'sidebar.governance': 'Governance Workspace',
     'gov.page_title': 'Engineering Governance Workspace',
     'gov.page_subtitle': 'Generic, domain-agnostic review / publication / resolution event workspace (Faz 2.8.11 Stage 4)',
@@ -4879,6 +4942,23 @@ const I18N = {
     'wrr.bool.yes': 'Evet',
     'wrr.bool.no': 'Hayır',
 
+    // Faz 2.8.19 Stage 3: Karar Giriş Formu (additive).
+    'wrr.decide.title': 'Karar Kaydet',
+    'wrr.decide.subtitle': 'Sağladığınız karar ve kanıtı mevcut pul çözümleme karar iş akışına gönderir. Burada hiçbir şey çıkarım yapılmaz, önerilmez veya otomatik üretilmez.',
+    'wrr.decide.blocked_notice': 'Bu kayıt blocked_authoritative_source durumundadır. Backend bu iş akışı üzerinden bir karara izin vermiyor; form devre dışı.',
+    'wrr.decide.terminal_notice': 'Bu kaydın efektif durumu zaten nihai (resolved, accepted-as-is veya rejected). Backend başka bir karara izin vermiyor; form devre dışı.',
+    'wrr.decide.select_placeholder': '-- seçiniz --',
+    'wrr.decide.new_status_label': 'Yeni Durum',
+    'wrr.decide.resolution_note_label': 'Çözümleme Notu',
+    'wrr.decide.evidence_reference_label': 'Kanıt Referansı',
+    'wrr.decide.resolved_by_label': 'Çözümleyen',
+    'wrr.decide.confidence_level_label': 'Güven Seviyesi (opsiyonel)',
+    'wrr.decide.confidence_none': '-- yok --',
+    'wrr.decide.submit_button': 'Kararı Gönder',
+    'wrr.decide.submitting': 'Gönderiliyor...',
+    'wrr.decide.success': 'Karar kaydedildi.',
+    'wrr.decide.validation_error_prefix': 'Lütfen doldurun: ',
+
     'sidebar.governance': 'Yönetişim Çalışma Alanı',
     'gov.page_title': 'Mühendislik Yönetişim Çalışma Alanı',
     'gov.page_subtitle': 'Genel, alan-bağımsız inceleme / yayınlama / çözümleme olay çalışma alanı (Faz 2.8.11 Aşama 4)',
@@ -6175,6 +6255,7 @@ async function wrrLoadResolutionDetail(resolutionId) {
   card.style.display = '';
   contentEl.style.display = 'none';
   statusEl.textContent = t('wrr.loading');
+  if (typeof wrrHideDecisionForm === 'function') wrrHideDecisionForm();
   try {
     const detail = await apiRequest('/api/library/washers/resolutions/' + encodeURIComponent(resolutionId));
     if (!wrrDetailIsWellFormed(detail)) {
@@ -6186,6 +6267,7 @@ async function wrrLoadResolutionDetail(resolutionId) {
     statusEl.textContent = '';
     contentEl.style.display = '';
     wrrRenderDetail(detail);
+    if (typeof wrrShowDecisionFormForDetail === 'function') wrrShowDecisionFormForDetail(detail);
   } catch (e) {
     WRR_LAST_DETAIL = null;
     statusEl.innerHTML = '<div class="alert alert-danger">' +
@@ -6223,6 +6305,157 @@ function wrrRenderDetail(detail) {
     ),
   ].join('');
   el.innerHTML = `<div class="result-box">${rows}</div>`;
+}
+
+// ---------------------------------------------------------------
+// Faz 2.8.19 Stage 3: Washer Resolution Decision Entry Form
+// (additive). Submits only the values the user types into the
+// existing, already-tested POST /{resolution_id}/decide endpoint
+// (Faz 2.8.9). No status, evidence, or confidence value is ever
+// inferred, suggested, or computed here -- the user supplies all of
+// it. The form is disabled (never bypassed) for blocked/terminal
+// records, driven only by the backend-provided is_blocked /
+// is_terminal fields already present on the detail response --
+// no state-machine table is re-implemented client-side.
+// ---------------------------------------------------------------
+
+let WRR_DECIDE_IDEMPOTENCY_KEY = null;
+let WRR_DECIDE_KEY_RESOLUTION_ID = null;
+let WRR_DECIDE_IN_FLIGHT = false;
+
+function wrrGenerateIdempotencyKey() {
+  // Not a security/crypto identifier -- a client-generated, per-
+  // form-session uniqueness token the existing idempotency-key-first
+  // backend workflow already requires (Faz 2.8.9). The backend
+  // remains the sole source of truth for idempotent-replay/conflict
+  // detection; this token is never inspected or compared client-side.
+  return 'wrr-decide-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
+function wrrPopulateStatusOptions() {
+  const sel = document.getElementById('wrr-decide-new-status');
+  if (!sel) return;
+  const options = Object.keys(WRR_STATUS_LABEL_KEYS).map(
+    (code) => `<option value="${scEsc(code)}">${scEsc(t(WRR_STATUS_LABEL_KEYS[code]))}</option>`
+  ).join('');
+  sel.innerHTML = `<option value="" data-i18n="wrr.decide.select_placeholder">${scEsc(t('wrr.decide.select_placeholder'))}</option>${options}`;
+}
+
+function wrrResetDecisionForm() {
+  const ids = [
+    'wrr-decide-resolution-note', 'wrr-decide-evidence-reference',
+    'wrr-decide-resolved-by', 'wrr-decide-new-status', 'wrr-decide-confidence-level',
+  ];
+  ids.forEach((id) => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const errEl = document.getElementById('wrr-decide-validation-error');
+  if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+  const statusMsgEl = document.getElementById('wrr-decide-status');
+  if (statusMsgEl) statusMsgEl.textContent = '';
+  WRR_DECIDE_IDEMPOTENCY_KEY = wrrGenerateIdempotencyKey();
+}
+
+function wrrShowDecisionFormForDetail(detail) {
+  const card = document.getElementById('wrr-decision-form-card');
+  if (!card) return;
+  card.style.display = '';
+  const blockedNotice = document.getElementById('wrr-decide-blocked-notice');
+  const terminalNotice = document.getElementById('wrr-decide-terminal-notice');
+  const disable = !!(detail.is_blocked || detail.is_terminal);
+  if (blockedNotice) blockedNotice.style.display = detail.is_blocked ? '' : 'none';
+  if (terminalNotice) terminalNotice.style.display = (!detail.is_blocked && detail.is_terminal) ? '' : 'none';
+  [
+    'wrr-decide-new-status', 'wrr-decide-resolution-note', 'wrr-decide-evidence-reference',
+    'wrr-decide-resolved-by', 'wrr-decide-confidence-level', 'wrr-decide-submit-btn',
+  ].forEach((id) => { const el = document.getElementById(id); if (el) el.disabled = disable; });
+  // New idempotency key + a clean, freshly-populated form only when
+  // this is a genuinely different record than the one the current
+  // key belongs to -- a failed-submit retry against the same record
+  // must keep its typed values and its key untouched (see
+  // wrrSubmitDecision's catch branch, which touches neither).
+  if (WRR_DECIDE_KEY_RESOLUTION_ID !== detail.resolution_id) {
+    wrrPopulateStatusOptions();
+    wrrResetDecisionForm();
+    WRR_DECIDE_KEY_RESOLUTION_ID = detail.resolution_id;
+  }
+}
+
+function wrrHideDecisionForm() {
+  const card = document.getElementById('wrr-decision-form-card');
+  if (card) card.style.display = 'none';
+}
+
+function wrrValidateDecisionForm(payload) {
+  // Only fields the backend contract itself requires and validates
+  // (backend/app.py::WasherResolutionDecisionRequest for presence;
+  // backend/library/washer_resolution_decisions.py::validate_decision_fields
+  // for non-blank resolution_note/evidence_reference/resolved_by) --
+  // no additional client-invented rule.
+  const missing = [];
+  if (!payload.new_status) missing.push(t('wrr.decide.new_status_label'));
+  if (!payload.resolution_note || !payload.resolution_note.trim()) missing.push(t('wrr.decide.resolution_note_label'));
+  if (!payload.evidence_reference || !payload.evidence_reference.trim()) missing.push(t('wrr.decide.evidence_reference_label'));
+  if (!payload.resolved_by || !payload.resolved_by.trim()) missing.push(t('wrr.decide.resolved_by_label'));
+  return missing;
+}
+
+async function wrrSubmitDecision() {
+  if (WRR_DECIDE_IN_FLIGHT) return;
+  const detail = WRR_LAST_DETAIL;
+  if (!detail || !detail.resolution_id) return;
+
+  const errEl = document.getElementById('wrr-decide-validation-error');
+  const statusMsgEl = document.getElementById('wrr-decide-status');
+  const submitBtn = document.getElementById('wrr-decide-submit-btn');
+  if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+  if (statusMsgEl) statusMsgEl.textContent = '';
+
+  const payload = {
+    new_status: document.getElementById('wrr-decide-new-status').value,
+    resolution_note: document.getElementById('wrr-decide-resolution-note').value,
+    evidence_reference: document.getElementById('wrr-decide-evidence-reference').value,
+    resolved_by: document.getElementById('wrr-decide-resolved-by').value,
+    idempotency_key: WRR_DECIDE_IDEMPOTENCY_KEY || wrrGenerateIdempotencyKey(),
+  };
+  const confRaw = document.getElementById('wrr-decide-confidence-level').value;
+  if (confRaw !== '') payload.confidence_level = parseInt(confRaw, 10);
+
+  const missing = wrrValidateDecisionForm(payload);
+  if (missing.length) {
+    if (errEl) {
+      errEl.style.display = '';
+      errEl.textContent = t('wrr.decide.validation_error_prefix') + missing.join(', ');
+    }
+    return;
+  }
+
+  WRR_DECIDE_IN_FLIGHT = true;
+  if (submitBtn) submitBtn.disabled = true;
+  if (statusMsgEl) statusMsgEl.textContent = t('wrr.decide.submitting');
+  try {
+    await apiRequest(
+      '/api/library/washers/resolutions/' + encodeURIComponent(detail.resolution_id) + '/decide',
+      { method: 'POST', body: JSON.stringify(payload) }
+    );
+    if (statusMsgEl) {
+      statusMsgEl.innerHTML = '<div class="alert alert-success">' + scEsc(t('wrr.decide.success')) + '</div>';
+    }
+    wrrResetDecisionForm();
+    await loadWasherResolutionQueue();
+    await wrrLoadResolutionDetail(detail.resolution_id);
+  } catch (e) {
+    // Deliberately does not touch WRR_DECIDE_IDEMPOTENCY_KEY or the
+    // typed field values here -- a retry of this exact submit must
+    // reuse both, per the backend's idempotency-key-first contract.
+    if (errEl) {
+      errEl.style.display = '';
+      errEl.textContent = t('wrr.api_error_prefix') + (e && e.message ? e.message : String(e));
+    }
+  } finally {
+    WRR_DECIDE_IN_FLIGHT = false;
+    if (submitBtn) {
+      submitBtn.disabled = !!(WRR_LAST_DETAIL && (WRR_LAST_DETAIL.is_blocked || WRR_LAST_DETAIL.is_terminal));
+    }
+  }
 }
 
 function miReapplyLanguage() {

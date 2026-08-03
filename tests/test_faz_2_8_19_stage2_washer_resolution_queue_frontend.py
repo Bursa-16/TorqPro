@@ -167,7 +167,7 @@ def test_no_post_decide_anywhere_in_frontend_stage2_additions(frontend_html):
     section's own doc comments legitimately mention "POST /decide"
     in prose to explain what is deliberately NOT called."""
     start = frontend_html.index("Faz 2.8.19 Stage 2: Washer Resolution Queue")
-    end = frontend_html.index("function miReapplyLanguage(")
+    end = frontend_html.index("Faz 2.8.19 Stage 3: Washer Resolution Decision Entry Form")
     section = frontend_html[start:end]
     assert "/decide'" not in section
     assert '/decide"' not in section
@@ -180,7 +180,7 @@ def test_no_decision_form_fields_introduced(frontend_html):
     input fields anywhere in the new Stage 2 markup -- those belong
     to a future decision-entry stage, explicitly out of scope here."""
     start = frontend_html.index('<!-- Faz 2.8.19 Stage 2:')
-    end = frontend_html.index('<div id="page-governance" class="page">')
+    end = frontend_html.index('<!-- Faz 2.8.19 Stage 3:')
     section = frontend_html[start:end]
     for forbidden in ("id=\"wrr-decide-", "new_status", "idempotency_key"):
         assert forbidden not in section, f"unexpected decision-form artifact: {forbidden!r}"
