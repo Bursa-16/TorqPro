@@ -63,6 +63,7 @@ __all__ = [
     "effective_status",
     "decide_resolution",
     "resolution_queue",
+    "resolution_detail",
 ]
 
 
@@ -253,3 +254,50 @@ def resolution_queue() -> List[dict]:
             }
         )
     return rows
+
+
+def resolution_detail(resolution_id: str) -> Optional[dict]:
+    """Faz 2.8.19 Stage 1: read-only detail view for a single
+    resolution. Merges the Faz 2.8.5 canonical ledger record's own
+    fields (``reason_code``, ``resolution_note``, ``evidence_reference``,
+    ``resolved_standard``, ``resolved_by``, ``resolved_at``,
+    ``confidence_level``) with the effective-status/decision-count/
+    ``is_blocked``/``is_terminal`` annotation :func:`resolution_queue`
+    already computes for every record.
+
+    Deliberately calls :func:`resolution_queue` rather than
+    re-deriving that annotation here: the Faz 2.8.9 Stage 4/5A design
+    principle is that effective-status logic is never duplicated
+    between the report, the API and the frontend -- this function
+    extends that principle to a third consumer instead of forking a
+    second copy of the formula. Returns ``None`` if ``resolution_id``
+    does not exist in the source ledger. Never mutates anything: no
+    file is written, no decision is recorded, both source calls are
+    already read-only.
+    """
+    record = wr.get_washer_resolution(resolution_id)
+    if record is None:
+        return None
+    queue_row = next(
+        row for row in resolution_queue() if row["resolution_id"] == resolution_id
+    )
+    return {
+        "resolution_id": record.resolution_id,
+        "washer_record_id": record.washer_record_id,
+        "issue_type": record.issue_type.value,
+        "reason_code": record.reason_code,
+        "source_status": queue_row["source_status"],
+        "effective_status": queue_row["effective_status"],
+        "decision_count": queue_row["decision_count"],
+        "is_blocked": queue_row["is_blocked"],
+        "is_terminal": queue_row["is_terminal"],
+        "resolution_note": record.resolution_note,
+        "evidence_reference": record.evidence_reference,
+        "resolved_standard": record.resolved_standard,
+        "resolved_by": record.resolved_by,
+        "resolved_at": record.resolved_at,
+        "confidence_level": (
+            record.confidence_level.value if record.confidence_level is not None else None
+        ),
+        "requires_authoritative_source": record.requires_authoritative_source,
+    }
