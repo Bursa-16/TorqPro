@@ -520,7 +520,7 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
   <div class="section-header"><span class="section-icon">📊</span><div>
-    <div class="section-title" data-i18n="dashboard.title">Üretim Tork Kontrol Paneli</div>
+    <div class="section-title" data-i18n="dashboard.title">Tork Kontrol Paneli</div>
     <div class="section-sub"><span data-i18n="dashboard.today">Bugün</span>: <span id="tarih"></span> · <span style="color:var(--text3)" data-i18n="dashboard.demo_data_note">Örnek/demo veriler — canlı üretim verisine bağlı değildir</span></div>
   </div></div>
   <div class="dash-kpi-top" style="margin-bottom:12px">
@@ -1937,7 +1937,7 @@ const I18N = {
     'sidebar.session_closed_note': 'Session will be closed',
 
     // ---- dashboard ----
-    'dashboard.title': 'Production Torque Control Panel',
+    'dashboard.title': 'Torque Control Panel',
     'dashboard.today': 'Today',
     'dashboard.demo_data_note': 'Sample/demo data — not connected to live production data',
     'dashboard.stat_daily_target': 'Daily Measurement Target',
@@ -1951,7 +1951,7 @@ const I18N = {
     'dashboard.stat_active_tools': 'Active Tightening Devices',
     'dashboard.stat_active_tools_note': '3 capability studies expired',
     'dashboard.equipment_list_title': 'Equipment List',
-    'dashboard.equipment_count_label': 'Equipment Count',
+    'dashboard.point_total_label': 'Measurement Point Total',
     'dashboard.equipment_id_label': 'Equipment ID',
     'dashboard.equipment_model_label': 'Equipment / Model',
     'dashboard.equipment_close': 'Close',
@@ -4511,7 +4511,7 @@ const I18N = {
     'sidebar.session_closed_note': 'Oturum kapatılır',
 
     // ---- dashboard ----
-    'dashboard.title': 'Üretim Tork Kontrol Paneli',
+    'dashboard.title': 'Tork Kontrol Paneli',
     'dashboard.today': 'Bugün',
     'dashboard.demo_data_note': 'Örnek/demo veriler — canlı üretim verisine bağlı değildir',
     'dashboard.stat_daily_target': 'Günlük Ölçüm Hedefi',
@@ -4525,7 +4525,7 @@ const I18N = {
     'dashboard.stat_active_tools': 'Aktif Vidalayıcı',
     'dashboard.stat_active_tools_note': '3 yetenek süresi dolmuş',
     'dashboard.equipment_list_title': 'Ekipman Listesi',
-    'dashboard.equipment_count_label': 'Ekipman Sayısı',
+    'dashboard.point_total_label': 'Ölçüm Noktası Toplamı',
     'dashboard.equipment_id_label': 'Ekipman Kimliği',
     'dashboard.equipment_model_label': 'Ekipman / Model',
     'dashboard.equipment_close': 'Kapat',
@@ -6336,7 +6336,7 @@ function openClassEquipmentModal(classId, triggerEl) {
   overlay.innerHTML = `
     <div class="equip-modal-box" role="dialog" aria-modal="true" aria-labelledby="classEquipmentModalTitle">
       <div class="confirm-title" id="classEquipmentModalTitle">${escHtml(t('dashboard.equipment_list_title'))} — ${escHtml(className)}</div>
-      <div class="equip-modal-sub">${escHtml(t('dashboard.equipment_count_label'))}: ${escHtml(pointCount)} · ${escHtml(t('dashboard.equipment_shown_count').replace('{n}', String(list.length)))}</div>
+      <div class="equip-modal-sub">${escHtml(t('dashboard.point_total_label'))}: ${escHtml(pointCount)} · ${escHtml(t('dashboard.equipment_shown_count').replace('{n}', String(list.length)))}</div>
       <div class="equip-modal-sub">${escHtml(t('dashboard.equipment_sample_note'))}</div>
       ${renderClassEquipmentRows(list)}
       <div class="confirm-actions" style="margin-top:16px">

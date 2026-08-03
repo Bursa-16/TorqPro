@@ -768,10 +768,10 @@ async function main() {
     check('dashboard.title element exists', !!titleEl);
     check('dashboard.th_operation element exists', !!thOpEl);
     ctx.context.applyStaticTranslations();
-    checkEqual('dashboard title is tr by default', titleEl.textContent, 'Üretim Tork Kontrol Paneli');
+    checkEqual('dashboard title is tr by default', titleEl.textContent, 'Tork Kontrol Paneli');
     checkEqual('dashboard borderline status is tr by default', statusBorderlineEl.textContent, 'SINIRDA');
     ctx.context.setLanguage('en');
-    checkEqual('dashboard title switches to en', titleEl.textContent, 'Production Torque Control Panel');
+    checkEqual('dashboard title switches to en', titleEl.textContent, 'Torque Control Panel');
     checkEqual('dashboard operation header switches to en', thOpEl.textContent, 'Operation');
     checkEqual('dashboard NOK status stays "NOK" in en (technical status code)', statusNokEl.textContent, 'NOK');
     checkEqual('dashboard borderline status switches to en', statusBorderlineEl.textContent, 'BORDERLINE');
@@ -783,7 +783,7 @@ async function main() {
     const titleEl = getByI18nKey(ctx, 'dashboard.title');
     const submitEl = getByI18nKey(ctx, 'login.submit');
     ctx.context.applyStaticTranslations();
-    checkEqual('dashboard renders in en on load when torqpro_lang=en persisted', titleEl.textContent, 'Production Torque Control Panel');
+    checkEqual('dashboard renders in en on load when torqpro_lang=en persisted', titleEl.textContent, 'Torque Control Panel');
     checkEqual('login renders in en on load when torqpro_lang=en persisted', submitEl.textContent, 'Sign In');
   }
 
@@ -4468,7 +4468,7 @@ async function main() {
     const ctx = newContext(extractedSource, rawHtml, {});
     const i18n = ctx.context.__getI18N();
     for (const key of [
-      'dashboard.equipment_list_title', 'dashboard.equipment_count_label', 'dashboard.equipment_id_label',
+      'dashboard.equipment_list_title', 'dashboard.point_total_label', 'dashboard.equipment_id_label',
       'dashboard.equipment_model_label', 'dashboard.equipment_close', 'dashboard.equipment_none_found',
       'dashboard.equipment_sample_note', 'dashboard.equipment_shown_count', 'dashboard.equipment_status_ok',
       'dashboard.equipment_status_check', 'dashboard.equipment_status_insufficient', 'dashboard.equipment_status_expired',
@@ -4576,6 +4576,44 @@ async function main() {
     ctx.context.showPage('admin');
     check('Stage 2 regression: non-admin showPage(\'admin\') still does not mark it active', !pageEl.classList.contains('active'));
     check('Stage 2 regression: non-admin showPage(\'admin\') still redirects to dashboard', dashEl.classList.contains('active'));
+  }
+
+  // ---- 230. Stage 5: final acceptance audit -- the two corrected
+  //           items (simplified dashboard title, corrected point-total
+  //           label) plus a compact smoke check across the other 10
+  //           PDF requirements (already covered in depth by Stage 1-4
+  //           tests; kept light here to avoid duplicate assertions,
+  //           per the audit's own instruction). ----
+  {
+    // --- Corrected item 1: dashboard title simplified ---
+    const ctx = newContext(extractedSource, rawHtml, {});
+    const titleEl = getByI18nKey(ctx, 'dashboard.title');
+    ctx.context.applyStaticTranslations();
+    checkEqual('acceptance: dashboard title tr is the concise required form', titleEl.textContent, 'Tork Kontrol Paneli');
+    ctx.context.setLanguage('en');
+    checkEqual('acceptance: dashboard title en is the concise required form', titleEl.textContent, 'Torque Control Panel');
+    check('acceptance: old extended TR title is gone from the source', rawHtml.indexOf('Üretim Tork Kontrol Paneli') === -1);
+    check('acceptance: old extended EN title is gone from the source', rawHtml.indexOf('Production Torque Control Panel') === -1);
+
+    // --- Corrected item 2: point-total label no longer says "Equipment Count" ---
+    const i18n = ctx.context.__getI18N();
+    check('acceptance: point_total_label exists (EN)', Object.prototype.hasOwnProperty.call(i18n.en, 'dashboard.point_total_label'));
+    check('acceptance: point_total_label exists (TR)', Object.prototype.hasOwnProperty.call(i18n.tr, 'dashboard.point_total_label'));
+    check('acceptance: mislabeled equipment_count_label key is gone', !Object.prototype.hasOwnProperty.call(i18n.en, 'dashboard.equipment_count_label'));
+    check('acceptance: modal source uses the corrected point_total_label key', rawHtml.indexOf("t('dashboard.point_total_label')") !== -1);
+
+    // --- Smoke check across the remaining 10 PDF items (full depth
+    //     already covered by Stage 1-4 tests 15, 211-212, 216-217,
+    //     220, 225-226) ---
+    check('item 1: "Go-Live Wizard" absent', rawHtml.indexOf('Go-Live Wizard') === -1);
+    check('item 2: dead showNav( duplicate topbar nav absent', rawHtml.indexOf('showNav(') === -1);
+    check('item 3: "ProtypeLab" absent anywhere', rawHtml.toLowerCase().indexOf('protypelab') === -1);
+    check('item 4: loadSystemHealth() still has the CURRENT_ROLE admin guard', /function loadSystemHealth\(\)\{\s*if\(CURRENT_ROLE!=='admin'\)return;/.test(rawHtml));
+    check('item 6: sidebar has the six Stage 1 module section keys', ['sidebar.section_quick_access', 'sidebar.section_design_calc', 'sidebar.section_engineering_analysis', 'sidebar.section_production', 'sidebar.section_reference', 'sidebar.section_admin'].every((k) => i18n.en[k] && i18n.tr[k]));
+    check('item 7/8: scrollbar rules include both WebKit width and Firefox scrollbar-color', rawHtml.indexOf('::-webkit-scrollbar{width:10px') !== -1 && rawHtml.indexOf('scrollbar-color:var(--neutral)') !== -1);
+    check('item 9.2: all five dashboard KPI ids present', ['kpiDailyTarget', 'kpiDailyCompleted', 'kpiActiveTools', 'kpiOkRate', 'kpiNokRecords'].every((id) => rawHtml.indexOf('id="' + id + '"') !== -1));
+    check('item 10.1: all four class-row buttons present', (rawHtml.match(/class="class-row-btn"/g) || []).length === 4);
+    check('item 10.2: existing sample-standard badge present ("per_sample_norm")', !!i18n.en['dashboard.per_sample_norm'] && !!i18n.tr['dashboard.per_sample_norm']);
   }
 
   console.log('\n' + pass + ' passed, ' + fail + ' failed.');
