@@ -320,3 +320,24 @@
 - Documented in
   `docs/phases/PHASE_2.8.13_STAGE1_SCOPE_AND_INTEGRATION_CONTRACT.md`
   and `docs/phases/PHASE_2.8.13_COMPLETION_REPORT.md`.
+
+## Faz 2.8.18 — UI/UX Refactoring and Dashboard Improvements — 2026-08-03
+
+- GitHub Release `v2.8.18` (tag commit `59ce6458fabf002ceab1be1ef18f6145fd01da0c`,
+  merge of PR #31 `feature/faz-stage5-final-acceptance-audit`) was published
+  without an accompanying `VERSION`/README/test version bump; `VERSION`,
+  `README.md`, and `tests/test_version_centralization.py` still identified
+  the codebase as `2.8.17` after the tag existed. This entry retroactively
+  aligns the single-source version (`VERSION` file, read dynamically by
+  `backend.app.APP_VERSION`, exposed via `/api/health`) with the already-
+  published tag. No architecture, API behaviour, or engineering value was
+  changed by this alignment.
+- Restricted `/api/runtime/status` to admin-only access
+  (`Depends(admin)`) — previously unauthenticated.
+- Reorganized dashboard measurement KPIs.
+- Added a tightening-class equipment drill-down view.
+- Finalized dashboard acceptance labels.
+- Changed files: `backend/app.py`, `frontend/index.html`,
+  `tests/js/run_i18n_tests.js`,
+  `tests/test_faz_stage2_system_health_authorization.py` (new),
+  `VERSION`, `README.md`, `tests/test_version_centralization.py`.

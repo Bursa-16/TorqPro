@@ -3,9 +3,26 @@
 | Item                          | Value                                                    |
 | ----------------------------- | --------------------------------------------------------- |
 | Product                       | TorqPro                                                    |
-| **Current Version**           | **v2.8.17**                                                |
-| **Version Date**              | **02 August 2026**                                         |
-| **Current Engineering Focus** | **Joint Revision HTTP API & Idempotent Write Exposure**    |
+| **Current Version**           | **v2.8.18**                                                |
+| **Version Date**              | **03 August 2026**                                         |
+| **Current Engineering Focus** | **UI/UX Refactoring and Dashboard Improvements (Stages 1-5)** |
+
+---
+
+# What's New in v2.8.18
+
+## UI/UX Refactoring and Dashboard Improvements (Stages 1-5)
+
+Phase **2.8.18** completes the TorqPro UI/UX review improvements across Stages 1-5 (`feature/faz-stage5-final-acceptance-audit`, PR #31). Changes:
+
+* Restricted `/api/runtime/status` to admin-only access (`Depends(admin)`) — a previously unauthenticated system-health endpoint is now access-controlled.
+* Reorganized dashboard measurement KPIs.
+* Added a tightening-class equipment drill-down view.
+* Finalized dashboard acceptance labels.
+
+Changed files: `backend/app.py`, `frontend/index.html`, `tests/js/run_i18n_tests.js`, plus a new authorization regression test (`tests/test_faz_stage2_system_health_authorization.py`).
+
+This entry retroactively documents the `v2.8.18` tag/release, which had been published without an accompanying `VERSION`/README/test bump; this phase closes that gap (see `docs/CHANGELOG.md`).
 
 ---
 
@@ -182,7 +199,8 @@ Continuous integration verifies every change before integration into the main br
 | Phase 2.8.14     | Joint Revision Governance Bulk Visibility     | ✅ Completed           |
 | Phase 2.8.15     | README / VERSION Maintenance                  | ✅ Completed           |
 | Phase 2.8.16     | Joint Revision List UX Improvements           | ✅ Completed           |
-| **Phase 2.8.17** | **Joint Revision HTTP API & Idempotent Write Exposure** | ⭐ **Current Version** |
+| Phase 2.8.17      | Joint Revision HTTP API & Idempotent Write Exposure | ✅ Completed           |
+| **Phase 2.8.18** | **UI/UX Refactoring and Dashboard Improvements (Stages 1-5)** | ⭐ **Current Version** |
 
 ---
 
@@ -190,7 +208,8 @@ Continuous integration verifies every change before integration into the main br
 
 | Version     | Highlights                                             |
 | ----------- | --------------------------------------------------------- |
-| **v2.8.17** | Joint Revision HTTP API & Idempotent Write Exposure        |
+| **v2.8.18** | UI/UX Refactoring and Dashboard Improvements (Stages 1-5)  |
+| v2.8.17     | Joint Revision HTTP API & Idempotent Write Exposure        |
 | v2.8.16     | Joint Revision List UX Improvements                       |
 | v2.8.14     | Joint Revision Governance Bulk Visibility                 |
 | v2.8.13     | Governance Workspace Integration                          |
@@ -207,16 +226,15 @@ Continuous integration verifies every change before integration into the main br
 
 ## Current Version
 
-**v2.8.17**
+**v2.8.18**
 
 Current engineering focus:
 
-* Idempotent joint revision write foundation
-* Joint / joint-revision HTTP API (create, submit, approve, reject)
-* Deterministic concurrency (IntegrityError) recovery
-* Archived-joint replay semantics
-* State-machine immutability regression coverage
-* Backward compatibility with all existing Faz 2.8.16 read-only behaviour
+* Dashboard measurement KPI reorganization
+* Tightening-class equipment drill-down
+* Admin-only restriction on `/api/runtime/status`
+* Dashboard acceptance label finalization
+* Retroactive version/documentation alignment for the previously-unversioned v2.8.18 tag
 
 ---
 
