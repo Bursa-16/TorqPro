@@ -312,8 +312,13 @@ def test_wrr_key_parity_exact_count(frontend_html):
     tr_all = _keys_in_literal(_extract_lang_dict_literal(script, "tr"))
     en_wrr = [k for k in en_all if k.startswith("wrr.")]
     tr_wrr = [k for k in tr_all if k.startswith("wrr.")]
-    assert len(en_wrr) == len(tr_wrr) == 38, (
-        f"expected 38/38 wrr.* key parity, got {len(en_wrr)} EN / {len(tr_wrr)} TR"
+    # Faz 2.8.9 Stage 5 shipped with 38 wrr.* keys; Faz 2.8.19 Stage 2
+    # (Resolution Queue / Detail, additive) added 20 more under the
+    # same wrr.* namespace -- same precedent as Faz 2.8.13's report,
+    # which updated an equivalent stale hardcoded key-count constant
+    # when its own required keys made the old count obsolete.
+    assert len(en_wrr) == len(tr_wrr) == 58, (
+        f"expected 58/58 wrr.* key parity, got {len(en_wrr)} EN / {len(tr_wrr)} TR"
     )
     assert len(set(en_wrr)) == len(en_wrr)
     assert len(set(tr_wrr)) == len(tr_wrr)

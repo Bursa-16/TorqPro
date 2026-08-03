@@ -1176,6 +1176,26 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
       <div id="wrr-integrity"></div>
     </div>
   </div>
+
+  <!-- Faz 2.8.19 Stage 2: additive, read-only Resolution Queue.
+       Never adds, edits or submits a decision -- this section only
+       calls GET /queue and GET /{resolution_id}. The report section
+       above is unchanged. -->
+  <div class="card">
+    <div class="card-title" data-i18n="wrr.queue.title">Resolution Queue</div>
+    <div class="card-sub" data-i18n="wrr.queue.subtitle">Read-only list of every washer resolution record and its current effective status. Selecting a record only loads its detail; it never records a decision.</div>
+    <div id="wrr-queue-status" class="fc-muted"></div>
+    <div id="wrr-queue-content" style="display:none">
+      <div id="wrr-queue-table"></div>
+    </div>
+  </div>
+
+  <div class="card" id="wrr-detail-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.detail.title">Resolution Detail</div>
+    <div class="card-sub" data-i18n="wrr.detail.subtitle">Read-only. Shows only the fields returned by the API -- nothing here is inferred or suggested.</div>
+    <div id="wrr-detail-status" class="fc-muted"></div>
+    <div id="wrr-detail-content" style="display:none"></div>
+  </div>
 </div>
 
 <div id="page-governance" class="page">
@@ -3254,6 +3274,28 @@ const I18N = {
     'wrr.col.decided_at': 'Decided At (UTC)',
     'wrr.col.decided_by': 'Decided By',
 
+    // Faz 2.8.19 Stage 2: Resolution Queue / Detail (read-only, additive).
+    'wrr.queue.title': 'Resolution Queue',
+    'wrr.queue.subtitle': 'Read-only list of every washer resolution record and its current effective status. Selecting a record only loads its detail; it never records a decision.',
+    'wrr.queue.detail_button': 'Detail',
+    'wrr.queue.col.washer_record_id': 'Washer Record ID',
+    'wrr.queue.col.issue_type': 'Issue Type',
+    'wrr.queue.col.source_status': 'Source Status',
+    'wrr.queue.col.is_blocked': 'Blocked',
+    'wrr.queue.col.is_terminal': 'Terminal',
+    'wrr.detail.title': 'Resolution Detail',
+    'wrr.detail.subtitle': 'Read-only. Shows only the fields returned by the API -- nothing here is inferred or suggested.',
+    'wrr.detail.reason_code': 'Reason Code',
+    'wrr.detail.resolution_note': 'Resolution Note',
+    'wrr.detail.evidence_reference': 'Evidence Reference',
+    'wrr.detail.resolved_standard': 'Resolved Standard',
+    'wrr.detail.resolved_by': 'Resolved By',
+    'wrr.detail.resolved_at': 'Resolved At',
+    'wrr.detail.confidence_level': 'Confidence Level',
+    'wrr.detail.requires_authoritative_source': 'Requires Authoritative Source',
+    'wrr.bool.yes': 'Yes',
+    'wrr.bool.no': 'No',
+
     'sidebar.governance': 'Governance Workspace',
     'gov.page_title': 'Engineering Governance Workspace',
     'gov.page_subtitle': 'Generic, domain-agnostic review / publication / resolution event workspace (Faz 2.8.11 Stage 4)',
@@ -4815,6 +4857,28 @@ const I18N = {
     'wrr.col.decided_at': 'Karar Zamanı (UTC)',
     'wrr.col.decided_by': 'Kararı Veren',
 
+    // Faz 2.8.19 Stage 2: Çözümleme Kuyruğu / Detayı (salt-okunur, additive).
+    'wrr.queue.title': 'Çözümleme Kuyruğu',
+    'wrr.queue.subtitle': 'Her pul çözümleme kaydının ve mevcut efektif durumunun salt-okunur listesi. Bir kayıt seçmek yalnızca detayını yükler; hiçbir zaman bir karar kaydetmez.',
+    'wrr.queue.detail_button': 'Detay',
+    'wrr.queue.col.washer_record_id': 'Pul Kayıt ID',
+    'wrr.queue.col.issue_type': 'Sorun Türü',
+    'wrr.queue.col.source_status': 'Kaynak Durum',
+    'wrr.queue.col.is_blocked': 'Bloke',
+    'wrr.queue.col.is_terminal': 'Nihai',
+    'wrr.detail.title': 'Çözümleme Detayı',
+    'wrr.detail.subtitle': 'Salt-okunur. Yalnızca API yanıtında bulunan alanları gösterir -- burada hiçbir şey çıkarım yapılmaz veya önerilmez.',
+    'wrr.detail.reason_code': 'Sebep Kodu',
+    'wrr.detail.resolution_note': 'Çözümleme Notu',
+    'wrr.detail.evidence_reference': 'Kanıt Referansı',
+    'wrr.detail.resolved_standard': 'Çözümlenen Standart',
+    'wrr.detail.resolved_by': 'Çözümleyen',
+    'wrr.detail.resolved_at': 'Çözümleme Zamanı',
+    'wrr.detail.confidence_level': 'Güven Seviyesi',
+    'wrr.detail.requires_authoritative_source': 'Yetkili Kaynak Gerektirir',
+    'wrr.bool.yes': 'Evet',
+    'wrr.bool.no': 'Hayır',
+
     'sidebar.governance': 'Yönetişim Çalışma Alanı',
     'gov.page_title': 'Mühendislik Yönetişim Çalışma Alanı',
     'gov.page_subtitle': 'Genel, alan-bağımsız inceleme / yayınlama / çözümleme olay çalışma alanı (Faz 2.8.11 Aşama 4)',
@@ -5998,6 +6062,167 @@ function wrrReapplyLanguage() {
     const statusEl = document.getElementById('wrr-status');
     if (statusEl && statusEl.textContent) statusEl.textContent = t('wrr.loading');
   }
+  if (typeof WRR_LAST_QUEUE !== 'undefined' && WRR_LAST_QUEUE) {
+    wrrRenderQueueTable(WRR_LAST_QUEUE);
+  } else if (typeof WRR_LAST_QUEUE !== 'undefined') {
+    const queueStatusEl = document.getElementById('wrr-queue-status');
+    if (queueStatusEl && queueStatusEl.textContent) queueStatusEl.textContent = t('wrr.loading');
+  }
+  if (typeof WRR_LAST_DETAIL !== 'undefined' && WRR_LAST_DETAIL) {
+    wrrRenderDetail(WRR_LAST_DETAIL);
+  }
+}
+
+// ---------------------------------------------------------------
+// Faz 2.8.19 Stage 2: Washer Resolution Queue (additive, read-only).
+// Calls GET /queue and GET /{resolution_id} only. Never calls
+// POST /decide and never renders a decision form or decision
+// history -- both are explicitly out of scope for this stage. Field
+// names below are taken verbatim from the actual API response shape
+// (backend.library.washer_resolution_service.resolution_queue() /
+// resolution_detail()); nothing here is guessed, computed or
+// suggested client-side.
+// ---------------------------------------------------------------
+
+let WRR_LAST_QUEUE = null;
+let WRR_LAST_DETAIL = null;
+
+const WRR_QUEUE_REQUIRED_FIELDS = [
+  'resolution_id', 'washer_record_id', 'issue_type', 'source_status',
+  'effective_status', 'decision_count', 'is_blocked', 'is_terminal',
+];
+
+const WRR_DETAIL_REQUIRED_FIELDS = [
+  'resolution_id', 'washer_record_id', 'issue_type', 'reason_code',
+  'source_status', 'effective_status', 'decision_count', 'is_blocked',
+  'is_terminal', 'resolution_note', 'evidence_reference',
+  'resolved_standard', 'resolved_by', 'resolved_at', 'confidence_level',
+  'requires_authoritative_source',
+];
+
+function wrrQueueRecordIsWellFormed(record) {
+  if (!record || typeof record !== 'object') return false;
+  return WRR_QUEUE_REQUIRED_FIELDS.every((f) => Object.prototype.hasOwnProperty.call(record, f));
+}
+
+function wrrDetailIsWellFormed(detail) {
+  if (!detail || typeof detail !== 'object') return false;
+  return WRR_DETAIL_REQUIRED_FIELDS.every((f) => Object.prototype.hasOwnProperty.call(detail, f));
+}
+
+function wrrBoolLabel(v) {
+  return v ? t('wrr.bool.yes') : t('wrr.bool.no');
+}
+
+async function loadWasherResolutionQueue() {
+  const statusEl = document.getElementById('wrr-queue-status');
+  const contentEl = document.getElementById('wrr-queue-content');
+  contentEl.style.display = 'none';
+  statusEl.textContent = t('wrr.loading');
+  try {
+    const data = await apiRequest('/api/library/washers/resolutions/queue');
+    const records = data && data.records;
+    if (!Array.isArray(records) || !records.every(wrrQueueRecordIsWellFormed)) {
+      WRR_LAST_QUEUE = null;
+      statusEl.innerHTML = '<div class="alert alert-danger">' + scEsc(t('wrr.malformed_response')) + '</div>';
+      return;
+    }
+    WRR_LAST_QUEUE = records;
+    statusEl.textContent = '';
+    contentEl.style.display = '';
+    wrrRenderQueueTable(records);
+  } catch (e) {
+    WRR_LAST_QUEUE = null;
+    statusEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(t('wrr.api_error_prefix')) + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
+function wrrRenderQueueTable(records) {
+  const el = document.getElementById('wrr-queue-table');
+  if (!records.length) {
+    el.innerHTML = `<div class="fc-muted">${scEsc(t('wrr.empty_state'))}</div>`;
+    return;
+  }
+  const body = records.map((r) => `<tr>
+    <td>${scEsc(r.resolution_id)}</td>
+    <td>${scEsc(r.washer_record_id)}</td>
+    <td>${scEsc(r.issue_type)}</td>
+    <td>${wrrStatusLabel(r.source_status)}</td>
+    <td>${wrrStatusLabel(r.effective_status)}</td>
+    <td>${scEsc(String(r.decision_count))}</td>
+    <td>${r.is_blocked ? `<span class="badge-prod nok">${scEsc(t('wrr.bool.yes'))}</span>` : scEsc(t('wrr.bool.no'))}</td>
+    <td>${scEsc(wrrBoolLabel(r.is_terminal))}</td>
+    <td><button class="btn btn-secondary" onclick="wrrLoadResolutionDetail('${scEsc(r.resolution_id)}')" data-i18n="wrr.queue.detail_button">Detail</button></td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="sc-table-wrap"><table class="sc-table"><thead><tr>
+    <th>${scEsc(t('wrr.col.resolution_id'))}</th>
+    <th>${scEsc(t('wrr.queue.col.washer_record_id'))}</th>
+    <th>${scEsc(t('wrr.queue.col.issue_type'))}</th>
+    <th>${scEsc(t('wrr.queue.col.source_status'))}</th>
+    <th>${scEsc(t('wrr.col.effective_status'))}</th>
+    <th>${scEsc(t('wrr.col.decision_count'))}</th>
+    <th>${scEsc(t('wrr.queue.col.is_blocked'))}</th>
+    <th>${scEsc(t('wrr.queue.col.is_terminal'))}</th>
+    <th></th>
+  </tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+async function wrrLoadResolutionDetail(resolutionId) {
+  const card = document.getElementById('wrr-detail-card');
+  const statusEl = document.getElementById('wrr-detail-status');
+  const contentEl = document.getElementById('wrr-detail-content');
+  card.style.display = '';
+  contentEl.style.display = 'none';
+  statusEl.textContent = t('wrr.loading');
+  try {
+    const detail = await apiRequest('/api/library/washers/resolutions/' + encodeURIComponent(resolutionId));
+    if (!wrrDetailIsWellFormed(detail)) {
+      WRR_LAST_DETAIL = null;
+      statusEl.innerHTML = '<div class="alert alert-danger">' + scEsc(t('wrr.malformed_response')) + '</div>';
+      return;
+    }
+    WRR_LAST_DETAIL = detail;
+    statusEl.textContent = '';
+    contentEl.style.display = '';
+    wrrRenderDetail(detail);
+  } catch (e) {
+    WRR_LAST_DETAIL = null;
+    statusEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(t('wrr.api_error_prefix')) + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
+function wrrDetailField(labelKey, value) {
+  const display = (value === null || value === undefined || value === '') ? '—' : String(value);
+  return `<div class="fc-field-row"><span class="fc-field-label">${scEsc(t(labelKey))}</span>` +
+    `<span class="fc-field-value">${scEsc(display)}</span></div>`;
+}
+
+function wrrRenderDetail(detail) {
+  const el = document.getElementById('wrr-detail-content');
+  const rows = [
+    wrrDetailField('wrr.col.resolution_id', detail.resolution_id),
+    wrrDetailField('wrr.queue.col.washer_record_id', detail.washer_record_id),
+    wrrDetailField('wrr.queue.col.issue_type', detail.issue_type),
+    wrrDetailField('wrr.detail.reason_code', detail.reason_code),
+    wrrDetailField('wrr.queue.col.source_status', wrrStatusLabel(detail.source_status)),
+    wrrDetailField('wrr.col.effective_status', wrrStatusLabel(detail.effective_status)),
+    wrrDetailField('wrr.col.decision_count', detail.decision_count),
+    wrrDetailField('wrr.queue.col.is_blocked', wrrBoolLabel(detail.is_blocked)),
+    wrrDetailField('wrr.queue.col.is_terminal', wrrBoolLabel(detail.is_terminal)),
+    wrrDetailField('wrr.detail.resolution_note', detail.resolution_note),
+    wrrDetailField('wrr.detail.evidence_reference', detail.evidence_reference),
+    wrrDetailField('wrr.detail.resolved_standard', detail.resolved_standard),
+    wrrDetailField('wrr.detail.resolved_by', detail.resolved_by),
+    wrrDetailField('wrr.detail.resolved_at', detail.resolved_at),
+    wrrDetailField('wrr.detail.confidence_level', detail.confidence_level),
+    wrrDetailField(
+      'wrr.detail.requires_authoritative_source',
+      wrrBoolLabel(detail.requires_authoritative_source)
+    ),
+  ].join('');
+  el.innerHTML = `<div class="result-box">${rows}</div>`;
 }
 
 function miReapplyLanguage() {
@@ -6365,7 +6590,7 @@ function showPage(id, el) {
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();}if(id==='governance'){govInit();}
+  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();loadWasherResolutionQueue();}if(id==='governance'){govInit();}
 }
 
 // ========== FRICTION CONDITION WORKSPACE (Faz 2.6.6) ==========
