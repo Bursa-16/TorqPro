@@ -1242,6 +1242,20 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
       <button class="btn btn-primary" id="wrr-decide-submit-btn" onclick="wrrSubmitDecision()" data-i18n="wrr.decide.submit_button">Submit Decision</button>
     </div>
   </div>
+
+  <!-- Faz 2.8.19 Stage 4: additive, read-only Decision History.
+       Calls only GET /{resolution_id}/decisions. No edit, delete,
+       rollback, replay, or bulk action of any kind -- this section
+       displays the existing audit trail exactly as the API returns
+       it, in the API's own order. Accessible for blocked/terminal
+       records too (the form above may be disabled; history viewing
+       never is). -->
+  <div class="card" id="wrr-history-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.history.title">Decision History</div>
+    <div class="card-sub" data-i18n="wrr.history.subtitle">Read-only audit trail. Shows only decisions already recorded through this workflow, in the order the API returns them.</div>
+    <div id="wrr-history-status" class="fc-muted"></div>
+    <div id="wrr-history-content" style="display:none"></div>
+  </div>
 </div>
 
 <div id="page-governance" class="page">
@@ -3359,6 +3373,19 @@ const I18N = {
     'wrr.decide.success': 'Decision recorded.',
     'wrr.decide.validation_error_prefix': 'Please fill in: ',
 
+    // Faz 2.8.19 Stage 4: Decision History (additive, read-only).
+    'wrr.history.title': 'Decision History',
+    'wrr.history.subtitle': 'Read-only audit trail. Shows only decisions already recorded through this workflow, in the order the API returns them.',
+    'wrr.history.empty_state': 'No decisions have been recorded for this resolution yet.',
+    'wrr.history.col.decision_id': 'Decision ID',
+    'wrr.history.col.previous_status': 'Previous Status',
+    'wrr.history.col.new_status': 'New Status',
+    'wrr.history.col.resolution_note': 'Resolution Note',
+    'wrr.history.col.evidence_reference': 'Evidence Reference',
+    'wrr.history.col.resolved_by': 'Resolved By',
+    'wrr.history.col.decided_at': 'Decided At (UTC)',
+    'wrr.history.col.confidence_level': 'Confidence Level',
+
     'sidebar.governance': 'Governance Workspace',
     'gov.page_title': 'Engineering Governance Workspace',
     'gov.page_subtitle': 'Generic, domain-agnostic review / publication / resolution event workspace (Faz 2.8.11 Stage 4)',
@@ -4959,6 +4986,19 @@ const I18N = {
     'wrr.decide.success': 'Karar kaydedildi.',
     'wrr.decide.validation_error_prefix': 'Lütfen doldurun: ',
 
+    // Faz 2.8.19 Stage 4: Karar Geçmişi (additive, salt-okunur).
+    'wrr.history.title': 'Karar Geçmişi',
+    'wrr.history.subtitle': 'Salt-okunur audit trail. Yalnızca bu iş akışı üzerinden zaten kaydedilmiş kararları, API\'nin döndürdüğü sırayla gösterir.',
+    'wrr.history.empty_state': 'Bu çözümleme için henüz kaydedilmiş bir karar yok.',
+    'wrr.history.col.decision_id': 'Karar ID',
+    'wrr.history.col.previous_status': 'Önceki Durum',
+    'wrr.history.col.new_status': 'Yeni Durum',
+    'wrr.history.col.resolution_note': 'Çözümleme Notu',
+    'wrr.history.col.evidence_reference': 'Kanıt Referansı',
+    'wrr.history.col.resolved_by': 'Çözümleyen',
+    'wrr.history.col.decided_at': 'Karar Zamanı (UTC)',
+    'wrr.history.col.confidence_level': 'Güven Seviyesi',
+
     'sidebar.governance': 'Yönetişim Çalışma Alanı',
     'gov.page_title': 'Mühendislik Yönetişim Çalışma Alanı',
     'gov.page_subtitle': 'Genel, alan-bağımsız inceleme / yayınlama / çözümleme olay çalışma alanı (Faz 2.8.11 Aşama 4)',
@@ -6256,6 +6296,7 @@ async function wrrLoadResolutionDetail(resolutionId) {
   contentEl.style.display = 'none';
   statusEl.textContent = t('wrr.loading');
   if (typeof wrrHideDecisionForm === 'function') wrrHideDecisionForm();
+  if (typeof wrrHideHistory === 'function') wrrHideHistory();
   try {
     const detail = await apiRequest('/api/library/washers/resolutions/' + encodeURIComponent(resolutionId));
     if (!wrrDetailIsWellFormed(detail)) {
@@ -6268,6 +6309,7 @@ async function wrrLoadResolutionDetail(resolutionId) {
     contentEl.style.display = '';
     wrrRenderDetail(detail);
     if (typeof wrrShowDecisionFormForDetail === 'function') wrrShowDecisionFormForDetail(detail);
+    if (typeof wrrLoadResolutionHistory === 'function') wrrLoadResolutionHistory(detail.resolution_id);
   } catch (e) {
     WRR_LAST_DETAIL = null;
     statusEl.innerHTML = '<div class="alert alert-danger">' +
@@ -6456,6 +6498,93 @@ async function wrrSubmitDecision() {
       submitBtn.disabled = !!(WRR_LAST_DETAIL && (WRR_LAST_DETAIL.is_blocked || WRR_LAST_DETAIL.is_terminal));
     }
   }
+}
+
+// ---------------------------------------------------------------
+// Faz 2.8.19 Stage 4: Washer Resolution Decision History (additive,
+// read-only). Calls only GET /{resolution_id}/decisions (Faz
+// 2.8.9). No edit, delete, rollback, replay, or bulk action --
+// displays the existing audit trail exactly as the API returns it,
+// in the API's own append order (no client-side re-sorting).
+// Loaded from wrrLoadResolutionDetail's success path (see the
+// typeof-guarded call there), so it is available even for blocked/
+// terminal records -- history viewing is never gated the way the
+// decision form is.
+// ---------------------------------------------------------------
+
+const WRR_HISTORY_REQUIRED_FIELDS = [
+  'decision_id', 'resolution_id', 'previous_status', 'new_status',
+  'resolution_note', 'evidence_reference', 'resolved_by', 'decided_at',
+];
+
+function wrrHistoryRecordIsWellFormed(record) {
+  if (!record || typeof record !== 'object') return false;
+  return WRR_HISTORY_REQUIRED_FIELDS.every((f) => Object.prototype.hasOwnProperty.call(record, f));
+}
+
+function wrrHistoryResponseIsWellFormed(data) {
+  return !!data && typeof data === 'object' && Array.isArray(data.decisions)
+    && data.decisions.every(wrrHistoryRecordIsWellFormed);
+}
+
+async function wrrLoadResolutionHistory(resolutionId) {
+  const card = document.getElementById('wrr-history-card');
+  const statusEl = document.getElementById('wrr-history-status');
+  const contentEl = document.getElementById('wrr-history-content');
+  if (!card || !statusEl || !contentEl) return;
+  card.style.display = '';
+  contentEl.style.display = 'none';
+  statusEl.textContent = t('wrr.loading');
+  try {
+    const data = await apiRequest(
+      '/api/library/washers/resolutions/' + encodeURIComponent(resolutionId) + '/decisions'
+    );
+    if (!wrrHistoryResponseIsWellFormed(data)) {
+      statusEl.innerHTML = '<div class="alert alert-danger">' + scEsc(t('wrr.malformed_response')) + '</div>';
+      return;
+    }
+    statusEl.textContent = '';
+    contentEl.style.display = '';
+    wrrRenderHistoryTable(data.decisions);
+  } catch (e) {
+    statusEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(t('wrr.api_error_prefix')) + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
+function wrrHideHistory() {
+  const card = document.getElementById('wrr-history-card');
+  if (card) card.style.display = 'none';
+}
+
+function wrrRenderHistoryTable(decisions) {
+  const el = document.getElementById('wrr-history-content');
+  if (!decisions.length) {
+    el.innerHTML = `<div class="fc-muted">${scEsc(t('wrr.history.empty_state'))}</div>`;
+    return;
+  }
+  // Rendered in exactly the order the API returned -- no
+  // client-side sort of any kind.
+  const rows = decisions.map((d) => `<tr>
+    <td>${scEsc(d.decision_id)}</td>
+    <td>${wrrStatusLabel(d.previous_status)}</td>
+    <td>${wrrStatusLabel(d.new_status)}</td>
+    <td class="sc-wrap">${scEsc(d.resolution_note)}</td>
+    <td class="sc-wrap">${scEsc(d.evidence_reference)}</td>
+    <td>${scEsc(d.resolved_by)}</td>
+    <td>${scEsc(d.decided_at)}</td>
+    <td>${scEsc(d.confidence_level === null || d.confidence_level === undefined ? '—' : String(d.confidence_level))}</td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="sc-table-wrap"><table class="sc-table"><thead><tr>
+    <th>${scEsc(t('wrr.history.col.decision_id'))}</th>
+    <th>${scEsc(t('wrr.history.col.previous_status'))}</th>
+    <th>${scEsc(t('wrr.history.col.new_status'))}</th>
+    <th>${scEsc(t('wrr.history.col.resolution_note'))}</th>
+    <th>${scEsc(t('wrr.history.col.evidence_reference'))}</th>
+    <th>${scEsc(t('wrr.history.col.resolved_by'))}</th>
+    <th>${scEsc(t('wrr.history.col.decided_at'))}</th>
+    <th>${scEsc(t('wrr.history.col.confidence_level'))}</th>
+  </tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
 function miReapplyLanguage() {

@@ -104,12 +104,12 @@ def test_all_five_pre_existing_harnesses_are_still_present(qg):
     assert pre_existing <= set(qg.JS_HARNESS_FILENAMES)
 
 
-def test_js_harness_total_count_is_eight(qg):
-    # Faz 2.8.19 Stage 3 (Decision Entry Form frontend) appended an
-    # 8th harness (run_washer_resolution_decision_form_tests.js)
-    # after Stage 2's -- same additive-append pattern this phase
-    # itself established.
-    assert len(qg.JS_HARNESS_FILENAMES) == 8
+def test_js_harness_total_count_is_nine(qg):
+    # Faz 2.8.19 Stage 3 appended an 8th harness
+    # (run_washer_resolution_decision_form_tests.js); Stage 4
+    # appended a 9th (run_washer_resolution_decision_history_tests.js)
+    # -- same additive-append pattern this phase itself established.
+    assert len(qg.JS_HARNESS_FILENAMES) == 9
 
 
 def test_every_listed_harness_file_actually_exists_on_disk(qg):
@@ -215,4 +215,4 @@ def test_new_harness_success_allows_js_step_to_pass(qg, monkeypatch):
     assert outcome.passed is True
     # Faz 2.8.19 Stage 3 appended an 8th harness; the message reflects
     # the current total, not a value frozen at an earlier phase.
-    assert "All 8 JavaScript harnesses passed." in outcome.output
+    assert "All 9 JavaScript harnesses passed." in outcome.output

@@ -318,11 +318,12 @@ def test_wrr_key_parity_exact_count(frontend_html):
     # which updated an equivalent stale hardcoded key-count constant
     # when its own required keys made the old count obsolete.
     # Faz 2.8.9 Stage 5 shipped with 38 wrr.* keys; Faz 2.8.19 Stage 2
-    # added 20 more (58 total); Faz 2.8.19 Stage 3 (Decision Entry
-    # Form, additive) added 15 more under the same wrr.* namespace --
-    # same precedent as Faz 2.8.13's report and Stage 2's own update.
-    assert len(en_wrr) == len(tr_wrr) == 73, (
-        f"expected 73/73 wrr.* key parity, got {len(en_wrr)} EN / {len(tr_wrr)} TR"
+    # added 20 more (58 total); Stage 3 added 15 more (73 total);
+    # Stage 4 (Decision History, additive) added 11 more under the
+    # same wrr.* namespace -- same precedent as Faz 2.8.13's report
+    # and each prior stage's own update.
+    assert len(en_wrr) == len(tr_wrr) == 84, (
+        f"expected 84/84 wrr.* key parity, got {len(en_wrr)} EN / {len(tr_wrr)} TR"
     )
     assert len(set(en_wrr)) == len(en_wrr)
     assert len(set(tr_wrr)) == len(tr_wrr)

@@ -75,6 +75,7 @@ JS_HARNESS_FILENAMES: tuple[str, ...] = (
     "run_joint_revision_list_ux_tests.js",
     "run_washer_resolution_queue_tests.js",
     "run_washer_resolution_decision_form_tests.js",
+    "run_washer_resolution_decision_history_tests.js",
 )
 
 NODE_MISSING_MESSAGE = (

@@ -108,7 +108,7 @@ def test_decision_form_hidden_by_default(frontend_html):
 
 def test_submit_uses_apirequest_post_with_correct_endpoint(frontend_html):
     idx = frontend_html.index("async function wrrSubmitDecision")
-    end = frontend_html.index("\nfunction miReapplyLanguage(")
+    end = frontend_html.index("Faz 2.8.19 Stage 4: Washer Resolution Decision History")
     body = frontend_html[idx:end]
     assert "apiRequest(" in body
     assert "/decide'" in body
@@ -119,7 +119,7 @@ def test_submit_uses_apirequest_post_with_correct_endpoint(frontend_html):
 
 def test_request_body_fields_match_backend_contract(frontend_html):
     idx = frontend_html.index("async function wrrSubmitDecision")
-    end = frontend_html.index("\nfunction miReapplyLanguage(")
+    end = frontend_html.index("Faz 2.8.19 Stage 4: Washer Resolution Decision History")
     body = frontend_html[idx:end]
     for field in (
         "new_status", "resolution_note", "evidence_reference",
@@ -133,7 +133,7 @@ def test_request_body_fields_match_backend_contract(frontend_html):
 
 def test_resolution_id_comes_from_loaded_detail_not_a_free_text_input(frontend_html):
     idx = frontend_html.index("async function wrrSubmitDecision")
-    end = frontend_html.index("\nfunction miReapplyLanguage(")
+    end = frontend_html.index("Faz 2.8.19 Stage 4: Washer Resolution Decision History")
     body = frontend_html[idx:end]
     assert "WRR_LAST_DETAIL" in body
     assert "detail.resolution_id" in body
@@ -163,7 +163,7 @@ def test_idempotency_key_generated_client_side_not_reimplementing_backend(fronte
 
 def test_in_flight_guard_present(frontend_html):
     idx = frontend_html.index("async function wrrSubmitDecision")
-    end = frontend_html.index("\nfunction miReapplyLanguage(")
+    end = frontend_html.index("Faz 2.8.19 Stage 4: Washer Resolution Decision History")
     body = frontend_html[idx:end]
     assert "WRR_DECIDE_IN_FLIGHT" in body
     assert "if (WRR_DECIDE_IN_FLIGHT) return;" in body
@@ -176,7 +176,7 @@ def test_key_persists_on_retry_reset_only_on_new_record_or_success(frontend_html
     assert "wrrGenerateIdempotencyKey()" in reset_body
 
     submit_idx = frontend_html.index("async function wrrSubmitDecision")
-    submit_end = frontend_html.index("\nfunction miReapplyLanguage(")
+    submit_end = frontend_html.index("Faz 2.8.19 Stage 4: Washer Resolution Decision History")
     submit_body = frontend_html[submit_idx:submit_end]
     catch_idx = submit_body.index("} catch (e) {")
     catch_block = submit_body[catch_idx:]
@@ -192,7 +192,7 @@ def test_key_persists_on_retry_reset_only_on_new_record_or_success(frontend_html
 
 def test_success_path_refreshes_queue_and_detail(frontend_html):
     idx = frontend_html.index("async function wrrSubmitDecision")
-    end = frontend_html.index("\nfunction miReapplyLanguage(")
+    end = frontend_html.index("Faz 2.8.19 Stage 4: Washer Resolution Decision History")
     body = frontend_html[idx:end]
     assert "await loadWasherResolutionQueue();" in body
     assert "await wrrLoadResolutionDetail(detail.resolution_id);" in body
@@ -212,7 +212,7 @@ def test_blocked_and_terminal_read_only_from_backend_fields(frontend_html):
 
 def test_no_decision_history_endpoint_called(frontend_html):
     idx = frontend_html.index("Faz 2.8.19 Stage 3: Washer Resolution Decision Entry Form")
-    end = frontend_html.index("function miReapplyLanguage(")
+    end = frontend_html.index("Faz 2.8.19 Stage 4: Washer Resolution Decision History")
     section = frontend_html[idx:end]
     assert "/decisions'" not in section
     assert "/decisions\"" not in section
@@ -220,7 +220,7 @@ def test_no_decision_history_endpoint_called(frontend_html):
 
 def test_no_bulk_or_ai_behavior(frontend_html):
     idx = frontend_html.index("Faz 2.8.19 Stage 3: Washer Resolution Decision Entry Form")
-    end = frontend_html.index("function miReapplyLanguage(")
+    end = frontend_html.index("Faz 2.8.19 Stage 4: Washer Resolution Decision History")
     section = frontend_html[idx:end].lower()
     # Narrowed to code-artifact-like terms only: the section's own
     # doc comment legitimately uses prose like "nothing here is
