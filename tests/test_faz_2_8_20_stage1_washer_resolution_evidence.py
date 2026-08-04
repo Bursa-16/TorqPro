@@ -248,9 +248,12 @@ def test_invalid_source_url_is_rejected():
         WasherResolutionEvidence(**kwargs)
 
 
-def test_http_source_url_is_accepted():
+@pytest.mark.parametrize(
+    "url", ["http://example.com/doc.pdf", "https://example.com/doc.pdf"]
+)
+def test_valid_source_url_scheme_is_accepted(url):
     payload = _valid_checksum_payload()
-    payload["source_url"] = "http://example.com/doc.pdf"
+    payload["source_url"] = url
     kwargs = dict(payload)
     kwargs["evidence_type"] = EvidenceType(payload["evidence_type"])
     kwargs["verification_status"] = EvidenceVerificationStatus(
@@ -258,20 +261,7 @@ def test_http_source_url_is_accepted():
     )
     kwargs["integrity_checksum"] = compute_evidence_checksum(payload)
     evidence = WasherResolutionEvidence(**kwargs)
-    assert evidence.source_url == "http://example.com/doc.pdf"
-
-
-def test_https_source_url_is_accepted():
-    payload = _valid_checksum_payload()
-    payload["source_url"] = "https://example.com/doc.pdf"
-    kwargs = dict(payload)
-    kwargs["evidence_type"] = EvidenceType(payload["evidence_type"])
-    kwargs["verification_status"] = EvidenceVerificationStatus(
-        payload["verification_status"]
-    )
-    kwargs["integrity_checksum"] = compute_evidence_checksum(payload)
-    evidence = WasherResolutionEvidence(**kwargs)
-    assert evidence.source_url == "https://example.com/doc.pdf"
+    assert evidence.source_url == url
 
 
 # ---------------------------------------------------------------------
@@ -279,71 +269,31 @@ def test_https_source_url_is_accepted():
 # ---------------------------------------------------------------------
 
 
-def test_verified_status_without_verified_by_is_rejected():
+@pytest.mark.parametrize(
+    "verification_status,verified_by,verified_at",
+    [
+        # verified: missing verified_by / missing verified_at
+        (EvidenceVerificationStatus.VERIFIED, None, "2026-01-16T09:00:00.000000Z"),
+        (EvidenceVerificationStatus.VERIFIED, "reviewer1", None),
+        # rejected: missing verified_by / missing verified_at
+        (EvidenceVerificationStatus.REJECTED, None, "2026-01-16T09:00:00.000000Z"),
+        (EvidenceVerificationStatus.REJECTED, "reviewer1", None),
+        # unverified: verified_by set / verified_at set (must be absent)
+        (EvidenceVerificationStatus.UNVERIFIED, "reviewer1", None),
+        (EvidenceVerificationStatus.UNVERIFIED, None, "2026-01-16T09:00:00.000000Z"),
+    ],
+)
+def test_verification_status_cross_field_violation_is_rejected(
+    verification_status, verified_by, verified_at
+):
     payload = _valid_checksum_payload()
-    payload["verification_status"] = EvidenceVerificationStatus.VERIFIED.value
-    payload["verified_at"] = "2026-01-16T09:00:00.000000Z"
+    if verified_by is not None:
+        payload["verified_by"] = verified_by
+    if verified_at is not None:
+        payload["verified_at"] = verified_at
     kwargs = dict(payload)
     kwargs["evidence_type"] = EvidenceType(payload["evidence_type"])
-    kwargs["verification_status"] = EvidenceVerificationStatus.VERIFIED
-    kwargs["integrity_checksum"] = compute_evidence_checksum(payload)
-    with pytest.raises(ValidationError):
-        WasherResolutionEvidence(**kwargs)
-
-
-def test_verified_status_without_verified_at_is_rejected():
-    payload = _valid_checksum_payload()
-    payload["verification_status"] = EvidenceVerificationStatus.VERIFIED.value
-    payload["verified_by"] = "reviewer1"
-    kwargs = dict(payload)
-    kwargs["evidence_type"] = EvidenceType(payload["evidence_type"])
-    kwargs["verification_status"] = EvidenceVerificationStatus.VERIFIED
-    kwargs["integrity_checksum"] = compute_evidence_checksum(payload)
-    with pytest.raises(ValidationError):
-        WasherResolutionEvidence(**kwargs)
-
-
-def test_rejected_status_without_verified_by_is_rejected():
-    payload = _valid_checksum_payload()
-    payload["verification_status"] = EvidenceVerificationStatus.REJECTED.value
-    payload["verified_at"] = "2026-01-16T09:00:00.000000Z"
-    kwargs = dict(payload)
-    kwargs["evidence_type"] = EvidenceType(payload["evidence_type"])
-    kwargs["verification_status"] = EvidenceVerificationStatus.REJECTED
-    kwargs["integrity_checksum"] = compute_evidence_checksum(payload)
-    with pytest.raises(ValidationError):
-        WasherResolutionEvidence(**kwargs)
-
-
-def test_rejected_status_without_verified_at_is_rejected():
-    payload = _valid_checksum_payload()
-    payload["verification_status"] = EvidenceVerificationStatus.REJECTED.value
-    payload["verified_by"] = "reviewer1"
-    kwargs = dict(payload)
-    kwargs["evidence_type"] = EvidenceType(payload["evidence_type"])
-    kwargs["verification_status"] = EvidenceVerificationStatus.REJECTED
-    kwargs["integrity_checksum"] = compute_evidence_checksum(payload)
-    with pytest.raises(ValidationError):
-        WasherResolutionEvidence(**kwargs)
-
-
-def test_unverified_status_with_verified_by_is_rejected():
-    payload = _valid_checksum_payload()
-    payload["verified_by"] = "reviewer1"
-    kwargs = dict(payload)
-    kwargs["evidence_type"] = EvidenceType(payload["evidence_type"])
-    kwargs["verification_status"] = EvidenceVerificationStatus.UNVERIFIED
-    kwargs["integrity_checksum"] = compute_evidence_checksum(payload)
-    with pytest.raises(ValidationError):
-        WasherResolutionEvidence(**kwargs)
-
-
-def test_unverified_status_with_verified_at_is_rejected():
-    payload = _valid_checksum_payload()
-    payload["verified_at"] = "2026-01-16T09:00:00.000000Z"
-    kwargs = dict(payload)
-    kwargs["evidence_type"] = EvidenceType(payload["evidence_type"])
-    kwargs["verification_status"] = EvidenceVerificationStatus.UNVERIFIED
+    kwargs["verification_status"] = verification_status
     kwargs["integrity_checksum"] = compute_evidence_checksum(payload)
     with pytest.raises(ValidationError):
         WasherResolutionEvidence(**kwargs)

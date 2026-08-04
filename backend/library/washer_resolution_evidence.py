@@ -12,9 +12,8 @@ Design constraints (Stage 1 task brief, enforced structurally):
 
   - This module never writes to ``washer_resolution_ledger.json``,
     ``washer_resolution_decisions.json``, ``washer_library.json`` or
-    ``washer_provenance_evidence.json``. It has no filesystem I/O of
-    any kind -- every function here operates purely on in-memory
-    values.
+    ``washer_provenance_evidence.json`` -- it has no filesystem I/O
+    of any kind.
   - ``WasherResolutionEvidence`` uses ``extra="forbid"`` and is
     frozen (immutable once constructed), mirroring
     ``WasherResolutionRecord`` (Faz 2.8.5) and
@@ -54,7 +53,13 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Dict, Optional
 
-from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    ValidationInfo,
+    field_validator,
+    model_validator,
+)
 
 __all__ = [
     "EvidenceType",
@@ -79,12 +84,7 @@ __all__ = [
 
 class EvidenceType(str, Enum):
     """Closed vocabulary for *what kind* of evidence a
-    :class:`WasherResolutionEvidence` record represents. Deliberately
-    broader than a single source -- an authoritative standard, a
-    manufacturer document, an internally-approved engineering source,
-    an internal measurement, a comparison analysis, a pointer back
-    into the Faz 2.8.4 provenance manifest, or an unclassified
-    ``other`` reference.
+    :class:`WasherResolutionEvidence` record represents.
 
     This stage assigns no closure weight or readiness score to any
     member -- that is explicitly out of scope (task brief rule)."""
@@ -104,9 +104,8 @@ class EvidenceVerificationStatus(str, Enum):
     own ``resolution_status``/effective status.
 
     Stage 1 only *carries* this value; no state-transition service
-    exists yet (that is a later stage). A newly created evidence
-    record is always ``unverified`` -- see
-    :func:`create_washer_resolution_evidence`."""
+    exists yet. A newly created evidence record is always
+    ``unverified`` -- see :func:`create_washer_resolution_evidence`."""
 
     UNVERIFIED = "unverified"
     VERIFIED = "verified"
@@ -156,10 +155,8 @@ def is_valid_sha256_hex(value: str) -> bool:
 
 
 def generate_evidence_id() -> str:
-    """Generate a unique, human-recognizable evidence identifier.
-
-    Not deterministic (each call returns a different value) and not
-    required to be -- only uniqueness and a readable ``WRE-`` prefix
+    """Generate a unique evidence identifier. Not required to be
+    deterministic -- only uniqueness and a readable ``WRE-`` prefix
     matter, mirroring the existing ``DEC-<uuid4>`` convention used by
     ``washer_resolution_service.decide_resolution`` for decision ids.
     """
@@ -170,11 +167,8 @@ def utc_now_iso() -> str:
     """Backend-generated UTC ISO-8601 timestamp, ``Z``-suffixed,
     microsecond precision. Mirrors
     ``washer_resolution_service.now_utc_iso8601`` /
-    ``washer_resolution_sync.now_utc_iso8601`` exactly. The only
-    wall-clock call in this module; :class:`WasherResolutionEvidence`
-    itself never calls this on its own -- a caller (Stage 1:
-    :func:`create_washer_resolution_evidence`) always supplies the
-    value explicitly."""
+    ``washer_resolution_sync.now_utc_iso8601`` exactly -- the only
+    wall-clock call in this module (see module docstring)."""
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%f") + "Z"
 
 
@@ -195,9 +189,7 @@ def _normalize_required(value: str, field_name: str) -> str:
 def _normalize_optional(value: Optional[str], field_name: str) -> Optional[str]:
     """``None`` passes through unchanged. A provided value is
     stripped; a whitespace-only provided value is rejected rather
-    than silently coerced to ``None`` (task brief: "yalnızca
-    whitespace olan değerler reddedilmeli" applies to every string
-    field, not only the required ones)."""
+    than silently coerced to ``None``."""
     if value is None:
         return None
     stripped = value.strip()
@@ -208,14 +200,12 @@ def _normalize_optional(value: Optional[str], field_name: str) -> Optional[str]:
 
 class WasherResolutionEvidence(BaseModel):
     """One structured evidence record associated with a single
-    ``backend.library.washer_resolution.WasherResolutionRecord``
-    (via ``resolution_id``).
-
-    ``extra="forbid"`` and ``frozen=True`` are deliberate (see module
-    docstring): a closed, immutable set of evidence-workflow fields.
-    This model never stores the evidence document itself -- only a
-    reference/locator to where it lives (``source_reference``,
-    ``source_locator``, ``source_url``).
+    ``backend.library.washer_resolution.WasherResolutionRecord`` (via
+    ``resolution_id``). ``extra="forbid"`` and ``frozen=True`` are
+    deliberate (see module docstring): a closed, immutable set of
+    evidence-workflow fields. This model never stores the evidence
+    document itself -- only a reference/locator to where it lives
+    (``source_reference``, ``source_locator``, ``source_url``).
     """
 
     model_config = ConfigDict(extra="forbid", frozen=True)
@@ -237,53 +227,27 @@ class WasherResolutionEvidence(BaseModel):
     integrity_checksum: str
 
     # -- required-field normalization (strip + reject blank) --------
+    # One validator across all six required string fields;
+    # ValidationInfo.field_name supplies the field name to
+    # _normalize_required per-field, so error messages stay
+    # field-specific without a separate function per field.
 
-    @field_validator("evidence_id")
+    @field_validator(
+        "evidence_id", "resolution_id", "title", "description",
+        "source_reference", "created_by",
+    )
     @classmethod
-    def _evidence_id_not_blank(cls, value: str) -> str:
-        return _normalize_required(value, "evidence_id")
-
-    @field_validator("resolution_id")
-    @classmethod
-    def _resolution_id_not_blank(cls, value: str) -> str:
-        return _normalize_required(value, "resolution_id")
-
-    @field_validator("title")
-    @classmethod
-    def _title_not_blank(cls, value: str) -> str:
-        return _normalize_required(value, "title")
-
-    @field_validator("description")
-    @classmethod
-    def _description_not_blank(cls, value: str) -> str:
-        return _normalize_required(value, "description")
-
-    @field_validator("source_reference")
-    @classmethod
-    def _source_reference_not_blank(cls, value: str) -> str:
-        return _normalize_required(value, "source_reference")
-
-    @field_validator("created_by")
-    @classmethod
-    def _created_by_not_blank(cls, value: str) -> str:
-        return _normalize_required(value, "created_by")
+    def _required_not_blank(cls, value: str, info: ValidationInfo) -> str:
+        return _normalize_required(value, info.field_name)
 
     # -- optional-field normalization (strip + reject whitespace-only) --
 
-    @field_validator("source_locator")
+    @field_validator("source_locator", "source_standard", "verified_by")
     @classmethod
-    def _source_locator_normalize(cls, value: Optional[str]) -> Optional[str]:
-        return _normalize_optional(value, "source_locator")
-
-    @field_validator("source_standard")
-    @classmethod
-    def _source_standard_normalize(cls, value: Optional[str]) -> Optional[str]:
-        return _normalize_optional(value, "source_standard")
-
-    @field_validator("verified_by")
-    @classmethod
-    def _verified_by_normalize(cls, value: Optional[str]) -> Optional[str]:
-        return _normalize_optional(value, "verified_by")
+    def _optional_normalize(
+        cls, value: Optional[str], info: ValidationInfo
+    ) -> Optional[str]:
+        return _normalize_optional(value, info.field_name)
 
     # -- source_url: normalize, then require http(s):// prefix ------
 
@@ -445,10 +409,8 @@ def create_washer_resolution_evidence(
     forge its identity. ``verification_status`` is always
     ``unverified`` on creation (``verified_by``/``verified_at`` are
     always ``None``); recording a verification decision is a later
-    stage's responsibility, not this factory's.
-
-    Never writes to the filesystem: this function only constructs and
-    returns an in-memory Pydantic model.
+    stage's responsibility, not this factory's. Never writes to the
+    filesystem (see module docstring).
     """
     evidence_id = generate_evidence_id()
     created_at = utc_now_iso()
