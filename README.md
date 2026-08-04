@@ -3,9 +3,27 @@
 | Item                          | Value                                                    |
 | ----------------------------- | --------------------------------------------------------- |
 | Product                       | TorqPro                                                    |
-| **Current Version**           | **v2.8.18**                                                |
+| **Current Version**           | **v2.8.19**                                                |
 | **Version Date**              | **03 August 2026**                                         |
-| **Current Engineering Focus** | **UI/UX Refactoring and Dashboard Improvements (Stages 1-5)** |
+| **Current Engineering Focus** | **Washer Resolution Decision Workflow Integration (Stages 1-5)** |
+
+---
+
+# What's New in v2.8.19
+
+## Washer Resolution Decision Workflow Integration (Stages 1-5)
+
+Phase **2.8.19** connects the Faz 2.8.9 washer resolution decision backend (built but never wired to any UI) to a full frontend workflow, delivered across five additive, independently-committed stages:
+
+* **Stage 1** — additive `GET /api/library/washers/resolutions/{resolution_id}` detail endpoint, reusing `get_washer_resolution()` and `resolution_queue()` unmodified; no new business logic, no duplicated effective-status formula.
+* **Stage 2** — read-only Resolution Queue + Detail frontend, listing all 76 washer resolution records with their effective status and a per-record detail lookup.
+* **Stage 3** — additive decision-entry form, submitting only user-typed values to the existing, already-tested `POST /{resolution_id}/decide` endpoint (Faz 2.8.9). No status, evidence, or confidence value is inferred, suggested, or computed. Idempotency-key handling, double-submit prevention, and blocked/terminal-record disabling all read only from backend-provided fields.
+* **Stage 4** — read-only Decision History view, using the existing `GET /{resolution_id}/decisions` endpoint. No edit, delete, rollback, or replay of any kind.
+* **Stage 5** — this closure: VERSION/README/CHANGELOG/backlog alignment, completion report, and full regression + quality gate verification.
+
+**No backend or API behavior changed in this phase.** All Stage 1-4 endpoints were either newly exposed as thin, additive read adapters (Stage 1) or reused verbatim from Faz 2.8.9 (Stages 2-4). No engineering value, evidence, or decision was invented anywhere in this workflow — every decision recorded through it is a human's own input, submitted through a form that only transports what was typed.
+
+**Important:** this phase delivers the *workflow*, not resolved records. As of this release, `backend/library/data/washer_resolution_decisions.json` still contains **zero recorded decisions**, and all **76** washer resolution records in `backend/library/data/washer_resolution_ledger.json` remain unresolved (**71** `open`, **5** `blocked_authoritative_source`). None of them were closed automatically by this phase — closing any of them still requires a human to open the record in this new UI and submit their own evidence-backed decision.
 
 ---
 
@@ -200,7 +218,8 @@ Continuous integration verifies every change before integration into the main br
 | Phase 2.8.15     | README / VERSION Maintenance                  | ✅ Completed           |
 | Phase 2.8.16     | Joint Revision List UX Improvements           | ✅ Completed           |
 | Phase 2.8.17      | Joint Revision HTTP API & Idempotent Write Exposure | ✅ Completed           |
-| **Phase 2.8.18** | **UI/UX Refactoring and Dashboard Improvements (Stages 1-5)** | ⭐ **Current Version** |
+| Phase 2.8.18      | UI/UX Refactoring and Dashboard Improvements (Stages 1-5) | ✅ Completed           |
+| **Phase 2.8.19** | **Washer Resolution Decision Workflow Integration (Stages 1-5)** | ⭐ **Current Version** |
 
 ---
 
@@ -208,7 +227,8 @@ Continuous integration verifies every change before integration into the main br
 
 | Version     | Highlights                                             |
 | ----------- | --------------------------------------------------------- |
-| **v2.8.18** | UI/UX Refactoring and Dashboard Improvements (Stages 1-5)  |
+| **v2.8.19** | Washer Resolution Decision Workflow Integration (Stages 1-5) |
+| v2.8.18     | UI/UX Refactoring and Dashboard Improvements (Stages 1-5)  |
 | v2.8.17     | Joint Revision HTTP API & Idempotent Write Exposure        |
 | v2.8.16     | Joint Revision List UX Improvements                       |
 | v2.8.14     | Joint Revision Governance Bulk Visibility                 |
@@ -226,15 +246,17 @@ Continuous integration verifies every change before integration into the main br
 
 ## Current Version
 
-**v2.8.18**
+**v2.8.19**
 
 Current engineering focus:
 
-* Dashboard measurement KPI reorganization
-* Tightening-class equipment drill-down
-* Admin-only restriction on `/api/runtime/status`
-* Dashboard acceptance label finalization
-* Retroactive version/documentation alignment for the previously-unversioned v2.8.18 tag
+* Washer resolution detail API (Stage 1, additive)
+* Washer resolution queue/detail frontend (Stage 2, read-only)
+* Washer resolution decision-entry form (Stage 3, no invented engineering data)
+* Washer resolution decision-history view (Stage 4, read-only)
+* VERSION/README/CHANGELOG/backlog closure and completion report (Stage 5)
+
+Not yet done by this phase: none of the 76 washer resolution records (71 `open`, 5 `blocked_authoritative_source`) have been resolved -- the workflow to resolve them now exists, but resolving them is a separate, ongoing human task.
 
 ---
 

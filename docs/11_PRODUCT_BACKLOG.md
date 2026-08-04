@@ -186,6 +186,18 @@ even though the harness reports a "clean" result. Not fixed here
 refactor that harness into the same awaited `async function main()`
 pattern this phase's own harness now uses.
 
+**Faz 2.8.19 closure note:** the frontend gap this phase deliberately
+left open — the decision API existed but no screen ever called
+`queue`, `{id}`, `decide`, or `{id}/decisions` — is closed by Faz
+2.8.19 (Stages 1-4). See `docs/CHANGELOG.md` and
+`docs/phases/PHASE_2.8.19_WASHER_RESOLUTION_DECISION_WORKFLOW_INTEGRATION.md`.
+This closes the workflow, not the 76 records themselves: as of Faz
+2.8.19, `washer_resolution_decisions.json` still has zero recorded
+decisions, and all 71 `open` / 5 `blocked_authoritative_source`
+records remain open. Resolving them is a separate, ongoing human task
+now unblocked by this workflow, not something either phase did on its
+own.
+
 ## 12C. Faz 2.8.10 – Test Harness & Quality (TR/EN)
 
 **Delivered** 2026-07-29 — see

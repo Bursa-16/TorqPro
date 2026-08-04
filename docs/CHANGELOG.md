@@ -341,3 +341,65 @@
   `tests/js/run_i18n_tests.js`,
   `tests/test_faz_stage2_system_health_authorization.py` (new),
   `VERSION`, `README.md`, `tests/test_version_centralization.py`.
+
+## Faz 2.8.19 — Washer Resolution Decision Workflow Integration — 2026-08-03
+
+Connects the Faz 2.8.9 washer resolution decision backend (built but
+never wired to any UI) to a full frontend workflow, across five
+additive, independently-committed stages.
+
+- **Stage 1** (`58ca1d487c0f4bdfd7ac0937ed260d5ed98f6732`) — additive
+  `GET /api/library/washers/resolutions/{resolution_id}` endpoint.
+  `backend/library/washer_resolution_service.py`: new
+  `resolution_detail()`, reusing `get_washer_resolution()` (Faz 2.8.5)
+  and `resolution_queue()` (Faz 2.8.9) unmodified — no new business
+  logic, no duplicated effective-status formula. Thin HTTP adapter in
+  `backend/app.py`, registered after the static `/queue` and `/report`
+  routes so route matching is unaffected (verified programmatically
+  via `app.routes`).
+- **Stage 2** (`2481b21d240b51f49cd0f5b08b2e8ffdde48f29e`) — read-only
+  Resolution Queue + Detail frontend inside `page-washerresolution`,
+  listing all 76 washer resolution records (`resolution_id`,
+  `washer_record_id`, `issue_type`, `source_status`,
+  `effective_status`, `decision_count`, `is_blocked`, `is_terminal`)
+  with a per-record detail lookup. 20 new `wrr.queue.*`/`wrr.detail.*`
+  TR/EN keys.
+- **Stage 3** (`bdb5d3d3cd72a56e319fb1566aabbe7da3cae3b2`) — additive
+  decision-entry form, submitting only user-typed values to the
+  existing, already-tested `POST /{resolution_id}/decide` endpoint.
+  No status, evidence, or confidence value is inferred, suggested, or
+  computed. Idempotency-key generation/persistence-on-retry,
+  double-submit prevention, and blocked/terminal-record disabling all
+  read only from backend-provided fields — no client-side
+  state-machine table. 15 new `wrr.decide.*` TR/EN keys.
+- **Stage 4** (`3eecfaf7eb2fb6a345ca9c4524055ee14d626202`) — read-only
+  Decision History view, using the existing
+  `GET /{resolution_id}/decisions` endpoint, rendered in the API's own
+  append order (no client-side sort). No edit, delete, rollback, or
+  replay. Hooked into the same detail-load success path used by
+  Stage 1-3, so it is accessible for blocked/terminal records and
+  refreshes automatically after a successful decision submit. 11 new
+  `wrr.history.*` TR/EN keys.
+- **Stage 5** (this entry) — `VERSION` bumped to `2.8.19`,
+  `README.md` and this changelog aligned, `docs/11_PRODUCT_BACKLOG.md`
+  washer-resolution entry updated,
+  `docs/phases/PHASE_2.8.19_WASHER_RESOLUTION_DECISION_WORKFLOW_INTEGRATION.md`
+  added, `tests/test_version_centralization.py` updated to `2.8.19`.
+
+No backend or API behaviour changed at any stage of this phase — every
+endpoint used was either a newly-added thin, additive read adapter
+(Stage 1) or reused verbatim from Faz 2.8.9 (Stages 2-4). No
+engineering value, evidence, or decision was invented anywhere in this
+workflow.
+
+**This phase delivers the workflow, not resolved records.** As of this
+release, `backend/library/data/washer_resolution_decisions.json`
+contains zero recorded decisions, and all 76 washer resolution records
+in `backend/library/data/washer_resolution_ledger.json` remain
+unresolved (71 `open`, 5 `blocked_authoritative_source`). None were
+closed automatically by this phase.
+
+Full test suite: 2291 passed (Stage 1 baseline 2213 + 13 + 25 + 21 +
+19 across the four stages). Canonical quality gate
+(`tools/run_quality_gate.py`) 6/6 PASSED at every stage, including 9
+JavaScript regression harnesses.

@@ -1176,6 +1176,86 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
       <div id="wrr-integrity"></div>
     </div>
   </div>
+
+  <!-- Faz 2.8.19 Stage 2: additive, read-only Resolution Queue.
+       Never adds, edits or submits a decision -- this section only
+       calls GET /queue and GET /{resolution_id}. The report section
+       above is unchanged. -->
+  <div class="card">
+    <div class="card-title" data-i18n="wrr.queue.title">Resolution Queue</div>
+    <div class="card-sub" data-i18n="wrr.queue.subtitle">Read-only list of every washer resolution record and its current effective status. Selecting a record only loads its detail; it never records a decision.</div>
+    <div id="wrr-queue-status" class="fc-muted"></div>
+    <div id="wrr-queue-content" style="display:none">
+      <div id="wrr-queue-table"></div>
+    </div>
+  </div>
+
+  <div class="card" id="wrr-detail-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.detail.title">Resolution Detail</div>
+    <div class="card-sub" data-i18n="wrr.detail.subtitle">Read-only. Shows only the fields returned by the API -- nothing here is inferred or suggested.</div>
+    <div id="wrr-detail-status" class="fc-muted"></div>
+    <div id="wrr-detail-content" style="display:none"></div>
+  </div>
+
+  <!-- Faz 2.8.19 Stage 3: additive decision-entry form. Submits only
+       the values the user types into the existing, already-tested
+       POST /{resolution_id}/decide endpoint (Faz 2.8.9). No status,
+       evidence, or confidence value is ever inferred, suggested, or
+       computed here -- the user supplies all of it. Shown only after
+       a detail record has loaded successfully; disabled (not
+       bypassed) for blocked/terminal records per the backend's own
+       is_blocked / is_terminal fields. -->
+  <div class="card" id="wrr-decision-form-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.decide.title">Record a Decision</div>
+    <div class="card-sub" data-i18n="wrr.decide.subtitle">Submits the decision and evidence you provide to the existing washer resolution decision workflow. Nothing here is inferred, suggested, or generated automatically.</div>
+    <div id="wrr-decide-blocked-notice" class="alert alert-warning" style="display:none" data-i18n="wrr.decide.blocked_notice">This record is blocked_authoritative_source. The backend does not permit a decision on it through this workflow; the form is disabled.</div>
+    <div id="wrr-decide-terminal-notice" class="alert alert-info" style="display:none" data-i18n="wrr.decide.terminal_notice">This record's effective status is already terminal (resolved, accepted-as-is, or rejected). The backend does not permit a further decision; the form is disabled.</div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.new_status_label">New Status</label>
+      <select class="form-select" id="wrr-decide-new-status"><option value="" data-i18n="wrr.decide.select_placeholder">-- select --</option></select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.resolution_note_label">Resolution Note</label>
+      <textarea class="form-input" id="wrr-decide-resolution-note" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.evidence_reference_label">Evidence Reference</label>
+      <textarea class="form-input" id="wrr-decide-evidence-reference" rows="2"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.resolved_by_label">Resolved By</label>
+      <input class="form-input" id="wrr-decide-resolved-by">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.decide.confidence_level_label">Confidence Level (optional)</label>
+      <select class="form-select" id="wrr-decide-confidence-level">
+        <option value="" data-i18n="wrr.decide.confidence_none">-- none --</option>
+        <option value="1">G1</option>
+        <option value="2">G2</option>
+        <option value="3">G3</option>
+        <option value="4">G4</option>
+      </select>
+    </div>
+    <div id="wrr-decide-validation-error" class="alert alert-danger" style="display:none"></div>
+    <div id="wrr-decide-status" class="fc-muted"></div>
+    <div class="form-group" style="display:flex;align-items:flex-end">
+      <button class="btn btn-primary" id="wrr-decide-submit-btn" onclick="wrrSubmitDecision()" data-i18n="wrr.decide.submit_button">Submit Decision</button>
+    </div>
+  </div>
+
+  <!-- Faz 2.8.19 Stage 4: additive, read-only Decision History.
+       Calls only GET /{resolution_id}/decisions. No edit, delete,
+       rollback, replay, or bulk action of any kind -- this section
+       displays the existing audit trail exactly as the API returns
+       it, in the API's own order. Accessible for blocked/terminal
+       records too (the form above may be disabled; history viewing
+       never is). -->
+  <div class="card" id="wrr-history-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.history.title">Decision History</div>
+    <div class="card-sub" data-i18n="wrr.history.subtitle">Read-only audit trail. Shows only decisions already recorded through this workflow, in the order the API returns them.</div>
+    <div id="wrr-history-status" class="fc-muted"></div>
+    <div id="wrr-history-content" style="display:none"></div>
+  </div>
 </div>
 
 <div id="page-governance" class="page">
@@ -3254,6 +3334,58 @@ const I18N = {
     'wrr.col.decided_at': 'Decided At (UTC)',
     'wrr.col.decided_by': 'Decided By',
 
+    // Faz 2.8.19 Stage 2: Resolution Queue / Detail (read-only, additive).
+    'wrr.queue.title': 'Resolution Queue',
+    'wrr.queue.subtitle': 'Read-only list of every washer resolution record and its current effective status. Selecting a record only loads its detail; it never records a decision.',
+    'wrr.queue.detail_button': 'Detail',
+    'wrr.queue.col.washer_record_id': 'Washer Record ID',
+    'wrr.queue.col.issue_type': 'Issue Type',
+    'wrr.queue.col.source_status': 'Source Status',
+    'wrr.queue.col.is_blocked': 'Blocked',
+    'wrr.queue.col.is_terminal': 'Terminal',
+    'wrr.detail.title': 'Resolution Detail',
+    'wrr.detail.subtitle': 'Read-only. Shows only the fields returned by the API -- nothing here is inferred or suggested.',
+    'wrr.detail.reason_code': 'Reason Code',
+    'wrr.detail.resolution_note': 'Resolution Note',
+    'wrr.detail.evidence_reference': 'Evidence Reference',
+    'wrr.detail.resolved_standard': 'Resolved Standard',
+    'wrr.detail.resolved_by': 'Resolved By',
+    'wrr.detail.resolved_at': 'Resolved At',
+    'wrr.detail.confidence_level': 'Confidence Level',
+    'wrr.detail.requires_authoritative_source': 'Requires Authoritative Source',
+    'wrr.bool.yes': 'Yes',
+    'wrr.bool.no': 'No',
+
+    // Faz 2.8.19 Stage 3: Decision Entry Form (additive).
+    'wrr.decide.title': 'Record a Decision',
+    'wrr.decide.subtitle': 'Submits the decision and evidence you provide to the existing washer resolution decision workflow. Nothing here is inferred, suggested, or generated automatically.',
+    'wrr.decide.blocked_notice': 'This record is blocked_authoritative_source. The backend does not permit a decision on it through this workflow; the form is disabled.',
+    'wrr.decide.terminal_notice': 'This record\'s effective status is already terminal (resolved, accepted-as-is, or rejected). The backend does not permit a further decision; the form is disabled.',
+    'wrr.decide.select_placeholder': '-- select --',
+    'wrr.decide.new_status_label': 'New Status',
+    'wrr.decide.resolution_note_label': 'Resolution Note',
+    'wrr.decide.evidence_reference_label': 'Evidence Reference',
+    'wrr.decide.resolved_by_label': 'Resolved By',
+    'wrr.decide.confidence_level_label': 'Confidence Level (optional)',
+    'wrr.decide.confidence_none': '-- none --',
+    'wrr.decide.submit_button': 'Submit Decision',
+    'wrr.decide.submitting': 'Submitting...',
+    'wrr.decide.success': 'Decision recorded.',
+    'wrr.decide.validation_error_prefix': 'Please fill in: ',
+
+    // Faz 2.8.19 Stage 4: Decision History (additive, read-only).
+    'wrr.history.title': 'Decision History',
+    'wrr.history.subtitle': 'Read-only audit trail. Shows only decisions already recorded through this workflow, in the order the API returns them.',
+    'wrr.history.empty_state': 'No decisions have been recorded for this resolution yet.',
+    'wrr.history.col.decision_id': 'Decision ID',
+    'wrr.history.col.previous_status': 'Previous Status',
+    'wrr.history.col.new_status': 'New Status',
+    'wrr.history.col.resolution_note': 'Resolution Note',
+    'wrr.history.col.evidence_reference': 'Evidence Reference',
+    'wrr.history.col.resolved_by': 'Resolved By',
+    'wrr.history.col.decided_at': 'Decided At (UTC)',
+    'wrr.history.col.confidence_level': 'Confidence Level',
+
     'sidebar.governance': 'Governance Workspace',
     'gov.page_title': 'Engineering Governance Workspace',
     'gov.page_subtitle': 'Generic, domain-agnostic review / publication / resolution event workspace (Faz 2.8.11 Stage 4)',
@@ -4815,6 +4947,58 @@ const I18N = {
     'wrr.col.decided_at': 'Karar Zamanı (UTC)',
     'wrr.col.decided_by': 'Kararı Veren',
 
+    // Faz 2.8.19 Stage 2: Çözümleme Kuyruğu / Detayı (salt-okunur, additive).
+    'wrr.queue.title': 'Çözümleme Kuyruğu',
+    'wrr.queue.subtitle': 'Her pul çözümleme kaydının ve mevcut efektif durumunun salt-okunur listesi. Bir kayıt seçmek yalnızca detayını yükler; hiçbir zaman bir karar kaydetmez.',
+    'wrr.queue.detail_button': 'Detay',
+    'wrr.queue.col.washer_record_id': 'Pul Kayıt ID',
+    'wrr.queue.col.issue_type': 'Sorun Türü',
+    'wrr.queue.col.source_status': 'Kaynak Durum',
+    'wrr.queue.col.is_blocked': 'Bloke',
+    'wrr.queue.col.is_terminal': 'Nihai',
+    'wrr.detail.title': 'Çözümleme Detayı',
+    'wrr.detail.subtitle': 'Salt-okunur. Yalnızca API yanıtında bulunan alanları gösterir -- burada hiçbir şey çıkarım yapılmaz veya önerilmez.',
+    'wrr.detail.reason_code': 'Sebep Kodu',
+    'wrr.detail.resolution_note': 'Çözümleme Notu',
+    'wrr.detail.evidence_reference': 'Kanıt Referansı',
+    'wrr.detail.resolved_standard': 'Çözümlenen Standart',
+    'wrr.detail.resolved_by': 'Çözümleyen',
+    'wrr.detail.resolved_at': 'Çözümleme Zamanı',
+    'wrr.detail.confidence_level': 'Güven Seviyesi',
+    'wrr.detail.requires_authoritative_source': 'Yetkili Kaynak Gerektirir',
+    'wrr.bool.yes': 'Evet',
+    'wrr.bool.no': 'Hayır',
+
+    // Faz 2.8.19 Stage 3: Karar Giriş Formu (additive).
+    'wrr.decide.title': 'Karar Kaydet',
+    'wrr.decide.subtitle': 'Sağladığınız karar ve kanıtı mevcut pul çözümleme karar iş akışına gönderir. Burada hiçbir şey çıkarım yapılmaz, önerilmez veya otomatik üretilmez.',
+    'wrr.decide.blocked_notice': 'Bu kayıt blocked_authoritative_source durumundadır. Backend bu iş akışı üzerinden bir karara izin vermiyor; form devre dışı.',
+    'wrr.decide.terminal_notice': 'Bu kaydın efektif durumu zaten nihai (resolved, accepted-as-is veya rejected). Backend başka bir karara izin vermiyor; form devre dışı.',
+    'wrr.decide.select_placeholder': '-- seçiniz --',
+    'wrr.decide.new_status_label': 'Yeni Durum',
+    'wrr.decide.resolution_note_label': 'Çözümleme Notu',
+    'wrr.decide.evidence_reference_label': 'Kanıt Referansı',
+    'wrr.decide.resolved_by_label': 'Çözümleyen',
+    'wrr.decide.confidence_level_label': 'Güven Seviyesi (opsiyonel)',
+    'wrr.decide.confidence_none': '-- yok --',
+    'wrr.decide.submit_button': 'Kararı Gönder',
+    'wrr.decide.submitting': 'Gönderiliyor...',
+    'wrr.decide.success': 'Karar kaydedildi.',
+    'wrr.decide.validation_error_prefix': 'Lütfen doldurun: ',
+
+    // Faz 2.8.19 Stage 4: Karar Geçmişi (additive, salt-okunur).
+    'wrr.history.title': 'Karar Geçmişi',
+    'wrr.history.subtitle': 'Salt-okunur audit trail. Yalnızca bu iş akışı üzerinden zaten kaydedilmiş kararları, API\'nin döndürdüğü sırayla gösterir.',
+    'wrr.history.empty_state': 'Bu çözümleme için henüz kaydedilmiş bir karar yok.',
+    'wrr.history.col.decision_id': 'Karar ID',
+    'wrr.history.col.previous_status': 'Önceki Durum',
+    'wrr.history.col.new_status': 'Yeni Durum',
+    'wrr.history.col.resolution_note': 'Çözümleme Notu',
+    'wrr.history.col.evidence_reference': 'Kanıt Referansı',
+    'wrr.history.col.resolved_by': 'Çözümleyen',
+    'wrr.history.col.decided_at': 'Karar Zamanı (UTC)',
+    'wrr.history.col.confidence_level': 'Güven Seviyesi',
+
     'sidebar.governance': 'Yönetişim Çalışma Alanı',
     'gov.page_title': 'Mühendislik Yönetişim Çalışma Alanı',
     'gov.page_subtitle': 'Genel, alan-bağımsız inceleme / yayınlama / çözümleme olay çalışma alanı (Faz 2.8.11 Aşama 4)',
@@ -5998,6 +6182,409 @@ function wrrReapplyLanguage() {
     const statusEl = document.getElementById('wrr-status');
     if (statusEl && statusEl.textContent) statusEl.textContent = t('wrr.loading');
   }
+  if (typeof WRR_LAST_QUEUE !== 'undefined' && WRR_LAST_QUEUE) {
+    wrrRenderQueueTable(WRR_LAST_QUEUE);
+  } else if (typeof WRR_LAST_QUEUE !== 'undefined') {
+    const queueStatusEl = document.getElementById('wrr-queue-status');
+    if (queueStatusEl && queueStatusEl.textContent) queueStatusEl.textContent = t('wrr.loading');
+  }
+  if (typeof WRR_LAST_DETAIL !== 'undefined' && WRR_LAST_DETAIL) {
+    wrrRenderDetail(WRR_LAST_DETAIL);
+  }
+}
+
+// ---------------------------------------------------------------
+// Faz 2.8.19 Stage 2: Washer Resolution Queue (additive, read-only).
+// Calls GET /queue and GET /{resolution_id} only. Never calls
+// POST /decide and never renders a decision form or decision
+// history -- both are explicitly out of scope for this stage. Field
+// names below are taken verbatim from the actual API response shape
+// (backend.library.washer_resolution_service.resolution_queue() /
+// resolution_detail()); nothing here is guessed, computed or
+// suggested client-side.
+// ---------------------------------------------------------------
+
+let WRR_LAST_QUEUE = null;
+let WRR_LAST_DETAIL = null;
+
+const WRR_QUEUE_REQUIRED_FIELDS = [
+  'resolution_id', 'washer_record_id', 'issue_type', 'source_status',
+  'effective_status', 'decision_count', 'is_blocked', 'is_terminal',
+];
+
+const WRR_DETAIL_REQUIRED_FIELDS = [
+  'resolution_id', 'washer_record_id', 'issue_type', 'reason_code',
+  'source_status', 'effective_status', 'decision_count', 'is_blocked',
+  'is_terminal', 'resolution_note', 'evidence_reference',
+  'resolved_standard', 'resolved_by', 'resolved_at', 'confidence_level',
+  'requires_authoritative_source',
+];
+
+function wrrQueueRecordIsWellFormed(record) {
+  if (!record || typeof record !== 'object') return false;
+  return WRR_QUEUE_REQUIRED_FIELDS.every((f) => Object.prototype.hasOwnProperty.call(record, f));
+}
+
+function wrrDetailIsWellFormed(detail) {
+  if (!detail || typeof detail !== 'object') return false;
+  return WRR_DETAIL_REQUIRED_FIELDS.every((f) => Object.prototype.hasOwnProperty.call(detail, f));
+}
+
+function wrrBoolLabel(v) {
+  return v ? t('wrr.bool.yes') : t('wrr.bool.no');
+}
+
+async function loadWasherResolutionQueue() {
+  const statusEl = document.getElementById('wrr-queue-status');
+  const contentEl = document.getElementById('wrr-queue-content');
+  contentEl.style.display = 'none';
+  statusEl.textContent = t('wrr.loading');
+  try {
+    const data = await apiRequest('/api/library/washers/resolutions/queue');
+    const records = data && data.records;
+    if (!Array.isArray(records) || !records.every(wrrQueueRecordIsWellFormed)) {
+      WRR_LAST_QUEUE = null;
+      statusEl.innerHTML = '<div class="alert alert-danger">' + scEsc(t('wrr.malformed_response')) + '</div>';
+      return;
+    }
+    WRR_LAST_QUEUE = records;
+    statusEl.textContent = '';
+    contentEl.style.display = '';
+    wrrRenderQueueTable(records);
+  } catch (e) {
+    WRR_LAST_QUEUE = null;
+    statusEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(t('wrr.api_error_prefix')) + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
+function wrrRenderQueueTable(records) {
+  const el = document.getElementById('wrr-queue-table');
+  if (!records.length) {
+    el.innerHTML = `<div class="fc-muted">${scEsc(t('wrr.empty_state'))}</div>`;
+    return;
+  }
+  const body = records.map((r) => `<tr>
+    <td>${scEsc(r.resolution_id)}</td>
+    <td>${scEsc(r.washer_record_id)}</td>
+    <td>${scEsc(r.issue_type)}</td>
+    <td>${wrrStatusLabel(r.source_status)}</td>
+    <td>${wrrStatusLabel(r.effective_status)}</td>
+    <td>${scEsc(String(r.decision_count))}</td>
+    <td>${r.is_blocked ? `<span class="badge-prod nok">${scEsc(t('wrr.bool.yes'))}</span>` : scEsc(t('wrr.bool.no'))}</td>
+    <td>${scEsc(wrrBoolLabel(r.is_terminal))}</td>
+    <td><button class="btn btn-secondary" onclick="wrrLoadResolutionDetail('${scEsc(r.resolution_id)}')" data-i18n="wrr.queue.detail_button">Detail</button></td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="sc-table-wrap"><table class="sc-table"><thead><tr>
+    <th>${scEsc(t('wrr.col.resolution_id'))}</th>
+    <th>${scEsc(t('wrr.queue.col.washer_record_id'))}</th>
+    <th>${scEsc(t('wrr.queue.col.issue_type'))}</th>
+    <th>${scEsc(t('wrr.queue.col.source_status'))}</th>
+    <th>${scEsc(t('wrr.col.effective_status'))}</th>
+    <th>${scEsc(t('wrr.col.decision_count'))}</th>
+    <th>${scEsc(t('wrr.queue.col.is_blocked'))}</th>
+    <th>${scEsc(t('wrr.queue.col.is_terminal'))}</th>
+    <th></th>
+  </tr></thead><tbody>${body}</tbody></table></div>`;
+}
+
+async function wrrLoadResolutionDetail(resolutionId) {
+  const card = document.getElementById('wrr-detail-card');
+  const statusEl = document.getElementById('wrr-detail-status');
+  const contentEl = document.getElementById('wrr-detail-content');
+  card.style.display = '';
+  contentEl.style.display = 'none';
+  statusEl.textContent = t('wrr.loading');
+  if (typeof wrrHideDecisionForm === 'function') wrrHideDecisionForm();
+  if (typeof wrrHideHistory === 'function') wrrHideHistory();
+  try {
+    const detail = await apiRequest('/api/library/washers/resolutions/' + encodeURIComponent(resolutionId));
+    if (!wrrDetailIsWellFormed(detail)) {
+      WRR_LAST_DETAIL = null;
+      statusEl.innerHTML = '<div class="alert alert-danger">' + scEsc(t('wrr.malformed_response')) + '</div>';
+      return;
+    }
+    WRR_LAST_DETAIL = detail;
+    statusEl.textContent = '';
+    contentEl.style.display = '';
+    wrrRenderDetail(detail);
+    if (typeof wrrShowDecisionFormForDetail === 'function') wrrShowDecisionFormForDetail(detail);
+    if (typeof wrrLoadResolutionHistory === 'function') wrrLoadResolutionHistory(detail.resolution_id);
+  } catch (e) {
+    WRR_LAST_DETAIL = null;
+    statusEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(t('wrr.api_error_prefix')) + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
+function wrrDetailField(labelKey, value) {
+  const display = (value === null || value === undefined || value === '') ? '—' : String(value);
+  return `<div class="fc-field-row"><span class="fc-field-label">${scEsc(t(labelKey))}</span>` +
+    `<span class="fc-field-value">${scEsc(display)}</span></div>`;
+}
+
+function wrrRenderDetail(detail) {
+  const el = document.getElementById('wrr-detail-content');
+  const rows = [
+    wrrDetailField('wrr.col.resolution_id', detail.resolution_id),
+    wrrDetailField('wrr.queue.col.washer_record_id', detail.washer_record_id),
+    wrrDetailField('wrr.queue.col.issue_type', detail.issue_type),
+    wrrDetailField('wrr.detail.reason_code', detail.reason_code),
+    wrrDetailField('wrr.queue.col.source_status', wrrStatusLabel(detail.source_status)),
+    wrrDetailField('wrr.col.effective_status', wrrStatusLabel(detail.effective_status)),
+    wrrDetailField('wrr.col.decision_count', detail.decision_count),
+    wrrDetailField('wrr.queue.col.is_blocked', wrrBoolLabel(detail.is_blocked)),
+    wrrDetailField('wrr.queue.col.is_terminal', wrrBoolLabel(detail.is_terminal)),
+    wrrDetailField('wrr.detail.resolution_note', detail.resolution_note),
+    wrrDetailField('wrr.detail.evidence_reference', detail.evidence_reference),
+    wrrDetailField('wrr.detail.resolved_standard', detail.resolved_standard),
+    wrrDetailField('wrr.detail.resolved_by', detail.resolved_by),
+    wrrDetailField('wrr.detail.resolved_at', detail.resolved_at),
+    wrrDetailField('wrr.detail.confidence_level', detail.confidence_level),
+    wrrDetailField(
+      'wrr.detail.requires_authoritative_source',
+      wrrBoolLabel(detail.requires_authoritative_source)
+    ),
+  ].join('');
+  el.innerHTML = `<div class="result-box">${rows}</div>`;
+}
+
+// ---------------------------------------------------------------
+// Faz 2.8.19 Stage 3: Washer Resolution Decision Entry Form
+// (additive). Submits only the values the user types into the
+// existing, already-tested POST /{resolution_id}/decide endpoint
+// (Faz 2.8.9). No status, evidence, or confidence value is ever
+// inferred, suggested, or computed here -- the user supplies all of
+// it. The form is disabled (never bypassed) for blocked/terminal
+// records, driven only by the backend-provided is_blocked /
+// is_terminal fields already present on the detail response --
+// no state-machine table is re-implemented client-side.
+// ---------------------------------------------------------------
+
+let WRR_DECIDE_IDEMPOTENCY_KEY = null;
+let WRR_DECIDE_KEY_RESOLUTION_ID = null;
+let WRR_DECIDE_IN_FLIGHT = false;
+
+function wrrGenerateIdempotencyKey() {
+  // Not a security/crypto identifier -- a client-generated, per-
+  // form-session uniqueness token the existing idempotency-key-first
+  // backend workflow already requires (Faz 2.8.9). The backend
+  // remains the sole source of truth for idempotent-replay/conflict
+  // detection; this token is never inspected or compared client-side.
+  return 'wrr-decide-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+}
+
+function wrrPopulateStatusOptions() {
+  const sel = document.getElementById('wrr-decide-new-status');
+  if (!sel) return;
+  const options = Object.keys(WRR_STATUS_LABEL_KEYS).map(
+    (code) => `<option value="${scEsc(code)}">${scEsc(t(WRR_STATUS_LABEL_KEYS[code]))}</option>`
+  ).join('');
+  sel.innerHTML = `<option value="" data-i18n="wrr.decide.select_placeholder">${scEsc(t('wrr.decide.select_placeholder'))}</option>${options}`;
+}
+
+function wrrResetDecisionForm() {
+  const ids = [
+    'wrr-decide-resolution-note', 'wrr-decide-evidence-reference',
+    'wrr-decide-resolved-by', 'wrr-decide-new-status', 'wrr-decide-confidence-level',
+  ];
+  ids.forEach((id) => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const errEl = document.getElementById('wrr-decide-validation-error');
+  if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+  const statusMsgEl = document.getElementById('wrr-decide-status');
+  if (statusMsgEl) statusMsgEl.textContent = '';
+  WRR_DECIDE_IDEMPOTENCY_KEY = wrrGenerateIdempotencyKey();
+}
+
+function wrrShowDecisionFormForDetail(detail) {
+  const card = document.getElementById('wrr-decision-form-card');
+  if (!card) return;
+  card.style.display = '';
+  const blockedNotice = document.getElementById('wrr-decide-blocked-notice');
+  const terminalNotice = document.getElementById('wrr-decide-terminal-notice');
+  const disable = !!(detail.is_blocked || detail.is_terminal);
+  if (blockedNotice) blockedNotice.style.display = detail.is_blocked ? '' : 'none';
+  if (terminalNotice) terminalNotice.style.display = (!detail.is_blocked && detail.is_terminal) ? '' : 'none';
+  [
+    'wrr-decide-new-status', 'wrr-decide-resolution-note', 'wrr-decide-evidence-reference',
+    'wrr-decide-resolved-by', 'wrr-decide-confidence-level', 'wrr-decide-submit-btn',
+  ].forEach((id) => { const el = document.getElementById(id); if (el) el.disabled = disable; });
+  // New idempotency key + a clean, freshly-populated form only when
+  // this is a genuinely different record than the one the current
+  // key belongs to -- a failed-submit retry against the same record
+  // must keep its typed values and its key untouched (see
+  // wrrSubmitDecision's catch branch, which touches neither).
+  if (WRR_DECIDE_KEY_RESOLUTION_ID !== detail.resolution_id) {
+    wrrPopulateStatusOptions();
+    wrrResetDecisionForm();
+    WRR_DECIDE_KEY_RESOLUTION_ID = detail.resolution_id;
+  }
+}
+
+function wrrHideDecisionForm() {
+  const card = document.getElementById('wrr-decision-form-card');
+  if (card) card.style.display = 'none';
+}
+
+function wrrValidateDecisionForm(payload) {
+  // Only fields the backend contract itself requires and validates
+  // (backend/app.py::WasherResolutionDecisionRequest for presence;
+  // backend/library/washer_resolution_decisions.py::validate_decision_fields
+  // for non-blank resolution_note/evidence_reference/resolved_by) --
+  // no additional client-invented rule.
+  const missing = [];
+  if (!payload.new_status) missing.push(t('wrr.decide.new_status_label'));
+  if (!payload.resolution_note || !payload.resolution_note.trim()) missing.push(t('wrr.decide.resolution_note_label'));
+  if (!payload.evidence_reference || !payload.evidence_reference.trim()) missing.push(t('wrr.decide.evidence_reference_label'));
+  if (!payload.resolved_by || !payload.resolved_by.trim()) missing.push(t('wrr.decide.resolved_by_label'));
+  return missing;
+}
+
+async function wrrSubmitDecision() {
+  if (WRR_DECIDE_IN_FLIGHT) return;
+  const detail = WRR_LAST_DETAIL;
+  if (!detail || !detail.resolution_id) return;
+
+  const errEl = document.getElementById('wrr-decide-validation-error');
+  const statusMsgEl = document.getElementById('wrr-decide-status');
+  const submitBtn = document.getElementById('wrr-decide-submit-btn');
+  if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+  if (statusMsgEl) statusMsgEl.textContent = '';
+
+  const payload = {
+    new_status: document.getElementById('wrr-decide-new-status').value,
+    resolution_note: document.getElementById('wrr-decide-resolution-note').value,
+    evidence_reference: document.getElementById('wrr-decide-evidence-reference').value,
+    resolved_by: document.getElementById('wrr-decide-resolved-by').value,
+    idempotency_key: WRR_DECIDE_IDEMPOTENCY_KEY || wrrGenerateIdempotencyKey(),
+  };
+  const confRaw = document.getElementById('wrr-decide-confidence-level').value;
+  if (confRaw !== '') payload.confidence_level = parseInt(confRaw, 10);
+
+  const missing = wrrValidateDecisionForm(payload);
+  if (missing.length) {
+    if (errEl) {
+      errEl.style.display = '';
+      errEl.textContent = t('wrr.decide.validation_error_prefix') + missing.join(', ');
+    }
+    return;
+  }
+
+  WRR_DECIDE_IN_FLIGHT = true;
+  if (submitBtn) submitBtn.disabled = true;
+  if (statusMsgEl) statusMsgEl.textContent = t('wrr.decide.submitting');
+  try {
+    await apiRequest(
+      '/api/library/washers/resolutions/' + encodeURIComponent(detail.resolution_id) + '/decide',
+      { method: 'POST', body: JSON.stringify(payload) }
+    );
+    if (statusMsgEl) {
+      statusMsgEl.innerHTML = '<div class="alert alert-success">' + scEsc(t('wrr.decide.success')) + '</div>';
+    }
+    wrrResetDecisionForm();
+    await loadWasherResolutionQueue();
+    await wrrLoadResolutionDetail(detail.resolution_id);
+  } catch (e) {
+    // Deliberately does not touch WRR_DECIDE_IDEMPOTENCY_KEY or the
+    // typed field values here -- a retry of this exact submit must
+    // reuse both, per the backend's idempotency-key-first contract.
+    if (errEl) {
+      errEl.style.display = '';
+      errEl.textContent = t('wrr.api_error_prefix') + (e && e.message ? e.message : String(e));
+    }
+  } finally {
+    WRR_DECIDE_IN_FLIGHT = false;
+    if (submitBtn) {
+      submitBtn.disabled = !!(WRR_LAST_DETAIL && (WRR_LAST_DETAIL.is_blocked || WRR_LAST_DETAIL.is_terminal));
+    }
+  }
+}
+
+// ---------------------------------------------------------------
+// Faz 2.8.19 Stage 4: Washer Resolution Decision History (additive,
+// read-only). Calls only GET /{resolution_id}/decisions (Faz
+// 2.8.9). No edit, delete, rollback, replay, or bulk action --
+// displays the existing audit trail exactly as the API returns it,
+// in the API's own append order (no client-side re-sorting).
+// Loaded from wrrLoadResolutionDetail's success path (see the
+// typeof-guarded call there), so it is available even for blocked/
+// terminal records -- history viewing is never gated the way the
+// decision form is.
+// ---------------------------------------------------------------
+
+const WRR_HISTORY_REQUIRED_FIELDS = [
+  'decision_id', 'resolution_id', 'previous_status', 'new_status',
+  'resolution_note', 'evidence_reference', 'resolved_by', 'decided_at',
+];
+
+function wrrHistoryRecordIsWellFormed(record) {
+  if (!record || typeof record !== 'object') return false;
+  return WRR_HISTORY_REQUIRED_FIELDS.every((f) => Object.prototype.hasOwnProperty.call(record, f));
+}
+
+function wrrHistoryResponseIsWellFormed(data) {
+  return !!data && typeof data === 'object' && Array.isArray(data.decisions)
+    && data.decisions.every(wrrHistoryRecordIsWellFormed);
+}
+
+async function wrrLoadResolutionHistory(resolutionId) {
+  const card = document.getElementById('wrr-history-card');
+  const statusEl = document.getElementById('wrr-history-status');
+  const contentEl = document.getElementById('wrr-history-content');
+  if (!card || !statusEl || !contentEl) return;
+  card.style.display = '';
+  contentEl.style.display = 'none';
+  statusEl.textContent = t('wrr.loading');
+  try {
+    const data = await apiRequest(
+      '/api/library/washers/resolutions/' + encodeURIComponent(resolutionId) + '/decisions'
+    );
+    if (!wrrHistoryResponseIsWellFormed(data)) {
+      statusEl.innerHTML = '<div class="alert alert-danger">' + scEsc(t('wrr.malformed_response')) + '</div>';
+      return;
+    }
+    statusEl.textContent = '';
+    contentEl.style.display = '';
+    wrrRenderHistoryTable(data.decisions);
+  } catch (e) {
+    statusEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(t('wrr.api_error_prefix')) + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
+function wrrHideHistory() {
+  const card = document.getElementById('wrr-history-card');
+  if (card) card.style.display = 'none';
+}
+
+function wrrRenderHistoryTable(decisions) {
+  const el = document.getElementById('wrr-history-content');
+  if (!decisions.length) {
+    el.innerHTML = `<div class="fc-muted">${scEsc(t('wrr.history.empty_state'))}</div>`;
+    return;
+  }
+  // Rendered in exactly the order the API returned -- no
+  // client-side sort of any kind.
+  const rows = decisions.map((d) => `<tr>
+    <td>${scEsc(d.decision_id)}</td>
+    <td>${wrrStatusLabel(d.previous_status)}</td>
+    <td>${wrrStatusLabel(d.new_status)}</td>
+    <td class="sc-wrap">${scEsc(d.resolution_note)}</td>
+    <td class="sc-wrap">${scEsc(d.evidence_reference)}</td>
+    <td>${scEsc(d.resolved_by)}</td>
+    <td>${scEsc(d.decided_at)}</td>
+    <td>${scEsc(d.confidence_level === null || d.confidence_level === undefined ? '—' : String(d.confidence_level))}</td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="sc-table-wrap"><table class="sc-table"><thead><tr>
+    <th>${scEsc(t('wrr.history.col.decision_id'))}</th>
+    <th>${scEsc(t('wrr.history.col.previous_status'))}</th>
+    <th>${scEsc(t('wrr.history.col.new_status'))}</th>
+    <th>${scEsc(t('wrr.history.col.resolution_note'))}</th>
+    <th>${scEsc(t('wrr.history.col.evidence_reference'))}</th>
+    <th>${scEsc(t('wrr.history.col.resolved_by'))}</th>
+    <th>${scEsc(t('wrr.history.col.decided_at'))}</th>
+    <th>${scEsc(t('wrr.history.col.confidence_level'))}</th>
+  </tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
 function miReapplyLanguage() {
@@ -6365,7 +6952,7 @@ function showPage(id, el) {
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();}if(id==='governance'){govInit();}
+  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();loadWasherResolutionQueue();}if(id==='governance'){govInit();}
 }
 
 // ========== FRICTION CONDITION WORKSPACE (Faz 2.6.6) ==========

@@ -1799,6 +1799,31 @@ def washer_resolution_report_endpoint(
     return {"format": "json", "lang": lang, "report": report}
 
 
+@app.get("/api/library/washers/resolutions/{resolution_id}")
+def washer_resolution_detail_endpoint(resolution_id: str, u=Depends(user)):
+    # Faz 2.8.19 Stage 1: read-only, additive. Registered after the
+    # static /queue and /report routes above (which are one-segment
+    # static paths, so they must -- and do -- match before this
+    # one-segment dynamic pattern; the two /{resolution_id}/decisions
+    # and /{resolution_id}/decide routes are two-segment paths and
+    # never collide with this one regardless of registration order).
+    # Thin adapter over
+    # backend.library.washer_resolution_service.resolution_detail(),
+    # which itself reuses get_washer_resolution() and
+    # resolution_queue() unmodified -- no new business logic, no
+    # duplicated effective-status formula, no write path.
+    from backend.library.washer_resolution_service import resolution_detail
+
+    try:
+        detail = resolution_detail(resolution_id)
+    except Exception:
+        log.exception("washer_resolution_detail_endpoint: unexpected error")
+        raise HTTPException(500, "Çözümleme detayı okunurken beklenmeyen bir hata oluştu.")
+    if detail is None:
+        raise HTTPException(404, f"Bilinmeyen resolution_id: {resolution_id}")
+    return detail
+
+
 @app.get("/")
 def root():return FileResponse(FRONT/"index.html")
 

@@ -104,8 +104,12 @@ def test_all_five_pre_existing_harnesses_are_still_present(qg):
     assert pre_existing <= set(qg.JS_HARNESS_FILENAMES)
 
 
-def test_js_harness_total_count_is_six(qg):
-    assert len(qg.JS_HARNESS_FILENAMES) == 6
+def test_js_harness_total_count_is_nine(qg):
+    # Faz 2.8.19 Stage 3 appended an 8th harness
+    # (run_washer_resolution_decision_form_tests.js); Stage 4
+    # appended a 9th (run_washer_resolution_decision_history_tests.js)
+    # -- same additive-append pattern this phase itself established.
+    assert len(qg.JS_HARNESS_FILENAMES) == 9
 
 
 def test_every_listed_harness_file_actually_exists_on_disk(qg):
@@ -146,16 +150,17 @@ def test_new_harness_is_invoked_via_node_subprocess(qg, monkeypatch):
 
 
 def test_new_harness_runs_after_all_five_pre_existing_harnesses(qg, monkeypatch):
-    # Confirms placement at the end of the list (no adjacent
-    # "governance workspace" harness entry exists to position next to
-    # -- see the Stage 5 report for why -- so the new entry was
-    # appended last, run only after all five pre-existing harnesses).
+    # Confirms this phase's own harness still runs immediately after
+    # the five harnesses that pre-existed it, at index 5 (position
+    # 6 of what is now 7 -- Faz 2.8.19 Stage 2 appended one more
+    # harness after this one, so this entry is no longer last, but
+    # its own relative position after the original five is unchanged).
     monkeypatch.setattr(qg.shutil, "which", lambda name: "/usr/bin/node")
     runner = _RecordingRunner(default_returncode=0)
     qg._run_js_harnesses(REPO_ROOT, runner=runner)
     invoked_filenames = [Path(call[1]).name for call in runner.calls]
-    assert invoked_filenames[-1] == NEW_HARNESS_FILENAME
-    assert invoked_filenames[:-1] == list(qg.JS_HARNESS_FILENAMES[:-1])
+    assert invoked_filenames[5] == NEW_HARNESS_FILENAME
+    assert invoked_filenames[:5] == list(qg.JS_HARNESS_FILENAMES[:5])
 
 
 # ---------------------------------------------------------------
@@ -208,4 +213,6 @@ def test_new_harness_success_allows_js_step_to_pass(qg, monkeypatch):
     runner = _RecordingRunner(default_returncode=0)
     outcome = qg._run_js_harnesses(REPO_ROOT, runner=runner)
     assert outcome.passed is True
-    assert "All 6 JavaScript harnesses passed." in outcome.output
+    # Faz 2.8.19 Stage 3 appended an 8th harness; the message reflects
+    # the current total, not a value frozen at an earlier phase.
+    assert "All 9 JavaScript harnesses passed." in outcome.output
