@@ -1848,4 +1848,16 @@ app.include_router(governance_router)
 from backend.api.routes.joints import router as joints_router
 app.include_router(joints_router)
 
+# Faz 2.8.20 Stage 4: washer resolution evidence & controlled closure API
+# module (backend/api/routes/washer_resolution_closure.py). Additive only --
+# new routes under /api/library/washers/resolutions/{resolution_id}/(evidence|
+# closure-readiness|close|closure), nothing existing renamed or removed;
+# the pre-existing /queue, /report, /{resolution_id}, /{resolution_id}/decide
+# and /{resolution_id}/decisions routes above are untouched. Reuses the
+# same `user` auth dependency as every other endpoint, imported here for
+# the same circular-import-avoidance reason as production_validation,
+# governance, and joints above.
+from backend.api.routes.washer_resolution_closure import router as washer_resolution_closure_router
+app.include_router(washer_resolution_closure_router)
+
 app.mount("/",StaticFiles(directory=FRONT,html=True),name="frontend")
