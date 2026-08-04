@@ -635,7 +635,16 @@ def close_resolution(
     if not readiness.is_ready:
         raise ClosureNotReadyError(resolution_id, readiness.blocking_reasons)
 
-    assert readiness.decision_id is not None  # guaranteed by is_ready == True
+    if readiness.decision_id is None:
+        # Defense-in-depth: structurally unreachable today (is_ready is
+        # only True when a terminal decision was found -- see
+        # evaluate_closure_readiness()), but checked explicitly rather
+        # than assumed, and without relying on `assert` (which is
+        # stripped under `python -O`, a production-unsafe guard).
+        raise ClosureNotReadyError(
+            resolution_id,
+            readiness.blocking_reasons or ["no decision_id was found despite is_ready=True"],
+        )
 
     closure = wc.create_washer_resolution_closure(
         resolution_id=resolution_id,

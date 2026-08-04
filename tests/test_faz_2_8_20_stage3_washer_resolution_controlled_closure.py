@@ -498,6 +498,24 @@ class TestCloseResolution:
         with pytest.raises(svc.ResolutionNotFoundError):
             svc.close_resolution(resolution_id="RES-DOES-NOT-EXIST", closure_rationale="r", closed_by="ilhan")
 
+    def test_close_rejects_ready_result_with_missing_decision_id(self, isolated_stack, monkeypatch):
+        """Defense-in-depth guard: if evaluate_closure_readiness() ever
+        reports is_ready=True with decision_id=None (structurally
+        unreachable through the real computation, but not assumed),
+        close_resolution() must raise ClosureNotReadyError rather than
+        proceed to build a closure with a None decision_id."""
+        crafted_readiness = svc.ClosureReadiness(
+            resolution_id="RES-TEST-OPEN",
+            effective_status=wr.WasherResolutionStatus.RESOLVED,
+            is_ready=True,
+            decision_id=None,
+            verified_evidence_ids=["WRE-fake-0001"],
+        )
+        monkeypatch.setattr(svc, "evaluate_closure_readiness", lambda resolution_id: crafted_readiness)
+        with pytest.raises(svc.ClosureNotReadyError):
+            svc.close_resolution(resolution_id="RES-TEST-OPEN", closure_rationale="r", closed_by="ilhan")
+        assert wc_store.get_closure_for_resolution("RES-TEST-OPEN") is None
+
     def test_close_does_not_mutate_evidence_or_decision_ledgers(self, isolated_stack):
         _decide_to_terminal()
         _add_verified_evidence()
