@@ -31,15 +31,21 @@ network retries fail with a spurious :class:`InvalidTransitionError`.
 from __future__ import annotations
 
 import uuid
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import List, Optional, Tuple
 
 from . import washer_resolution as wr
+from . import washer_resolution_closure as wc
+from . import washer_resolution_closure_store as wc_store
+from . import washer_resolution_evidence as we
+from . import washer_resolution_evidence_store as we_store
 from .washer_resolution_decisions import (
     BlockedRecordDecisionError,
     InvalidTransitionError,
     MissingEvidenceError,
     WasherResolutionDecision,
+    is_blocked_source_status,
     validate_decision_fields,
     validate_transition,
 )
@@ -50,6 +56,7 @@ from .washer_resolution_decisions_store import (
     find_by_idempotency_key,
     record_decision,
 )
+from .washer_resolution_closure_store import DuplicateClosureError
 
 __all__ = [
     "ResolutionNotFoundError",
@@ -59,11 +66,21 @@ __all__ = [
     "InvalidTransitionError",
     "MissingEvidenceError",
     "DuplicateDecisionIdError",
+    "EvidenceIntegrityError",
+    "ClosureIntegrityError",
+    "ClosureNotReadyError",
+    "DuplicateClosureError",
     "now_utc_iso8601",
     "effective_status",
     "decide_resolution",
     "resolution_queue",
     "resolution_detail",
+    "ClosureReadiness",
+    "record_resolution_evidence",
+    "resolution_evidence_for",
+    "evaluate_closure_readiness",
+    "close_resolution",
+    "get_resolution_closure",
 ]
 
 
@@ -99,6 +116,59 @@ class IdempotencyConflictError(Exception):
         super().__init__(
             f"idempotency_key '{idempotency_key}' was already used for a "
             "different decision request."
+        )
+
+
+class EvidenceIntegrityError(Exception):
+    """Raised when a :class:`~backend.library.washer_resolution_evidence.
+    WasherResolutionEvidence` record's ``integrity_checksum`` does not
+    match a fresh recomputation over its own fields -- i.e. it is
+    corrupt or was hand-edited. Raised both at write time (Stage 3
+    task brief rule: service must verify integrity *before* calling
+    ``washer_resolution_evidence_store.append_evidence``) and at read
+    time (:func:`resolution_evidence_for`, when a persisted record
+    fails verification). One shared exception for both cases: the
+    underlying problem -- checksum does not match content -- is
+    identical regardless of when it is detected."""
+
+    def __init__(self, evidence_id: str):
+        self.evidence_id = evidence_id
+        super().__init__(
+            f"Evidence '{evidence_id}' failed integrity verification "
+            "(checksum does not match content)."
+        )
+
+
+class ClosureIntegrityError(Exception):
+    """Raised when a :class:`~backend.library.washer_resolution_closure.
+    WasherResolutionClosure` record's ``integrity_checksum`` does not
+    match a fresh recomputation over its own fields. Kept distinct
+    from :class:`EvidenceIntegrityError` (rather than reused) because
+    the two protect different record types with different callers --
+    a caller catching one must not accidentally also catch integrity
+    failures for the other kind of record."""
+
+    def __init__(self, resolution_id: str):
+        self.resolution_id = resolution_id
+        super().__init__(
+            f"Closure for resolution '{resolution_id}' failed integrity "
+            "verification (checksum does not match content)."
+        )
+
+
+class ClosureNotReadyError(Exception):
+    """Raised by :func:`close_resolution` when
+    :func:`evaluate_closure_readiness` reports ``is_ready=False``.
+    Carries the same ``blocking_reasons`` the readiness result
+    reported, so a caller does not have to call
+    :func:`evaluate_closure_readiness` separately just to learn why."""
+
+    def __init__(self, resolution_id: str, blocking_reasons: List[str]):
+        self.resolution_id = resolution_id
+        self.blocking_reasons = list(blocking_reasons)
+        super().__init__(
+            f"Resolution '{resolution_id}' is not ready for closure: "
+            + "; ".join(blocking_reasons)
         )
 
 
@@ -301,3 +371,298 @@ def resolution_detail(resolution_id: str) -> Optional[dict]:
         ),
         "requires_authoritative_source": record.requires_authoritative_source,
     }
+
+
+# =======================================================================
+# Faz 2.8.20 Stage 3 - evidence orchestration and controlled closure
+# =======================================================================
+#
+# This section is the third cross-reference point this module adds
+# (after decisions in the section above): it is where the Faz 2.8.5
+# source ledger, the Faz 2.8.9 decision audit trail, the Faz 2.8.20
+# Stage 1/2 evidence ledger, and the Stage 3 closure ledger all meet.
+# None of those four modules imports any of the others; this module
+# remains the single place that cross-references them, exactly as its
+# module docstring already states for decisions.
+#
+# resolution_id existence is validated here (wr.get_washer_resolution),
+# never inside washer_resolution_evidence_store.py or
+# washer_resolution_closure_store.py -- neither persistence layer
+# performs this check by design (Stage 1/2 decisions), so it is a
+# service-layer responsibility on every function below that touches a
+# resolution_id.
+#
+# Checksum integrity is verified here too, on both the write path
+# (before every append_evidence/append_closure call) and the read
+# path (every persisted record this module hands back to a caller) --
+# neither persistence layer verifies integrity automatically either
+# (see the Stage 2 code review). A corrupted persisted evidence record
+# is never silently included in a closure-readiness computation.
+#
+# Reopen does not exist anywhere in this section, matching ADR-0013:
+# a closure, once appended, has no code path that alters or removes
+# it.
+
+
+@dataclass(frozen=True)
+class ClosureReadiness:
+    """Immutable, typed result of :func:`evaluate_closure_readiness`.
+    Never persisted -- this is a computed, point-in-time view, not a
+    ledger record."""
+
+    resolution_id: str
+    effective_status: wr.WasherResolutionStatus
+    is_ready: bool
+    decision_id: Optional[str] = None
+    verified_evidence_ids: List[str] = field(default_factory=list)
+    unverified_evidence_ids: List[str] = field(default_factory=list)
+    rejected_evidence_ids: List[str] = field(default_factory=list)
+    corrupted_evidence_ids: List[str] = field(default_factory=list)
+    blocking_reasons: List[str] = field(default_factory=list)
+
+
+def record_resolution_evidence(
+    *,
+    resolution_id: str,
+    evidence_type: we.EvidenceType,
+    title: str,
+    description: str,
+    source_reference: str,
+    created_by: str,
+    source_locator: Optional[str] = None,
+    source_url: Optional[str] = None,
+    source_standard: Optional[str] = None,
+) -> we.WasherResolutionEvidence:
+    """Validate ``resolution_id`` against the source ledger, build a
+    checksummed evidence record (:func:`~backend.library.
+    washer_resolution_evidence.create_washer_resolution_evidence`),
+    verify its own integrity before persisting it, then append it.
+
+    Raises :class:`ResolutionNotFoundError` if ``resolution_id`` does
+    not exist in the source ledger, or :class:`EvidenceIntegrityError`
+    if the freshly-built record somehow fails its own integrity check
+    (a defense-in-depth guard -- the factory always produces a
+    matching checksum, so this should never actually fire in
+    practice). Never writes to
+    ``washer_resolution_ledger.json`` or
+    ``washer_resolution_decisions.json``.
+    """
+    if wr.get_washer_resolution(resolution_id) is None:
+        raise ResolutionNotFoundError(resolution_id)
+
+    evidence = we.create_washer_resolution_evidence(
+        resolution_id=resolution_id,
+        evidence_type=evidence_type,
+        title=title,
+        description=description,
+        source_reference=source_reference,
+        created_by=created_by,
+        source_locator=source_locator,
+        source_url=source_url,
+        source_standard=source_standard,
+    )
+    if not we.verify_evidence_integrity(evidence):
+        raise EvidenceIntegrityError(evidence.evidence_id)
+    return we_store.append_evidence(evidence)
+
+
+def resolution_evidence_for(resolution_id: str) -> List[we.WasherResolutionEvidence]:
+    """Validate ``resolution_id``, then return every persisted
+    evidence record for it, in append order.
+
+    Raises :class:`ResolutionNotFoundError` if ``resolution_id`` does
+    not exist, or :class:`EvidenceIntegrityError` on the **first**
+    persisted record whose checksum no longer matches its content --
+    a corrupted record is never silently included in the returned
+    list."""
+    if wr.get_washer_resolution(resolution_id) is None:
+        raise ResolutionNotFoundError(resolution_id)
+    records = we_store.evidence_for_resolution(resolution_id)
+    for record in records:
+        if not we.verify_evidence_integrity(record):
+            raise EvidenceIntegrityError(record.evidence_id)
+    return records
+
+
+def evaluate_closure_readiness(resolution_id: str) -> ClosureReadiness:
+    """Compute, but never persist, whether ``resolution_id`` may be
+    closed right now.
+
+    ``is_ready`` is ``True`` only if **all** of the following hold:
+
+      - the source ledger's status is not
+        ``blocked_authoritative_source``;
+      - :func:`effective_status` is one of ``TERMINAL_STATUSES``
+        (``resolved`` / ``accepted_as_is`` / ``rejected``), and a
+        decision record for that terminal transition was found (its
+        ``decision_id`` is carried on the result);
+      - at least one persisted evidence record has
+        ``verification_status == verified``;
+      - **no** persisted evidence record for this resolution fails
+        integrity verification -- a single corrupted record blocks
+        closure entirely, even if enough verified evidence exists
+        elsewhere (task brief rule 9: never silently drop a corrupted
+        record from the computation);
+      - no closure has already been recorded for this resolution.
+
+    Every reason ``is_ready`` is ``False`` is appended to
+    ``blocking_reasons`` in human-readable form -- callers never have
+    to re-derive why. Raises :class:`ResolutionNotFoundError` if
+    ``resolution_id`` does not exist in the source ledger.
+    """
+    source_record = wr.get_washer_resolution(resolution_id)
+    if source_record is None:
+        raise ResolutionNotFoundError(resolution_id)
+
+    blocking_reasons: List[str] = []
+
+    if is_blocked_source_status(source_record.resolution_status):
+        blocking_reasons.append(
+            "resolution is blocked_authoritative_source and cannot be closed"
+        )
+
+    current_status = effective_status(resolution_id)
+    decision_id: Optional[str] = None
+    if current_status not in wr.TERMINAL_STATUSES:
+        blocking_reasons.append(
+            f"effective_status '{current_status.value}' is not terminal"
+        )
+    else:
+        history = decisions_for_resolution(resolution_id)
+        if history:
+            decision_id = history[-1].decision_id
+        else:
+            # Structurally unreachable today: no source-ledger record
+            # is itself born into a TERMINAL_STATUSES value (see
+            # effective_status() docstring) -- a terminal
+            # effective_status can only be reached via a recorded
+            # decision. Guarded anyway, fail-closed, rather than
+            # assumed.
+            blocking_reasons.append(
+                "effective_status is terminal but no decision record was found"
+            )
+
+    verified_ids: List[str] = []
+    unverified_ids: List[str] = []
+    rejected_ids: List[str] = []
+    corrupted_ids: List[str] = []
+    for evidence in we_store.evidence_for_resolution(resolution_id):
+        if not we.verify_evidence_integrity(evidence):
+            corrupted_ids.append(evidence.evidence_id)
+            continue
+        if evidence.verification_status == we.EvidenceVerificationStatus.VERIFIED:
+            verified_ids.append(evidence.evidence_id)
+        elif evidence.verification_status == we.EvidenceVerificationStatus.REJECTED:
+            rejected_ids.append(evidence.evidence_id)
+        else:
+            unverified_ids.append(evidence.evidence_id)
+
+    if corrupted_ids:
+        blocking_reasons.append(
+            f"{len(corrupted_ids)} evidence record(s) failed integrity verification"
+        )
+
+    if not verified_ids:
+        blocking_reasons.append("no verified evidence exists for this resolution")
+
+    existing_closure = wc_store.get_closure_for_resolution(resolution_id)
+    if existing_closure is not None:
+        blocking_reasons.append(
+            f"resolution already has a closure ('{existing_closure.closure_id}')"
+        )
+
+    return ClosureReadiness(
+        resolution_id=resolution_id,
+        effective_status=current_status,
+        is_ready=not blocking_reasons,
+        decision_id=decision_id,
+        verified_evidence_ids=verified_ids,
+        unverified_evidence_ids=unverified_ids,
+        rejected_evidence_ids=rejected_ids,
+        corrupted_evidence_ids=corrupted_ids,
+        blocking_reasons=blocking_reasons,
+    )
+
+
+def close_resolution(
+    *,
+    resolution_id: str,
+    closure_rationale: str,
+    closed_by: str,
+) -> wc.WasherResolutionClosure:
+    """Full orchestration for one closure request.
+
+    1. Validate ``resolution_id`` against the source ledger (404
+       domain error if absent).
+    2. Reject ``blocked_authoritative_source`` records outright
+       (:class:`BlockedRecordDecisionError`, reused unchanged from
+       the decision workflow -- not redefined here).
+    3. Fast, non-atomic pre-check: if a closure already exists,
+       raise :class:`DuplicateClosureError` immediately rather than
+       running the full readiness computation.
+    4. Call :func:`evaluate_closure_readiness`; if not ready, raise
+       :class:`ClosureNotReadyError` carrying its ``blocking_reasons``.
+    5. Build a checksummed closure whose ``evidence_ids`` are
+       *exactly* the readiness result's ``verified_evidence_ids``
+       (never unverified/rejected/corrupted ones) and whose
+       ``decision_id`` is the readiness result's terminal decision.
+    6. Verify the freshly-built closure's own integrity
+       (defense-in-depth), then append it.
+
+    The authoritative duplicate guard is
+    ``washer_resolution_closure_store.append_closure``'s own
+    ``resolution_id``-keyed, lock-protected check (step 3 above is
+    only a friendlier, non-racing fast path) -- this is what makes
+    "only one of several concurrent close attempts for the same
+    resolution succeeds" actually true under concurrency, not just on
+    the common sequential path.
+
+    Never writes to ``washer_resolution_ledger.json``,
+    ``washer_resolution_decisions.json``, or
+    ``washer_resolution_evidence.json``.
+    """
+    source_record = wr.get_washer_resolution(resolution_id)
+    if source_record is None:
+        raise ResolutionNotFoundError(resolution_id)
+
+    if is_blocked_source_status(source_record.resolution_status):
+        raise BlockedRecordDecisionError(resolution_id)
+
+    if wc_store.get_closure_for_resolution(resolution_id) is not None:
+        raise DuplicateClosureError(resolution_id)
+
+    readiness = evaluate_closure_readiness(resolution_id)
+    if not readiness.is_ready:
+        raise ClosureNotReadyError(resolution_id, readiness.blocking_reasons)
+
+    assert readiness.decision_id is not None  # guaranteed by is_ready == True
+
+    closure = wc.create_washer_resolution_closure(
+        resolution_id=resolution_id,
+        closure_rationale=closure_rationale,
+        closed_by=closed_by,
+        evidence_ids=readiness.verified_evidence_ids,
+        decision_id=readiness.decision_id,
+    )
+    if not wc.verify_closure_integrity(closure):
+        raise ClosureIntegrityError(resolution_id)
+
+    return wc_store.append_closure(closure)
+
+
+def get_resolution_closure(resolution_id: str) -> Optional[wc.WasherResolutionClosure]:
+    """Validate ``resolution_id``, then return its closure record if
+    one exists (``None`` otherwise), after verifying its integrity.
+
+    Raises :class:`ResolutionNotFoundError` if ``resolution_id`` does
+    not exist in the source ledger, or :class:`ClosureIntegrityError`
+    if a persisted closure record's checksum no longer matches its
+    content."""
+    if wr.get_washer_resolution(resolution_id) is None:
+        raise ResolutionNotFoundError(resolution_id)
+    closure = wc_store.get_closure_for_resolution(resolution_id)
+    if closure is None:
+        return None
+    if not wc.verify_closure_integrity(closure):
+        raise ClosureIntegrityError(resolution_id)
+    return closure
