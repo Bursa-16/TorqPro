@@ -26,6 +26,7 @@ from __future__ import annotations
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -301,7 +302,7 @@ def test_i18n_key_parity_suite_passes():
     file walk here -- this module only asserts the *new* keys exist
     (above); overall en/tr set equality is that module's job."""
     result = subprocess.run(
-        ["python3", "-m", "pytest", "tests/test_i18n_key_parity.py", "-q"],
+        [sys.executable, "-m", "pytest", "tests/test_i18n_key_parity.py", "-q"],
         capture_output=True, text=True, cwd=str(REPO_ROOT),
     )
     assert result.returncode == 0, result.stdout + result.stderr
@@ -359,6 +360,13 @@ def test_only_expected_files_changed_in_stage5():
         "tests/js/run_washer_resolution_evidence_closure_tests.js",
         "tests/test_faz_2_8_20_stage5_washer_resolution_evidence_closure_frontend.py",
         "tools/run_quality_gate.py",
+        # Stage 5's second commit (9002c7eb841634b12d050c1945dac1a7506c7286)
+        # deliberately updated these two pre-existing test files' hardcoded
+        # counters (wrr.* key count, JS harness total) to reflect Stage 5's
+        # own additions -- an intentional, in-scope part of the Stage 5
+        # delivery, not an unexpected file.
+        "tests/test_faz_2_8_9_stage5_frontend.py",
+        "tests/test_quality_gate_joint_revision_ux.py",
     }
     unexpected = changed - allowed
     assert not unexpected, f"unexpected files changed in Stage 5: {sorted(unexpected)}"
