@@ -18,7 +18,11 @@ overtaken) -- it is a **closed range**: both the start and the end of
 the diff must be fixed, historical commits that both belong to the
 stage being described. ``stage_range_changed_files()`` enforces that
 shape and fails loudly (never silently) if a caller passes something
-that looks like the old open-ended pattern, or a reversed/empty range.
+that looks like the old open-ended pattern, a reversed/empty range, or
+either endpoint is a commit reference that cannot be resolved in the
+current checkout -- a broken, deleted, or unreachable commit reference
+is a real problem (a rewritten history, a corrupted checkout, a typo'd
+hash) and must never be hidden behind a skip.
 """
 
 from __future__ import annotations
@@ -26,8 +30,6 @@ from __future__ import annotations
 import subprocess
 from pathlib import Path
 from typing import List
-
-import pytest
 
 
 def stage_range_changed_files(
@@ -43,17 +45,18 @@ def stage_range_changed_files(
     immediately, before any git call, so the mistake is obvious at the
     call site rather than showing up as a mysterious later failure.
 
-    Skips (does not fail) the calling test if either commit is not
-    reachable in the current checkout (e.g. a shallow clone without
-    full history) -- this matches the pre-existing behaviour of the
-    tests this helper replaces, which is the correct behaviour for
-    that specific situation (an environment limitation, not a stage
-    regression).
-
-    Raises ``AssertionError`` -- not a silent pass -- if the two
-    commits are identical, or if ``start_commit`` is not an ancestor
-    of ``end_commit`` (an empty or reversed range almost always means
-    a bookkeeping mistake in the *test*, not that "nothing changed").
+    Raises ``AssertionError`` -- never a silent pass and never a
+    ``pytest.skip`` -- for every one of the following: the two commits
+    are identical (empty range); ``start_commit`` is not an ancestor
+    of ``end_commit`` (reversed/unrelated range); or either
+    ``start_commit`` or ``end_commit`` cannot be resolved in the
+    current checkout (``git cat-file -e`` fails) -- a broken, deleted,
+    or unreachable commit reference must fail loudly, precisely
+    because a shallow or otherwise incomplete checkout could otherwise
+    make a genuinely broken reference indistinguishable from "nothing
+    to check here". The resulting message always names which of the
+    two (start or end) failed to resolve, the exact ref that was
+    given, and the full range that was being checked.
     """
     if end_commit.strip().upper() == "HEAD":
         raise AssertionError(
@@ -70,15 +73,23 @@ def stage_range_changed_files(
             "changed files."
         )
 
-    for label, commit in (("start_commit", start_commit), ("end_commit", end_commit)):
+    for label, boundary, commit in (
+        ("start_commit", "start", start_commit),
+        ("end_commit", "end", end_commit),
+    ):
         reachable = subprocess.run(
             ["git", "cat-file", "-e", commit],
             capture_output=True, text=True, cwd=str(repo_root),
         )
         if reachable.returncode != 0:
-            pytest.skip(
-                f"{label} {commit!r} is not reachable in this checkout "
-                "(e.g. a shallow clone without full history)"
+            raise AssertionError(
+                f"stage_range_changed_files(): {label} {commit!r} could not "
+                f"be resolved in this checkout ('git cat-file -e {commit}' "
+                f"failed) -- this is the {boundary} boundary of the stage "
+                f"range being checked ({start_commit!r} -> {end_commit!r}). "
+                "A broken, deleted, or unreachable commit reference is a "
+                "real problem and must fail loudly, not be silently "
+                "skipped."
             )
 
     ancestor = subprocess.run(
