@@ -908,13 +908,59 @@ async function testNoDuplicateEventBindingAttributesForEachControl() {
 // i18n
 // =================================================================
 
+// Faz 2.8.20 Stage 5 follow-up fix: replaces the previous
+// enBlockMatch/trBlockMatch regex pattern
+// (`/en:\s*\{([\s\S]*?)\n  \},\n  tr:/`), which located the end of
+// the I18N.en/I18N.tr blocks by looking for the *next* literal
+// "  },\n  tr:" / "  },\n};" text -- fragile because it assumes no
+// nested object or string value anywhere earlier in the block
+// happens to be followed by that exact same text, and produces a
+// silent `null[1]` TypeError (not a clear error) the moment that
+// assumption breaks.
+//
+// This helper instead reuses harness_common.js's extractConstDecl,
+// which already extracts `const I18N = { ... };` by brace-depth
+// counting (the same proven technique every other harness in this
+// repo relies on for extractConstDecl/extractFunctionDecl), then
+// applies the identical brace-depth technique a second time, scoped
+// to the already-isolated I18N declaration text, to find exactly
+// where the requested language's `{ ... }` sub-object starts and
+// ends -- regardless of what nested content it contains, and without
+// assuming anything about what immediately follows it. No eval/
+// Function is used; this is pure string/regex + brace counting, the
+// same class of technique already used throughout this file and
+// harness_common.js.
+function extractI18nLanguageBlock(script, language) {
+  const i18nDecl = extractConstDecl(script, 'I18N');
+  const keyRe = new RegExp('\\b' + language + '\\s*:\\s*\\{');
+  const keyMatch = keyRe.exec(i18nDecl);
+  if (!keyMatch) {
+    throw new Error('I18N.' + language + ' block not found in extracted I18N declaration');
+  }
+  const braceStart = i18nDecl.indexOf('{', keyMatch.index);
+  let depth = 0;
+  let j = braceStart;
+  for (; j < i18nDecl.length; j++) {
+    const c = i18nDecl[j];
+    if (c === '{') depth++;
+    else if (c === '}') {
+      depth--;
+      if (depth === 0) break;
+    }
+  }
+  if (depth !== 0) {
+    throw new Error('unterminated I18N.' + language + ' block (brace depth never returned to 0)');
+  }
+  return i18nDecl.slice(braceStart + 1, j);
+}
+
 async function testAllUsedGovJrlistKeysExistInEnglish() {
   const script = extractScript(HTML);
   const usedInCalls = new Set((script.match(/t\('(gov\.jrlist\.[\w.]+)'\)/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)'/)[1]));
   const usedInAttrs = new Set((HTML.match(/data-i18n(?:-placeholder)?="(gov\.jrlist\.[\w.]+)"/g) || []).map((m) => m.match(/"(gov\.jrlist\.[\w.]+)"/)[1]));
   const used = new Set([...usedInCalls, ...usedInAttrs]);
-  const enBlockMatch = /en:\s*\{([\s\S]*?)\n  \},\n  tr:/.exec(script);
-  const enKeys = new Set((enBlockMatch[1].match(/'(gov\.jrlist\.[\w.]+)':/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)':/)[1]));
+  const enBlock = extractI18nLanguageBlock(script, 'en');
+  const enKeys = new Set((enBlock.match(/'(gov\.jrlist\.[\w.]+)':/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)':/)[1]));
   const missing = [...used].filter((k) => !enKeys.has(k));
   check('every used gov.jrlist.* key exists in the EN dictionary', missing.length === 0);
 }
@@ -924,18 +970,18 @@ async function testAllUsedGovJrlistKeysExistInTurkish() {
   const usedInCalls = new Set((script.match(/t\('(gov\.jrlist\.[\w.]+)'\)/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)'/)[1]));
   const usedInAttrs = new Set((HTML.match(/data-i18n(?:-placeholder)?="(gov\.jrlist\.[\w.]+)"/g) || []).map((m) => m.match(/"(gov\.jrlist\.[\w.]+)"/)[1]));
   const used = new Set([...usedInCalls, ...usedInAttrs]);
-  const trBlockMatch = /tr:\s*\{([\s\S]*?)\n  \},\n\};/.exec(script);
-  const trKeys = new Set((trBlockMatch[1].match(/'(gov\.jrlist\.[\w.]+)':/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)':/)[1]));
+  const trBlock = extractI18nLanguageBlock(script, 'tr');
+  const trKeys = new Set((trBlock.match(/'(gov\.jrlist\.[\w.]+)':/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)':/)[1]));
   const missing = [...used].filter((k) => !trKeys.has(k));
   check('every used gov.jrlist.* key exists in the TR dictionary', missing.length === 0);
 }
 
 async function testEnAndTrGovJrlistKeySetsMatchExactly() {
   const script = extractScript(HTML);
-  const enBlockMatch = /en:\s*\{([\s\S]*?)\n  \},\n  tr:/.exec(script);
-  const trBlockMatch = /tr:\s*\{([\s\S]*?)\n  \},\n\};/.exec(script);
-  const enKeys = new Set((enBlockMatch[1].match(/'(gov\.jrlist\.[\w.]+)':/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)':/)[1]));
-  const trKeys = new Set((trBlockMatch[1].match(/'(gov\.jrlist\.[\w.]+)':/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)':/)[1]));
+  const enBlock = extractI18nLanguageBlock(script, 'en');
+  const trBlock = extractI18nLanguageBlock(script, 'tr');
+  const enKeys = new Set((enBlock.match(/'(gov\.jrlist\.[\w.]+)':/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)':/)[1]));
+  const trKeys = new Set((trBlock.match(/'(gov\.jrlist\.[\w.]+)':/g) || []).map((m) => m.match(/'(gov\.jrlist\.[\w.]+)':/)[1]));
   const enOnly = [...enKeys].filter((k) => !trKeys.has(k));
   const trOnly = [...trKeys].filter((k) => !enKeys.has(k));
   check('EN and TR gov.jrlist.* key sets are identical (full parity)', enOnly.length === 0 && trOnly.length === 0);
