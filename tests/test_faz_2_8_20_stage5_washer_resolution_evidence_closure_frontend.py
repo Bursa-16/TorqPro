@@ -367,6 +367,13 @@ def test_only_expected_files_changed_in_stage5():
         # delivery, not an unexpected file.
         "tests/test_faz_2_8_9_stage5_frontend.py",
         "tests/test_quality_gate_joint_revision_ux.py",
+        # Stage 5's final maintenance commit
+        # (0db87628d5cbbeb819fee7ee71281935833db74c) deliberately fixed a
+        # pre-existing I18N extraction fragility in this harness that
+        # surfaced after the Stage 5 frontend expansion added new wrr.*
+        # keys to the same I18N object -- an intentional, in-scope part
+        # of the Stage 5 delivery, not an unexpected file.
+        "tests/js/run_joint_revision_list_ux_tests.js",
     }
     unexpected = changed - allowed
     assert not unexpected, f"unexpected files changed in Stage 5: {sorted(unexpected)}"
