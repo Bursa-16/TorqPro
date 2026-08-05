@@ -1256,6 +1256,102 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
     <div id="wrr-history-status" class="fc-muted"></div>
     <div id="wrr-history-content" style="display:none"></div>
   </div>
+
+  <!-- Faz 2.8.20 Stage 5: additive Evidence & Controlled Closure UI.
+       Calls only the five Stage 4 endpoints already covered by
+       tests/test_faz_2_8_20_stage4_washer_resolution_closure_api.py.
+       No verification-transition UI (verification_status is shown,
+       never changed here), no reopen UI anywhere in this section. -->
+  <div class="card" id="wrr-evidence-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.evidence.list_title">Evidence</div>
+    <div class="card-sub" data-i18n="wrr.evidence.list_subtitle">Read-only. Shows every evidence record already submitted for this resolution, in the order the API returns them.</div>
+    <div id="wrr-evidence-status" class="fc-muted"></div>
+    <div id="wrr-evidence-content" style="display:none">
+      <div id="wrr-evidence-table"></div>
+    </div>
+  </div>
+
+  <div class="card" id="wrr-evidence-form-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.evidence.add_title">Add Evidence</div>
+    <div class="card-sub" data-i18n="wrr.evidence.add_subtitle">Submits the evidence you provide to the existing evidence record endpoint. Nothing here is inferred, suggested, or generated automatically.</div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.evidence.type_label">Evidence Type</label>
+      <select class="form-select" id="wrr-evidence-type">
+        <option value="" data-i18n="wrr.decide.select_placeholder">-- select --</option>
+        <option value="authoritative_standard" data-i18n="wrr.evidence.type.authoritative_standard">Authoritative Standard</option>
+        <option value="manufacturer_document" data-i18n="wrr.evidence.type.manufacturer_document">Manufacturer Document</option>
+        <option value="approved_engineering_source" data-i18n="wrr.evidence.type.approved_engineering_source">Approved Engineering Source</option>
+        <option value="internal_measurement" data-i18n="wrr.evidence.type.internal_measurement">Internal Measurement</option>
+        <option value="comparison_analysis" data-i18n="wrr.evidence.type.comparison_analysis">Comparison Analysis</option>
+        <option value="legacy_provenance_reference" data-i18n="wrr.evidence.type.legacy_provenance_reference">Legacy Provenance Reference</option>
+        <option value="other" data-i18n="wrr.evidence.type.other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.evidence.title_label">Title</label>
+      <input class="form-input" id="wrr-evidence-title">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.evidence.description_label">Description</label>
+      <textarea class="form-input" id="wrr-evidence-description" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.evidence.source_reference_label">Source Reference</label>
+      <textarea class="form-input" id="wrr-evidence-source-reference" rows="2"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.evidence.source_locator_label">Source Locator (optional)</label>
+      <input class="form-input" id="wrr-evidence-source-locator">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.evidence.source_url_label">Source URL (optional)</label>
+      <input class="form-input" id="wrr-evidence-source-url">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.evidence.source_standard_label">Source Standard</label>
+      <input class="form-input" id="wrr-evidence-source-standard">
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.evidence.created_by_label">Created By</label>
+      <input class="form-input" id="wrr-evidence-created-by">
+    </div>
+    <div id="wrr-evidence-validation-error" class="alert alert-danger" style="display:none"></div>
+    <div id="wrr-evidence-status-msg" class="fc-muted"></div>
+    <div class="form-group" style="display:flex;align-items:flex-end">
+      <button class="btn btn-primary" id="wrr-evidence-submit-btn" onclick="wrrSubmitEvidence()" data-i18n="wrr.evidence.submit_button">Add Evidence</button>
+    </div>
+  </div>
+
+  <div class="card" id="wrr-closure-readiness-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.closure.readiness_title">Closure Readiness</div>
+    <div class="card-sub" data-i18n="wrr.closure.readiness_subtitle">Read-only. Reflects only what the backend has already computed -- nothing here is inferred or suggested.</div>
+    <div id="wrr-closure-readiness-status" class="fc-muted"></div>
+    <div id="wrr-closure-readiness-content" style="display:none"></div>
+  </div>
+
+  <div class="card" id="wrr-close-form-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.closure.close_title">Close Resolution</div>
+    <div class="card-sub" data-i18n="wrr.closure.close_subtitle">Submits the closure rationale and closer you provide to the existing controlled closure endpoint. Enabled only when the resolution is ready for closure.</div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.closure.rationale_label">Closure Rationale</label>
+      <textarea class="form-input" id="wrr-close-rationale" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" data-i18n="wrr.closure.closed_by_label">Closed By</label>
+      <input class="form-input" id="wrr-close-closed-by">
+    </div>
+    <div id="wrr-close-validation-error" class="alert alert-danger" style="display:none"></div>
+    <div id="wrr-close-status-msg" class="fc-muted"></div>
+    <div class="form-group" style="display:flex;align-items:flex-end">
+      <button class="btn btn-primary" id="wrr-close-submit-btn" onclick="wrrSubmitClosure()" data-i18n="wrr.closure.close_button">Close Resolution</button>
+    </div>
+  </div>
+
+  <div class="card" id="wrr-closure-result-card" style="display:none">
+    <div class="card-title" data-i18n="wrr.closure.result_title">Closure Details</div>
+    <div class="card-sub" data-i18n="wrr.closure.result_subtitle">Read-only. This resolution has been closed; there is no reopen action.</div>
+    <div id="wrr-closure-result-content"></div>
+  </div>
 </div>
 
 <div id="page-governance" class="page">
@@ -3386,6 +3482,70 @@ const I18N = {
     'wrr.history.col.decided_at': 'Decided At (UTC)',
     'wrr.history.col.confidence_level': 'Confidence Level',
 
+    'wrr.evidence.list_title': 'Evidence',
+    'wrr.evidence.list_subtitle': 'Read-only. Shows every evidence record already submitted for this resolution, in the order the API returns them.',
+    'wrr.evidence.add_title': 'Add Evidence',
+    'wrr.evidence.add_subtitle': 'Submits the evidence you provide to the existing evidence record endpoint. Nothing here is inferred, suggested, or generated automatically.',
+    'wrr.evidence.type_label': 'Evidence Type',
+    'wrr.evidence.type.authoritative_standard': 'Authoritative Standard',
+    'wrr.evidence.type.manufacturer_document': 'Manufacturer Document',
+    'wrr.evidence.type.approved_engineering_source': 'Approved Engineering Source',
+    'wrr.evidence.type.internal_measurement': 'Internal Measurement',
+    'wrr.evidence.type.comparison_analysis': 'Comparison Analysis',
+    'wrr.evidence.type.legacy_provenance_reference': 'Legacy Provenance Reference',
+    'wrr.evidence.type.other': 'Other',
+    'wrr.evidence.title_label': 'Title',
+    'wrr.evidence.description_label': 'Description',
+    'wrr.evidence.source_reference_label': 'Source Reference',
+    'wrr.evidence.source_locator_label': 'Source Locator (optional)',
+    'wrr.evidence.source_url_label': 'Source URL (optional)',
+    'wrr.evidence.source_standard_label': 'Source Standard',
+    'wrr.evidence.created_by_label': 'Created By',
+    'wrr.evidence.submit_button': 'Add Evidence',
+    'wrr.evidence.validation_error_prefix': 'Missing or invalid fields: ',
+    'wrr.evidence.loading': 'Loading evidence...',
+    'wrr.evidence.submitting': 'Submitting...',
+    'wrr.evidence.success': 'Evidence added.',
+    'wrr.evidence.empty_state': 'No evidence has been recorded yet.',
+    'wrr.evidence.status.unverified': 'Unverified',
+    'wrr.evidence.status.verified': 'Verified',
+    'wrr.evidence.status.rejected': 'Rejected',
+    'wrr.evidence.col.evidence_id': 'Evidence ID',
+    'wrr.evidence.col.evidence_type': 'Evidence Type',
+    'wrr.evidence.col.title': 'Title',
+    'wrr.evidence.col.source_reference': 'Source Reference',
+    'wrr.evidence.col.verification_status': 'Verification Status',
+    'wrr.evidence.col.created_by': 'Created By',
+    'wrr.evidence.col.created_at': 'Created At (UTC)',
+
+    'wrr.closure.readiness_title': 'Closure Readiness',
+    'wrr.closure.readiness_subtitle': 'Read-only. Reflects only what the backend has already computed -- nothing here is inferred or suggested.',
+    'wrr.closure.close_title': 'Close Resolution',
+    'wrr.closure.close_subtitle': 'Submits the closure rationale and closer you provide to the existing controlled closure endpoint. Enabled only when the resolution is ready for closure.',
+    'wrr.closure.rationale_label': 'Closure Rationale',
+    'wrr.closure.closed_by_label': 'Closed By',
+    'wrr.closure.close_button': 'Close Resolution',
+    'wrr.closure.validation_error_prefix': 'Missing or invalid fields: ',
+    'wrr.closure.submitting': 'Submitting...',
+    'wrr.closure.success': 'Resolution closed.',
+    'wrr.closure.ready': 'Ready',
+    'wrr.closure.not_ready': 'Not Ready',
+    'wrr.closure.is_ready_label': 'Closure Status',
+    'wrr.closure.decision_id_label': 'Decision ID',
+    'wrr.closure.verified_count_label': 'Verified Evidence',
+    'wrr.closure.unverified_count_label': 'Unverified Evidence',
+    'wrr.closure.rejected_count_label': 'Rejected Evidence',
+    'wrr.closure.corrupted_count_label': 'Corrupted Evidence',
+    'wrr.closure.blocking_reasons_label': 'Blocking Reasons',
+    'wrr.closure.result_title': 'Closure Details',
+    'wrr.closure.result_subtitle': 'Read-only. This resolution has been closed; there is no reopen action.',
+    'wrr.closure.closure_id_label': 'Closure ID',
+    'wrr.closure.status_label': 'Status',
+    'wrr.closure.rationale_result_label': 'Closure Rationale',
+    'wrr.closure.closed_by_result_label': 'Closed By',
+    'wrr.closure.closed_at_label': 'Closed At (UTC)',
+    'wrr.closure.evidence_ids_label': 'Evidence IDs',
+
     'sidebar.governance': 'Governance Workspace',
     'gov.page_title': 'Engineering Governance Workspace',
     'gov.page_subtitle': 'Generic, domain-agnostic review / publication / resolution event workspace (Faz 2.8.11 Stage 4)',
@@ -4999,6 +5159,70 @@ const I18N = {
     'wrr.history.col.decided_at': 'Karar Zamanı (UTC)',
     'wrr.history.col.confidence_level': 'Güven Seviyesi',
 
+    'wrr.evidence.list_title': 'Kanıtlar',
+    'wrr.evidence.list_subtitle': 'Salt-okunur. Bu çözümleme için bugüne kadar gönderilmiş tüm kanıt kayıtlarını, API\'nin döndürdüğü sırayla gösterir.',
+    'wrr.evidence.add_title': 'Kanıt Ekle',
+    'wrr.evidence.add_subtitle': 'Girdiğiniz kanıtı mevcut kanıt kaydı uç noktasına gönderir. Hiçbir alan otomatik olarak çıkarılmaz, önerilmez veya üretilmez.',
+    'wrr.evidence.type_label': 'Kanıt Türü',
+    'wrr.evidence.type.authoritative_standard': 'Yetkili Standart',
+    'wrr.evidence.type.manufacturer_document': 'Üretici Belgesi',
+    'wrr.evidence.type.approved_engineering_source': 'Onaylı Mühendislik Kaynağı',
+    'wrr.evidence.type.internal_measurement': 'İç Ölçüm',
+    'wrr.evidence.type.comparison_analysis': 'Karşılaştırma Analizi',
+    'wrr.evidence.type.legacy_provenance_reference': 'Eski Kaynak Referansı',
+    'wrr.evidence.type.other': 'Diğer',
+    'wrr.evidence.title_label': 'Başlık',
+    'wrr.evidence.description_label': 'Açıklama',
+    'wrr.evidence.source_reference_label': 'Kaynak Referansı',
+    'wrr.evidence.source_locator_label': 'Kaynak Konumu (opsiyonel)',
+    'wrr.evidence.source_url_label': 'Kaynak URL (opsiyonel)',
+    'wrr.evidence.source_standard_label': 'Kaynak Standardı',
+    'wrr.evidence.created_by_label': 'Oluşturan',
+    'wrr.evidence.submit_button': 'Kanıt Ekle',
+    'wrr.evidence.validation_error_prefix': 'Eksik veya geçersiz alanlar: ',
+    'wrr.evidence.loading': 'Kanıtlar yükleniyor...',
+    'wrr.evidence.submitting': 'Gönderiliyor...',
+    'wrr.evidence.success': 'Kanıt eklendi.',
+    'wrr.evidence.empty_state': 'Henüz kayıtlı kanıt yok.',
+    'wrr.evidence.status.unverified': 'Doğrulanmamış',
+    'wrr.evidence.status.verified': 'Doğrulanmış',
+    'wrr.evidence.status.rejected': 'Reddedilmiş',
+    'wrr.evidence.col.evidence_id': 'Kanıt ID',
+    'wrr.evidence.col.evidence_type': 'Kanıt Türü',
+    'wrr.evidence.col.title': 'Başlık',
+    'wrr.evidence.col.source_reference': 'Kaynak Referansı',
+    'wrr.evidence.col.verification_status': 'Doğrulama Durumu',
+    'wrr.evidence.col.created_by': 'Oluşturan',
+    'wrr.evidence.col.created_at': 'Oluşturulma (UTC)',
+
+    'wrr.closure.readiness_title': 'Kapanış Hazırlığı',
+    'wrr.closure.readiness_subtitle': 'Salt-okunur. Yalnızca backend\'in zaten hesapladığı bilgiyi yansıtır -- hiçbir şey burada çıkarılmaz veya önerilmez.',
+    'wrr.closure.close_title': 'Çözümlemeyi Kapat',
+    'wrr.closure.close_subtitle': 'Girdiğiniz kapanış gerekçesini ve kapatanı mevcut kontrollü kapanış uç noktasına gönderir. Yalnızca çözümleme kapanışa hazır olduğunda etkindir.',
+    'wrr.closure.rationale_label': 'Kapanış Gerekçesi',
+    'wrr.closure.closed_by_label': 'Kapatan',
+    'wrr.closure.close_button': 'Çözümlemeyi Kapat',
+    'wrr.closure.validation_error_prefix': 'Eksik veya geçersiz alanlar: ',
+    'wrr.closure.submitting': 'Gönderiliyor...',
+    'wrr.closure.success': 'Çözümleme kapatıldı.',
+    'wrr.closure.ready': 'Hazır',
+    'wrr.closure.not_ready': 'Hazır Değil',
+    'wrr.closure.is_ready_label': 'Kapanış Durumu',
+    'wrr.closure.decision_id_label': 'Karar ID',
+    'wrr.closure.verified_count_label': 'Doğrulanmış Kanıt',
+    'wrr.closure.unverified_count_label': 'Doğrulanmamış Kanıt',
+    'wrr.closure.rejected_count_label': 'Reddedilmiş Kanıt',
+    'wrr.closure.corrupted_count_label': 'Bozuk Kanıt',
+    'wrr.closure.blocking_reasons_label': 'Engelleyici Nedenler',
+    'wrr.closure.result_title': 'Kapanış Detayları',
+    'wrr.closure.result_subtitle': 'Salt-okunur. Bu çözümleme kapatılmıştır; yeniden açma işlemi yoktur.',
+    'wrr.closure.closure_id_label': 'Kapanış ID',
+    'wrr.closure.status_label': 'Durum',
+    'wrr.closure.rationale_result_label': 'Kapanış Gerekçesi',
+    'wrr.closure.closed_by_result_label': 'Kapatan',
+    'wrr.closure.closed_at_label': 'Kapanış Zamanı (UTC)',
+    'wrr.closure.evidence_ids_label': 'Kanıt ID\'leri',
+
     'sidebar.governance': 'Yönetişim Çalışma Alanı',
     'gov.page_title': 'Mühendislik Yönetişim Çalışma Alanı',
     'gov.page_subtitle': 'Genel, alan-bağımsız inceleme / yayınlama / çözümleme olay çalışma alanı (Faz 2.8.11 Aşama 4)',
@@ -6297,6 +6521,7 @@ async function wrrLoadResolutionDetail(resolutionId) {
   statusEl.textContent = t('wrr.loading');
   if (typeof wrrHideDecisionForm === 'function') wrrHideDecisionForm();
   if (typeof wrrHideHistory === 'function') wrrHideHistory();
+  if (typeof wrrResetEvidenceClosureState === 'function') wrrResetEvidenceClosureState();
   try {
     const detail = await apiRequest('/api/library/washers/resolutions/' + encodeURIComponent(resolutionId));
     if (!wrrDetailIsWellFormed(detail)) {
@@ -6310,6 +6535,9 @@ async function wrrLoadResolutionDetail(resolutionId) {
     wrrRenderDetail(detail);
     if (typeof wrrShowDecisionFormForDetail === 'function') wrrShowDecisionFormForDetail(detail);
     if (typeof wrrLoadResolutionHistory === 'function') wrrLoadResolutionHistory(detail.resolution_id);
+    if (typeof wrrLoadEvidence === 'function') wrrLoadEvidence(detail.resolution_id);
+    if (typeof wrrLoadClosureReadiness === 'function') wrrLoadClosureReadiness(detail.resolution_id);
+    if (typeof wrrLoadClosure === 'function') wrrLoadClosure(detail.resolution_id);
   } catch (e) {
     WRR_LAST_DETAIL = null;
     statusEl.innerHTML = '<div class="alert alert-danger">' +
@@ -6587,7 +6815,414 @@ function wrrRenderHistoryTable(decisions) {
   </tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
+// ---------------------------------------------------------------
+// Faz 2.8.20 Stage 5: Washer Resolution Evidence & Controlled
+// Closure (additive). Calls only the five Faz 2.8.20 Stage 4
+// endpoints (POST/GET .../evidence, GET .../closure-readiness,
+// POST/GET .../closure) -- no business logic, no readiness rule,
+// and no checksum/state-machine of any kind lives here; all of it
+// already lives in backend.library.washer_resolution_service and is
+// covered by tests/test_faz_2_8_20_stage4_washer_resolution_closure_api.py.
+//
+// No verification-transition UI: verification_status is shown
+// exactly as the API returns it, never changed from this workspace
+// (Stage 5 task brief decision 3). No reopen UI anywhere in this
+// section, matching ADR-0013 / Faz 2.8.20 Stage 3 decision 12 -- once
+// a closure is loaded, wrr-close-form-card stays hidden and no
+// element in wrr-closure-result-card offers any action.
+//
+// blocking_reasons are rendered exactly as the backend returns them
+// (plain English sentences) -- Stage 5 task brief decision 6
+// deliberately defers any client-side i18n mapping for them to a
+// later phase.
+// ---------------------------------------------------------------
+
+let WRR_EVIDENCE_IN_FLIGHT = false;
+let WRR_CLOSE_IN_FLIGHT = false;
+let WRR_LAST_READINESS = null;
+let WRR_LAST_CLOSURE = null;
+
+const WRR_EVIDENCE_TYPE_LABEL_KEYS = {
+  authoritative_standard: 'wrr.evidence.type.authoritative_standard',
+  manufacturer_document: 'wrr.evidence.type.manufacturer_document',
+  approved_engineering_source: 'wrr.evidence.type.approved_engineering_source',
+  internal_measurement: 'wrr.evidence.type.internal_measurement',
+  comparison_analysis: 'wrr.evidence.type.comparison_analysis',
+  legacy_provenance_reference: 'wrr.evidence.type.legacy_provenance_reference',
+  other: 'wrr.evidence.type.other',
+};
+
+function wrrEvidenceTypeLabel(code) {
+  const key = WRR_EVIDENCE_TYPE_LABEL_KEYS[code];
+  return key ? t(key) : scEsc(code);
+}
+
+const WRR_VERIFICATION_STATUS_LABEL_KEYS = {
+  unverified: 'wrr.evidence.status.unverified',
+  verified: 'wrr.evidence.status.verified',
+  rejected: 'wrr.evidence.status.rejected',
+};
+
+function wrrVerificationStatusLabel(code) {
+  const key = WRR_VERIFICATION_STATUS_LABEL_KEYS[code];
+  return key ? t(key) : scEsc(code);
+}
+
+function wrrResetEvidenceClosureState() {
+  WRR_LAST_READINESS = null;
+  WRR_LAST_CLOSURE = null;
+  ['wrr-evidence-card', 'wrr-evidence-form-card', 'wrr-closure-readiness-card',
+    'wrr-close-form-card', 'wrr-closure-result-card'].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+}
+
+// ----------------------------------------------------------- evidence
+
+async function wrrLoadEvidence(resolutionId) {
+  const card = document.getElementById('wrr-evidence-card');
+  const statusEl = document.getElementById('wrr-evidence-status');
+  const contentEl = document.getElementById('wrr-evidence-content');
+  if (!card || !statusEl || !contentEl) return;
+  card.style.display = '';
+  contentEl.style.display = 'none';
+  statusEl.textContent = t('wrr.evidence.loading');
+  try {
+    const data = await apiRequest(
+      '/api/library/washers/resolutions/' + encodeURIComponent(resolutionId) + '/evidence'
+    );
+    const records = (data && Array.isArray(data.records)) ? data.records : [];
+    statusEl.textContent = '';
+    contentEl.style.display = '';
+    wrrRenderEvidenceTable(records);
+    const formCard = document.getElementById('wrr-evidence-form-card');
+    if (formCard) {
+      formCard.style.display = '';
+      wrrShowEvidenceFormForDetail(WRR_LAST_DETAIL);
+    }
+  } catch (e) {
+    statusEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(t('wrr.api_error_prefix')) + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
+function wrrRenderEvidenceTable(records) {
+  const el = document.getElementById('wrr-evidence-table');
+  if (!records.length) {
+    el.innerHTML = `<div class="fc-muted">${scEsc(t('wrr.evidence.empty_state'))}</div>`;
+    return;
+  }
+  // Rendered in exactly the order the API returned -- no
+  // client-side sort of any kind.
+  const rows = records.map((r) => `<tr>
+    <td title="${scEsc(r.evidence_id)}">${scEsc(String(r.evidence_id).slice(0, 12))}…</td>
+    <td>${wrrEvidenceTypeLabel(r.evidence_type)}</td>
+    <td class="sc-wrap">${scEsc(r.title)}</td>
+    <td class="sc-wrap">${scEsc(r.source_reference)}</td>
+    <td>${wrrVerificationStatusLabel(r.verification_status)}</td>
+    <td>${scEsc(r.created_by)}</td>
+    <td>${scEsc(r.created_at)}</td>
+  </tr>`).join('');
+  el.innerHTML = `<div class="sc-table-wrap"><table class="sc-table"><thead><tr>
+    <th>${scEsc(t('wrr.evidence.col.evidence_id'))}</th>
+    <th>${scEsc(t('wrr.evidence.col.evidence_type'))}</th>
+    <th>${scEsc(t('wrr.evidence.col.title'))}</th>
+    <th>${scEsc(t('wrr.evidence.col.source_reference'))}</th>
+    <th>${scEsc(t('wrr.evidence.col.verification_status'))}</th>
+    <th>${scEsc(t('wrr.evidence.col.created_by'))}</th>
+    <th>${scEsc(t('wrr.evidence.col.created_at'))}</th>
+  </tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function wrrShowEvidenceFormForDetail(detail) {
+  const card = document.getElementById('wrr-evidence-form-card');
+  if (!card) return;
+  card.style.display = '';
+}
+
+function wrrResetEvidenceForm() {
+  const ids = [
+    'wrr-evidence-type', 'wrr-evidence-title', 'wrr-evidence-description',
+    'wrr-evidence-source-reference', 'wrr-evidence-source-locator',
+    'wrr-evidence-source-url', 'wrr-evidence-source-standard', 'wrr-evidence-created-by',
+  ];
+  ids.forEach((id) => { const el = document.getElementById(id); if (el) el.value = ''; });
+  const errEl = document.getElementById('wrr-evidence-validation-error');
+  if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+  const statusMsgEl = document.getElementById('wrr-evidence-status-msg');
+  if (statusMsgEl) statusMsgEl.textContent = '';
+}
+
+function wrrValidateEvidenceForm(payload) {
+  // Only fields the backend contract itself requires, mirrored
+  // client-side -- nothing invented beyond that (Stage 4's
+  // ResolutionEvidenceCreate: evidence_type/title/description/
+  // source_reference/created_by required; source_standard required
+  // only when evidence_type is authoritative_standard, matching the
+  // domain model's own rule).
+  const missing = [];
+  if (!payload.evidence_type) missing.push(t('wrr.evidence.type_label'));
+  if (!payload.title) missing.push(t('wrr.evidence.title_label'));
+  if (!payload.description) missing.push(t('wrr.evidence.description_label'));
+  if (!payload.source_reference) missing.push(t('wrr.evidence.source_reference_label'));
+  if (!payload.created_by) missing.push(t('wrr.evidence.created_by_label'));
+  if (payload.evidence_type === 'authoritative_standard' && !payload.source_standard) {
+    missing.push(t('wrr.evidence.source_standard_label'));
+  }
+  return missing;
+}
+
+async function wrrSubmitEvidence() {
+  if (WRR_EVIDENCE_IN_FLIGHT) return;
+  const detail = WRR_LAST_DETAIL;
+  if (!detail || !detail.resolution_id) return;
+
+  const errEl = document.getElementById('wrr-evidence-validation-error');
+  const statusMsgEl = document.getElementById('wrr-evidence-status-msg');
+  const submitBtn = document.getElementById('wrr-evidence-submit-btn');
+  if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+  if (statusMsgEl) statusMsgEl.textContent = '';
+
+  const payload = {
+    evidence_type: document.getElementById('wrr-evidence-type').value,
+    title: document.getElementById('wrr-evidence-title').value,
+    description: document.getElementById('wrr-evidence-description').value,
+    source_reference: document.getElementById('wrr-evidence-source-reference').value,
+    created_by: document.getElementById('wrr-evidence-created-by').value,
+  };
+  // Optional fields: omitted entirely (not sent as empty strings)
+  // when left blank, matching ResolutionEvidenceCreate's
+  // Optional[str] = None contract.
+  const locatorRaw = document.getElementById('wrr-evidence-source-locator').value;
+  if (locatorRaw !== '') payload.source_locator = locatorRaw;
+  const urlRaw = document.getElementById('wrr-evidence-source-url').value;
+  if (urlRaw !== '') payload.source_url = urlRaw;
+  const standardRaw = document.getElementById('wrr-evidence-source-standard').value;
+  if (standardRaw !== '') payload.source_standard = standardRaw;
+
+  const missing = wrrValidateEvidenceForm(payload);
+  if (missing.length) {
+    if (errEl) {
+      errEl.style.display = '';
+      errEl.textContent = t('wrr.evidence.validation_error_prefix') + missing.join(', ');
+    }
+    return;
+  }
+
+  WRR_EVIDENCE_IN_FLIGHT = true;
+  if (submitBtn) submitBtn.disabled = true;
+  if (statusMsgEl) statusMsgEl.textContent = t('wrr.evidence.submitting');
+  try {
+    await apiRequest(
+      '/api/library/washers/resolutions/' + encodeURIComponent(detail.resolution_id) + '/evidence',
+      { method: 'POST', body: JSON.stringify(payload) }
+    );
+    if (statusMsgEl) {
+      statusMsgEl.innerHTML = '<div class="alert alert-success">' + scEsc(t('wrr.evidence.success')) + '</div>';
+    }
+    wrrResetEvidenceForm();
+    await wrrLoadEvidence(detail.resolution_id);
+    await wrrLoadClosureReadiness(detail.resolution_id);
+    await wrrLoadClosure(detail.resolution_id);
+  } catch (e) {
+    if (errEl) {
+      errEl.style.display = '';
+      errEl.textContent = t('wrr.api_error_prefix') + (e && e.message ? e.message : String(e));
+    }
+  } finally {
+    WRR_EVIDENCE_IN_FLIGHT = false;
+    if (submitBtn) submitBtn.disabled = false;
+  }
+}
+
+// ------------------------------------------------------ closure readiness
+
+async function wrrLoadClosureReadiness(resolutionId) {
+  const card = document.getElementById('wrr-closure-readiness-card');
+  const statusEl = document.getElementById('wrr-closure-readiness-status');
+  const contentEl = document.getElementById('wrr-closure-readiness-content');
+  if (!card || !statusEl || !contentEl) return;
+  card.style.display = '';
+  contentEl.style.display = 'none';
+  statusEl.textContent = t('wrr.loading');
+  try {
+    const readiness = await apiRequest(
+      '/api/library/washers/resolutions/' + encodeURIComponent(resolutionId) + '/closure-readiness'
+    );
+    WRR_LAST_READINESS = readiness;
+    statusEl.textContent = '';
+    contentEl.style.display = '';
+    wrrRenderClosureReadiness(readiness);
+    wrrShowCloseFormForReadiness(readiness);
+  } catch (e) {
+    WRR_LAST_READINESS = null;
+    statusEl.innerHTML = '<div class="alert alert-danger">' +
+      scEsc(t('wrr.api_error_prefix')) + scEsc(e && e.message ? e.message : String(e)) + '</div>';
+  }
+}
+
+function wrrRenderClosureReadiness(readiness) {
+  const el = document.getElementById('wrr-closure-readiness-content');
+  const badge = readiness.is_ready
+    ? `<span class="badge-prod ok">${scEsc(t('wrr.closure.ready'))}</span>`
+    : `<span class="badge-prod nok">${scEsc(t('wrr.closure.not_ready'))}</span>`;
+  // blocking_reasons rendered verbatim -- see module note above.
+  const reasons = readiness.blocking_reasons || [];
+  const reasonsHtml = reasons.length
+    ? `<ul>${reasons.map((r) => `<li>${scEsc(r)}</li>`).join('')}</ul>`
+    : `<span class="fc-muted">—</span>`;
+  const rows = [
+    `<div class="fc-field-row"><span class="fc-field-label">${scEsc(t('wrr.closure.is_ready_label'))}</span><span class="fc-field-value">${badge}</span></div>`,
+    wrrDetailField('wrr.col.effective_status', wrrStatusLabel(readiness.effective_status)),
+    wrrDetailField('wrr.closure.decision_id_label', readiness.decision_id),
+    wrrDetailField('wrr.closure.verified_count_label', (readiness.verified_evidence_ids || []).length),
+    wrrDetailField('wrr.closure.unverified_count_label', (readiness.unverified_evidence_ids || []).length),
+    wrrDetailField('wrr.closure.rejected_count_label', (readiness.rejected_evidence_ids || []).length),
+    wrrDetailField('wrr.closure.corrupted_count_label', (readiness.corrupted_evidence_ids || []).length),
+  ].join('');
+  el.innerHTML = `<div class="result-box">${rows}
+    <div class="fc-field-row"><span class="fc-field-label">${scEsc(t('wrr.closure.blocking_reasons_label'))}</span><span class="fc-field-value">${reasonsHtml}</span></div>
+  </div>`;
+}
+
+function wrrShowCloseFormForReadiness(readiness) {
+  const card = document.getElementById('wrr-close-form-card');
+  if (!card) return;
+  card.style.display = '';
+  const submitBtn = document.getElementById('wrr-close-submit-btn');
+  const enabled = !!(readiness && readiness.is_ready) && !WRR_CLOSE_IN_FLIGHT;
+  if (submitBtn) submitBtn.disabled = !enabled;
+}
+
+// ------------------------------------------------------------- closure
+
+async function wrrLoadClosure(resolutionId) {
+  const resultCard = document.getElementById('wrr-closure-result-card');
+  const closeFormCard = document.getElementById('wrr-close-form-card');
+  if (!resultCard) return;
+  try {
+    const data = await apiRequest(
+      '/api/library/washers/resolutions/' + encodeURIComponent(resolutionId) + '/closure'
+    );
+    // 200 + {"closure": null} is the normal "not yet closed" case,
+    // never treated as an error.
+    const closure = (data && data.closure !== undefined) ? data.closure : null;
+    WRR_LAST_CLOSURE = closure;
+    if (closure === null) {
+      resultCard.style.display = 'none';
+    } else {
+      resultCard.style.display = '';
+      wrrRenderClosure(closure);
+    }
+    // Authoritative re-check: closure existence always wins over the
+    // readiness-only enable/disable decision made when the readiness
+    // response arrived (which may have resolved before this call).
+    // Once a closure exists, the close form stays hidden -- no
+    // reopen action exists anywhere in this workspace.
+    if (closeFormCard) {
+      if (closure !== null) {
+        closeFormCard.style.display = 'none';
+      } else {
+        const submitBtn = document.getElementById('wrr-close-submit-btn');
+        if (submitBtn) {
+          const enabled = !!(WRR_LAST_READINESS && WRR_LAST_READINESS.is_ready) && !WRR_CLOSE_IN_FLIGHT;
+          submitBtn.disabled = !enabled;
+        }
+      }
+    }
+  } catch (e) {
+    WRR_LAST_CLOSURE = null;
+    resultCard.style.display = 'none';
+  }
+}
+
+function wrrRenderClosure(closure) {
+  const el = document.getElementById('wrr-closure-result-content');
+  const evidenceIds = (closure.evidence_ids || []).join(', ');
+  const rows = [
+    wrrDetailField('wrr.closure.closure_id_label', closure.closure_id),
+    wrrDetailField('wrr.closure.status_label', closure.closure_status),
+    wrrDetailField('wrr.closure.rationale_result_label', closure.closure_rationale),
+    wrrDetailField('wrr.closure.closed_by_result_label', closure.closed_by),
+    wrrDetailField('wrr.closure.closed_at_label', closure.closed_at),
+    wrrDetailField('wrr.closure.decision_id_label', closure.decision_id),
+    wrrDetailField('wrr.closure.evidence_ids_label', evidenceIds),
+  ].join('');
+  el.innerHTML = `<div class="result-box">${rows}</div>`;
+}
+
+function wrrValidateCloseForm(payload) {
+  const missing = [];
+  if (!payload.closure_rationale) missing.push(t('wrr.closure.rationale_label'));
+  if (!payload.closed_by) missing.push(t('wrr.closure.closed_by_label'));
+  return missing;
+}
+
+async function wrrSubmitClosure() {
+  if (WRR_CLOSE_IN_FLIGHT) return;
+  const detail = WRR_LAST_DETAIL;
+  if (!detail || !detail.resolution_id) return;
+  // Re-checked here, not just at render time: the enabled/disabled
+  // state of the button is a UI convenience, not the source of
+  // truth -- the backend re-validates readiness on every call
+  // regardless, but this avoids firing a request the UI itself
+  // already knows will be rejected.
+  if (!WRR_LAST_READINESS || !WRR_LAST_READINESS.is_ready) return;
+  if (WRR_LAST_CLOSURE !== null) return;
+
+  const errEl = document.getElementById('wrr-close-validation-error');
+  const statusMsgEl = document.getElementById('wrr-close-status-msg');
+  const submitBtn = document.getElementById('wrr-close-submit-btn');
+  if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+  if (statusMsgEl) statusMsgEl.textContent = '';
+
+  const payload = {
+    closure_rationale: document.getElementById('wrr-close-rationale').value,
+    closed_by: document.getElementById('wrr-close-closed-by').value,
+  };
+
+  const missing = wrrValidateCloseForm(payload);
+  if (missing.length) {
+    if (errEl) {
+      errEl.style.display = '';
+      errEl.textContent = t('wrr.closure.validation_error_prefix') + missing.join(', ');
+    }
+    return;
+  }
+
+  WRR_CLOSE_IN_FLIGHT = true;
+  if (submitBtn) submitBtn.disabled = true;
+  if (statusMsgEl) statusMsgEl.textContent = t('wrr.closure.submitting');
+  try {
+    await apiRequest(
+      '/api/library/washers/resolutions/' + encodeURIComponent(detail.resolution_id) + '/close',
+      { method: 'POST', body: JSON.stringify(payload) }
+    );
+    if (statusMsgEl) {
+      statusMsgEl.innerHTML = '<div class="alert alert-success">' + scEsc(t('wrr.closure.success')) + '</div>';
+    }
+    // Readiness + closure only -- queue/detail/decision/history are
+    // deliberately not reloaded here (Stage 5 task brief: no
+    // unnecessary full reload).
+    await wrrLoadClosureReadiness(detail.resolution_id);
+    await wrrLoadClosure(detail.resolution_id);
+  } catch (e) {
+    if (errEl) {
+      errEl.style.display = '';
+      errEl.textContent = t('wrr.api_error_prefix') + (e && e.message ? e.message : String(e));
+    }
+  } finally {
+    WRR_CLOSE_IN_FLIGHT = false;
+    if (submitBtn) {
+      const enabled = !!(WRR_LAST_READINESS && WRR_LAST_READINESS.is_ready) && (WRR_LAST_CLOSURE === null);
+      submitBtn.disabled = !enabled;
+    }
+  }
+}
+
 function miReapplyLanguage() {
+
   // Faz 2.8.8: re-render already-fetched Material Intelligence data
   // with the newly selected language's t()-resolved labels -- the
   // materials table needs no new network call (its data is
