@@ -3,9 +3,27 @@
 | Item                          | Value                                                    |
 | ----------------------------- | --------------------------------------------------------- |
 | Product                       | TorqPro                                                    |
-| **Current Version**           | **v2.8.19**                                                |
-| **Version Date**              | **03 August 2026**                                         |
-| **Current Engineering Focus** | **Washer Resolution Decision Workflow Integration (Stages 1-5)** |
+| **Current Version**           | **v2.8.20**                                                |
+| **Version Date**              | **05 August 2026**                                         |
+| **Current Engineering Focus** | **Washer Resolution Evidence & Controlled Closure (Stages 1-5)** |
+
+---
+
+# What's New in v2.8.20
+
+## Washer Resolution Evidence & Controlled Closure (Stages 1-5)
+
+Phase **2.8.20** adds a structured evidence trail and a controlled, evidence-backed closure workflow on top of the Faz 2.8.9/2.8.19 washer resolution decision system, delivered across five additive, independently-committed stages plus a small set of follow-up test-maintenance commits.
+
+* **Stage 1 — Evidence domain model.** `WasherResolutionEvidence`: an immutable, checksummed Pydantic model with a closed `EvidenceType` vocabulary (authoritative standard, manufacturer document, approved engineering source, internal measurement, comparison analysis, legacy provenance reference, other) and an `EvidenceVerificationStatus` (unverified/verified/rejected). No persistence, no API, no readiness logic at this stage.
+* **Stage 2 — Evidence persistence.** An append-only, locked, atomically-written evidence ledger mirroring the existing Faz 2.8.9 decision ledger's own proven file-I/O pattern exactly. No `resolution_id` validation and no idempotency at this layer (both are the service layer's job).
+* **Stage 3 — Controlled closure service.** A `WasherResolutionClosure` domain model, its own append-only ledger, and orchestration (`record_resolution_evidence`, `evaluate_closure_readiness`, `close_resolution`, `get_resolution_closure`) requiring a terminal decision and at least one *verified* evidence record before a resolution can be closed. Corrupted evidence blocks closure rather than being silently dropped. No reopen mechanism anywhere.
+* **Stage 4 — REST API.** Five new endpoints under `/api/library/washers/resolutions/{resolution_id}/(evidence|closure-readiness|close|closure)`, following the existing modular-router convention (`APIRouter`, `Depends(user)`, a central exception-mapping helper). `GET .../closure` returns `200 {"closure": null}`, not 404, before anything has been closed.
+* **Stage 5 — Frontend workflow.** Additive Evidence List/Form, Closure Readiness, and Close Form/Result cards inside the existing washer resolution detail screen; verification status is shown, never changed, from this screen. New TR/EN translation keys and a dependency-free JS regression harness registered in the canonical quality gate, plus a short follow-up series hardening test portability and harness robustness.
+
+**No reopen, governance sync, or reporting/export UI exists anywhere in this phase.** No backend business rule, checksum algorithm, or readiness rule was duplicated across layers -- each new layer calls the one beneath it unchanged.
+
+**Important:** this phase delivers the *workflow*, not closed records. As of this release, the evidence and closure ledgers are both empty -- no washer resolution has been evidenced or closed by this phase; doing so remains a separate, ongoing human task using the new UI.
 
 ---
 
@@ -219,7 +237,8 @@ Continuous integration verifies every change before integration into the main br
 | Phase 2.8.16     | Joint Revision List UX Improvements           | ✅ Completed           |
 | Phase 2.8.17      | Joint Revision HTTP API & Idempotent Write Exposure | ✅ Completed           |
 | Phase 2.8.18      | UI/UX Refactoring and Dashboard Improvements (Stages 1-5) | ✅ Completed           |
-| **Phase 2.8.19** | **Washer Resolution Decision Workflow Integration (Stages 1-5)** | ⭐ **Current Version** |
+| Phase 2.8.19      | Washer Resolution Decision Workflow Integration (Stages 1-5) | ✅ Completed           |
+| **Phase 2.8.20** | **Washer Resolution Evidence & Controlled Closure (Stages 1-5)** | ⭐ **Current Version** |
 
 ---
 
@@ -227,7 +246,8 @@ Continuous integration verifies every change before integration into the main br
 
 | Version     | Highlights                                             |
 | ----------- | --------------------------------------------------------- |
-| **v2.8.19** | Washer Resolution Decision Workflow Integration (Stages 1-5) |
+| **v2.8.20** | Washer Resolution Evidence & Controlled Closure (Stages 1-5) |
+| v2.8.19     | Washer Resolution Decision Workflow Integration (Stages 1-5) |
 | v2.8.18     | UI/UX Refactoring and Dashboard Improvements (Stages 1-5)  |
 | v2.8.17     | Joint Revision HTTP API & Idempotent Write Exposure        |
 | v2.8.16     | Joint Revision List UX Improvements                       |
@@ -246,17 +266,17 @@ Continuous integration verifies every change before integration into the main br
 
 ## Current Version
 
-**v2.8.19**
+**v2.8.20**
 
 Current engineering focus:
 
-* Washer resolution detail API (Stage 1, additive)
-* Washer resolution queue/detail frontend (Stage 2, read-only)
-* Washer resolution decision-entry form (Stage 3, no invented engineering data)
-* Washer resolution decision-history view (Stage 4, read-only)
-* VERSION/README/CHANGELOG/backlog closure and completion report (Stage 5)
+* Washer resolution evidence domain model (Stage 1, immutable, checksummed)
+* Washer resolution evidence persistence layer (Stage 2, append-only ledger)
+* Controlled closure service (Stage 3, evidence-backed readiness rules, no reopen)
+* Evidence & closure REST API (Stage 4, five new additive endpoints)
+* Evidence & closure frontend workflow (Stage 5, additive UI + test/harness hardening)
 
-Not yet done by this phase: none of the 76 washer resolution records (71 `open`, 5 `blocked_authoritative_source`) have been resolved -- the workflow to resolve them now exists, but resolving them is a separate, ongoing human task.
+Not yet done by this phase: the evidence and closure ledgers are both empty -- no washer resolution has been evidenced or closed by this phase yet; doing so remains a separate, ongoing human task using the new UI.
 
 ---
 

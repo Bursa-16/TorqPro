@@ -403,3 +403,77 @@ Full test suite: 2291 passed (Stage 1 baseline 2213 + 13 + 25 + 21 +
 19 across the four stages). Canonical quality gate
 (`tools/run_quality_gate.py`) 6/6 PASSED at every stage, including 9
 JavaScript regression harnesses.
+
+## Faz 2.8.20 — Washer Resolution Evidence & Controlled Closure — 2026-08-05
+
+Adds a structured evidence trail and a controlled, evidence-backed
+closure workflow on top of the Faz 2.8.9/2.8.19 washer resolution
+decision system, across five additive, independently-committed stages
+(PR #33) plus a short follow-up test-maintenance series (PR #34).
+
+- **Stage 1** (`ea65071`, refactored `46ec085`) — `WasherResolutionEvidence`
+  domain model (`backend/library/washer_resolution_evidence.py`):
+  immutable, checksummed evidence records with a closed `EvidenceType`
+  vocabulary (authoritative standard, manufacturer document, approved
+  engineering source, internal measurement, comparison analysis,
+  legacy provenance reference, other) and an `EvidenceVerificationStatus`
+  (unverified/verified/rejected). No persistence, no API, no readiness
+  logic at this stage.
+- **Stage 2** (`b3a2d39`) — append-only evidence persistence layer
+  (`backend/library/washer_resolution_evidence_store.py` +
+  `backend/library/data/washer_resolution_evidence.json`), mirroring
+  the Faz 2.8.9 decision ledger's locked/atomic-write pattern exactly.
+  No `resolution_id` validation and no idempotency at this layer
+  (deliberate; both are the service layer's responsibility).
+- **Stage 3** (`58f15ae`, hardened `323222a`) — controlled closure
+  service: a `WasherResolutionClosure` domain model, its own
+  append-only ledger, and `record_resolution_evidence()` /
+  `evaluate_closure_readiness()` / `close_resolution()` /
+  `get_resolution_closure()` orchestration in
+  `backend/library/washer_resolution_service.py`. Closure requires a
+  terminal decision and at least one *verified* evidence record;
+  corrupted evidence blocks closure rather than being silently
+  dropped. No reopen mechanism anywhere (ADR-0013 consistent).
+- **Stage 4** (`8c557b6`) — five new REST endpoints under
+  `/api/library/washers/resolutions/{resolution_id}/(evidence|
+  closure-readiness|close|closure)`
+  (`backend/api/routes/washer_resolution_closure.py`), following the
+  established modular-router convention (`APIRouter`, `Depends(user)`,
+  a central exception-mapping helper). `GET .../closure` returns
+  `200 {"closure": null}`, not 404, when nothing has been closed yet.
+- **Stage 5** (`a0ce595`) — additive Evidence List/Form, Closure
+  Readiness, and Close Form/Result cards inside the existing
+  washer-resolution detail screen; `verification_status` is shown,
+  never changed, from this screen. 62 new
+  `wrr.evidence.*`/`wrr.closure.*` TR/EN keys. New dependency-free
+  JS/vm regression harness
+  (`tests/js/run_washer_resolution_evidence_closure_tests.js`, 128
+  assertions) registered in the canonical quality gate.
+- **Follow-up test-maintenance series** (`309097c`, `81fd04d`,
+  `a39210e`, `1b87954`; PR #34, merged after the `v2.8.20` tag) —
+  cross-platform (`sys.executable`) portability for the Stage 5
+  wrapper's i18n-parity subprocess call; refreshed hardcoded
+  `wrr.*` key-count and JS-harness-count assertions to match Stage 5's
+  own additions; a brace-depth-based, version-independent rewrite of
+  the Joint Revision List UX harness's I18N-block extraction (Faz
+  2.8.16), replacing a fragile regex that could throw an unclear
+  `TypeError` if the block's trailing text ever shifted; and a final
+  scope-list update recognizing that fix as an intentional part of
+  Stage 5.
+
+No backend business rule, checksum algorithm, or readiness rule was
+duplicated across layers at any stage — each new layer (domain model,
+persistence, service, API, frontend) calls the one beneath it
+unchanged. No reopen, governance sync, or reporting/export UI exists
+anywhere in this phase.
+
+**This phase delivers the workflow, not closed records.** As of this
+release, `backend/library/data/washer_resolution_evidence.json` and
+`backend/library/data/washer_resolution_closure.json` are both empty;
+no washer resolution has been evidenced or closed by this phase.
+
+**Release note:** `v2.8.20` was tagged at the PR #33 merge commit
+(`e30e5e1`). The four follow-up test-maintenance commits above
+(PR #34) were merged to `main` *after* that tag and are included in
+this changelog entry for completeness, but are not covered by the
+`v2.8.20` tag itself.
