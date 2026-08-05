@@ -31,6 +31,8 @@ from pathlib import Path
 
 import pytest
 
+from tests._stage_boundary import stage_range_changed_files
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 HARNESS_PATH = REPO_ROOT / "tests" / "js" / "run_washer_resolution_evidence_closure_tests.js"
 FRONTEND_PATH = REPO_ROOT / "frontend" / "index.html"
@@ -328,18 +330,19 @@ def test_frontend_js_syntax_is_valid(tmp_path):
 
 
 def test_stage5_touches_no_backend_files():
-    """Scoped to this stage's own commit range (Stage 4 HEAD..HEAD),
-    not a permanently-pinned historical boundary -- deliberately not
-    one of the three known-fragile Faz 2.8.19 stage-boundary tests
-    (see Faz 2.8.20 Stage 2 code review's root-cause analysis of why
-    those are pinned against a moving HEAD)."""
-    result = subprocess.run(
-        ["git", "diff", "--name-only", STAGE4_COMMIT, "HEAD"],
-        capture_output=True, text=True, cwd=str(REPO_ROOT),
+    """Closed range: Stage 4's own end commit (STAGE4_COMMIT) -> Stage
+    5's own closing merge commit
+    (``5f233dcf4f0a674e897079c890d0ab1fc88a3c2d``, "Merge pull request
+    #34 from Bursa-16/fix/faz-2.8.20-stage5-completion") -- not the
+    moving ``HEAD`` ref. The previous version of this test already
+    documented (in its own docstring) that open-ended ranges against
+    HEAD are exactly the "known-fragile Faz 2.8.19" pattern it meant
+    to avoid, but used that same pattern anyway; this closes that gap.
+    See fix/pre-existing-stage-boundary-tests delivery report for the
+    evidence backing both endpoints."""
+    changed = stage_range_changed_files(
+        REPO_ROOT, STAGE4_COMMIT, "5f233dcf4f0a674e897079c890d0ab1fc88a3c2d"
     )
-    if result.returncode != 0:
-        pytest.skip("not a git checkout with the expected Stage 4 commit reachable")
-    changed = [f for f in result.stdout.splitlines() if f.strip()]
     for f in changed:
         assert not f.startswith("backend/"), f"unexpected backend file changed in Stage 5: {f}"
     assert "VERSION" not in changed
@@ -348,13 +351,13 @@ def test_stage5_touches_no_backend_files():
 
 
 def test_only_expected_files_changed_in_stage5():
-    result = subprocess.run(
-        ["git", "diff", "--name-only", STAGE4_COMMIT, "HEAD"],
-        capture_output=True, text=True, cwd=str(REPO_ROOT),
+    """Same closed range as test_stage5_touches_no_backend_files
+    above -- see that test's docstring for the evidence."""
+    changed = set(
+        stage_range_changed_files(
+            REPO_ROOT, STAGE4_COMMIT, "5f233dcf4f0a674e897079c890d0ab1fc88a3c2d"
+        )
     )
-    if result.returncode != 0:
-        pytest.skip("not a git checkout with the expected Stage 4 commit reachable")
-    changed = {f for f in result.stdout.splitlines() if f.strip()}
     allowed = {
         "frontend/index.html",
         "tests/js/run_washer_resolution_evidence_closure_tests.js",
