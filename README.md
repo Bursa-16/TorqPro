@@ -3,9 +3,25 @@
 | Item                          | Value                                                    |
 | ----------------------------- | --------------------------------------------------------- |
 | Product                       | TorqPro                                                    |
-| **Current Version**           | **v2.8.20**                                                |
+| **Current Version**           | **v2.8.21**                                                |
 | **Version Date**              | **05 August 2026**                                         |
-| **Current Engineering Focus** | **Washer Resolution Evidence & Controlled Closure (Stages 1-5)** |
+| **Current Engineering Focus** | **Engineering Formula Traceability and Governance Foundation** |
+
+---
+
+# What's New in v2.8.21
+
+## Engineering Formula Traceability and Governance Foundation
+
+Phase **2.8.21** is governance and visibility only -- no engineering formula, coefficient, or numerical result changed. It gives the 10 live `backend.engineering_core` formulas (torque, thread friction, pitch/minor diameter, helix angle, thread shear area, material shear strength, preload, proof-load utilization, and the composite joint check behind `/api/engineering/check`) the same kind of APPROVED/PROVISIONAL/EXPERIMENTAL/DEPRECATED/UNVERIFIED traceability already proven out in `backend.vdi2230_core.trace` -- reusing that architecture, not duplicating it (`APPROVED`/`PROVISIONAL` are imported, not redefined).
+
+* **`backend/engineering_core/trace.py` (new).** 10 formulas registered: 0 APPROVED, 9 PROVISIONAL, 1 UNVERIFIED. Torsional stress, von Mises equivalent stress, bearing/contact pressure, and a standalone tensile-stress (F/A) function were investigated and confirmed genuinely absent from the codebase -- deliberately given **no** placeholder entry.
+* **`internal_thread_sf`/`external_thread_sf` now traceable.** Both previously carried no visible status. They now report PROVISIONAL, LOW confidence, the `d2`/`d3` diameter basis, the `0.5` coefficient, and a fixed list of prohibited compliance claims (ISO 16224, VDI 2230, FCA C2001, ASME) -- via an additive `formula_governance` key on `/api/engineering/check` and via the existing `/api/engineering/formula-validation` endpoint (extended, not replaced).
+* **Frontend visibility.** The "Hızlı Hesap" screen -- found this phase to compute its own thread-strip safety factors independently in client-side JavaScript, never calling the backend endpoint above -- gained a small "Provisional model" / "Geçici model (Provisional)" label next to both values, using the existing i18n mechanism.
+* **Thread-stripping model unchanged.** `0.5*pi*d_effective*Le` (via `d2` for internal, `d3` for external capacity) remains PROVISIONAL, confidence LOW, per the source-validation review that preceded this phase. Not redesigned.
+* **36 new governance tests**, including a numerical-regression baseline locking `evaluate_joint()`'s output bit-for-bit against its pre-phase behaviour.
+
+See `docs/phases/PHASE_2.8.21_ENGINEERING_CORE_TRACEABILITY.md` for the full delivery report.
 
 ---
 
@@ -238,7 +254,8 @@ Continuous integration verifies every change before integration into the main br
 | Phase 2.8.17      | Joint Revision HTTP API & Idempotent Write Exposure | ✅ Completed           |
 | Phase 2.8.18      | UI/UX Refactoring and Dashboard Improvements (Stages 1-5) | ✅ Completed           |
 | Phase 2.8.19      | Washer Resolution Decision Workflow Integration (Stages 1-5) | ✅ Completed           |
-| **Phase 2.8.20** | **Washer Resolution Evidence & Controlled Closure (Stages 1-5)** | ⭐ **Current Version** |
+| Phase 2.8.20     | Washer Resolution Evidence & Controlled Closure (Stages 1-5) | ✅ Completed           |
+| **Phase 2.8.21** | **Engineering Formula Traceability and Governance Foundation** | ⭐ **Current Version** |
 
 ---
 
@@ -246,7 +263,8 @@ Continuous integration verifies every change before integration into the main br
 
 | Version     | Highlights                                             |
 | ----------- | --------------------------------------------------------- |
-| **v2.8.20** | Washer Resolution Evidence & Controlled Closure (Stages 1-5) |
+| **v2.8.21** | Engineering Formula Traceability and Governance Foundation |
+| v2.8.20     | Washer Resolution Evidence & Controlled Closure (Stages 1-5) |
 | v2.8.19     | Washer Resolution Decision Workflow Integration (Stages 1-5) |
 | v2.8.18     | UI/UX Refactoring and Dashboard Improvements (Stages 1-5)  |
 | v2.8.17     | Joint Revision HTTP API & Idempotent Write Exposure        |
@@ -266,17 +284,17 @@ Continuous integration verifies every change before integration into the main br
 
 ## Current Version
 
-**v2.8.20**
+**v2.8.21**
 
 Current engineering focus:
 
-* Washer resolution evidence domain model (Stage 1, immutable, checksummed)
-* Washer resolution evidence persistence layer (Stage 2, append-only ledger)
-* Controlled closure service (Stage 3, evidence-backed readiness rules, no reopen)
-* Evidence & closure REST API (Stage 4, five new additive endpoints)
-* Evidence & closure frontend workflow (Stage 5, additive UI + test/harness hardening)
+* `backend/engineering_core/trace.py` -- 10 live formulas registered (0 APPROVED, 9 PROVISIONAL, 1 UNVERIFIED)
+* `internal_thread_sf`/`external_thread_sf` traceability -- diameter basis, coefficient, status, prohibited claims
+* Additive `formula_governance` key on `/api/engineering/check`; `/api/engineering/formula-validation` extended
+* Frontend "Provisional model" label on the Hızlı Hesap thread-strip-safety results
+* 36 new governance tests, including a numerical-regression baseline
 
-Not yet done by this phase: the evidence and closure ledgers are both empty -- no washer resolution has been evidenced or closed by this phase yet; doing so remains a separate, ongoing human task using the new UI.
+Not yet done by this phase: no ISO 16224/VDI 2230/FCA C2001/FED-STD calculation engine was added; torsional stress, von Mises equivalent stress and bearing/contact pressure remain unimplemented (deliberately, not silently); the frontend's independent JS thread-shear implementation and the backend's are not yet covered by a shared parity test.
 
 ---
 

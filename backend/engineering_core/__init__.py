@@ -14,9 +14,12 @@ Modules:
 - joint:      joint-level evaluation (composition of the above)
 - units:      unit conversions
 - validation: reference-data record validation and deviation checks
+- trace:      formula traceability metadata (Phase 2.8.21, governance/
+              visibility only -- describes the modules above, changes
+              no formula, coefficient or numerical result)
 """
 
-from . import friction, geometry, joint, materials, preload, torque, units, validation
+from . import friction, geometry, joint, materials, preload, torque, trace, units, validation
 
 __all__ = [
     "friction",
@@ -25,6 +28,7 @@ __all__ = [
     "materials",
     "preload",
     "torque",
+    "trace",
     "units",
     "validation",
 ]

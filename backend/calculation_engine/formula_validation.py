@@ -10,10 +10,21 @@ already exist in this repository:
   is out of scope for this phase, per
   ``docs/adr/ADR-0012-material-intelligence-formula-validation.md``).
 
+Phase 2.8.21 adds a third source, read the same way: read-only,
+additive, no reclassification -- ``backend.engineering_core.trace.
+all_traces()``. Its entries carry a richer metadata shape than the
+5-field ``FormulaValidationEntry`` below (see
+``backend.engineering_core.trace.EngineeringCoreFormulaTrace``); the
+extra fields are exposed as additional, backward-compatible keys on
+``FormulaValidationEntry.to_dict()`` (``None``/empty for the two
+pre-existing catalogs, populated for engineering_core) rather than by
+widening the two pre-existing catalogs' own trace shapes.
+
 This module never writes to either catalog and never reclassifies a
 formula's ``validation_status``. It only reads
-``vdi2230_core.trace.all_traces()`` and
-``formula_registry.all_formulas()`` (both pre-existing public
+``vdi2230_core.trace.all_traces()``,
+``formula_registry.all_formulas()`` and (Phase 2.8.21)
+``engineering_core.trace.all_traces()`` (all pre-existing public
 accessors) and produces a deterministic coverage/status report, in
 TR/EN.
 
@@ -31,10 +42,15 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from backend.calculation_engine import formula_registry
+from backend.engineering_core import trace as engcore_trace
 from backend.vdi2230_core import trace as vdi_trace
 
-APPROVED = "APPROVED"
-PROVISIONAL = "PROVISIONAL"
+# Single source of truth for these two values remains
+# backend.vdi2230_core.trace (imported, not redefined) -- Phase 2.8.21
+# extends the *set* of statuses this report can display, not the
+# meaning of the two shared ones.
+APPROVED = vdi_trace.APPROVED
+PROVISIONAL = vdi_trace.PROVISIONAL
 
 
 _MESSAGES: Dict[str, Dict[str, str]] = {
@@ -83,6 +99,16 @@ class FormulaValidationEntry:
     classification: str
     validation_status: str
     catalog: str
+    # Phase 2.8.21, additive: richer governance metadata. ``None``/empty
+    # for entries from the two pre-existing catalogs (vdi2230_core.trace,
+    # formula_registry) -- their own trace shapes are untouched by this
+    # phase; populated for engineering_core.trace entries. Existing
+    # consumers reading only the seven fields above are unaffected.
+    source_level: Optional[str] = None
+    confidence: Optional[str] = None
+    limitations: Optional[List[str]] = None
+    prohibited_claims: Optional[List[str]] = None
+    intended_use: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -93,6 +119,11 @@ class FormulaValidationEntry:
             "classification": self.classification,
             "validation_status": self.validation_status,
             "catalog": self.catalog,
+            "source_level": self.source_level,
+            "confidence": self.confidence,
+            "limitations": list(self.limitations) if self.limitations else [],
+            "prohibited_claims": list(self.prohibited_claims) if self.prohibited_claims else [],
+            "intended_use": self.intended_use,
         }
 
 
@@ -152,6 +183,35 @@ def _formula_registry_entries() -> List[FormulaValidationEntry]:
     return entries
 
 
+def _engineering_core_entries() -> List[FormulaValidationEntry]:
+    """Phase 2.8.21: read-only projection of
+    ``backend.engineering_core.trace.all_traces()`` into the same
+    ``FormulaValidationEntry`` shape used by the other two catalogs,
+    with the additional metadata fields populated. Never reclassifies
+    a status -- every ``validation_status`` here is exactly the
+    ``status`` already recorded in ``engineering_core.trace``.
+    """
+    entries = []
+    for formula_id, formula_trace in engcore_trace.all_traces().items():
+        entries.append(
+            FormulaValidationEntry(
+                formula_id=str(getattr(formula_id, "value", formula_id)),
+                symbol=formula_trace.name,
+                unit="",
+                source=formula_trace.source_reference,
+                classification=formula_trace.domain,
+                validation_status=formula_trace.status,
+                catalog="engineering_core.trace",
+                source_level=formula_trace.source_level,
+                confidence=formula_trace.confidence,
+                limitations=list(formula_trace.limitations),
+                prohibited_claims=list(formula_trace.prohibited_claims),
+                intended_use=formula_trace.intended_use,
+            )
+        )
+    return entries
+
+
 def build_formula_validation_report(lang: Optional[str] = None) -> FormulaValidationReport:
     """Aggregate every known formula catalog into one deterministic,
     read-only report. Raises nothing for an empty catalog -- an empty
@@ -161,7 +221,8 @@ def build_formula_validation_report(lang: Optional[str] = None) -> FormulaValida
     lang = _normalize_lang(lang)
     vdi_entries = _vdi2230_entries()
     registry_entries = _formula_registry_entries()
-    entries = vdi_entries + registry_entries
+    engcore_entries = _engineering_core_entries()
+    entries = vdi_entries + registry_entries + engcore_entries
 
     approved = sum(1 for e in entries if e.validation_status == APPROVED)
     provisional = sum(1 for e in entries if e.validation_status == PROVISIONAL)

@@ -477,3 +477,47 @@ no washer resolution has been evidenced or closed by this phase.
 (PR #34) were merged to `main` *after* that tag and are included in
 this changelog entry for completeness, but are not covered by the
 `v2.8.20` tag itself.
+
+## Faz 2.8.21 — Engineering Formula Traceability and Governance Foundation — 2026-08-05
+
+Governance and visibility only -- no engineering formula, coefficient,
+or numerical result changed anywhere in this phase. Adds
+`backend/engineering_core/trace.py`, giving the 10 live formulas
+actually reachable from `evaluate_joint()` (torque, thread friction,
+pitch/minor diameter, helix angle, thread shear area, material shear
+strength, preload, proof-load utilization, and the composite joint
+check) the same APPROVED/PROVISIONAL/EXPERIMENTAL/DEPRECATED/UNVERIFIED
+traceability already proven out in `backend.vdi2230_core.trace` --
+reused architecturally, not duplicated: `APPROVED`/`PROVISIONAL` are
+imported directly from `vdi2230_core.trace`, not redefined.
+
+Result: 0 APPROVED, 9 PROVISIONAL, 1 UNVERIFIED (the `0.58`
+shear-strength factor, whose origin is not documented in the
+codebase). `internal_thread_sf`/`external_thread_sf` -- previously
+returned with no visible status -- now carry an explicit PROVISIONAL,
+LOW-confidence governance record naming the `d2`/`d3` diameter basis,
+the `0.5` coefficient, and a fixed set of prohibited compliance claims
+(ISO 16224, VDI 2230, FCA C2001, ASME). The existing
+`/api/engineering/formula-validation` endpoint was extended (not
+replaced) to also report these; `/api/engineering/check` gained one
+additive `formula_governance` key. The frontend's "Hızlı Hesap" screen
+-- found during this phase to compute its own `internal_thread_sf`/
+`external_thread_sf` independently in client-side JavaScript, never
+calling `/api/engineering/check` -- gained a small, existing-i18n-driven
+"Provisional model" / "Geçici model (Provisional)" label next to both
+values.
+
+Thread-stripping model (`0.5*pi*d_effective*Le`) remains PROVISIONAL,
+confidence LOW, per the source-validation review that preceded this
+phase (structurally aligned with a RoyMech "convenient formula," no
+primary ISO/DIN/VDI/ASME citation found). Not redesigned or replaced
+here. Torsional stress, von Mises equivalent stress, bearing/contact
+pressure, and a standalone tensile-stress (F/A) function remain
+genuinely absent from `backend.engineering_core` and were **not**
+given placeholder registry entries.
+
+36 new governance tests (`tests/test_faz_2_8_21_engineering_core_traceability.py`),
+including a LEGACY_REGRESSION_ONLY numerical baseline locking
+`evaluate_joint()`'s pre-phase output bit-for-bit. See
+`docs/phases/PHASE_2.8.21_ENGINEERING_CORE_TRACEABILITY.md` for the
+full delivery report.

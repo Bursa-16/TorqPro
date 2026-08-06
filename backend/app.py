@@ -15,6 +15,10 @@ from pydantic import BaseModel, Field
 # Dual import path: repo root (backend.engineering_core) or backend/ on sys.path (CI import check).
 try:
     from backend.engineering_core.joint import evaluate_joint
+    from backend.engineering_core.trace import (
+        get_trace as get_engcore_trace,
+        EngineeringCoreFormulaId,
+    )
     from backend.engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed
     from backend.calculation_engine.friction_readiness import assess_friction_readiness
     from backend.calculation_engine.friction_recommendations import (
@@ -39,6 +43,10 @@ try:
     )
 except ImportError:  # pragma: no cover - direct import with backend/ on sys.path
     from engineering_core.joint import evaluate_joint  # type: ignore[no-redef]
+    from engineering_core.trace import (  # type: ignore[no-redef]
+        get_trace as get_engcore_trace,
+        EngineeringCoreFormulaId,
+    )
     from engineering_core.validation import QUALITY_SCHEMAS, validate_package_records, deviation_pct, tolerance_passed  # type: ignore[no-redef]
     from calculation_engine.friction_readiness import assess_friction_readiness  # type: ignore[no-redef]
     from calculation_engine.friction_recommendations import (  # type: ignore[no-redef]
@@ -460,6 +468,28 @@ class EngineeringCheck(BaseModel):
     # above, which is unaffected whether or not this field is set.
     friction_condition_id: Optional[str] = None
 
+def _formula_governance_entry(formula_id, diameter_basis=None, coefficient=None):
+    # Faz 2.8.21: compact, additive governance pointer for a single
+    # output field -- not a full metadata dump (see
+    # /api/engineering/formula-validation for that). Built from
+    # engineering_core.trace so this can never drift from the
+    # registered status.
+    t = get_engcore_trace(formula_id)
+    entry = {
+        "model_id": t.formula_id.value,
+        "status": t.status,
+        "source_level": t.source_level,
+        "confidence": t.confidence,
+        "limitations": list(t.limitations),
+        "prohibited_claims": list(t.prohibited_claims),
+    }
+    if diameter_basis is not None:
+        entry["diameter_basis"] = diameter_basis
+    if coefficient is not None:
+        entry["coefficient"] = coefficient
+    return entry
+
+
 @app.post("/api/engineering/check")
 def engineering_check(x: EngineeringCheck, u=Depends(user)):
     # Orchestration only: input validated by Pydantic, calculation in engineering_core.
@@ -472,6 +502,29 @@ def engineering_check(x: EngineeringCheck, u=Depends(user)):
         except CalculationInputError as e:
             raise HTTPException(422, str(e))
         result["friction_readiness"] = readiness.to_dict()
+    # Faz 2.8.21: additive governance/traceability key. Existing keys
+    # (preload_n, torque_min_nm, ..., internal_thread_sf,
+    # external_thread_sf, nut_proof_util_pct[, friction_readiness])
+    # are unchanged -- no consumer reading only those keys is affected.
+    # No formula, coefficient or numerical result is touched by this
+    # block; it only reports the already-registered status of the
+    # formulas that produced the values above it.
+    result["formula_governance"] = {
+        "internal_thread_sf": _formula_governance_entry(
+            EngineeringCoreFormulaId.ENGCORE_THREAD_SHEAR_AREA,
+            diameter_basis="d2 (pitch diameter)", coefficient=0.5,
+        ),
+        "external_thread_sf": _formula_governance_entry(
+            EngineeringCoreFormulaId.ENGCORE_THREAD_SHEAR_AREA,
+            diameter_basis="d3 (minor diameter)", coefficient=0.5,
+        ),
+        "preload_n": _formula_governance_entry(EngineeringCoreFormulaId.ENGCORE_PRELOAD_FROM_YIELD),
+        "torque_min_nm": _formula_governance_entry(EngineeringCoreFormulaId.ENGCORE_TIGHTENING_TORQUE),
+        "torque_nom_nm": _formula_governance_entry(EngineeringCoreFormulaId.ENGCORE_TIGHTENING_TORQUE),
+        "torque_max_nm": _formula_governance_entry(EngineeringCoreFormulaId.ENGCORE_TIGHTENING_TORQUE),
+        "nut_proof_util_pct": _formula_governance_entry(EngineeringCoreFormulaId.ENGCORE_PROOF_LOAD_UTILIZATION),
+        "see_also": "/api/engineering/formula-validation",
+    }
     return result
 
 

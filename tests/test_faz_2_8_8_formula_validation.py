@@ -41,15 +41,24 @@ class TestAggregation:
         assert len(vdi_entries) == 7
 
     def test_approved_and_provisional_counts_match_known_catalog(self):
+        # Faz 2.8.21: engineering_core.trace added as a third,
+        # read-only source (10 entries: 9 PROVISIONAL + 1 UNVERIFIED).
+        # vdi2230_core.trace's own 7-entry split (2 APPROVED / 5
+        # PROVISIONAL) is unchanged -- see
+        # test_reports_seven_vdi2230_entries above.
         report = fv.build_formula_validation_report()
         assert report.approved_count == 2
-        assert report.provisional_count == 5
-        assert report.total_count == 7
+        assert report.provisional_count == 14
+        assert report.other_status_count == 1
+        assert report.total_count == 17
 
     def test_formula_registry_currently_empty_is_not_an_error(self):
         assert formula_registry.all_formulas() == {}
         report = fv.build_formula_validation_report()
-        assert report.total_count == 7  # only vdi2230_core entries counted
+        # Faz 2.8.21: total_count now includes engineering_core.trace's
+        # 10 entries alongside vdi2230_core's 7; formula_registry's own
+        # contribution remains 0, which is still not an error.
+        assert report.total_count == 17
 
     def test_phi_and_fs_are_approved(self):
         report = fv.build_formula_validation_report()
@@ -125,6 +134,7 @@ class TestReadOnlyBoundary:
             "dataclasses",
             "typing",
             "backend.calculation_engine",
+            "backend.engineering_core",  # Faz 2.8.21: read-only trace accessor
             "backend.vdi2230_core",
         }
 
@@ -148,7 +158,9 @@ class TestAPI:
         r = client.get("/api/engineering/formula-validation", headers=auth_headers)
         assert r.status_code == 200
         body = r.json()
-        assert body["total_count"] == 7
+        # Faz 2.8.21: engineering_core.trace adds 10 entries (see
+        # TestAggregation.test_approved_and_provisional_counts_match_known_catalog).
+        assert body["total_count"] == 17
         assert body["approved_count"] == 2
 
     def test_endpoint_lang_query_param(self, auth_headers):
