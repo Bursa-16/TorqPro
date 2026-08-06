@@ -15,23 +15,37 @@ TorqPro is a professional engineering platform for the design, analysis, validat
 - Engineering traceability
 - AI-ready architecture
 
----
-
-## Current Version
-
-
-
-
-
-
 # Current Version
 
 | Item                          | Value                                                    |
 | ----------------------------- | --------------------------------------------------------- |
 | Product                       | TorqPro                                                    |
-| **Current Version**           | **v2.8.21**                                                |
-| **Version Date**              | **05 August 2026**                                         |
-| **Current Engineering Focus** | **Engineering Formula Traceability and Governance Foundation** |
+| **Current Version**           | **v2.8.22**                                                |
+| **Version Date**              | **06 August 2026**                                         |
+| **Current Engineering Focus** | **Torque Study UI/UX Messaging and CI Stage-Boundary Reliability** |
+
+---
+
+# What's New in v2.8.22
+
+## Torque Study UI/UX Messaging and CI Reliability
+
+Phase **2.8.22** is a focused maintenance and release phase. It does not redesign the engineering calculation core introduced and governed in v2.8.21.
+
+* **Example Torque Study UI/UX messaging updated.** User-facing messages in the torque-study workflow were clarified and aligned for a more consistent TR/EN experience.
+* **Historical stage-boundary tests hardened in CI.** GitHub Actions now fetches full repository history so tests that depend on historical commit boundaries can run reliably.
+* **Engineering core preserved.** No engineering formula, coefficient, or numerical result was intentionally changed by this maintenance phase.
+* **Release metadata updated.** The canonical product version was advanced to **v2.8.22** after the feature work was merged into `main`.
+* **Validation.** The recorded full regression result for this release line is **2546 passed, 0 failed**.
+
+Relevant release commits on `main`:
+
+```text
+75a5612  chore(release): bump version to 2.8.22
+97fab79  Merge pull request #36 from Bursa-16/feature/faz-2.8.22-torque-study-ui-messaging
+0f2860c  ci: fetch full history for stage boundary tests
+40f7b1b  Faz 2.8.22: Örnek Tork Çalışması UI/UX mesajı düzeltmeleri
+```
 
 ---
 
@@ -243,14 +257,13 @@ Engineering quality is continuously verified using automated validation.
 
 # Test Results
 
-| Test Group                  | Result                 |
-| ----------------------------- | ---------------------- |
-| Full pytest Suite             | **2201 / 2201 Passed** |
-| Governance Suite              | **517 / 517 Passed**   |
-| Joint-related Tests (all)     | **448 / 448 Passed**   |
-| Joints API Tests              | **19 / 19 Passed**     |
-| Joints Foundation Tests       | **41 / 41 Passed**     |
-| TR / EN Localization Tests    | **6 / 6 Passed**       |
+| Test Group                 | Result                           |
+| -------------------------- | -------------------------------- |
+| Full pytest Suite          | **2546 / 2546 Passed**           |
+| Failed Tests               | **0**                            |
+| Quality Gate               | **Passed**                       |
+| Historical Boundary Checks | **Passed with full Git history** |
+| TR / EN UI Messaging       | **Validated**                    |
 
 Continuous integration verifies every change before integration into the main branch.
 
@@ -281,7 +294,8 @@ Continuous integration verifies every change before integration into the main br
 | Phase 2.8.18      | UI/UX Refactoring and Dashboard Improvements (Stages 1-5) | ✅ Completed           |
 | Phase 2.8.19      | Washer Resolution Decision Workflow Integration (Stages 1-5) | ✅ Completed           |
 | Phase 2.8.20     | Washer Resolution Evidence & Controlled Closure (Stages 1-5) | ✅ Completed           |
-| **Phase 2.8.21** | **Engineering Formula Traceability and Governance Foundation** | ⭐ **Current Version** |
+| Phase 2.8.21 | Engineering Formula Traceability and Governance Foundation | ✅ Completed |
+| **Phase 2.8.22** | **Torque Study UI/UX Messaging and CI Stage-Boundary Reliability** | ⭐ **Current Version** |
 
 ---
 
@@ -289,7 +303,8 @@ Continuous integration verifies every change before integration into the main br
 
 | Version     | Highlights                                             |
 | ----------- | --------------------------------------------------------- |
-| **v2.8.21** | Engineering Formula Traceability and Governance Foundation |
+| **v2.8.22** | Torque Study UI/UX Messaging and CI Stage-Boundary Reliability |
+| v2.8.21     | Engineering Formula Traceability and Governance Foundation |
 | v2.8.20     | Washer Resolution Evidence & Controlled Closure (Stages 1-5) |
 | v2.8.19     | Washer Resolution Decision Workflow Integration (Stages 1-5) |
 | v2.8.18     | UI/UX Refactoring and Dashboard Improvements (Stages 1-5)  |
@@ -310,17 +325,17 @@ Continuous integration verifies every change before integration into the main br
 
 ## Current Version
 
-**v2.8.21**
+**v2.8.22**
 
 Current engineering focus:
 
-* `backend/engineering_core/trace.py` -- 10 live formulas registered (0 APPROVED, 9 PROVISIONAL, 1 UNVERIFIED)
-* `internal_thread_sf`/`external_thread_sf` traceability -- diameter basis, coefficient, status, prohibited claims
-* Additive `formula_governance` key on `/api/engineering/check`; `/api/engineering/formula-validation` extended
-* Frontend "Provisional model" label on the Hızlı Hesap thread-strip-safety results
-* 36 new governance tests, including a numerical-regression baseline
+* Example Torque Study user-facing messages refined for clearer TR/EN communication
+* CI checkout configured to fetch full Git history for historical stage-boundary validation
+* v2.8.21 engineering formula governance and traceability foundation preserved
+* Full regression record: **2546 passed, 0 failed**
+* Release version aligned to **v2.8.22**
 
-Not yet done by this phase: no ISO 16224/VDI 2230/FCA C2001/FED-STD calculation engine was added; torsional stress, von Mises equivalent stress and bearing/contact pressure remain unimplemented (deliberately, not silently); the frontend's independent JS thread-shear implementation and the backend's are not yet covered by a shared parity test.
+The engineering limitations documented for v2.8.21 remain unchanged unless a later phase explicitly closes them. No ISO 16224/VDI 2230/FCA C2001/FED-STD calculation engine, torsional-stress model, von Mises equivalent-stress model, or bearing/contact-pressure implementation is claimed by this maintenance release.
 
 ---
 
@@ -334,4 +349,4 @@ Potential future work areas:
 * Cross-mechanism validation
 * Further governance workspace UX refinements
 
-No subsequent phase has been officially approved yet.
+The next phase after v2.8.22 has not yet been formally approved in this README.
