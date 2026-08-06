@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "questions": [
+    {
+      "question_id": "QB-TIGHTENING_TORQUE-00001",
+      "content_version": 1,
+      "category": "tightening_torque",
+      "subcategory": "torque_preload_relationship",
+      "difficulty": "beginner",
+      "question_type": "single_choice",
+      "question_tr": "Sıkma torku (T), sürtünme katsayısı (mu) ve ön yük (F) arasındaki temel ilişkide, mu sabit tutulup F arttırılırsa T nasıl değişir?",
+      "question_en": "In the basic relationship between tightening torque (T), friction coefficient (mu), and preload (F), if mu is held constant and F increases, how does T change?",
+      "options_tr": ["Artar", "Azalır", "Değişmez", "Önce artar sonra azalır"],
+      "options_en": ["Increases", "Decreases", "Stays the same", "Increases then decreases"],
+      "correct_answer": 0,
+      "technical_explanation_tr": "T = K * F * d bağıntısında K (tork katsayısı, sürtünmeye bağlı) ve d (nominal çap) sabitken, F ile T doğru orantılı olarak artar.",
+      "technical_explanation_en": "In T = K * F * d, with K (torque coefficient, friction-dependent) and d (nominal diameter) held constant, T increases proportionally with F.",
+      "standard_reference": null,
+      "source_reference": {
+        "source_type": "internal_engine",
+        "description": "backend.engineering_core.trace.EngineeringCoreFormulaId.ENGCORE_TIGHTENING_TORQUE"
+      },
+      "source_locator": "backend/engineering_core/torque.py",
+      "traceability_level": "PROVISIONAL",
+      "tags": ["torque", "preload", "basic-relationship"],
+      "learning_objective": "Tork-ön yük ilişkisinin temel orantısını kavramak.",
+      "engineering_risk_level": "low",
+      "is_active": true
+    },
+    {
+      "question_id": "QB-ISO_16047_TESTING-00001",
+      "content_version": 1,
+      "category": "iso_16047_testing",
+      "subcategory": "test_method_scope",
+      "difficulty": "intermediate",
+      "question_type": "single_choice",
+      "question_tr": "ISO 16047 standardı temel olarak neyi tanımlar?",
+      "question_en": "What does the ISO 16047 standard primarily define?",
+      "options_tr": [
+        "Cıvatalı bağlantılarda tork-ön yük ve sürtünme test metodunu",
+        "Diş sıyırma dayanımı hesap yöntemini",
+        "Yorulma ömrü hesap yöntemini",
+        "Yüzey kaplama kalınlığı ölçüm yöntemini"
+      ],
+      "options_en": [
+        "Torque-preload and friction test method for threaded fasteners",
+        "Thread stripping strength calculation method",
+        "Fatigue life calculation method",
+        "Surface coating thickness measurement method"
+      ],
+      "correct_answer": 0,
+      "technical_explanation_tr": "ISO 16047, cıvatalı bağlantılarda tork ile ön yük arasındaki ilişkiyi ve sürtünme katsayısını laboratuvar koşullarında ölçmek için kullanılan bir test metodudur; bir diş sıyırma hesap standardı değildir.",
+      "technical_explanation_en": "ISO 16047 is a laboratory test method for measuring the torque-preload relationship and friction coefficient in threaded fasteners; it is not a thread-stripping calculation standard.",
+      "standard_reference": {
+        "name": "ISO 16047",
+        "edition_or_year": "2005",
+        "clause_or_table": "Scope"
+      },
+      "source_reference": {
+        "source_type": "standard_requirement",
+        "description": "Standardın kapsam (Scope) bölümünün TorqPro tarafından yeniden ifadesi."
+      },
+      "source_locator": null,
+      "traceability_level": "APPROVED",
+      "tags": ["iso-16047", "test-method", "scope"],
+      "learning_objective": "ISO 16047'nin gerçek kapsamını (test metodu) diş sıyırma hesap standartlarından ayırt edebilmek.",
+      "engineering_risk_level": "medium",
+      "is_active": true
+    },
+    {
+      "question_id": "QB-VDI_2230_FUNDAMENTALS-00001",
+      "content_version": 1,
+      "category": "vdi_2230_fundamentals",
+      "subcategory": null,
+      "difficulty": "advanced",
+      "question_type": "true_false",
+      "question_tr": "VDI 2230, cıvatalı birleşmelerin tasarım hesaplaması için Alman mühendislik kılavuzudur.",
+      "question_en": "VDI 2230 is a German engineering guideline for the design calculation of bolted joints.",
+      "options_tr": ["Doğru", "Yanlış"],
+      "options_en": ["True", "False"],
+      "correct_answer": true,
+      "technical_explanation_tr": "VDI 2230, cıvatalı sistemlerin sistematik tasarım hesabı için VDI (Verein Deutscher Ingenieure) tarafından yayımlanan bir mühendislik kılavuzudur.",
+      "technical_explanation_en": "VDI 2230 is an engineering guideline published by VDI (Verein Deutscher Ingenieure) for the systematic design calculation of bolted joint systems.",
+      "standard_reference": {
+        "name": "VDI 2230",
+        "edition_or_year": "2015",
+        "clause_or_table": "Part 1, Introduction"
+      },
+      "source_reference": {
+        "source_type": "standard_requirement",
+        "description": "Kılavuzun kapsam bölümünün TorqPro tarafından yeniden ifadesi."
+      },
+      "source_locator": null,
+      "traceability_level": "APPROVED",
+      "tags": ["vdi-2230", "fundamentals"],
+      "learning_objective": "VDI 2230'un mühendislik kılavuzu niteliğini tanımak.",
+      "engineering_risk_level": "low",
+      "is_active": true
+    },
+    {
+      "question_id": "QB-OEM_GENERAL_ESTIMATION_METHODS-00001",
+      "content_version": 1,
+      "category": "oem_general_estimation_methods",
+      "subcategory": null,
+      "difficulty": "beginner",
+      "question_type": "numerical",
+      "question_tr": "Bir OEM genel tahmin yöntemine göre M10 8.8 sınıfı bir cıvata için kuru sürtünmede yaklaşık sıkma torku 47 Nm olarak tahmin edilmektedir. Bu değer +/- 10% tolerans ile doğrulanacaktır. Alt sınır kaç Nm'dir?",
+      "question_en": "According to an OEM general estimation method, the approximate dry-friction tightening torque for an M10, class 8.8 bolt is estimated at 47 Nm. This will be verified with a +/-10% tolerance. What is the lower bound in Nm?",
+      "options_tr": null,
+      "options_en": null,
+      "correct_answer": 42.3,
+      "tolerance": 0.5,
+      "technical_explanation_tr": "47 Nm'nin %10'u 4.7 Nm'dir; alt sınır 47 - 4.7 = 42.3 Nm olur. Bu değer bir OEM genel tahminidir, standart bir gereklilik değildir.",
+      "technical_explanation_en": "10% of 47 Nm is 4.7 Nm; the lower bound is 47 - 4.7 = 42.3 Nm. This figure is an OEM general estimate, not a standard requirement.",
+      "standard_reference": null,
+      "source_reference": {
+        "source_type": "oem_estimation",
+        "description": "Temsili OEM genel tahmin tablosu (demo amaçlı, gerçek bir OEM belgesine atıfsız)."
+      },
+      "source_locator": null,
+      "traceability_level": "UNVERIFIED",
+      "tags": ["oem-estimation", "tolerance", "unit-conversion"],
+      "learning_objective": "OEM genel tahmin değerlerinin tolerans aralığıyla nasıl doğrulandığını uygulamak.",
+      "engineering_risk_level": "medium",
+      "is_active": false
+    }
+  ]
+}
