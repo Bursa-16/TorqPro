@@ -2386,6 +2386,7 @@ const I18N = {
     'hizli.result_nut_proof_utilization': 'Nut Proof-Load Utilization',
     'hizli.no_data': 'No data',
     'hizli.result_thread_strip_safety': 'Internal / External Thread Strip Safety',
+    'hizli.model_status_provisional': 'Provisional model',
     'hizli.result_bearing_pressure_safety': 'Bearing Pressure / Safety',
     'hizli.result_nut_class_compat': 'Nut Class Compatibility',
     'hizli.compat_ok': 'Compatible',
@@ -3868,6 +3869,7 @@ const I18N = {
     'hizli.result_nut_proof_utilization': 'Somun Proof-Load Kullanımı',
     'hizli.no_data': 'Veri yok',
     'hizli.result_thread_strip_safety': 'İç / Dış Diş Sıyırma Emniyeti',
+    'hizli.model_status_provisional': 'Geçici model (Provisional)',
     'hizli.result_bearing_pressure_safety': 'Yüzey Basıncı / Emniyet',
     'hizli.result_nut_class_compat': 'Somun Sınıf Uyumluluğu',
     'hizli.compat_ok': 'Uygun',
@@ -8315,7 +8317,7 @@ function hesapla(){
       <div class="result-row"><span class="result-key">${t('hizli.result_preload_range_at_nom')}</span><span class="result-val">${Math.round(FminAtNomTorque).toLocaleString('tr-TR')} – ${Math.round(FmaxAtNomTorque).toLocaleString('tr-TR')} N</span></div>
       <div class="result-row"><span class="result-key">${t('hizli.result_yield_utilization')}</span><span class="result-val ${yieldUtil<=90?'ok':yieldUtil<=95?'warn':'nok'}">${yieldUtil.toFixed(1)}%</span></div>
       <div class="result-row"><span class="result-key">${t('hizli.result_nut_proof_utilization')}</span><span class="result-val ${nutUtil<=100?'ok':nutUtil<=110?'warn':'nok'}">${Number.isFinite(nutUtil)?nutUtil.toFixed(1)+'%':t('hizli.no_data')}</span></div>
-      <div class="result-row"><span class="result-key">${t('hizli.result_thread_strip_safety')}</span><span class="result-val ${(sfInt>=1.2&&sfExt>=1.2)?'ok':(sfInt>=1&&sfExt>=1)?'warn':'nok'}">${sfInt.toFixed(2)} / ${sfExt.toFixed(2)}</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_thread_strip_safety')}</span><span class="result-val ${(sfInt>=1.2&&sfExt>=1.2)?'ok':(sfInt>=1&&sfExt>=1)?'warn':'nok'}">${sfInt.toFixed(2)} / ${sfExt.toFixed(2)} <small style="font-weight:400;opacity:.65">(${t('hizli.model_status_provisional')})</small></span></div>
       <div class="result-row"><span class="result-key">${t('hizli.result_bearing_pressure_safety')}</span><span class="result-val ${bearingSF>=1?'ok':bearingSF>=0.9?'warn':'nok'}">${bearingPressure.toFixed(1)} MPa / SF ${bearingSF.toFixed(2)}</span></div>
       <div class="result-row"><span class="result-key">${t('hizli.result_nut_class_compat')}</span><span class="result-val ${compatibilityOk?'ok':'nok'}">${compatibilityOk?t('hizli.compat_ok'):t('hizli.compat_not_ok')}${requiredNutClass?` · ${t('hizli.compat_min_prefix')} ${requiredNutClass}`:''}</span></div><div class="result-row"><span class="result-key">${t('hizli.result_overall_decision')}</span><span class="result-val ${overallOk?'ok':overallWarn?'warn':'nok'}">${overallOk?'✅ '+t('hizli.decision_ok'):overallWarn?'⚠️ '+t('hizli.decision_borderline'):'❌ '+t('hizli.decision_risky')}</span></div>
       <div class="result-row"><span class="result-key">${t('hizli.result_confidence_level')}</span><span class="result-val"><span class="confidence ${confClass(minConf)}">${confLabel(minConf)}</span></span></div>
@@ -8325,8 +8327,8 @@ function hesapla(){
     <div class="eng-grid">
       <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_thread_torque')}</div><div class="eng-value blue">${tNom.thread.toFixed(1)} Nm</div><div class="stat-sub">${(tNom.thread/tNom.total*100).toFixed(0)}%</div></div>
       <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_bearing_torque')}</div><div class="eng-value blue">${tNom.bearing.toFixed(1)} Nm</div><div class="stat-sub">${(tNom.bearing/tNom.total*100).toFixed(0)}%</div></div>
-      <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_internal_thread_capacity')}</div><div class="eng-value ${sfInt>=1.2?'green':sfInt>=1?'yellow':'red'}">${Math.round(stripCapInt).toLocaleString('tr-TR')} N</div><div class="stat-sub">SF ${sfInt.toFixed(2)}</div></div>
-      <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_external_thread_capacity')}</div><div class="eng-value ${sfExt>=1.2?'green':sfExt>=1?'yellow':'red'}">${Math.round(stripCapExt).toLocaleString('tr-TR')} N</div><div class="stat-sub">SF ${sfExt.toFixed(2)}</div></div>
+      <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_internal_thread_capacity')}</div><div class="eng-value ${sfInt>=1.2?'green':sfInt>=1?'yellow':'red'}">${Math.round(stripCapInt).toLocaleString('tr-TR')} N</div><div class="stat-sub">SF ${sfInt.toFixed(2)} · ${t('hizli.model_status_provisional')}</div></div>
+      <div class="eng-card"><div class="calc-box-label">${t('hizli.eng_external_thread_capacity')}</div><div class="eng-value ${sfExt>=1.2?'green':sfExt>=1?'yellow':'red'}">${Math.round(stripCapExt).toLocaleString('tr-TR')} N</div><div class="stat-sub">SF ${sfExt.toFixed(2)} · ${t('hizli.model_status_provisional')}</div></div>
     </div>
 
     <table class="eng-table">

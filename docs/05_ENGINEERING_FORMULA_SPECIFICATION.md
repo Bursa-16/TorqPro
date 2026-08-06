@@ -242,3 +242,65 @@ Current implementation status (Faz 2.6.0, architecture/spec only):
 - **Faz 2.6.4 (2026-07-23):** no formula changed; no recommendation engine added. `backend.calculation_engine.friction_recommendations` (additive) generates deterministic, field-derived engineering warnings and a recommendation-readiness level (`warnings_only`/`comparison_only` for every live record; `engineering_recommendation_ready`/`production_recommendation_ready` reached by none). Never computes a torque-reduction percentage, ranks lubricants/coatings, or issues a temperature/corrosion/reusability/tightening-method recommendation -- no formula or coefficient exists for any of those in this codebase. See `docs/phases/PHASE_2.6.4_FRICTION_RECOMMENDATION_WARNING_FRAMEWORK.md`.
 - **Faz 2.6.5 (2026-07-23):** no formula changed; no new engineering value computed. `backend.calculation_engine.friction_report` (additive) formats the Faz 2.6.3/2.6.4 domain results (readiness, warnings, comparison) into a structured, JSON-serializable "Friction Condition Assessment" report section, reusing `assess_friction_readiness`/`assess_recommendation_readiness`/`generate_friction_warnings`/`compare_friction_conditions` unchanged. See `docs/phases/PHASE_2.6.5_FRICTION_REPORTING_INTEGRATION.md`.
 
+## 22. Engineering Core traceability and governance (Faz 2.8.21)
+
+**Scope:** governance and visibility only. No formula in `backend.engineering_core` was redesigned, no coefficient changed, no numerical result changed, `d2`/`d3` usage unchanged. See `docs/phases/PHASE_2.8.21_ENGINEERING_CORE_TRACEABILITY.md` for the full delivery report.
+
+**Problem addressed:** `backend.vdi2230_core.trace` already gave 7 formulas a traceable APPROVED/PROVISIONAL status (Section 20). `backend.engineering_core` -- the original prototype layer still backing the live `/api/engineering/check` endpoint (torque, friction, geometry, thread-shear, material-strength, preload formulas) -- had no equivalent mechanism. `internal_thread_sf`/`external_thread_sf`, in particular, were computed and returned with no visible status, source, or limitation at all.
+
+**What changed:** `backend/engineering_core/trace.py` (new) gives every one of the 10 formulas actually reachable from `evaluate_joint()` a traceability record, in the same architectural shape as `vdi2230_core.trace` (frozen dataclass + closed `str` Enum + `get_trace()`/`all_traces()`), extended with the richer metadata Faz 2.8.21 required (`source_level`, `confidence`, `assumptions`, `limitations`, `intended_use`, `prohibited_claims`, `validation_basis`, `affected_outputs`). `APPROVED`/`PROVISIONAL` are imported directly from `vdi2230_core.trace` (not redefined); `EXPERIMENTAL`/`DEPRECATED`/`UNVERIFIED` are the three additional states this package's formulas needed. The existing `/api/engineering/formula-validation` endpoint (`backend.calculation_engine.formula_validation`) was extended, not replaced, to also read this new catalog. `/api/engineering/check` gained one additive `formula_governance` key.
+
+### 22.1 Source hierarchy (as applied in this phase)
+
+1. ISO / DIN / VDI 2230 / ASME / ASTM / SAE / OEM (FCA/Stellantis) specifications
+2. Machinery's Handbook, Shigley, Bickford, NASA Fastener Design Manual
+3. Peer-reviewed engineering literature
+4. RoyMech and equivalent secondary engineering references
+5. TorqPro's own question bank (`Cilt_1/2/3`, `TorqPro_Validation_Senaryolari.json`)
+
+The question bank sits at level 5 for a specific reason, restated here because it governs every `source_level`/`status` value in this catalog:
+
+> **The question bank is an educational dataset, not an engineering-authoritative source. Numerical agreement between a TorqPro formula and a question-bank answer is evidence of dataset consistency, not of physical correctness or standards compliance, and was never used to promote or justify any `status` value in this catalog.**
+
+### 22.2 Status meanings (five semantic classes)
+
+- **APPROVED** -- source review, independent hand calculation, golden-case fixture, and engineering sign-off all complete (Section 20's 7-step process). Currently: `Phi` and `F_S` in `vdi2230_core.trace` only. **No `engineering_core` formula is APPROVED.**
+- **PROVISIONAL** -- concept/structure accepted, but source validation is incomplete. The default status for every `engineering_core` formula in this catalog whose structural form matches known screw-thread mechanics but has no independent primary-source derivation on file.
+- **EXPERIMENTAL** -- reserved for a formula under active development/testing, not yet claiming even provisional engineering acceptance. Unused in this phase (no `engineering_core` formula qualifies).
+- **DEPRECATED** -- reserved for a formula being phased out in favour of a validated replacement. Unused in this phase.
+- **UNVERIFIED** -- weaker than PROVISIONAL: the formula's *origin* itself is not documented in the codebase, only plausibly inferred (`ENGCORE_SHEAR_STRENGTH_FROM_RM`'s `0.58` factor: plausibly `1/sqrt(3)` von Mises, but the code carries no comment or citation confirming this).
+
+**Explicit, mandatory statements (Faz 2.8.21 policy):**
+
+- Passing tests proves implementation consistency (the code does what the code says), not physical correctness (that the code matches reality or a standard).
+- Frontend/backend numerical parity proves internal consistency, not standards compliance.
+- Question-bank agreement proves dataset agreement, not engineering authority.
+
+### 22.3 Thread-stripping model status
+
+`ENGCORE_THREAD_SHEAR_AREA` (`backend.engineering_core.geometry.thread_shear_area_mm2`, `0.5*pi*d_effective*Le`, called with `d2` for internal-thread capacity and `d3` for external/bolt capacity) remains **PROVISIONAL**, confidence **LOW**. It is structurally aligned with RoyMech's published "convenient formula," itself presented as an approximation of the more exact FED-STD-H28/2B and Machinery's Handbook 18th-edition formula (which additionally accounts for pitch-diameter tolerance). No ISO/DIN/VDI/ASME primary-standard citation was found for this exact form. The `0.5` coefficient's physical explanation ("half the material is cut away by the thread") traces only to an unverified engineering-forum reply, not a citable derivation. **This status was not changed by Faz 2.8.21 and the formula's numerical behaviour was not touched.**
+
+### 22.4 Prohibited claims (apply to every entry in this catalog)
+
+No formula, endpoint response, or frontend label produced by this phase may state or imply:
+
+- ISO 16224 compliant
+- VDI 2230 compliant
+- FCA C2001 compliant
+- ASME validated
+- production approval without independent engineering validation
+
+### 22.5 Promotion from PROVISIONAL/UNVERIFIED to APPROVED
+
+Identical to Section 20's existing 7-step process, restated for `engineering_core` formulas specifically. A formula may only become APPROVED once, in order:
+
+1. an authoritative source (source hierarchy level 1-2) is identified and cited by exact edition/clause;
+2. every variable in the formula is mapped to that source's own notation;
+3. applicability limits (thread series, material class, size range, tolerance class) are documented;
+4. an independent calculation review is performed by someone other than the original implementer;
+5. a source-backed golden fixture (a worked example from the cited source, not the question bank) is added;
+6. regression tests lock the golden fixture's expected output;
+7. sign-off is recorded by a qualified mechanical engineer where required.
+
+Formula-registry entries added in this phase (`ENGCORE_TIGHTENING_TORQUE`, `ENGCORE_THREAD_FRICTION_ANGLE`, `ENGCORE_PITCH_DIAMETER`, `ENGCORE_MINOR_DIAMETER`, `ENGCORE_HELIX_ANGLE`, `ENGCORE_THREAD_SHEAR_AREA`, `ENGCORE_SHEAR_STRENGTH_FROM_RM`, `ENGCORE_PRELOAD_FROM_YIELD`, `ENGCORE_PROOF_LOAD_UTILIZATION`, `ENGCORE_JOINT_CHECK`) start this process at step 0 -- none has an authoritative primary-source citation on file yet.
+
