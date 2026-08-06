@@ -27,6 +27,8 @@ from pathlib import Path
 
 import pytest
 
+from tests._stage_boundary import stage_range_changed_files
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 HARNESS_PATH = REPO_ROOT / "tests" / "js" / "run_washer_resolution_queue_tests.js"
 FRONTEND_PATH = REPO_ROOT / "frontend" / "index.html"
@@ -355,13 +357,17 @@ def test_queue_table_uses_existing_scrollable_table_class(frontend_html):
 
 
 def test_stage2_touches_no_backend_files():
-    result = subprocess.run(
-        ["git", "diff", "--name-only", "58ca1d487c0f4bdfd7ac0937ed260d5ed98f6732", "HEAD"],
-        capture_output=True, text=True, cwd=str(REPO_ROOT),
+    """Closed range: Stage 1's own end commit -> Stage 2's own end
+    commit (``2481b21d240b51f49cd0f5b08b2e8ffdde48f29e``, "feat: add
+    washer resolution queue frontend") -- not the moving ``HEAD`` ref.
+    Evidence for both endpoints: ``git log --oneline --reverse
+    58ca1d48..bc0d73f`` (see fix/pre-existing-stage-boundary-tests
+    delivery report)."""
+    changed = stage_range_changed_files(
+        REPO_ROOT,
+        "58ca1d487c0f4bdfd7ac0937ed260d5ed98f6732",
+        "2481b21d240b51f49cd0f5b08b2e8ffdde48f29e",
     )
-    if result.returncode != 0:
-        pytest.skip("not a git checkout with the expected Stage 1 commit reachable")
-    changed = [f for f in result.stdout.splitlines() if f.strip()]
     for f in changed:
         assert not f.startswith("backend/"), f"unexpected backend file changed in Stage 2: {f}"
     assert "VERSION" not in changed

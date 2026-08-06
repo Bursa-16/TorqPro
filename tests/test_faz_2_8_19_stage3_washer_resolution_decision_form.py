@@ -25,6 +25,8 @@ from pathlib import Path
 
 import pytest
 
+from tests._stage_boundary import stage_range_changed_files
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 HARNESS_PATH = REPO_ROOT / "tests" / "js" / "run_washer_resolution_decision_form_tests.js"
 FRONTEND_PATH = REPO_ROOT / "frontend" / "index.html"
@@ -246,13 +248,14 @@ def test_no_automatic_status_or_confidence_selection(frontend_html):
 
 
 def test_stage3_touches_no_backend_or_version_files():
-    result = subprocess.run(
-        ["git", "diff", "--name-only", STAGE2_COMMIT, "HEAD"],
-        capture_output=True, text=True, cwd=str(REPO_ROOT),
+    """Closed range: Stage 2's own end commit (STAGE2_COMMIT) -> Stage
+    3's own end commit (``bdb5d3d3cd72a56e319fb1566aabbe7da3cae3b2``,
+    "feat: add washer resolution decision form") -- not the moving
+    ``HEAD`` ref. See fix/pre-existing-stage-boundary-tests delivery
+    report for the evidence backing both endpoints."""
+    changed = stage_range_changed_files(
+        REPO_ROOT, STAGE2_COMMIT, "bdb5d3d3cd72a56e319fb1566aabbe7da3cae3b2"
     )
-    if result.returncode != 0:
-        pytest.skip("not a git checkout with the expected Stage 2 commit reachable")
-    changed = [f for f in result.stdout.splitlines() if f.strip()]
     for f in changed:
         assert not f.startswith("backend/"), f"unexpected backend file changed in Stage 3: {f}"
     assert "VERSION" not in changed
