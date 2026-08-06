@@ -122,6 +122,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .info-icon-btn:hover,.info-icon-btn:focus-visible{background:var(--accent);color:#fff;outline:none}
 .info-icon-btn.warn{color:var(--warning);border-color:var(--warning)}
 .info-icon-btn.warn:hover,.info-icon-btn.warn:focus-visible{background:var(--warning);color:#1a1300}
+.info-icon-btn.err{color:var(--danger);border-color:var(--danger)}
+.info-icon-btn.err:hover,.info-icon-btn.err:focus-visible{background:var(--danger);color:#fff}
+.info-icon-btn.ref{color:var(--accent2);border-color:var(--border2);font-size:12px}
+.info-icon-btn.ref:hover,.info-icon-btn.ref:focus-visible{background:var(--accent2);color:#1a1300}
 .info-popover-wrap{position:relative;display:inline-flex;align-items:center}
 .info-popover{position:absolute;z-index:500;top:24px;left:0;width:320px;max-width:min(320px,80vw);background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:12px 14px;font-size:12px;line-height:1.5;color:var(--text2);box-shadow:0 12px 32px rgba(0,0,0,.45);display:none}
 .info-popover.open{display:block}
@@ -555,15 +559,16 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
 <!-- 01391 HIZLI ÖNGÖRÜ -->
 <div id="page-n01391" class="page">
   <div class="section-header"><span class="section-icon">⚡</span><div>
-    <div class="section-title" data-i18n="n01391.title">Örnek Tork Çalışması <span style="font-size:11px;color:var(--text3);font-weight:400">(Sample Torque Study)</span></div>
+    <div class="section-title" data-i18n="n01391.title">Örnek Tork Çalışması</div>
     <div class="section-sub" data-i18n="n01391.subtitle">Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları</div>
   </div></div>
   <div class="alert alert-warn" style="display:flex;align-items:center;gap:8px">
-    <span><strong data-i18n="n01391.scope_priority_label">⚠️ Kapsam ve Öncelik:</strong> <span data-i18n="n01391.scope_priority_text">Teknik resim veya proje şartnamesi varsa o değer önceliklidir; bu ekran örnek referans amaçlıdır.</span></span>
+    <strong data-i18n="n01391.scope_priority_label">⚠️ Kapsam ve Öncelik</strong>
     <span id="n01391-scope-info"></span>
   </div>
-  <div class="alert alert-info" style="font-size:12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
-    <span><strong data-i18n="n01391.ref_source_label">Referans Kaynak:</strong> <span data-i18n="n01391.ref_source_text">TorqPro Demo Engineering Dataset v1.0 — gerçek bir OEM standardı değildir.</span></span>
+  <div class="alert alert-info" style="font-size:12px;display:flex;align-items:center;gap:8px">
+    <strong data-i18n="n01391.ref_source_label">Referans Kaynak</strong>
+    <span id="n01391-ref-info"></span>
   </div>
   <div class="grid2">
     <div class="card">
@@ -608,9 +613,9 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
           </select>
         </div>
       </div>
-      <div class="alert alert-info" style="margin-top:8px;font-size:12px" data-i18n="n01391.matching_rule">
-        Somun sınıfı 8 → cıvata sınıfı 8.8 ile, somun sınıfı 10 → cıvata sınıfı 10.9 ile eşleştirilir.
-        Uyumsuz kombinasyonlarda düşük sınıf geçerlidir.
+      <div class="alert alert-info" style="margin-top:8px;font-size:12px;display:flex;align-items:center;gap:8px">
+        <span data-i18n="n01391.matching_rule_label">Sınıf Eşleştirme Kuralı</span>
+        <span id="n01391-matching-info"></span>
       </div>
     </div>
     <div class="card" id="n01391-sonuc">
@@ -2165,12 +2170,14 @@ const I18N = {
 
     // ---- Faz 2.7.1: Calculations & Production Validation ----
     // n01391 (Sample Torque Study)
-    'n01391.title': 'Sample Torque Study <span style="font-size:11px;color:var(--text3);font-weight:400">(Sample Torque Study)</span>',
+    'n01391.title': 'Sample Torque Study',
     'n01391.subtitle': 'Size and class combinations defined in the selected demo dataset',
-    'n01391.scope_priority_label': '⚠️ Scope & Priority:',
+    'n01391.scope_priority_label': '⚠️ Scope & Priority',
     'n01391.scope_priority_text': 'If a technical drawing or project specification exists, that value takes priority; this screen is for sample reference only.',
-    'n01391.ref_source_label': 'Reference Source:',
+    'n01391.scope_priority_icon_label': 'View scope and priority details',
+    'n01391.ref_source_label': 'Reference Source',
     'n01391.ref_source_text': 'TorqPro Demo Engineering Dataset v1.0 — not an actual OEM standard.',
+    'n01391.ref_source_icon_label': 'View reference source',
     'n01391.param_selection_title': 'Parameter Selection',
     'n01391.param_selection_sub': 'Sizes defined in the selected dataset are listed',
     'n01391.thread_size': 'Thread Size',
@@ -2180,6 +2187,8 @@ const I18N = {
     'n01391.bolt_strength_class': 'Bolt Strength Class',
     'n01391.nut_strength_class': 'Nut Strength Class',
     'n01391.matching_rule': 'Nut class 8 → matched with bolt class 8.8, nut class 10 → matched with bolt class 10.9. The lower class governs in incompatible combinations.',
+    'n01391.matching_rule_label': 'Class Matching Rule',
+    'n01391.matching_rule_icon_label': 'View class matching rule details',
     'n01391.forecast_result_title': 'Forecast Result',
     'n01391.select_parameters': 'Select parameters',
 
@@ -2368,12 +2377,14 @@ const I18N = {
     'n01391.bolt_label': 'Bolt',
     'n01391.nut_label': 'Nut',
     'n01391.mismatch_warning': 'Bolt and nut class are mismatched — the lower class values are being used.',
+    'n01391.mismatch_icon_label': 'View class mismatch details',
     'n01391.forecast_nominal_torque': 'Forecast Nominal Torque',
     'n01391.forecast_tensile_force': 'Forecast Tensile Force',
-    'n01391.disclaimer_line1': 'This value is a sample general OEM forecast — it is not a definitive or approved production torque.',
+    'n01391.disclaimer_line1': 'This value is a sample estimate — it is not a definitive or approved production torque.',
     'n01391.disclaimer_line2': 'If a technical drawing or model-based OEM norm specifies a particular value, that value takes priority.',
     'n01391.disclaimer_line3': 'The production value must be finalized with joint testing, friction verification, tool capability, and product verification.',
     'n01391.disclaimer_line4': 'The values apply to fasteners as they leave production, with no additional lubricant applied.',
+    'n01391.disclaimer_icon_label': 'View full disclaimer details',
     'n01391.goto_theoretical': '→ Go to Theoretical Calculation',
     'n01391.goto_oem_search': '→ Search OEM Norm',
     'hizli.missing_data': 'Data required for the calculation is missing.',
@@ -3654,12 +3665,14 @@ const I18N = {
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
-    'n01391.title': 'Örnek Tork Çalışması <span style="font-size:11px;color:var(--text3);font-weight:400">(Sample Torque Study)</span>',
+    'n01391.title': 'Örnek Tork Çalışması',
     'n01391.subtitle': 'Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları',
-    'n01391.scope_priority_label': '⚠️ Kapsam ve Öncelik:',
+    'n01391.scope_priority_label': '⚠️ Kapsam ve Öncelik',
     'n01391.scope_priority_text': 'Teknik resim veya proje şartnamesi varsa o değer önceliklidir; bu ekran örnek referans amaçlıdır.',
-    'n01391.ref_source_label': 'Referans Kaynak:',
+    'n01391.scope_priority_icon_label': 'Kapsam ve öncelik ayrıntılarını görüntüle',
+    'n01391.ref_source_label': 'Referans Kaynak',
     'n01391.ref_source_text': 'TorqPro Demo Engineering Dataset v1.0 — gerçek bir OEM standardı değildir.',
+    'n01391.ref_source_icon_label': 'Referans kaynağını görüntüle',
     'n01391.param_selection_title': 'Parametre Seçimi',
     'n01391.param_selection_sub': 'Seçili veri setinde tanımlı ölçüler listelenmiştir',
     'n01391.thread_size': 'Diş Ölçüsü',
@@ -3669,6 +3682,8 @@ const I18N = {
     'n01391.bolt_strength_class': 'Cıvata Dayanım Sınıfı',
     'n01391.nut_strength_class': 'Somun Dayanım Sınıfı',
     'n01391.matching_rule': 'Somun sınıfı 8 → cıvata sınıfı 8.8 ile, somun sınıfı 10 → cıvata sınıfı 10.9 ile eşleştirilir. Uyumsuz kombinasyonlarda düşük sınıf geçerlidir.',
+    'n01391.matching_rule_label': 'Sınıf Eşleştirme Kuralı',
+    'n01391.matching_rule_icon_label': 'Sınıf eşleştirme kuralı ayrıntılarını görüntüle',
     'n01391.forecast_result_title': 'Öngörü Sonucu',
     'n01391.select_parameters': 'Parametreleri seçin',
 
@@ -3851,12 +3866,14 @@ const I18N = {
     'n01391.bolt_label': 'Cıvata',
     'n01391.nut_label': 'Somun',
     'n01391.mismatch_warning': 'Cıvata ve somun sınıfı uyumsuz — düşük sınıf değerleri kullanılmaktadır.',
+    'n01391.mismatch_icon_label': 'Sınıf uyumsuzluğu ayrıntılarını görüntüle',
     'n01391.forecast_nominal_torque': 'Öngörü Nominal Torku',
     'n01391.forecast_tensile_force': 'Öngörü Çekme Kuvveti',
-    'n01391.disclaimer_line1': 'Bu değer örnek OEM genel öngörüsüdür — kesin veya onaylı üretim torku değildir.',
+    'n01391.disclaimer_line1': 'Bu değer örnek öngörüdür — kesin veya onaylı üretim torku değildir.',
     'n01391.disclaimer_line2': 'Teknik resim veya model bazlı OEM normunda özel bir değer varsa o değer önceliklidir.',
     'n01391.disclaimer_line3': 'Seri üretim değeri; bağlantı testi, sürtünme doğrulaması, sıkıcı yeteneği ve ürün doğrulaması ile kesinleştirilmelidir.',
     'n01391.disclaimer_line4': 'Değerler ek yağlayıcı uygulanmamış, üretimden çıktığı durumdaki bağlantı elemanları için geçerlidir.',
+    'n01391.disclaimer_icon_label': 'Ayrıntılı açıklamayı görüntüle',
     'n01391.goto_theoretical': '→ Teorik Hesaba Geç',
     'n01391.goto_oem_search': '→ OEM Normunda Ara',
     'hizli.missing_data': 'Hesap için gerekli veri eksik.',
@@ -7270,6 +7287,7 @@ function setLanguage(lang) {
   CURRENT_LANG = lang;
   localStorage.setItem('torqpro_lang', lang);
   applyStaticTranslations();
+  if (typeof initInfoIcons === 'function') initInfoIcons();
   if (typeof fcRenderList === 'function' && Array.isArray(FC_LIST)) {
     const verifSel = document.getElementById('fc-filter-verification');
     const srcSel = document.getElementById('fc-filter-source-type');
@@ -7404,14 +7422,25 @@ function doLogout(){
 // Uzun açıklama metinlerini ekrandan kaldırıp bilgi/uyarı ikonuna taşımak için kullanılır.
 // Kullanım: infoIconHtml({title:'...', body:'...', warn:true/false})
 let INFO_ICON_SEQ = 0;
+// Icon char/class per message type. 'warn' kept as legacy boolean input
+// (see below) so the two pre-existing infoIconHtml({warn:true, ...})
+// call sites below keep working unchanged; 'type' is the newer,
+// preferred input for the two additional variants added in Faz 2.8.22
+// (reference-source "open book" icon, and blocking-error red icon).
+const INFO_ICON_VARIANTS = {
+  info:  {cls: 'info-icon-btn',      char: 'i'},
+  warn:  {cls: 'info-icon-btn warn', char: '!'},
+  error: {cls: 'info-icon-btn err',  char: '!'},
+  ref:   {cls: 'info-icon-btn ref',  char: '\uD83D\uDCD6'} // 📖 open book
+};
 function infoIconHtml(opts){
-  const o = Object.assign({title:'', body:'', warn:false, label:t('admin.detailed_info_label')}, opts||{});
+  const o = Object.assign({title:'', body:'', warn:false, type:'', label:t('admin.detailed_info_label')}, opts||{});
+  const resolvedType = o.type || (o.warn ? 'warn' : 'info');
+  const variant = INFO_ICON_VARIANTS[resolvedType] || INFO_ICON_VARIANTS.info;
   const id = 'info-pop-' + (++INFO_ICON_SEQ);
   const safeBody = o.body || '';
-  const iconCls = o.warn ? 'info-icon-btn warn' : 'info-icon-btn';
-  const iconChar = o.warn ? '!' : 'i';
   return `<span class="info-popover-wrap">
-    <button type="button" class="${iconCls}" data-info-target="${id}" aria-haspopup="dialog" aria-expanded="false" aria-label="${o.label}" title="${o.label}">${iconChar}</button>
+    <button type="button" class="${variant.cls}" data-info-target="${id}" aria-haspopup="dialog" aria-expanded="false" aria-label="${o.label}" title="${o.label}">${variant.char}</button>
     <span class="info-popover" id="${id}" role="dialog">${o.title ? `<div class="info-popover-title">${o.title}</div>` : ''}<div>${safeBody}</div></span>
   </span>`;
 }
@@ -7419,9 +7448,28 @@ function initInfoIcons(){
   const scopeInfo = document.getElementById('n01391-scope-info');
   if (scopeInfo) {
     scopeInfo.innerHTML = infoIconHtml({
-      title: 'Kapsam ve Öncelik',
-      warn: true,
-      body: 'Bu değerler ek yağlayıcı uygulanmamış, üretimden çıktığı durumdaki bağlantı elemanları için geçerli örnek genel öngörüdür. Teknik resim, proje şartnamesi veya araç/model bazlı özel OEM normu varsa o değer önceliklidir. Seri üretim değeri bağlantı testi, sürtünme doğrulaması ve ürün doğrulaması ile kesinleştirilmelidir.'
+      type: 'warn',
+      title: t('n01391.scope_priority_label'),
+      label: t('n01391.scope_priority_icon_label'),
+      body: t('n01391.scope_priority_text')
+    });
+  }
+  const refInfo = document.getElementById('n01391-ref-info');
+  if (refInfo) {
+    refInfo.innerHTML = infoIconHtml({
+      type: 'ref',
+      title: t('n01391.ref_source_label'),
+      label: t('n01391.ref_source_icon_label'),
+      body: t('n01391.ref_source_text')
+    });
+  }
+  const matchInfo = document.getElementById('n01391-matching-info');
+  if (matchInfo) {
+    matchInfo.innerHTML = infoIconHtml({
+      type: 'info',
+      title: t('n01391.matching_rule_label'),
+      label: t('n01391.matching_rule_icon_label'),
+      body: t('n01391.matching_rule')
     });
   }
   const lubeInfo = document.getElementById('surtunme-uyari-info');
@@ -7954,7 +8002,7 @@ function n01391Hesapla() {
   document.getElementById('n01391-sonuc').innerHTML = `
     <div class="card-title">${t('n01391.result_title')} <span class="norm-badge">${t('n01391.demo_dataset')}</span></div>
     <div style="font-size:11px;color:var(--text3);margin:8px 0 4px">${t('n01391.selection_label')}: ${dis} · ${flans ? t('n01391.with_flange') : t('n01391.no_flange')} · ${t('n01391.bolt_label')} ${civata} · ${t('n01391.nut_label')} ${somun}</div>
-    ${uyumsuz ? '<div class="alert alert-warn" style="margin-bottom:8px">⚠️ ' + t('n01391.mismatch_warning') + '</div>' : ''}
+    ${uyumsuz ? '<div class="alert alert-danger" style="margin-bottom:8px;display:flex;align-items:center;gap:8px"><span>⚠️ ' + t('n01391.mismatch_warning') + '</span>' + infoIconHtml({type:'error', title:t('n01391.mismatch_warning'), label:t('n01391.mismatch_icon_label'), body:t('n01391.matching_rule')}) + '</div>' : ''}
     <div class="n01391-result">
       <div style="display:flex;gap:24px;flex-wrap:wrap">
         <div>
@@ -7967,11 +8015,9 @@ function n01391Hesapla() {
         </div>
       </div>
     </div>
-    <div class="n01391-warn">
-      <strong>${t('n01391.disclaimer_line1')}</strong><br>
-      ${t('n01391.disclaimer_line2')}<br>
-      ${t('n01391.disclaimer_line3')}<br>
-      ${t('n01391.disclaimer_line4')}
+    <div class="n01391-warn" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <strong>${t('n01391.disclaimer_line1')}</strong>
+      ${infoIconHtml({type:'info', title:t('n01391.disclaimer_line1'), label:t('n01391.disclaimer_icon_label'), body: t('n01391.disclaimer_line2') + '<br>' + t('n01391.disclaimer_line3') + '<br>' + t('n01391.disclaimer_line4')})}
     </div>
     <div class="btn-group" style="margin-top:12px">
       <button class="btn btn-secondary btn-sm" onclick="showPage('hizli',this)">${t('n01391.goto_theoretical')}</button>
