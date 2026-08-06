@@ -1,3 +1,29 @@
+# TorqPro
+
+> Professional Fastener Engineering Platform
+
+TorqPro is a professional engineering platform for the design, analysis, validation and optimization of threaded joints and tightening processes.
+
+## Key Features
+
+- VDI 2230 implementation
+- Torque and preload calculation
+- Friction and lubrication modelling
+- Threaded joint engineering
+- Fastener libraries
+- Manufacturing quality analytics
+- Engineering traceability
+- AI-ready architecture
+
+---
+
+## Current Version
+
+
+
+
+
+
 # Current Version
 
 | Item                          | Value                                                    |
