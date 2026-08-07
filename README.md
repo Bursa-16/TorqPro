@@ -17,12 +17,55 @@ TorqPro is a professional engineering platform for the design, analysis, validat
 
 # Current Version
 
-| Item                          | Value                                                    |
-| ----------------------------- | --------------------------------------------------------- |
-| Product                       | TorqPro                                                    |
-| **Current Version**           | **v2.8.22**                                                |
-| **Version Date**              | **06 August 2026**                                         |
-| **Current Engineering Focus** | **Torque Study UI/UX Messaging and CI Stage-Boundary Reliability** |
+| Item                          | Value                                  |
+| ----------------------------- | -------------------------------------- |
+| Product                       | TorqPro                                |
+| **Current Version**           | **v2.9.3**                             |
+| **Version Date**              | **07 August 2026**                     |
+| **Current Engineering Focus** | **Question Bank Update/Edit Workflow** |
+
+---
+
+# What's New in v2.9.3
+
+## Question Bank Update/Edit Workflow
+
+Phase **2.9.3** introduces the update and edit workflow infrastructure for the TorqPro Question Bank module.
+
+* **Question retrieval layer.** Existing Question Bank records can be retrieved through the established application architecture.
+* **Question management API endpoints.** The Question Bank API surface now supports the update/edit workflow.
+* **Data-access improvements.** Question Bank persistence and access paths were extended for controlled record updates.
+* **Validation and consistency checks.** Update operations remain subject to the Question Bank validation rules and lifecycle constraints.
+* **Update and edit workflow support.** Existing Question Bank records can be modified through the controlled PATCH-based workflow.
+* **Extended regression coverage.** New tests were added while preserving the existing application behaviour.
+
+## Validation
+
+| Item              | Result          |
+| ----------------- | --------------- |
+| Full pytest suite | **2660 passed** |
+| Failed tests      | **0**           |
+
+## Release Assets
+
+```text
+torqpro-v2.9.3-release.bundle
+0001-chore-release-bump-version-to-2.9.3.patch
+SHA256SUMS_6.txt
+```
+
+## Release Information
+
+* Version: **v2.9.3**
+* Release date: **07 August 2026**
+* Status: **Latest**
+* Main focus: **Question Bank Update/Edit Workflow**
+
+## Related Commit
+
+```text
+e606351  feat(question-bank): add Faz 2.9.3 update/edit (PATCH) workflow
+```
 
 ---
 
@@ -153,16 +196,16 @@ The implementation was delivered across four controlled stages, each independent
 
 ## Routes Added
 
-| Method | Path                                              |
+| Method | Path                                               |
 | ------ | -------------------------------------------------- |
-| POST   | `/api/joints`                                       |
-| GET    | `/api/joints`                                       |
-| GET    | `/api/joints/{joint_id}`                            |
-| POST   | `/api/joints/{joint_id}/revisions`                  |
-| GET    | `/api/joints/revisions/{revision_id}`               |
-| POST   | `/api/joints/revisions/{revision_id}/submit`        |
-| POST   | `/api/joints/revisions/{revision_id}/approve`       |
-| POST   | `/api/joints/revisions/{revision_id}/reject`        |
+| POST   | `/api/joints`                                      |
+| GET    | `/api/joints`                                      |
+| GET    | `/api/joints/{joint_id}`                           |
+| POST   | `/api/joints/{joint_id}/revisions`                 |
+| GET    | `/api/joints/revisions/{revision_id}`              |
+| POST   | `/api/joints/revisions/{revision_id}/submit`       |
+| POST   | `/api/joints/revisions/{revision_id}/approve`      |
+| POST   | `/api/joints/revisions/{revision_id}/reject`       |
 
 ---
 
@@ -191,11 +234,11 @@ README.md
 # Validation Results
 
 | Item           | Result                                                                                                          |
-| -------------- | ----------------------------------------------------------------------------------------------------------------- |
+| -------------- | ---------------------------------------------------------------------------------------------------------------- |
 | Feature Branch | **feature/faz-2.8.17-joint-revision-http-api**                                                                   |
 | Feature Commit | **4ddb925** (final functional commit — the documentation stage adds only version/documentation metadata in the commit immediately following) |
-| Working Tree   | Clean                                                                                                             |
-| Quality Gate   | **6 / 6 PASSED**                                                                                                   |
+| Working Tree   | Clean                                                                                                            |
+| Quality Gate   | **6 / 6 PASSED**                                                                                                 |
 
 ---
 
@@ -244,8 +287,8 @@ Engineering quality is continuously verified using automated validation.
 
 ## Current Validation Summary
 
-| Validation Area     | Result   |
-| -------------------- | -------- |
+| Validation Area     | Result    |
+| ------------------- | --------- |
 | Unit Tests          | ✅ Passed |
 | Integration Tests   | ✅ Passed |
 | Governance Tests    | ✅ Passed |
@@ -259,7 +302,7 @@ Engineering quality is continuously verified using automated validation.
 
 | Test Group                 | Result                           |
 | -------------------------- | -------------------------------- |
-| Full pytest Suite          | **2546 / 2546 Passed**           |
+| Full pytest Suite          | **2660 / 2660 Passed**           |
 | Failed Tests               | **0**                            |
 | Quality Gate               | **Passed**                       |
 | Historical Boundary Checks | **Passed with full Git history** |
@@ -271,53 +314,59 @@ Continuous integration verifies every change before integration into the main br
 
 # Development Status
 
-| Phase            | Description                                | Status                |
-| ---------------- | -------------------------------------------- | --------------------- |
-| Phase 2.7        | Report Engine                                 | ✅ Completed           |
-| Phase 2.8.1      | Engineering Library Audit                     | ✅ Completed           |
-| Phase 2.8.2      | Thread Geometry Verification                  | ✅ Completed           |
-| Phase 2.8.3      | Bolt / Nut Strength Classes                   | ✅ Completed           |
-| Phase 2.8.4      | Washer Library Provenance                     | ✅ Completed           |
-| Phase 2.8.5      | Washer Correction Workflow                    | ✅ Completed           |
-| Phase 2.8.6      | Fastener Assembly Intelligence                | ✅ Completed           |
-| Phase 2.8.7      | Joint Analysis & Torque Optimization          | ✅ Completed           |
-| Phase 2.8.8      | Material Intelligence                         | ✅ Completed           |
-| Phase 2.8.9      | Washer Resolution Workflow                    | ✅ Completed           |
-| Phase 2.8.10     | Test Harness & Quality                        | ✅ Completed           |
-| Phase 2.8.11     | Engineering Governance Architecture           | ✅ Completed           |
-| Phase 2.8.12     | Governance Compatibility Layer                | ✅ Completed           |
-| Phase 2.8.13     | Governance Workspace Integration              | ✅ Completed           |
-| Phase 2.8.14     | Joint Revision Governance Bulk Visibility     | ✅ Completed           |
-| Phase 2.8.15     | README / VERSION Maintenance                  | ✅ Completed           |
-| Phase 2.8.16     | Joint Revision List UX Improvements           | ✅ Completed           |
-| Phase 2.8.17      | Joint Revision HTTP API & Idempotent Write Exposure | ✅ Completed           |
-| Phase 2.8.18      | UI/UX Refactoring and Dashboard Improvements (Stages 1-5) | ✅ Completed           |
-| Phase 2.8.19      | Washer Resolution Decision Workflow Integration (Stages 1-5) | ✅ Completed           |
-| Phase 2.8.20     | Washer Resolution Evidence & Controlled Closure (Stages 1-5) | ✅ Completed           |
-| Phase 2.8.21 | Engineering Formula Traceability and Governance Foundation | ✅ Completed |
-| **Phase 2.8.22** | **Torque Study UI/UX Messaging and CI Stage-Boundary Reliability** | ⭐ **Current Version** |
+| Phase            | Description                                                     | Status             |
+| ---------------- | --------------------------------------------------------------- | ------------------ |
+| Phase 2.7        | Report Engine                                                   | ✅ Completed       |
+| Phase 2.8.1      | Engineering Library Audit                                       | ✅ Completed       |
+| Phase 2.8.2      | Thread Geometry Verification                                    | ✅ Completed       |
+| Phase 2.8.3      | Bolt / Nut Strength Classes                                     | ✅ Completed       |
+| Phase 2.8.4      | Washer Library Provenance                                       | ✅ Completed       |
+| Phase 2.8.5      | Washer Correction Workflow                                      | ✅ Completed       |
+| Phase 2.8.6      | Fastener Assembly Intelligence                                  | ✅ Completed       |
+| Phase 2.8.7      | Joint Analysis & Torque Optimization                            | ✅ Completed       |
+| Phase 2.8.8      | Material Intelligence                                           | ✅ Completed       |
+| Phase 2.8.9      | Washer Resolution Workflow                                      | ✅ Completed       |
+| Phase 2.8.10     | Test Harness & Quality                                          | ✅ Completed       |
+| Phase 2.8.11     | Engineering Governance Architecture                             | ✅ Completed       |
+| Phase 2.8.12     | Governance Compatibility Layer                                  | ✅ Completed       |
+| Phase 2.8.13     | Governance Workspace Integration                                | ✅ Completed       |
+| Phase 2.8.14     | Joint Revision Governance Bulk Visibility                       | ✅ Completed       |
+| Phase 2.8.15     | README / VERSION Maintenance                                    | ✅ Completed       |
+| Phase 2.8.16     | Joint Revision List UX Improvements                             | ✅ Completed       |
+| Phase 2.8.17     | Joint Revision HTTP API & Idempotent Write Exposure             | ✅ Completed       |
+| Phase 2.8.18     | UI/UX Refactoring and Dashboard Improvements (Stages 1-5)       | ✅ Completed       |
+| Phase 2.8.19     | Washer Resolution Decision Workflow Integration (Stages 1-5)    | ✅ Completed       |
+| Phase 2.8.20     | Washer Resolution Evidence & Controlled Closure (Stages 1-5)    | ✅ Completed       |
+| Phase 2.8.21     | Engineering Formula Traceability and Governance Foundation      | ✅ Completed       |
+| Phase 2.8.22     | Torque Study UI/UX Messaging and CI Stage-Boundary Reliability | ✅ Completed       |
+| Phase 2.9.1      | Question Bank Foundation                                        | ✅ Completed       |
+| Phase 2.9.2      | Question Bank Retrieval Filtering and Read API                  | ✅ Completed       |
+| **Phase 2.9.3**  | **Question Bank Update/Edit Workflow**                           | ⭐ **Current Version** |
 
 ---
 
 # Version History
 
-| Version     | Highlights                                             |
-| ----------- | --------------------------------------------------------- |
-| **v2.8.22** | Torque Study UI/UX Messaging and CI Stage-Boundary Reliability |
-| v2.8.21     | Engineering Formula Traceability and Governance Foundation |
-| v2.8.20     | Washer Resolution Evidence & Controlled Closure (Stages 1-5) |
-| v2.8.19     | Washer Resolution Decision Workflow Integration (Stages 1-5) |
-| v2.8.18     | UI/UX Refactoring and Dashboard Improvements (Stages 1-5)  |
-| v2.8.17     | Joint Revision HTTP API & Idempotent Write Exposure        |
-| v2.8.16     | Joint Revision List UX Improvements                       |
-| v2.8.14     | Joint Revision Governance Bulk Visibility                 |
-| v2.8.13     | Governance Workspace Integration                          |
-| v2.8.12     | Governance Compatibility Layer                             |
-| v2.8.11     | Engineering Governance Architecture                        |
-| v2.8.10     | Test Harness & Quality                                      |
-| v2.8.9      | Washer Resolution Workflow                                  |
-| v2.8.8      | Material Intelligence                                       |
-| v2.8.7      | Joint Analysis & Torque Optimization                        |
+| Version     | Highlights                                                       |
+| ----------- | ---------------------------------------------------------------- |
+| **v2.9.3**  | Question Bank Update/Edit Workflow                               |
+| v2.9.2      | Question Bank Retrieval Filtering and Read API                   |
+| v2.9.1      | Question Bank Hybrid Persistence Foundation                      |
+| v2.8.22     | Torque Study UI/UX Messaging and CI Stage-Boundary Reliability  |
+| v2.8.21     | Engineering Formula Traceability and Governance Foundation       |
+| v2.8.20     | Washer Resolution Evidence & Controlled Closure (Stages 1-5)     |
+| v2.8.19     | Washer Resolution Decision Workflow Integration (Stages 1-5)     |
+| v2.8.18     | UI/UX Refactoring and Dashboard Improvements (Stages 1-5)        |
+| v2.8.17     | Joint Revision HTTP API & Idempotent Write Exposure              |
+| v2.8.16     | Joint Revision List UX Improvements                              |
+| v2.8.14     | Joint Revision Governance Bulk Visibility                        |
+| v2.8.13     | Governance Workspace Integration                                 |
+| v2.8.12     | Governance Compatibility Layer                                   |
+| v2.8.11     | Engineering Governance Architecture                              |
+| v2.8.10     | Test Harness & Quality                                            |
+| v2.8.9      | Washer Resolution Workflow                                        |
+| v2.8.8      | Material Intelligence                                             |
+| v2.8.7      | Joint Analysis & Torque Optimization                              |
 
 ---
 
@@ -325,17 +374,17 @@ Continuous integration verifies every change before integration into the main br
 
 ## Current Version
 
-**v2.8.22**
+**v2.9.3**
 
 Current engineering focus:
 
-* Example Torque Study user-facing messages refined for clearer TR/EN communication
-* CI checkout configured to fetch full Git history for historical stage-boundary validation
-* v2.8.21 engineering formula governance and traceability foundation preserved
-* Full regression record: **2546 passed, 0 failed**
-* Release version aligned to **v2.8.22**
+* Question Bank retrieval workflow completed.
+* Question Bank update/edit workflow completed.
+* Validation and consistency infrastructure expanded.
+* Full regression result: **2660 passed, 0 failed**.
+* Release version aligned to **v2.9.3**.
 
-The engineering limitations documented for v2.8.21 remain unchanged unless a later phase explicitly closes them. No ISO 16224/VDI 2230/FCA C2001/FED-STD calculation engine, torsional-stress model, von Mises equivalent-stress model, or bearing/contact-pressure implementation is claimed by this maintenance release.
+The engineering limitations documented for earlier engineering-core governance phases remain unchanged unless a later phase explicitly closes them. No ISO 16224/VDI 2230/FCA C2001/FED-STD calculation engine, torsional-stress model, von Mises equivalent-stress model, or bearing/contact-pressure implementation is claimed by the Question Bank releases.
 
 ---
 
@@ -348,5 +397,6 @@ Potential future work areas:
 * Governance registry expansion
 * Cross-mechanism validation
 * Further governance workspace UX refinements
+* Further Question Bank workflow expansion
 
-The next phase after v2.8.22 has not yet been formally approved in this README.
+The next phase after v2.9.3 has not yet been formally approved in this README.
