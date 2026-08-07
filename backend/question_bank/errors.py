@@ -77,3 +77,39 @@ class QuestionBankValidationError(QuestionBankError):
     def __init__(self, reasons: list[str]) -> None:
         self.reasons = list(reasons)
         super().__init__("; ".join(reasons) if reasons else "validation failed")
+
+
+class EmptyPatchError(QuestionBankValidationError):
+    """Faz 2.9.3: a PATCH payload with zero fields set (``exclude_unset``
+    is empty). Subclasses :class:`QuestionBankValidationError` on purpose
+    -- an empty patch is a validation failure like any other, so it maps
+    to the same 422 response without a second HTTP-mapping branch in the
+    router."""
+
+    def __init__(self) -> None:
+        super().__init__(["PATCH body en az bir alan içermeli (empty patch)"])
+
+
+class PartialUpdateFailureError(QuestionBankError):
+    """Faz 2.9.3: the paired SQLite lifecycle registration (draft record
+    + status-history entry) for a new content_version failed inside its
+    own transaction and was rolled back, *after* the new content
+    snapshot had already been appended to the JSON store.
+
+    JSON and SQLite are two separate storage backends with no shared
+    transaction, so true cross-store atomicity is not technically
+    achievable here. ``update_question`` always attempts a best-effort
+    compensating delete of its own just-written JSON record before
+    raising this error (see
+    ``backend.question_bank.store._delete_question_content_version``).
+    In the common case that compensation succeeds, no orphan is left
+    behind and the net effect is as if the update had never been
+    attempted. In the rare case that the compensating delete *also*
+    fails, an orphaned ``content_version`` (a JSON record with no
+    matching SQLite row) may remain; that residual case is called out
+    explicitly in this error's message rather than hidden, and stays
+    harmless to normal use because every publishable-only read path in
+    this module already excludes any content_version with no matching
+    SQLite row. See ``backend.question_bank.service.update_question``'s
+    docstring for the full write-ordering rationale.
+    """

@@ -129,9 +129,55 @@ def save_question_content(record: QuestionRecord, path: Optional[Path] = None) -
         _write_raw(resolved_path, existing)
 
 
+def _delete_question_content_version(
+    question_id: str, content_version: int, path: Optional[Path] = None
+) -> bool:
+    """Faz 2.9.3 failure-compensation helper. **Not** a general edit/
+    delete capability -- underscore-prefixed and used from exactly one
+    call site (``backend.question_bank.service.update_question``'s
+    SQLite-write-failure rollback path) to undo *that same call's own*
+    JSON append when the paired SQLite lifecycle registration failed
+    and was rolled back.
+
+    This does not weaken the append-only contract
+    :func:`save_question_content` enforces: that contract protects any
+    content_version a caller could ever have *completed and observed*
+    (i.e. one with a matching SQLite lifecycle row) from being
+    overwritten or silently mutated. A content_version whose paired
+    SQLite write never succeeded was never such a committed revision --
+    it is this module's own half-finished write, undone by the same
+    logical operation that created it, not a later edit reaching back
+    into history. No caller outside ``update_question``'s own exception
+    handler should ever call this function.
+
+    Returns ``True`` if a matching record was found and removed,
+    ``False`` if no such ``(question_id, content_version)`` existed
+    (e.g. a second failure already removed it, or it was never written
+    at all) -- never raises for "not found", so a caller performing
+    best-effort compensation never needs a second try/except layer just
+    to tell "already gone" apart from a real I/O error.
+    """
+    resolved_path = path if path is not None else DATA_PATH
+    with _json_lock:
+        existing = _read_raw(resolved_path)
+        remaining = [
+            item
+            for item in existing
+            if not (
+                item.get("question_id") == question_id
+                and item.get("content_version") == content_version
+            )
+        ]
+        if len(remaining) == len(existing):
+            return False
+        _write_raw(resolved_path, remaining)
+        return True
+
+
 # ---------------------------------------------------------------------
 # SQLite lifecycle + audit store
 # ---------------------------------------------------------------------
+
 
 DDL = """
 CREATE TABLE IF NOT EXISTS question_bank_records(

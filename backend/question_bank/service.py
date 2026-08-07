@@ -23,12 +23,19 @@ from __future__ import annotations
 import sqlite3
 from typing import Callable, List, Optional
 
+from pydantic import ValidationError
+
 from .errors import (
     ContentVersionUnchangedError,
+    EmptyPatchError,
+    PartialUpdateFailureError,
+    QuestionBankValidationError,
     UnauthorizedTransitionError,
 )
+from .patch import QuestionPatch
 from .schema import QuestionRecord
 from .store import (
+    _delete_question_content_version,
     append_status_history,
     fetch_publishable_candidates,
     fetch_record,
@@ -39,7 +46,13 @@ from .store import (
     update_record_status,
 )
 from .transitions import AUTHORIZATION_REQUIRED_TRANSITIONS, ValidationStatus
-from .validator import require_valid, validate_publishable, validate_revision_reason, validate_transition_request
+from .validator import (
+    require_valid,
+    validate_publishable,
+    validate_record_structure,
+    validate_revision_reason,
+    validate_transition_request,
+)
 
 #: (actor_role: str, action: str) -> bool. No FastAPI/JWT dependency
 #: here -- the API layer (out of Faz 2.9.1's file scope) is expected to
@@ -137,6 +150,197 @@ def register_question_content(record: QuestionRecord) -> None:
     afterwards to create the corresponding lifecycle record."""
     require_valid(record)
     save_question_content(record)
+
+
+# ---------------------------------------------------------------------
+# Faz 2.9.3: content update (implemented as an append-only revision)
+# ---------------------------------------------------------------------
+
+
+def _pydantic_reasons(exc: ValidationError) -> List[str]:
+    reasons = []
+    for err in exc.errors():
+        loc = ".".join(str(part) for part in err.get("loc", ()))
+        reasons.append(f"{loc}: {err.get('msg')}" if loc else str(err.get("msg")))
+    return reasons
+
+
+def update_question(
+    c: sqlite3.Connection, *, question_id: str, patch: QuestionPatch, actor: str
+) -> QuestionRecord:
+    """Faz 2.9.3: partial ("PATCH") update of a question's content.
+
+    Deliberately **not** an in-place mutation of an existing
+    ``(question_id, content_version)`` record -- that would break both
+    :class:`backend.question_bank.schema.QuestionRecord`'s own
+    immutability contract ("a content change always means a new
+    content_version, never an edit in place") and
+    :func:`backend.question_bank.store.save_question_content`'s
+    silent-overwrite guard. Instead this function computes the merged
+    result, and -- only if that merge is an actual change -- appends it
+    as a brand-new ``content_version = current_version + 1`` and
+    registers that new version in SQLite exactly the way
+    :func:`register_question` registers any other brand-new version
+    (``draft``, ``from_status=None``). Every previously existing
+    ``(question_id, content_version)`` row, in JSON and in SQLite alike,
+    is left completely untouched.
+
+    Only fields present in ``patch`` (``model_dump(exclude_unset=True)``)
+    are applied; every omitted field keeps the current version's value.
+    ``question_id`` and ``content_version`` are not patchable at all --
+    :class:`backend.question_bank.patch.QuestionPatch` has no fields for
+    them -- and no lifecycle field (``validation_status`` etc.) can be
+    set through this path either, since those live only in SQLite and
+    are never part of :class:`QuestionRecord`.
+
+    Write ordering and partial-failure behaviour (JSON + SQLite are two
+    separate storage backends with no shared/distributed transaction --
+    true cross-store atomicity is not technically achievable here):
+
+    1. The new content snapshot is appended to the JSON store first.
+       This mirrors the existing two-step ``register_question_content()``
+       then ``register_question()`` pattern -- SQLite registration
+       already requires the JSON content to exist first
+       (``register_question``'s own docstring), so this ordering is
+       forced, not a new choice made here.
+    2. The SQLite draft record + status-history entry are then written
+       inside one transaction, committed together or rolled back
+       together.
+    3. If step 2 fails, this function immediately performs a *best-
+       effort compensating delete* of the exact JSON record step 1 just
+       wrote (:func:`backend.question_bank.store._delete_question_content_version`,
+       a narrowly-scoped helper used from nowhere else -- see its own
+       docstring for why this does not weaken the append-only contract:
+       it only ever undoes this same call's own half-finished write,
+       never a content_version that ever had a completed, observable
+       SQLite registration).
+       - If the compensating delete succeeds, the net effect is exactly
+         as if the update had never been attempted at all: no new
+         content_version in JSON, no new SQLite row, the previous
+         latest version completely unchanged.
+       - If the compensating delete *also* fails (a genuine double
+         failure -- e.g. the filesystem itself is unavailable), true
+         atomicity is not achievable and this is not hidden: the raised
+         error explicitly says so, and an orphaned ``content_version``
+         may remain in JSON with no matching SQLite row. Even in that
+         residual case the orphan cannot leak into normal use --
+         *every* publishable-only read path in this module (the default
+         everywhere) already treats a JSON record with no matching
+         SQLite row as "not publishable"
+         (``retrieval._status_map``'s own docstring), and
+         :func:`load_question_content_validated` always resolves
+         "current" to the JSON store's *latest* version regardless of
+         SQLite state, so a future ``update_question`` call would
+         simply treat that orphan as its own new base content rather
+         than silently losing data. Detection is a plain audit
+         (any JSON ``content_version`` with no matching
+         ``question_bank_records`` row is, by definition, an orphan);
+         manual completion via :func:`register_question` remains
+         available.
+       In both cases :class:`backend.question_bank.errors.
+       PartialUpdateFailureError` is raised so the caller is always told
+       about the failure explicitly rather than seeing it swallowed.
+
+    Raises:
+        EmptyPatchError: ``patch`` has no fields set at all.
+        ContentNotFoundError: ``question_id`` has no existing content.
+        QuestionBankValidationError: the merged content fails schema or
+            structural validation.
+        DuplicateContentVersionError: a concurrent update already
+            claimed ``current_version + 1`` (race condition) -- the
+            append-only guard in :func:`save_question_content` catches
+            this; the caller should reload and retry.
+        PartialUpdateFailureError: see (3) above.
+    """
+    provided = patch.model_dump(exclude_unset=True)
+    if not provided:
+        raise EmptyPatchError()
+
+    current = load_question_content_validated(question_id)
+
+    merged_fields = current.model_dump()
+    merged_fields.update(provided)
+
+    try:
+        merged_at_current_version = QuestionRecord.model_validate(merged_fields)
+    except ValidationError as exc:
+        raise QuestionBankValidationError(_pydantic_reasons(exc)) from exc
+
+    if merged_at_current_version.model_dump(
+        exclude={"content_version"}
+    ) == current.model_dump(exclude={"content_version"}):
+        # No-op: every provided field's value equals the current
+        # version's value. No new content_version, no SQLite write, no
+        # status-history entry -- explicit and deterministic per the
+        # Faz 2.9.3 instruction.
+        return current
+
+    structure_reasons = validate_record_structure(merged_at_current_version)
+    if structure_reasons:
+        raise QuestionBankValidationError(structure_reasons)
+
+    target_version = current.content_version + 1
+    new_record = merged_at_current_version.model_copy(
+        update={"content_version": target_version}
+    )
+
+    # Step 1: JSON append (append-only; raises DuplicateContentVersionError
+    # on a concurrent racing writer -- propagated as-is).
+    save_question_content(new_record)
+
+    # Step 2: SQLite draft registration + status history, one transaction.
+    now = _now_iso()
+    try:
+        c.execute("BEGIN")
+        register_record(
+            c,
+            question_id=new_record.question_id,
+            content_version=target_version,
+            now_iso=now,
+            validation_status=ValidationStatus.DRAFT.value,
+        )
+        append_status_history(
+            c,
+            question_id=new_record.question_id,
+            from_status=None,
+            to_status=ValidationStatus.DRAFT.value,
+            actor=actor,
+            now_iso=now,
+            revision_reason="content updated via PATCH",
+            content_version_before=current.content_version,
+            content_version_after=target_version,
+        )
+        c.commit()
+    except Exception as exc:
+        c.rollback()
+        try:
+            compensated = _delete_question_content_version(
+                new_record.question_id, target_version
+            )
+        except Exception:
+            compensated = False
+
+        if compensated:
+            raise PartialUpdateFailureError(
+                f"{question_id}@v{target_version} için SQLite lifecycle kaydı başarısız "
+                "oldu; işlem geri alındı (JSON içeriği otomatik olarak temizlendi, "
+                "orphan content_version bırakılmadı). Değişiklik hiç uygulanmamış "
+                "gibi davranın ve isterseniz tekrar deneyin."
+            ) from exc
+
+        raise PartialUpdateFailureError(
+            f"{question_id}@v{target_version} için SQLite lifecycle kaydı başarısız oldu "
+            "VE JSON telafi (compensation) silme işlemi de başarısız oldu -- gerçek "
+            "atomicity bu iki ayrı depolama katmanı arasında teknik olarak garanti "
+            "edilemez. content_version orphan olarak JSON'da kalmış olabilir. Bu "
+            "orphan varsayılan publishable_only=True okuma yolunda görünmez (SQLite "
+            "kaydı yok), ama kalıcı temizlik için manuel doğrulama gerekir: JSON'daki "
+            "her content_version'ın question_bank_records tablosunda bir karşılığı "
+            "olup olmadığını denetleyin; eksikse register_question() ile tamamlayın "
+            "ya da içeriği manuel temizleyin."
+        ) from exc
+
+    return new_record
 
 
 # ---------------------------------------------------------------------
