@@ -274,3 +274,17 @@ def fetch_publishable_candidates(c: sqlite3.Connection) -> list:
     return c.execute(
         "SELECT * FROM question_bank_records WHERE validation_status='validated'"
     ).fetchall()
+
+
+def fetch_all_records(c: sqlite3.Connection) -> list:
+    """Returns every ``question_bank_records`` row regardless of
+    ``validation_status`` (Faz 2.9.2). Unlike
+    :func:`fetch_publishable_candidates`, this is not itself a
+    visibility rule -- it is a plain bulk read used by
+    ``backend.question_bank.retrieval`` to build a
+    ``(question_id, content_version) -> validation_status`` lookup for
+    filtering. Callers remain responsible for applying
+    ``backend.question_bank.validator.validate_publishable`` (or any
+    other visibility rule) themselves; this function never decides
+    what is publishable."""
+    return c.execute("SELECT * FROM question_bank_records").fetchall()

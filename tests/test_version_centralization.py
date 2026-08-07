@@ -30,14 +30,14 @@ VERSION_FILE = REPO_ROOT / "VERSION"
 FRONTEND_PATH = REPO_ROOT / "frontend" / "index.html"
 
 
-def test_version_file_exists_and_is_2_9_1():
+def test_version_file_exists_and_is_2_9_2():
     assert VERSION_FILE.exists()
-    assert VERSION_FILE.read_text(encoding="utf-8").strip() == "2.9.1"
+    assert VERSION_FILE.read_text(encoding="utf-8").strip() == "2.9.2"
 
 
 def test_backend_app_version_matches_version_file():
     assert app_module.APP_VERSION == VERSION_FILE.read_text(encoding="utf-8").strip()
-    assert app_module.APP_VERSION == "2.9.1"
+    assert app_module.APP_VERSION == "2.9.2"
 
 
 def test_backend_app_version_is_not_hardcoded_literal():
@@ -54,13 +54,13 @@ def test_backend_app_version_is_not_hardcoded_literal():
 def test_health_endpoint_reports_same_version_unauthenticated():
     r = client.get("/api/health")
     assert r.status_code == 200, r.text
-    assert r.json()["version"] == "2.9.1"
+    assert r.json()["version"] == "2.9.2"
 
 
 def test_fastapi_app_title_version_matches():
     """The FastAPI app object itself (used for e.g. OpenAPI docs) is
     also constructed with the same single-source version."""
-    assert app.version == "2.9.1"
+    assert app.version == "2.9.2"
 
 
 # ---------------------------------------------------------------------

@@ -1915,4 +1915,16 @@ app.include_router(joints_router)
 from backend.api.routes.washer_resolution_closure import router as washer_resolution_closure_router
 app.include_router(washer_resolution_closure_router)
 
+# Faz 2.9.2: question bank read-only retrieval/filtering/selection API
+# module (backend/api/routes/question_bank.py). Additive only -- new
+# routes under /api/question-bank/questions, nothing existing renamed
+# or removed. Thin HTTP adapter over the pre-existing
+# backend.question_bank.retrieval read layer (Faz 2.9.2), itself built
+# on the Faz 2.9.1 hybrid persistence foundation; reuses the same
+# `user` auth dependency as every other endpoint, imported here for
+# the same circular-import-avoidance reason as production_validation,
+# governance, joints, and washer_resolution_closure above.
+from backend.api.routes.question_bank import router as question_bank_router
+app.include_router(question_bank_router)
+
 app.mount("/",StaticFiles(directory=FRONT,html=True),name="frontend")

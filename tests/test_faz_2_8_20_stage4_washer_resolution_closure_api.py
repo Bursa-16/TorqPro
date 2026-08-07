@@ -522,8 +522,9 @@ class TestBackwardCompatibility:
             1 for r in app.router.routes
             if type(r).__name__ == "_IncludedRouter"
         )
-        # production_validation, governance, joints, washer_resolution_closure
-        assert count == 4
+        # production_validation, governance, joints, washer_resolution_closure,
+        # question_bank (Faz 2.9.2)
+        assert count == 5
 
     def test_five_new_routes_registered_exactly_once(self):
         expected_new_paths = {
