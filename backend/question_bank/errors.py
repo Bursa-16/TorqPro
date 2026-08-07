@@ -70,6 +70,26 @@ class UnauthorizedTransitionError(QuestionBankError):
     combination."""
 
 
+class QuestionAlreadyDeletedError(QuestionBankError):
+    """Faz 2.9.4: a soft-delete was requested for a ``question_id``
+    whose SQLite records are already ``is_deleted=1``. Fail-closed,
+    matching this module's existing "explicit error rather than a
+    silent no-op" convention (e.g. :class:`DuplicateContentVersionError`
+    for a silent-overwrite attempt)."""
+
+
+class QuestionNotDeletedError(QuestionBankError):
+    """Faz 2.9.4: a restore was requested for a ``question_id`` whose
+    SQLite records are not currently ``is_deleted=1``."""
+
+
+class QuestionAlreadyArchivedError(QuestionBankError):
+    """Faz 2.9.4: an archive was requested for a ``question_id`` whose
+    SQLite records already carry a non-null ``archived_at``. There is
+    no "unarchive" action in this phase (deliberately out of scope), so
+    an already-archived question can never legally be archived again."""
+
+
 class QuestionBankValidationError(QuestionBankError):
     """One or more structural/content validation checks failed. Carries
     the full list of human-readable failure reasons."""

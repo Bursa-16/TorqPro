@@ -84,12 +84,24 @@ def is_valid_transition(previous: ValidationStatus, new: ValidationStatus) -> bo
 #: own judgement on whether authorization applies to authorship --
 #: this module only enumerates the transitions that unambiguously
 #: require it per the instruction text.
+#: Faz 2.9.4 additions: soft-delete/restore/archive are not
+#: ``ValidationStatus`` transitions at all (they never touch
+#: ``validation_status`` -- see ``service.delete_question`` /
+#: ``restore_question`` / ``archive_question``), but they are exactly
+#: the kind of state-mutating, authorization-gated action this same
+#: callback/policy mechanism already exists for. Reusing
+#: ``AUTHORIZATION_REQUIRED_TRANSITIONS`` + the existing
+#: ``AuthorizationCallback`` here means Faz 2.9.4 introduces no second,
+#: parallel authorization mechanism.
 AUTHORIZATION_REQUIRED_TRANSITIONS: FrozenSet[str] = frozenset(
     {
         "return_to_draft",
         "validate_question",
         "reject_question",
         "deprecate_question",
+        "soft_delete",
+        "restore",
+        "archive",
     }
 )
 

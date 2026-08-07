@@ -522,7 +522,18 @@ def test_migration_is_idempotent(db):
             "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'question_bank_%'"
         ).fetchall()
     }
-    assert tables == {"question_bank_records", "question_bank_status_history"}
+    # Faz 2.9.4 adds a fourth, purely additive table
+    # (question_bank_lifecycle_audit -- see backend.question_bank.store's
+    # DDL docstring for why soft-delete/restore/archive auditing lives
+    # in its own table rather than being folded into
+    # question_bank_status_history). This assertion is updated to
+    # reflect that additive change; the idempotency behaviour itself
+    # (repeated migrate() calls create nothing new) is unchanged.
+    assert tables == {
+        "question_bank_records",
+        "question_bank_status_history",
+        "question_bank_lifecycle_audit",
+    }
 
 
 # ---------------------------------------------------------------------

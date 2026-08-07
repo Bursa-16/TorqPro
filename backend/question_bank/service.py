@@ -29,20 +29,28 @@ from .errors import (
     ContentVersionUnchangedError,
     EmptyPatchError,
     PartialUpdateFailureError,
+    QuestionAlreadyArchivedError,
+    QuestionAlreadyDeletedError,
     QuestionBankValidationError,
+    QuestionNotDeletedError,
     UnauthorizedTransitionError,
 )
 from .patch import QuestionPatch
 from .schema import QuestionRecord
 from .store import (
     _delete_question_content_version,
+    append_lifecycle_audit,
     append_status_history,
+    fetch_lifecycle_audit,
     fetch_publishable_candidates,
     fetch_record,
+    fetch_records_by_question_id,
     fetch_status_history,
     load_question_content,
     register_record,
     save_question_content,
+    set_records_archived,
+    set_records_deleted_flag,
     update_record_status,
 )
 from .transitions import AUTHORIZATION_REQUIRED_TRANSITIONS, ValidationStatus
@@ -540,6 +548,186 @@ def _transition(
     except Exception:
         c.rollback()
         raise
+
+
+# ---------------------------------------------------------------------
+# Faz 2.9.4: soft-delete / restore / archive lifecycle management
+#
+# All three functions below act on *every* ``content_version`` row of
+# a ``question_id`` at once, inside a single SQLite transaction
+# (commit or rollback together) -- per the Faz 2.9.4 instruction that
+# these operations must never partially apply across a question's
+# versions. None of the three ever touches ``validation_status`` (that
+# remains Faz 2.9.1/2.9.3's exclusive concern) and none of them uses
+# ``question_bank_status_history`` -- see ``store.DDL``'s
+# ``question_bank_lifecycle_audit`` table docstring for why that table
+# is a deliberately separate, additive audit trail rather than a reuse
+# of the validation-status one.
+# ---------------------------------------------------------------------
+
+
+def _lifecycle_rows_or_not_found(c: sqlite3.Connection, question_id: str) -> list:
+    from .errors import ContentNotFoundError
+
+    rows = fetch_records_by_question_id(c, question_id)
+    if not rows:
+        raise ContentNotFoundError(
+            f"question_id '{question_id}' için SQLite lifecycle kaydı bulunamadı"
+        )
+    return rows
+
+
+def delete_question(
+    c: sqlite3.Connection,
+    *,
+    question_id: str,
+    actor: str,
+    actor_role: str,
+    authorize: AuthorizationCallback,
+) -> List[int]:
+    """Soft-deletes (``is_deleted=1``) every ``content_version`` row of
+    ``question_id``. Never a hard delete -- no row is ever removed from
+    ``question_bank_records`` or the JSON content store by this
+    function. Raises :class:`backend.question_bank.errors.
+    QuestionAlreadyDeletedError` if every existing row is already
+    ``is_deleted=1`` (nothing to do). Returns the list of
+    ``content_version`` values affected."""
+    _require_authorized(authorize, actor_role, "soft_delete")
+    rows = _lifecycle_rows_or_not_found(c, question_id)
+    if all(bool(row["is_deleted"]) for row in rows):
+        raise QuestionAlreadyDeletedError(
+            f"question_id '{question_id}' zaten silinmiş durumda (is_deleted=1)"
+        )
+
+    now = _now_iso()
+    try:
+        c.execute("BEGIN")
+        set_records_deleted_flag(
+            c, question_id=question_id, is_deleted=True, now_iso=now, actor=actor
+        )
+        for row in rows:
+            append_lifecycle_audit(
+                c,
+                question_id=question_id,
+                content_version=row["content_version"],
+                action="soft_delete",
+                actor=actor,
+                actor_role=actor_role,
+                previous_is_deleted=bool(row["is_deleted"]),
+                new_is_deleted=True,
+                previous_archived_at=row["archived_at"],
+                new_archived_at=row["archived_at"],
+                now_iso=now,
+            )
+        c.commit()
+    except Exception:
+        c.rollback()
+        raise
+
+    return [row["content_version"] for row in rows]
+
+
+def restore_question(
+    c: sqlite3.Connection,
+    *,
+    question_id: str,
+    actor: str,
+    actor_role: str,
+    authorize: AuthorizationCallback,
+) -> List[int]:
+    """Restores (``is_deleted=0``) every ``content_version`` row of
+    ``question_id``. Deliberately clears **only** ``is_deleted`` --
+    ``archived_at``/``archived_by`` are left completely untouched (Faz
+    2.9.4 instruction: restore must not clear archive state; a
+    restored-but-still-archived question stays hidden from default
+    retrieval until a future, out-of-scope "unarchive" action exists).
+    Raises :class:`backend.question_bank.errors.QuestionNotDeletedError`
+    if no existing row is currently ``is_deleted=1``."""
+    _require_authorized(authorize, actor_role, "restore")
+    rows = _lifecycle_rows_or_not_found(c, question_id)
+    if all(not bool(row["is_deleted"]) for row in rows):
+        raise QuestionNotDeletedError(
+            f"question_id '{question_id}' silinmiş durumda değil (is_deleted=0)"
+        )
+
+    now = _now_iso()
+    try:
+        c.execute("BEGIN")
+        set_records_deleted_flag(
+            c, question_id=question_id, is_deleted=False, now_iso=now, actor=actor
+        )
+        for row in rows:
+            append_lifecycle_audit(
+                c,
+                question_id=question_id,
+                content_version=row["content_version"],
+                action="restore",
+                actor=actor,
+                actor_role=actor_role,
+                previous_is_deleted=bool(row["is_deleted"]),
+                new_is_deleted=False,
+                previous_archived_at=row["archived_at"],
+                new_archived_at=row["archived_at"],
+                now_iso=now,
+            )
+        c.commit()
+    except Exception:
+        c.rollback()
+        raise
+
+    return [row["content_version"] for row in rows]
+
+
+def archive_question(
+    c: sqlite3.Connection,
+    *,
+    question_id: str,
+    actor: str,
+    actor_role: str,
+    authorize: AuthorizationCallback,
+) -> List[int]:
+    """Sets ``archived_at``/``archived_by`` (and ``modified_at``/
+    ``modified_by``) on every ``content_version`` row of
+    ``question_id``. Never touches ``is_deleted`` or
+    ``validation_status``. There is no "unarchive" counterpart in Faz
+    2.9.4 -- deliberately out of this phase's scope. Raises
+    :class:`backend.question_bank.errors.QuestionAlreadyArchivedError`
+    if every existing row already has a non-null ``archived_at``."""
+    _require_authorized(authorize, actor_role, "archive")
+    rows = _lifecycle_rows_or_not_found(c, question_id)
+    if all(row["archived_at"] is not None for row in rows):
+        raise QuestionAlreadyArchivedError(
+            f"question_id '{question_id}' zaten arşivlenmiş durumda"
+        )
+
+    now = _now_iso()
+    try:
+        c.execute("BEGIN")
+        set_records_archived(c, question_id=question_id, now_iso=now, actor=actor)
+        for row in rows:
+            append_lifecycle_audit(
+                c,
+                question_id=question_id,
+                content_version=row["content_version"],
+                action="archive",
+                actor=actor,
+                actor_role=actor_role,
+                previous_is_deleted=bool(row["is_deleted"]),
+                new_is_deleted=bool(row["is_deleted"]),
+                previous_archived_at=row["archived_at"],
+                new_archived_at=now,
+                now_iso=now,
+            )
+        c.commit()
+    except Exception:
+        c.rollback()
+        raise
+
+    return [row["content_version"] for row in rows]
+
+
+def get_lifecycle_audit(c: sqlite3.Connection, question_id: str) -> list:
+    return fetch_lifecycle_audit(c, question_id)
 
 
 # ---------------------------------------------------------------------

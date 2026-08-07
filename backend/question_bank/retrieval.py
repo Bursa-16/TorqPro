@@ -44,6 +44,21 @@ def _status_map(c: sqlite3.Connection) -> Dict[Tuple[str, int], str]:
     return {(r["question_id"], r["content_version"]): r["validation_status"] for r in rows}
 
 
+def _lifecycle_map(c: sqlite3.Connection) -> Dict[Tuple[str, int], Tuple[bool, Optional[str]]]:
+    """Faz 2.9.4: ``(question_id, content_version) -> (is_deleted,
+    archived_at)`` lookup, built the same way and for the same reason
+    as :func:`_status_map`. A JSON content record with no matching
+    SQLite row has no entry here -- callers treat that as "no known
+    lifecycle state" (never deleted, never archived), matching
+    ``_status_map``'s own "no entry == unknown, not an error"
+    convention."""
+    rows = fetch_all_records(c)
+    return {
+        (r["question_id"], r["content_version"]): (bool(r["is_deleted"]), r["archived_at"])
+        for r in rows
+    }
+
+
 def list_questions(
     c: sqlite3.Connection,
     *,
@@ -54,6 +69,8 @@ def list_questions(
     is_active: Optional[bool] = None,
     validation_status: Optional[ValidationStatus] = None,
     publishable_only: bool = True,
+    include_deleted: bool = False,
+    include_archived: bool = False,
 ) -> List[QuestionRecord]:
     """Filtered listing over every JSON content record.
 
@@ -68,6 +85,23 @@ def list_questions(
     caller meant, so ``validation_status`` is only consulted when
     ``publishable_only=False``).
 
+    Faz 2.9.4: ``include_deleted`` and ``include_archived`` each default
+    to ``False`` -- the same "safe default" principle Faz 2.9.2 already
+    established for ``publishable_only``. A record whose SQLite row has
+    ``is_deleted=1`` is excluded unless ``include_deleted=True``; a
+    record whose SQLite row has a non-null ``archived_at`` is excluded
+    unless ``include_archived=True``. Both checks apply independently
+    of, and *in addition to*, ``publishable_only`` -- a deleted or
+    archived record could in principle still carry
+    ``validation_status='validated'`` and ``is_active=True`` (Faz
+    2.9.4's ``is_deleted``/``archived_at`` are orthogonal to the Faz
+    2.9.1 validation-status lifecycle and are never inferred from it),
+    so this filtering is never skipped just because
+    ``publishable_only=False``. A record with no matching SQLite row at
+    all is treated as neither deleted nor archived (see
+    ``_lifecycle_map``'s docstring), exactly mirroring how such a
+    record is already treated as having "no known validation_status".
+
     Results are sorted deterministically by ``(question_id,
     content_version)`` so repeated calls against an unchanged dataset
     always return the same order -- callers needing a shuffled subset
@@ -75,12 +109,19 @@ def list_questions(
     function's order.
     """
     status_by_key = _status_map(c)
+    lifecycle_by_key = _lifecycle_map(c)
     records = load_all_question_content()
 
     results: List[QuestionRecord] = []
     for record in records:
         key = (record.question_id, record.content_version)
         record_status = status_by_key.get(key)
+        is_deleted, archived_at = lifecycle_by_key.get(key, (False, None))
+
+        if is_deleted and not include_deleted:
+            continue
+        if archived_at is not None and not include_archived:
+            continue
 
         if publishable_only:
             if not validate_publishable(record, record_status or ""):
@@ -112,6 +153,8 @@ def get_question(
     content_version: Optional[int] = None,
     *,
     publishable_only: bool = True,
+    include_deleted: bool = False,
+    include_archived: bool = False,
 ) -> QuestionRecord:
     """Single-question lookup. ``content_version=None`` resolves to
     the highest existing ``content_version`` for ``question_id``
@@ -125,12 +168,29 @@ def get_question(
     genuinely non-existent ``question_id`` -- deliberately not a
     different error/status, so a caller cannot distinguish "does not
     exist" from "exists but is hidden" and non-publishable content
-    never leaks its existence through this path either."""
+    never leaks its existence through this path either. Faz 2.9.4's
+    ``include_deleted``/``include_archived`` (each defaulting to
+    ``False``) apply the exact same "hide as not-found" treatment for a
+    soft-deleted or archived record -- see :func:`list_questions`'s
+    docstring for the full independence-from-``publishable_only``
+    rationale, which applies identically here."""
     record = load_question_content(question_id, content_version)
+    status_map = _status_map(c)
+    lifecycle_map = _lifecycle_map(c)
+    key = (record.question_id, record.content_version)
+
+    is_deleted, archived_at = lifecycle_map.get(key, (False, None))
+    if is_deleted and not include_deleted:
+        raise ContentNotFoundError(
+            f"question_id '{question_id}' silinmiş kayıtlarda bulunamadı"
+        )
+    if archived_at is not None and not include_archived:
+        raise ContentNotFoundError(
+            f"question_id '{question_id}' arşivlenmiş kayıtlarda bulunamadı"
+        )
 
     if publishable_only:
-        status_map = _status_map(c)
-        status = status_map.get((record.question_id, record.content_version))
+        status = status_map.get(key)
         if not validate_publishable(record, status or ""):
             raise ContentNotFoundError(
                 f"question_id '{question_id}' publishable sonuçlarda bulunamadı"
@@ -151,9 +211,12 @@ def select_questions(
     is_active: Optional[bool] = None,
     validation_status: Optional[ValidationStatus] = None,
     publishable_only: bool = True,
+    include_deleted: bool = False,
+    include_archived: bool = False,
 ) -> List[QuestionRecord]:
     """Deterministic (seeded) selection over the same filter set as
-    :func:`list_questions`.
+    :func:`list_questions` (including Faz 2.9.4's ``include_deleted``/
+    ``include_archived``).
 
     ``seed`` is a required keyword argument with no default -- Faz
     2.9.2's explicit requirement that no hidden/non-deterministic
@@ -183,6 +246,8 @@ def select_questions(
         is_active=is_active,
         validation_status=validation_status,
         publishable_only=publishable_only,
+        include_deleted=include_deleted,
+        include_archived=include_archived,
     )
 
     rng = random.Random(seed)

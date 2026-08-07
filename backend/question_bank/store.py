@@ -31,6 +31,19 @@ from typing import List, Optional
 from .errors import ContentNotFoundError, DuplicateContentVersionError, DuplicateQuestionIdError
 from .schema import QuestionRecord
 
+# Faz 2.9.4: columns added to ``question_bank_records`` for soft-delete
+# / archive lifecycle management. Listed once here as the single
+# source of truth for both the fresh-DB DDL below and the idempotent
+# ALTER-TABLE migration path used against pre-2.9.4 databases (see
+# ``migrate()``).
+_LIFECYCLE_MANAGEMENT_COLUMNS = (
+    ("is_deleted", "INTEGER NOT NULL DEFAULT 0"),
+    ("archived_at", "TEXT"),
+    ("archived_by", "TEXT"),
+    ("modified_at", "TEXT"),
+    ("modified_by", "TEXT"),
+)
+
 DATA_PATH = Path(__file__).resolve().parent / "data" / "question_bank.v1.json"
 
 _json_lock = threading.Lock()
@@ -189,6 +202,11 @@ CREATE TABLE IF NOT EXISTS question_bank_records(
   review_date TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
+  is_deleted INTEGER NOT NULL DEFAULT 0,
+  archived_at TEXT,
+  archived_by TEXT,
+  modified_at TEXT,
+  modified_by TEXT,
   UNIQUE(question_id, content_version)
 );
 CREATE INDEX IF NOT EXISTS idx_question_bank_records_question_id
@@ -209,7 +227,57 @@ CREATE TABLE IF NOT EXISTS question_bank_status_history(
 );
 CREATE INDEX IF NOT EXISTS idx_question_bank_status_history_question_id
   ON question_bank_status_history(question_id, created_at);
+
+-- Faz 2.9.4: soft-delete / restore / archive audit trail.
+--
+-- Deliberately a *separate* table from ``question_bank_status_history``
+-- above, not a repurposing of it. That table's ``to_status`` column is
+-- consumed by ``backend.question_bank.validator.validate_transition_request``
+-- as a ``backend.question_bank.transitions.ValidationStatus`` member
+-- (draft/technical_review/validated/rejected/deprecated) -- every
+-- existing reader of that table (``service.get_status_history``, the
+-- Faz 2.9.1/2.9.3 tests) assumes every row's ``to_status`` is one of
+-- those five values. Soft-delete/restore/archive are a second,
+-- orthogonal lifecycle dimension (Faz 2.9.4 instruction: "validation_status
+-- silme/arşivleme sırasında değişmesin") -- writing "soft_deleted" or
+-- "archived" into ``to_status`` would silently corrupt that assumption
+-- for every existing and future consumer. This table is purely
+-- additive: it does not alter, rename, or repurpose any existing
+-- table or column.
+CREATE TABLE IF NOT EXISTS question_bank_lifecycle_audit(
+  id INTEGER PRIMARY KEY,
+  question_id TEXT NOT NULL,
+  content_version INTEGER NOT NULL,
+  action TEXT NOT NULL,
+  actor TEXT NOT NULL,
+  actor_role TEXT,
+  previous_is_deleted INTEGER NOT NULL,
+  new_is_deleted INTEGER NOT NULL,
+  previous_archived_at TEXT,
+  new_archived_at TEXT,
+  created_at TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_question_bank_lifecycle_audit_question_id
+  ON question_bank_lifecycle_audit(question_id, created_at);
 """
+
+
+def _ensure_lifecycle_management_columns(c: sqlite3.Connection) -> None:
+    """Idempotent ``ALTER TABLE ... ADD COLUMN`` backfill for databases
+    created before Faz 2.9.4 (SQLite has no ``ADD COLUMN IF NOT
+    EXISTS``, so existence is checked via ``PRAGMA table_info`` first).
+    A fresh database created by the DDL above already has every one of
+    these columns from ``CREATE TABLE``, so on a fresh DB this is a
+    correctly-idempotent no-op (every column already present, nothing
+    is added twice); on a pre-2.9.4 DB it backfills exactly the
+    missing columns, safe to call on every startup and any number of
+    times in the same process."""
+    existing = {row[1] for row in c.execute("PRAGMA table_info(question_bank_records)")}
+    for column_name, column_ddl in _LIFECYCLE_MANAGEMENT_COLUMNS:
+        if column_name not in existing:
+            c.execute(
+                f"ALTER TABLE question_bank_records ADD COLUMN {column_name} {column_ddl}"
+            )
 
 
 def migrate(c: sqlite3.Connection) -> None:
@@ -219,6 +287,16 @@ def migrate(c: sqlite3.Connection) -> None:
     pattern. Safe to call on every startup and multiple times in the
     same test run."""
     c.executescript(DDL)
+    _ensure_lifecycle_management_columns(c)
+    # This index references is_deleted, which on a pre-2.9.4 database
+    # only exists *after* _ensure_lifecycle_management_columns() above
+    # has run -- kept as a separate statement (not part of the DDL
+    # script executed first) specifically so this ordering is
+    # guaranteed rather than accidental.
+    c.execute(
+        "CREATE INDEX IF NOT EXISTS idx_question_bank_records_is_deleted "
+        "ON question_bank_records(is_deleted)"
+    )
 
 
 def register_record(
@@ -319,6 +397,104 @@ def fetch_publishable_candidates(c: sqlite3.Connection) -> list:
     them."""
     return c.execute(
         "SELECT * FROM question_bank_records WHERE validation_status='validated'"
+    ).fetchall()
+
+
+def fetch_records_by_question_id(c: sqlite3.Connection, question_id: str) -> list:
+    """Every SQLite lifecycle row for ``question_id``, across all
+    ``content_version`` values, ordered by ``content_version``. Faz
+    2.9.4 lifecycle actions (soft-delete/restore/archive) always act on
+    this whole set at once -- a single ``question_id`` may have several
+    ``content_version`` rows, and the instruction is explicit that all
+    of them move together in one transaction, never a subset."""
+    return c.execute(
+        "SELECT * FROM question_bank_records WHERE question_id=? ORDER BY content_version",
+        (question_id,),
+    ).fetchall()
+
+
+def set_records_deleted_flag(
+    c: sqlite3.Connection,
+    *,
+    question_id: str,
+    is_deleted: bool,
+    now_iso: str,
+    actor: str,
+) -> None:
+    """Updates ``is_deleted``, ``modified_at``, ``modified_by`` for
+    every ``content_version`` row of ``question_id``. Never touches
+    ``validation_status``, ``archived_at``, or ``archived_by`` -- those
+    are each a separate, orthogonal piece of state (Faz 2.9.4
+    instructions: validation_status must not change on delete/archive;
+    restore must not clear archived_at/archived_by)."""
+    c.execute(
+        "UPDATE question_bank_records SET is_deleted=?, modified_at=?, modified_by=?"
+        " WHERE question_id=?",
+        (1 if is_deleted else 0, now_iso, actor, question_id),
+    )
+
+
+def set_records_archived(
+    c: sqlite3.Connection,
+    *,
+    question_id: str,
+    now_iso: str,
+    actor: str,
+) -> None:
+    """Sets ``archived_at``/``archived_by`` (to ``now_iso``/``actor``)
+    and ``modified_at``/``modified_by`` for every ``content_version``
+    row of ``question_id``. Never touches ``is_deleted`` or
+    ``validation_status``. There is deliberately no corresponding
+    "unarchive" setter in Faz 2.9.4 -- that capability is explicitly
+    out of this phase's scope."""
+    c.execute(
+        "UPDATE question_bank_records SET archived_at=?, archived_by=?,"
+        " modified_at=?, modified_by=? WHERE question_id=?",
+        (now_iso, actor, now_iso, actor, question_id),
+    )
+
+
+def append_lifecycle_audit(
+    c: sqlite3.Connection,
+    *,
+    question_id: str,
+    content_version: int,
+    action: str,
+    actor: str,
+    actor_role: Optional[str],
+    previous_is_deleted: bool,
+    new_is_deleted: bool,
+    previous_archived_at: Optional[str],
+    new_archived_at: Optional[str],
+    now_iso: str,
+) -> None:
+    """Append-only by construction, exactly like
+    ``append_status_history`` -- no UPDATE/DELETE statement against
+    ``question_bank_lifecycle_audit`` exists anywhere in this module."""
+    c.execute(
+        "INSERT INTO question_bank_lifecycle_audit"
+        "(question_id,content_version,action,actor,actor_role,"
+        "previous_is_deleted,new_is_deleted,previous_archived_at,new_archived_at,created_at)"
+        " VALUES(?,?,?,?,?,?,?,?,?,?)",
+        (
+            question_id,
+            content_version,
+            action,
+            actor,
+            actor_role,
+            1 if previous_is_deleted else 0,
+            1 if new_is_deleted else 0,
+            previous_archived_at,
+            new_archived_at,
+            now_iso,
+        ),
+    )
+
+
+def fetch_lifecycle_audit(c: sqlite3.Connection, question_id: str) -> list:
+    return c.execute(
+        "SELECT * FROM question_bank_lifecycle_audit WHERE question_id=? ORDER BY id",
+        (question_id,),
     ).fetchall()
 
 
