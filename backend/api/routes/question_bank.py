@@ -48,13 +48,24 @@ gains ``include_deleted``/``include_archived`` query parameters
 (each defaulting to ``False``, matching ``publishable_only``'s
 existing safe-default convention) so an admin view can opt back into
 seeing soft-deleted or archived content.
+
+Faz 2.9.5 adds tag-based and keyword search on the two Faz 2.9.2 list
+routes (``GET .../questions`` and ``GET .../questions/select``):
+``tags`` (repeatable query parameter, e.g. ``?tags=iso&tags=torque``),
+``tags_match`` (``"any"``/``"all"``, default ``"any"``), and
+``keyword`` (free-text, whitespace-tokenized). All three default to
+"no filtering" (``None``/``"any"``), so every existing caller's request
+is completely unaffected. No route path, method, or existing parameter
+changes -- this is purely additive. All matching logic lives in
+``backend.question_bank.retrieval``; this module only parses the query
+parameters and passes them through.
 """
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import List, Literal, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 router = APIRouter(tags=["question_bank"])
 
@@ -123,6 +134,9 @@ def select_questions(
     publishable_only: bool = True,
     include_deleted: bool = False,
     include_archived: bool = False,
+    tags: Optional[List[str]] = Query(None),
+    tags_match: Literal["any", "all"] = "any",
+    keyword: Optional[str] = None,
     u=Depends(user),
 ):
     if count < 0:
@@ -141,6 +155,9 @@ def select_questions(
             publishable_only=publishable_only,
             include_deleted=include_deleted,
             include_archived=include_archived,
+            tags=tags,
+            tags_match=tags_match,
+            keyword=keyword,
         )
     return [r.model_dump(mode="json") for r in records]
 
@@ -178,6 +195,9 @@ def list_questions(
     publishable_only: bool = True,
     include_deleted: bool = False,
     include_archived: bool = False,
+    tags: Optional[List[str]] = Query(None),
+    tags_match: Literal["any", "all"] = "any",
+    keyword: Optional[str] = None,
     u=Depends(user),
 ):
     with conn() as c:
@@ -192,6 +212,9 @@ def list_questions(
             publishable_only=publishable_only,
             include_deleted=include_deleted,
             include_archived=include_archived,
+            tags=tags,
+            tags_match=tags_match,
+            keyword=keyword,
         )
     return [r.model_dump(mode="json") for r in records]
 
