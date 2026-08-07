@@ -28,6 +28,15 @@ Route registration order matters: ``/api/question-bank/questions/select``
 is declared *before* ``/api/question-bank/questions/{question_id}`` so
 FastAPI's exact-match route is tried first and the literal path segment
 ``select`` is never swallowed by the ``{question_id}`` path parameter.
+
+Faz 2.9.3 adds the one write route this module has (``PATCH
+.../questions/{question_id}``). It is still thin: all merge, no-op,
+versioning and JSON/SQLite write-ordering logic lives in
+``backend.question_bank.service.update_question``; this module only
+does request-body parsing (via ``backend.question_bank.patch.
+QuestionPatch``), the DB connection, the service call, response
+serialization, and the extra domain-exception -> HTTPException mappings
+that writing (as opposed to Faz 2.9.2's pure reads) newly requires.
 """
 
 from __future__ import annotations
@@ -48,7 +57,14 @@ router = APIRouter(tags=["question_bank"])
 from backend.api.dependencies import user  # noqa: E402
 from backend.app import conn  # noqa: E402
 from backend.question_bank import retrieval  # noqa: E402
-from backend.question_bank.errors import ContentNotFoundError  # noqa: E402
+from backend.question_bank import service as qb_service  # noqa: E402
+from backend.question_bank.errors import (  # noqa: E402
+    ContentNotFoundError,
+    DuplicateContentVersionError,
+    PartialUpdateFailureError,
+    QuestionBankValidationError,
+)
+from backend.question_bank.patch import QuestionPatch  # noqa: E402
 from backend.question_bank.schema import (  # noqa: E402
     Category,
     Difficulty,
@@ -63,6 +79,12 @@ def _handle(fn, *args, **kwargs):
         return fn(*args, **kwargs)
     except ContentNotFoundError as exc:
         raise HTTPException(404, str(exc))
+    except DuplicateContentVersionError as exc:
+        raise HTTPException(409, str(exc))
+    except QuestionBankValidationError as exc:
+        raise HTTPException(422, {"message": str(exc), "reasons": exc.reasons})
+    except PartialUpdateFailureError as exc:
+        raise HTTPException(500, str(exc))
 
 
 @router.get("/api/question-bank/questions/select")
@@ -137,3 +159,28 @@ def list_questions(
             publishable_only=publishable_only,
         )
     return [r.model_dump(mode="json") for r in records]
+
+
+@router.patch("/api/question-bank/questions/{question_id}")
+def patch_question(question_id: str, patch: QuestionPatch, u=Depends(user)):
+    """Faz 2.9.3. Partial content update: only fields present in the
+    request body are changed; ``question_id`` and lifecycle fields
+    (``validation_status`` etc.) cannot be set through this body at all.
+    Internally this always creates a new, immutable ``content_version``
+    rather than mutating an existing one -- see
+    ``backend.question_bank.service.update_question``'s docstring for
+    the full versioning and JSON/SQLite write-ordering behaviour. A
+    no-op patch (every provided field already matches the current
+    value) returns the unchanged current record with no new version
+    created. The response uses the same canonical
+    :class:`backend.question_bank.schema.QuestionRecord` shape as every
+    Faz 2.9.2 retrieval route."""
+    with conn() as c:
+        record = _handle(
+            qb_service.update_question,
+            c,
+            question_id=question_id,
+            patch=patch,
+            actor=u["username"],
+        )
+    return record.model_dump(mode="json")
