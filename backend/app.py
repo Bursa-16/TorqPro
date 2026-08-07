@@ -290,6 +290,8 @@ def migrate():
         migrate_joints(c)
         from backend.production_validation.repository import migrate as migrate_production_validation
         migrate_production_validation(c)
+        from backend.question_bank.store import migrate as migrate_question_bank
+        migrate_question_bank(c)
 
         c.commit()
 
