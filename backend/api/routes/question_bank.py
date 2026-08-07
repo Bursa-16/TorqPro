@@ -59,6 +59,21 @@ is completely unaffected. No route path, method, or existing parameter
 changes -- this is purely additive. All matching logic lives in
 ``backend.question_bank.retrieval``; this module only parses the query
 parameters and passes them through.
+
+Faz 2.9.6 exposes the create workflow and the lifecycle-transition /
+audit / status-history read paths that Faz 2.9.1's service layer has
+carried since its own foundation but that, until now, had no HTTP
+route at all (``register_question``/``register_question_content``,
+``submit_for_technical_review``, ``validate_question``,
+``reject_question``, ``deprecate_question``, ``get_lifecycle_audit``,
+``get_status_history``). No new persistence, no new schema, no new
+service-layer business rule is introduced here -- every new route is
+a thin wrapper in the exact same style as the Faz 2.9.3/2.9.4 write
+routes above: request-body parsing (via two small, local, purpose-
+built Pydantic bodies), the DB connection, the service call, response
+serialization, and the shared ``_handle`` exception mapping (extended
+with one new entry, ``InvalidTransitionError`` -> 409, the one domain
+error no prior route's service call could raise).
 """
 
 from __future__ import annotations
@@ -66,6 +81,7 @@ from __future__ import annotations
 from typing import List, Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel, ConfigDict, Field
 
 router = APIRouter(tags=["question_bank"])
 
@@ -83,6 +99,7 @@ from backend.question_bank import service as qb_service  # noqa: E402
 from backend.question_bank.errors import (  # noqa: E402
     ContentNotFoundError,
     DuplicateContentVersionError,
+    InvalidTransitionError,
     PartialUpdateFailureError,
     QuestionAlreadyArchivedError,
     QuestionAlreadyDeletedError,
@@ -94,6 +111,7 @@ from backend.question_bank.patch import QuestionPatch  # noqa: E402
 from backend.question_bank.schema import (  # noqa: E402
     Category,
     Difficulty,
+    QuestionRecord,
     QuestionType,
     TraceabilityLevel,
 )
@@ -117,6 +135,7 @@ def _handle(fn, *args, **kwargs):
         QuestionAlreadyDeletedError,
         QuestionNotDeletedError,
         QuestionAlreadyArchivedError,
+        InvalidTransitionError,
     ) as exc:
         raise HTTPException(409, str(exc))
 
@@ -318,3 +337,195 @@ def delete_question(question_id: str, u=Depends(user)):
             authorize=qb_service.default_role_authorization,
         )
     return _lifecycle_response(question_id, versions)
+
+
+# ---------------------------------------------------------------------
+# Faz 2.9.6: create workflow + lifecycle-transition routes + audit /
+# status-history read routes.
+#
+# Same division of responsibility as every write route above: all
+# merge/versioning/transition-legality/authorization logic lives in
+# ``backend.question_bank.service``; this module only parses the
+# request, opens the DB connection, calls the service function, and
+# serializes the response. Every body model below is deliberately
+# minimal (``extra="forbid"``, matching ``QuestionPatch``'s own
+# convention) -- no field this phase does not need.
+# ---------------------------------------------------------------------
+
+
+class ContentVersionBody(BaseModel):
+    """Request body for the two transition routes that need nothing
+    beyond the target ``content_version`` (submit-for-review,
+    deprecate) -- and the base that ``validate``/``reject`` extend
+    with their own additional required fields."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    content_version: int = Field(ge=1)
+
+
+class ValidateQuestionBody(ContentVersionBody):
+    reviewed_by: str = Field(min_length=1)
+    review_date: str = Field(min_length=1)
+
+
+class RejectQuestionBody(ContentVersionBody):
+    reason: str = Field(min_length=1)
+
+
+def _transition_response(question_id: str, content_version: int, validation_status: str) -> dict:
+    return {
+        "question_id": question_id,
+        "content_version": content_version,
+        "validation_status": validation_status,
+    }
+
+
+@router.post("/api/question-bank/questions", status_code=201)
+def create_question(payload: QuestionRecord, u=Depends(user)):
+    """Creates a brand-new question: appends the content snapshot to
+    the JSON store, then registers the initial ``draft`` SQLite
+    lifecycle record for it -- the same two-call sequence
+    (``register_question_content`` then ``register_question``) Faz
+    2.9.1's own tests already use, now reachable over HTTP for the
+    first time. ``question_id`` and ``content_version`` come from the
+    request body itself; posting a ``(question_id, content_version)``
+    pair that already exists in either store is a 409, never a silent
+    overwrite (matches every other append-only write path in this
+    module). Structural/content validation failures (e.g. a too-short
+    ``technical_explanation_tr``) are a 422 with the full reason list,
+    exactly like the PATCH route above."""
+    _handle(qb_service.register_question_content, payload)
+    with conn() as c:
+        _handle(
+            qb_service.register_question,
+            c,
+            question_id=payload.question_id,
+            content_version=payload.content_version,
+            actor=u["username"],
+        )
+    return payload.model_dump(mode="json")
+
+
+@router.post("/api/question-bank/questions/{question_id}/submit-for-review")
+def submit_question_for_review(question_id: str, body: ContentVersionBody, u=Depends(user)):
+    """``draft -> technical_review``. Matches
+    ``backend.question_bank.service.submit_for_technical_review``'s own
+    signature exactly: no ``authorize`` callback, because submission is
+    not in ``AUTHORIZATION_REQUIRED_TRANSITIONS`` (see
+    ``backend/question_bank/transitions.py``'s docstring -- authorship
+    submission is deliberately left ungated; this route does not add a
+    gate the service layer itself does not have). Any authenticated
+    user may call this route. 409 if the current status is not
+    ``draft``; 404 if the ``(question_id, content_version)`` pair has
+    no SQLite lifecycle record at all."""
+    with conn() as c:
+        _handle(
+            qb_service.submit_for_technical_review,
+            c,
+            question_id=question_id,
+            content_version=body.content_version,
+            actor=u["username"],
+        )
+    return _transition_response(question_id, body.content_version, "technical_review")
+
+
+@router.post("/api/question-bank/questions/{question_id}/validate")
+def validate_question_route(question_id: str, body: ValidateQuestionBody, u=Depends(user)):
+    """``technical_review -> validated``. Requires admin/engineer
+    authorization (``backend.question_bank.service.
+    default_role_authorization`` -- the same reference implementation
+    the Faz 2.9.4 archive/restore/delete routes already reuse); a
+    ``viewer`` gets 403. 409 if the current status is not
+    ``technical_review``; 404 if unregistered."""
+    with conn() as c:
+        _handle(
+            qb_service.validate_question,
+            c,
+            question_id=question_id,
+            content_version=body.content_version,
+            actor=u["username"],
+            actor_role=u["role"],
+            reviewed_by=body.reviewed_by,
+            review_date=body.review_date,
+            authorize=qb_service.default_role_authorization,
+        )
+    return _transition_response(question_id, body.content_version, "validated")
+
+
+@router.post("/api/question-bank/questions/{question_id}/reject")
+def reject_question_route(question_id: str, body: RejectQuestionBody, u=Depends(user)):
+    """``technical_review -> rejected``. Requires admin/engineer
+    authorization, same as ``validate`` above. 409 if the current
+    status is not ``technical_review``; 404 if unregistered."""
+    with conn() as c:
+        _handle(
+            qb_service.reject_question,
+            c,
+            question_id=question_id,
+            content_version=body.content_version,
+            actor=u["username"],
+            actor_role=u["role"],
+            reason=body.reason,
+            authorize=qb_service.default_role_authorization,
+        )
+    return _transition_response(question_id, body.content_version, "rejected")
+
+
+@router.post("/api/question-bank/questions/{question_id}/deprecate")
+def deprecate_question_route(question_id: str, body: ContentVersionBody, u=Depends(user)):
+    """``validated -> deprecated``. Requires admin/engineer
+    authorization, same as ``validate``/``reject`` above. 409 if the
+    current status is not ``validated``; 404 if unregistered. Terminal
+    -- there is no route back out of ``deprecated`` in this phase."""
+    with conn() as c:
+        _handle(
+            qb_service.deprecate_question,
+            c,
+            question_id=question_id,
+            content_version=body.content_version,
+            actor=u["username"],
+            actor_role=u["role"],
+            authorize=qb_service.default_role_authorization,
+        )
+    return _transition_response(question_id, body.content_version, "deprecated")
+
+
+def _require_question_exists(c, question_id: str) -> None:
+    """Existence check shared by the two read-only routes below. Reuses
+    an invariant ``register_question`` already establishes: every
+    legitimately-registered ``question_id`` has at least one
+    ``question_bank_status_history`` row from the moment it is created
+    (``register_question`` always appends a ``None -> draft`` row), so
+    an empty status-history result is equivalent to "no such
+    question_id" -- mapped to the same 404 shape every other lifecycle
+    route already uses for an unknown ``question_id``."""
+    if not qb_service.get_status_history(c, question_id):
+        raise HTTPException(404, f"question_id '{question_id}' bulunamadı")
+
+
+@router.get("/api/question-bank/questions/{question_id}/audit")
+def get_question_audit(question_id: str, u=Depends(user)):
+    """Read-only wrapper over
+    ``backend.question_bank.service.get_lifecycle_audit`` (the Faz
+    2.9.4 soft-delete/restore/archive audit trail). A question that
+    exists but was never deleted/restored/archived legitimately
+    returns an empty list with 200 -- only a wholly unknown
+    ``question_id`` is a 404 (see ``_require_question_exists``)."""
+    with conn() as c:
+        _require_question_exists(c, question_id)
+        rows = qb_service.get_lifecycle_audit(c, question_id)
+    return [dict(row) for row in rows]
+
+
+@router.get("/api/question-bank/questions/{question_id}/status-history")
+def get_question_status_history(question_id: str, u=Depends(user)):
+    """Read-only wrapper over
+    ``backend.question_bank.service.get_status_history`` (the Faz
+    2.9.1 validation-status transition trail). Every registered
+    question always has at least one row here, so an empty result is
+    itself the 404 signal -- see ``_require_question_exists``."""
+    with conn() as c:
+        _require_question_exists(c, question_id)
+        rows = qb_service.get_status_history(c, question_id)
+    return [dict(row) for row in rows]
