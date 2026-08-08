@@ -1542,6 +1542,24 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
     <div id="qb-stats-body"></div>
   </div>
 
+  <!-- Faz 2.9.12: Statistics Trend / History -- read-only list of
+       point-in-time snapshots taken via POST /api/question-bank/stats/
+       snapshot and read back via GET /api/question-bank/stats/history.
+       Rendered as a plain HTML table only: no charting library is
+       introduced by this phase. -->
+  <div class="card">
+    <div class="card-header">
+      <div><div class="card-title" style="margin-bottom:0" data-i18n="qb.stats.history.title">Trend / History</div>
+        <div class="card-sub" data-i18n="qb.stats.history.sub">Snapshots of the statistics above over time</div></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary btn-sm" onclick="qbCreateStatsSnapshot()" data-i18n="qb.stats.history.snapshot_button">Take snapshot</button>
+        <button class="btn btn-secondary btn-sm" onclick="qbLoadStatsHistory()" data-i18n="qb.stats.history.refresh_button">Refresh</button>
+      </div>
+    </div>
+    <div id="qb-stats-history-status" class="fc-muted"></div>
+    <div id="qb-stats-history-body"></div>
+  </div>
+
   <div id="qb-detail-card" class="card" style="display:none">
     <div class="card-header">
       <div><div class="card-title" style="margin-bottom:0" id="qb-detail-title" data-i18n="qb.detail_title">Question Detail</div>
@@ -3973,6 +3991,17 @@ const I18N = {
     'qb.stats.by_difficulty': 'By Difficulty',
     'qb.stats.by_question_type': 'By Question Type',
     'qb.stats.unknown_bucket': 'Unknown',
+    'qb.stats.history.title': 'Trend / History',
+    'qb.stats.history.sub': 'Snapshots of the statistics above over time',
+    'qb.stats.history.snapshot_button': 'Take snapshot',
+    'qb.stats.history.refresh_button': 'Refresh',
+    'qb.stats.history.loading': 'Loading history...',
+    'qb.stats.history.empty': 'No snapshots yet -- take one to start tracking trends.',
+    'qb.stats.history.error_prefix': 'Could not load history: ',
+    'qb.stats.history.snapshot_error_prefix': 'Could not create snapshot: ',
+    'qb.stats.history.snapshot_success': 'Snapshot saved.',
+    'qb.stats.history.col_taken_at': 'Taken at',
+    'qb.stats.history.col_total': 'Total questions',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -5818,6 +5847,17 @@ const I18N = {
     'qb.stats.by_difficulty': 'Zorluk Seviyesine Göre',
     'qb.stats.by_question_type': 'Soru Tipine Göre',
     'qb.stats.unknown_bucket': 'Bilinmiyor',
+    'qb.stats.history.title': 'Eğilim / Geçmiş',
+    'qb.stats.history.sub': 'Yukarıdaki istatistiklerin zaman içindeki anlık görüntüleri',
+    'qb.stats.history.snapshot_button': 'Anlık görüntü al',
+    'qb.stats.history.refresh_button': 'Yenile',
+    'qb.stats.history.loading': 'Geçmiş yükleniyor...',
+    'qb.stats.history.empty': 'Henüz anlık görüntü yok -- eğilimleri izlemeye başlamak için bir tane alın.',
+    'qb.stats.history.error_prefix': 'Geçmiş yüklenemedi: ',
+    'qb.stats.history.snapshot_error_prefix': 'Anlık görüntü oluşturulamadı: ',
+    'qb.stats.history.snapshot_success': 'Anlık görüntü kaydedildi.',
+    'qb.stats.history.col_taken_at': 'Alınma zamanı',
+    'qb.stats.history.col_total': 'Toplam soru sayısı',
   },
 };
 
@@ -10635,6 +10675,7 @@ function qbInit() {
   qbCancelForm();
   qbLoadList();
   qbLoadStats();
+  qbLoadStatsHistory();
 }
 
 function qbReapplyLanguage() {
@@ -10646,6 +10687,7 @@ function qbReapplyLanguage() {
   qbUpdateCorrectAnswerHint();
   if (QB_SELECTED_RECORD) qbRenderDetail();
   if (QB_STATS) qbRenderStats();
+  if (QB_STATS_HISTORY) qbRenderStatsHistory();
 }
 
 // ---------------------------------------------------------------------
@@ -10720,6 +10762,69 @@ function qbRenderStats() {
       <table class="source-table"><tbody>${rows}</tbody></table></div>`;
   }).join('');
   bodyEl.innerHTML = totalHtml + `<div style="display:flex;gap:20px;flex-wrap:wrap">${breakdownsHtml}</div>`;
+}
+
+// ---------------------------------------------------------------------
+// Faz 2.9.12: Statistics Trend / History -- read-only list of
+// point-in-time snapshots. Reuses the existing GET
+// /api/question-bank/stats/history response verbatim (Faz 2.9.10's
+// compute_stats() reused server-side by
+// backend.question_bank.stats_history -- see that module's own
+// docstring): this panel never recomputes a count itself, it only
+// renders the "taken_at" / "total" pair already present in each
+// history entry. Rendered as a plain HTML table only -- no charting
+// library is introduced by this phase.
+// ---------------------------------------------------------------------
+
+let QB_STATS_HISTORY = null;
+const QB_STATS_HISTORY_LIMIT = 20;
+
+async function qbCreateStatsSnapshot() {
+  const statusEl = document.getElementById('qb-stats-history-status');
+  if (!statusEl) return;
+  try {
+    await apiRequest('/api/question-bank/stats/snapshot', { method: 'POST' });
+    statusEl.textContent = t('qb.stats.history.snapshot_success');
+    await qbLoadStatsHistory();
+  } catch (e) {
+    statusEl.textContent = t('qb.stats.history.snapshot_error_prefix') + e.message;
+  }
+}
+
+async function qbLoadStatsHistory() {
+  const statusEl = document.getElementById('qb-stats-history-status');
+  const bodyEl = document.getElementById('qb-stats-history-body');
+  if (!statusEl || !bodyEl) return;
+  statusEl.textContent = t('qb.stats.history.loading');
+  bodyEl.innerHTML = '';
+  try {
+    QB_STATS_HISTORY = await apiRequest('/api/question-bank/stats/history?limit=' + QB_STATS_HISTORY_LIMIT);
+    qbRenderStatsHistory();
+  } catch (e) {
+    QB_STATS_HISTORY = null;
+    statusEl.textContent = t('qb.stats.history.error_prefix') + e.message;
+    bodyEl.innerHTML = '';
+  }
+}
+
+function qbRenderStatsHistory() {
+  const statusEl = document.getElementById('qb-stats-history-status');
+  const bodyEl = document.getElementById('qb-stats-history-body');
+  if (!statusEl || !bodyEl) return;
+  if (!QB_STATS_HISTORY) { statusEl.textContent = ''; bodyEl.innerHTML = ''; return; }
+  if (QB_STATS_HISTORY.length === 0) {
+    statusEl.textContent = t('qb.stats.history.empty');
+    bodyEl.innerHTML = '';
+    return;
+  }
+  statusEl.textContent = '';
+  const rows = QB_STATS_HISTORY.map((snap) =>
+    `<tr><td>${qbEsc(snap.created_at)}</td><td style="text-align:right">${qbEsc(String(snap.stats.total))}</td></tr>`,
+  ).join('');
+  bodyEl.innerHTML = `<table class="source-table"><thead><tr>` +
+    `<th>${qbEsc(t('qb.stats.history.col_taken_at'))}</th>` +
+    `<th style="text-align:right">${qbEsc(t('qb.stats.history.col_total'))}</th>` +
+    `</tr></thead><tbody>${rows}</tbody></table>`;
 }
 
 function qbDebouncedLoadList() {

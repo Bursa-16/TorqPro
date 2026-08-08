@@ -259,6 +259,32 @@ CREATE TABLE IF NOT EXISTS question_bank_lifecycle_audit(
 );
 CREATE INDEX IF NOT EXISTS idx_question_bank_lifecycle_audit_question_id
   ON question_bank_lifecycle_audit(question_id, created_at);
+
+-- Faz 2.9.12: point-in-time statistics snapshots for the Trend /
+-- History panel. Purely additive, append-only (no UPDATE/DELETE
+-- statement against this table exists anywhere in this module,
+-- matching ``question_bank_status_history``'s and
+-- ``question_bank_lifecycle_audit``'s own append-only convention
+-- above). ``stats_json`` stores the exact ``dict``
+-- ``backend.question_bank.stats.compute_stats`` returned at snapshot
+-- time (sha256/checksum-style canonical JSON: ``sort_keys=True,
+-- ensure_ascii=False`` -- this module's own ``_checksum`` helper
+-- above documents why ``ensure_ascii=False`` is mandatory for
+-- Turkish-character content, and no bucket label in a stats payload
+-- is Turkish-character-free by construction). ``id`` (the existing
+-- autoincrement-by-construction SQLite convention every other table
+-- in this DDL already relies on for deterministic chronological
+-- ordering, e.g. ``fetch_status_history``'s ``ORDER BY id``) is the
+-- single source of truth for ordering, not ``created_at`` alone --
+-- two snapshots created within the same wall-clock second must still
+-- sort deterministically.
+CREATE TABLE IF NOT EXISTS question_bank_stats_snapshots(
+  id INTEGER PRIMARY KEY,
+  created_at TEXT NOT NULL,
+  stats_json TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_question_bank_stats_snapshots_created_at
+  ON question_bank_stats_snapshots(created_at);
 """
 
 
