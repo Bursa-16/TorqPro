@@ -549,3 +549,22 @@ full delivery report.
   count in the response, HTTP auth enforcement, response shape,
   route-order (not shadowed by `{question_id}`), and no regression on
   the pre-existing list/export routes.
+
+## Faz 2.9.11 — Question Bank Statistics Dashboard / Admin UI — 2026-08-08
+
+- Added a read-only Statistics / Coverage section to the Question Bank
+  Admin UI (`frontend/index.html`): `total`, `by_validation_status`,
+  `by_category`, `by_difficulty`, `by_question_type`, rendered exactly
+  as returned by the existing `GET /api/question-bank/stats` (Faz
+  2.9.10) -- reused verbatim, no new backend endpoint, no client-side
+  re-aggregation.
+- Full TR/EN i18n parity (`qb.stats.*`). No new UI framework: reuses
+  the existing `frontend/index.html` card/table conventions.
+- Loading, empty, and API-error states handled with the same pattern
+  already used by the Questions list and Import/Export panels.
+- 23 new tests
+  (`tests/test_faz_2_9_11_question_bank_statistics_dashboard_frontend.py`):
+  card presence/placement, loading/empty/error-state handling, all
+  four breakdowns rendered without re-implementing aggregation,
+  `qbInit()`/`qbReapplyLanguage()` lifecycle wiring, `qb.stats.*`
+  TR/EN key parity, and JS syntax validity.

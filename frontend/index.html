@@ -1529,6 +1529,19 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
     </div>
   </div>
 
+  <!-- Faz 2.9.11: Statistics / Coverage -- read-only, reuses GET
+       /api/question-bank/stats verbatim (Faz 2.9.10). No client-side
+       recomputation of any count: the API response is rendered as-is. -->
+  <div class="card">
+    <div class="card-header">
+      <div><div class="card-title" style="margin-bottom:0" data-i18n="qb.stats.title">Statistics / Coverage</div>
+        <div class="card-sub" data-i18n="qb.stats.sub">Read-only aggregate counts over the whole Question Bank</div></div>
+      <div><button class="btn btn-secondary btn-sm" onclick="qbLoadStats()" data-i18n="qb.stats.refresh_button">Refresh</button></div>
+    </div>
+    <div id="qb-stats-status" class="fc-muted"></div>
+    <div id="qb-stats-body"></div>
+  </div>
+
   <div id="qb-detail-card" class="card" style="display:none">
     <div class="card-header">
       <div><div class="card-title" style="margin-bottom:0" id="qb-detail-title" data-i18n="qb.detail_title">Question Detail</div>
@@ -3946,6 +3959,20 @@ const I18N = {
     'qb.ie.result_summary': '{created} created, {skipped} skipped (duplicate), {rejected} rejected (of {total} total).',
     'qb.ie.result.col.question_id': 'Question ID',
     'qb.ie.result.col.reason': 'Reason',
+
+    // ---- Faz 2.9.11: Question Bank Statistics / Coverage dashboard ----
+    'qb.stats.title': 'Statistics / Coverage',
+    'qb.stats.sub': 'Read-only aggregate counts over the whole Question Bank',
+    'qb.stats.refresh_button': 'Refresh',
+    'qb.stats.loading': 'Loading statistics...',
+    'qb.stats.empty': 'No data to show yet.',
+    'qb.stats.error_prefix': 'Could not load statistics: ',
+    'qb.stats.total_label': 'Total questions:',
+    'qb.stats.by_validation_status': 'By Validation Status',
+    'qb.stats.by_category': 'By Category',
+    'qb.stats.by_difficulty': 'By Difficulty',
+    'qb.stats.by_question_type': 'By Question Type',
+    'qb.stats.unknown_bucket': 'Unknown',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -5777,6 +5804,20 @@ const I18N = {
     'qb.ie.result_summary': '{created} oluşturuldu, {skipped} atlandı (duplicate), {rejected} reddedildi (toplam {total}).',
     'qb.ie.result.col.question_id': 'Soru ID',
     'qb.ie.result.col.reason': 'Gerekçe',
+
+    // ---- Faz 2.9.11: Soru Bankası İstatistik / Kapsam paneli ----
+    'qb.stats.title': 'İstatistik / Kapsam',
+    'qb.stats.sub': 'Tüm Soru Bankası üzerinde salt okunur toplam sayılar',
+    'qb.stats.refresh_button': 'Yenile',
+    'qb.stats.loading': 'İstatistikler yükleniyor...',
+    'qb.stats.empty': 'Henüz gösterilecek veri yok.',
+    'qb.stats.error_prefix': 'İstatistikler yüklenemedi: ',
+    'qb.stats.total_label': 'Toplam soru sayısı:',
+    'qb.stats.by_validation_status': 'Doğrulama Durumuna Göre',
+    'qb.stats.by_category': 'Kategoriye Göre',
+    'qb.stats.by_difficulty': 'Zorluk Seviyesine Göre',
+    'qb.stats.by_question_type': 'Soru Tipine Göre',
+    'qb.stats.unknown_bucket': 'Bilinmiyor',
   },
 };
 
@@ -10593,6 +10634,7 @@ function qbInit() {
   qbCloseDetail();
   qbCancelForm();
   qbLoadList();
+  qbLoadStats();
 }
 
 function qbReapplyLanguage() {
@@ -10603,6 +10645,81 @@ function qbReapplyLanguage() {
   qbUpdateBulkToolbar();
   qbUpdateCorrectAnswerHint();
   if (QB_SELECTED_RECORD) qbRenderDetail();
+  if (QB_STATS) qbRenderStats();
+}
+
+// ---------------------------------------------------------------------
+// Faz 2.9.11: Statistics / Coverage -- thin, read-only render of the
+// existing GET /api/question-bank/stats response (Faz 2.9.10). This
+// module never recomputes total/by_validation_status/by_category/
+// by_difficulty/by_question_type itself: the API is the single source
+// of truth for every number shown here, and the breakdown dicts are
+// rendered exactly as received (already key-sorted server-side).
+// Deliberately out of scope, per Faz 2.9.11: any date/time trend,
+// historical/point-in-time comparison, charting library, or new
+// statistics endpoint -- this is a single current-snapshot read only.
+// ---------------------------------------------------------------------
+
+let QB_STATS = null;
+
+const QB_STATS_BREAKDOWNS = [
+  { key: 'by_validation_status', labelKind: 'validation_status', titleKey: 'qb.stats.by_validation_status' },
+  { key: 'by_category', labelKind: null, titleKey: 'qb.stats.by_category' },
+  { key: 'by_difficulty', labelKind: 'difficulty', titleKey: 'qb.stats.by_difficulty' },
+  { key: 'by_question_type', labelKind: 'question_type', titleKey: 'qb.stats.by_question_type' },
+];
+
+function qbStatsBucketLabel(labelKind, bucketKey) {
+  // The API's own deterministic "unknown" bucket (see
+  // backend/question_bank/stats.py UNKNOWN_BUCKET) is shown via its
+  // own translated copy rather than qbLabel()'s enum lookup, since
+  // "unknown" is not itself a Category/Difficulty/QuestionType/
+  // ValidationStatus vocabulary value.
+  if (bucketKey === 'unknown') return t('qb.stats.unknown_bucket');
+  return labelKind ? qbLabel(labelKind, bucketKey) : qbCategoryLabel(bucketKey);
+}
+
+async function qbLoadStats() {
+  const statusEl = document.getElementById('qb-stats-status');
+  const bodyEl = document.getElementById('qb-stats-body');
+  if (!statusEl || !bodyEl) return;
+  statusEl.textContent = t('qb.stats.loading');
+  bodyEl.innerHTML = '';
+  try {
+    QB_STATS = await apiRequest('/api/question-bank/stats');
+    qbRenderStats();
+  } catch (e) {
+    QB_STATS = null;
+    statusEl.textContent = t('qb.stats.error_prefix') + e.message;
+    bodyEl.innerHTML = '';
+  }
+}
+
+function qbRenderStats() {
+  const statusEl = document.getElementById('qb-stats-status');
+  const bodyEl = document.getElementById('qb-stats-body');
+  if (!statusEl || !bodyEl) return;
+  if (!QB_STATS) { statusEl.textContent = ''; bodyEl.innerHTML = ''; return; }
+  if (!QB_STATS.total) {
+    statusEl.textContent = t('qb.stats.empty');
+    bodyEl.innerHTML = '';
+    return;
+  }
+  statusEl.textContent = '';
+  const totalHtml = `<div style="margin-bottom:10px"><span class="fc-muted">${qbEsc(t('qb.stats.total_label'))}</span> <strong>${qbEsc(String(QB_STATS.total))}</strong></div>`;
+  const breakdownsHtml = QB_STATS_BREAKDOWNS.map(({ key, labelKind, titleKey }) => {
+    const dict = QB_STATS[key] || {};
+    const entries = Object.entries(dict);
+    if (entries.length === 0) {
+      return `<div style="min-width:220px"><div class="card-title" style="font-size:13px">${qbEsc(t(titleKey))}</div><div class="fc-muted">${qbEsc(t('qb.stats.empty'))}</div></div>`;
+    }
+    const rows = entries.map(([bucketKey, count]) =>
+      `<tr><td>${qbEsc(qbStatsBucketLabel(labelKind, bucketKey))}</td><td style="text-align:right">${qbEsc(String(count))}</td></tr>`,
+    ).join('');
+    return `<div style="min-width:220px"><div class="card-title" style="font-size:13px">${qbEsc(t(titleKey))}</div>
+      <table class="source-table"><tbody>${rows}</tbody></table></div>`;
+  }).join('');
+  bodyEl.innerHTML = totalHtml + `<div style="display:flex;gap:20px;flex-wrap:wrap">${breakdownsHtml}</div>`;
 }
 
 function qbDebouncedLoadList() {
