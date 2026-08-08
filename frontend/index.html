@@ -1494,10 +1494,23 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
       <select class="form-select" id="qb-filter-status" onchange="qbLoadList()"><option value="" data-i18n="qb.filter_status_all">Any status</option></select>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)"><input type="checkbox" id="qb-filter-include-archived" style="accent-color:var(--accent)" onchange="qbLoadList()"> <span data-i18n="qb.filter_include_archived">Include archived/deleted</span></label>
     </div>
+    <div id="qb-bulk-toolbar" class="fc-toolbar" style="display:none;align-items:center;gap:8px">
+      <span id="qb-bulk-count" style="font-size:12px;color:var(--text3)"></span>
+      <button class="btn btn-secondary btn-sm" onclick="qbBulkSubmitForReview()" data-i18n="qb.action.submit_for_review">Submit for Review</button>
+      <button class="btn btn-secondary btn-sm qb-bulk-privileged" onclick="qbBulkValidate()" data-i18n="qb.action.validate">Validate</button>
+      <button class="btn btn-secondary btn-sm qb-bulk-privileged" onclick="qbBulkReject()" data-i18n="qb.action.reject">Reject</button>
+      <button class="btn btn-secondary btn-sm qb-bulk-privileged" onclick="qbBulkDeprecate()" data-i18n="qb.action.deprecate">Deprecate</button>
+      <button class="btn btn-secondary btn-sm qb-bulk-privileged" onclick="qbBulkArchive()" data-i18n="qb.action.archive">Archive</button>
+      <button class="btn btn-secondary btn-sm" onclick="qbBulkAddTags()" data-i18n="qb.bulk.action.add_tags">Add Tags</button>
+      <button class="btn btn-secondary btn-sm" onclick="qbBulkRemoveTags()" data-i18n="qb.bulk.action.remove_tags">Remove Tags</button>
+      <button class="btn btn-secondary btn-sm" onclick="qbClearBulkSelection()" data-i18n="qb.bulk.clear_selection">Clear Selection</button>
+    </div>
+    <div id="qb-bulk-result"></div>
     <div id="qb-list-status" class="fc-muted"></div>
     <div style="overflow-x:auto">
     <table class="source-table" id="qb-list-table">
       <thead><tr>
+        <th style="width:28px"><input type="checkbox" id="qb-select-all" onchange="qbToggleSelectAll(this.checked)"></th>
         <th data-i18n="qb.col.id">ID</th>
         <th data-i18n="qb.col.question">Question</th>
         <th data-i18n="qb.col.category">Category</th>
@@ -3898,6 +3911,21 @@ const I18N = {
     'qb.yes': 'Yes',
     'qb.no': 'No',
     'qb.unknown_status': 'unknown status',
+
+    // ---- Faz 2.9.8: Question Bank bulk lifecycle + tag operations ----
+    'qb.bulk.selected_count': '{n} question(s) selected',
+    'qb.bulk.action.add_tags': 'Add Tags',
+    'qb.bulk.action.remove_tags': 'Remove Tags',
+    'qb.bulk.clear_selection': 'Clear Selection',
+    'qb.bulk.confirm_add_tags': 'Tags to add (comma separated):',
+    'qb.bulk.confirm_remove_tags': 'Tags to remove (comma separated):',
+    'qb.bulk.confirm_archive_title': 'Archive the selected questions?',
+    'qb.bulk.confirm_deprecate_title': 'Deprecate the selected questions?',
+    'qb.bulk.running': 'Running bulk action...',
+    'qb.bulk.error_prefix': 'Bulk action failed: ',
+    'qb.bulk.result_summary': '{succeeded} succeeded, {failed} failed (of {total} total).',
+    'qb.bulk.result.col.question_id': 'Question ID',
+    'qb.bulk.result.col.error': 'Error',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -5700,6 +5728,21 @@ const I18N = {
     'qb.yes': 'Evet',
     'qb.no': 'Hayır',
     'qb.unknown_status': 'bilinmeyen durum',
+
+    // ---- Faz 2.9.8: Question Bank bulk lifecycle + tag operations ----
+    'qb.bulk.selected_count': '{n} soru seçildi',
+    'qb.bulk.action.add_tags': 'Etiket Ekle',
+    'qb.bulk.action.remove_tags': 'Etiket Kaldır',
+    'qb.bulk.clear_selection': 'Seçimi Temizle',
+    'qb.bulk.confirm_add_tags': 'Eklenecek etiketler (virgülle ayırın):',
+    'qb.bulk.confirm_remove_tags': 'Kaldırılacak etiketler (virgülle ayırın):',
+    'qb.bulk.confirm_archive_title': 'Seçili sorular arşivlensin mi?',
+    'qb.bulk.confirm_deprecate_title': 'Seçili sorular kullanımdan kaldırılsın mı?',
+    'qb.bulk.running': 'Toplu işlem çalıştırılıyor...',
+    'qb.bulk.error_prefix': 'Toplu işlem başarısız oldu: ',
+    'qb.bulk.result_summary': '{succeeded} başarılı, {failed} başarısız (toplam {total}).',
+    'qb.bulk.result.col.question_id': 'Soru ID',
+    'qb.bulk.result.col.error': 'Hata',
   },
 };
 
@@ -10466,6 +10509,17 @@ let QB_SELECTED_AUDIT = [];
 let QB_FORM_MODE = null; // 'create' | 'edit'
 let QB_DEBOUNCE_TIMER = null;
 let QB_STATIC_SELECTS_POPULATED = false;
+// Faz 2.9.8: bulk selection -- a Set of question_id (deterministic,
+// ID-based selection only; content_version for a transition item is
+// resolved at submit-time from the currently loaded QB_LIST row for
+// that question_id -- see qbBulkTransitionItems()). Selection
+// survives a list re-render (filter change, language switch) for any
+// question_id still present in the new QB_LIST; qbLoadList() prunes
+// only the ids that disappeared.
+let QB_BULK_SELECTED = new Set();
+// Faz 2.9.8: guards against a second bulk request being fired while
+// one is still in flight (double-submit guard).
+let QB_BULK_ACTION_IN_FLIGHT = false;
 
 function qbPopulateSelect(id, values, kind, includeBlank, blankKey) {
   const el = document.getElementById(id);
@@ -10512,6 +10566,7 @@ function qbReapplyLanguage() {
   qbPopulateFilterSelects();
   qbPopulateFormSelects();
   qbRenderList();
+  qbUpdateBulkToolbar();
   qbUpdateCorrectAnswerHint();
   if (QB_SELECTED_RECORD) qbRenderDetail();
 }
@@ -10553,7 +10608,15 @@ async function qbLoadList() {
   try {
     const query = qbBuildListQuery();
     QB_LIST = await apiRequest('/api/question-bank/questions' + (query ? '?' + query : ''));
+    // Faz 2.9.8: prune any selected question_id no longer present in
+    // the freshly loaded list (filters may have changed which rows
+    // are visible) -- but a selection for a question_id that is still
+    // present survives this reload untouched, so a filter/language
+    // re-render never silently drops an in-progress bulk selection.
+    const presentIds = new Set(QB_LIST.map(r => r.question_id));
+    Array.from(QB_BULK_SELECTED).forEach(qid => { if (!presentIds.has(qid)) QB_BULK_SELECTED.delete(qid); });
     qbRenderList();
+    qbUpdateBulkToolbar();
   } catch (e) {
     statusEl.textContent = t('qb.list_error_prefix') + e.message;
     bodyEl.innerHTML = '';
@@ -10581,17 +10644,21 @@ function qbStatusBadgeHtml(status) {
 function qbRenderList() {
   const statusEl = document.getElementById('qb-list-status');
   const bodyEl = document.getElementById('qb-list-body');
+  const selectAllEl = document.getElementById('qb-select-all');
   if (!statusEl || !bodyEl) return;
   if (!Array.isArray(QB_LIST) || QB_LIST.length === 0) {
     statusEl.textContent = qbAnyFilterActive() ? t('qb.list_empty_filtered') : t('qb.list_empty_none');
     bodyEl.innerHTML = '';
+    if (selectAllEl) { selectAllEl.checked = false; selectAllEl.indeterminate = false; }
     return;
   }
   statusEl.textContent = '';
   bodyEl.innerHTML = QB_LIST.map(r => {
     const qText = (r.question_tr || '');
     const truncated = qText.length > 90 ? qText.slice(0, 90) + '…' : qText;
+    const checked = QB_BULK_SELECTED.has(r.question_id) ? 'checked' : '';
     return `<tr style="cursor:pointer" onclick="qbOpenDetail('${qbEsc(r.question_id)}')">
+      <td onclick="event.stopPropagation()"><input type="checkbox" class="qb-row-select" data-qid="${qbEsc(r.question_id)}" ${checked} onchange="qbToggleRowSelect('${qbEsc(r.question_id)}', this.checked)"></td>
       <td>${qbEsc(r.question_id)}</td>
       <td>${qbEsc(truncated)}</td>
       <td>${qbEsc(qbCategoryLabel(r.category))}</td>
@@ -10600,6 +10667,62 @@ function qbRenderList() {
       <td>${qbStatusBadgeHtml(r.validation_status)}</td>
     </tr>`;
   }).join('');
+  qbSyncSelectAllCheckbox();
+}
+
+// ---------------------------------------------------------------------
+// Faz 2.9.8: bulk selection helpers -- deterministic, ID-based
+// selection over the currently-rendered QB_LIST. No client-side
+// re-derivation of which questions "should" be selectable: every
+// checkbox is wired to exactly the question_id already present in the
+// current list row.
+// ---------------------------------------------------------------------
+
+function qbSyncSelectAllCheckbox() {
+  const selectAllEl = document.getElementById('qb-select-all');
+  if (!selectAllEl) return;
+  const allSelected = QB_LIST.length > 0 && QB_LIST.every(r => QB_BULK_SELECTED.has(r.question_id));
+  const someSelected = QB_LIST.some(r => QB_BULK_SELECTED.has(r.question_id));
+  selectAllEl.checked = allSelected;
+  selectAllEl.indeterminate = someSelected && !allSelected;
+}
+
+function qbToggleRowSelect(questionId, checked) {
+  if (checked) QB_BULK_SELECTED.add(questionId);
+  else QB_BULK_SELECTED.delete(questionId);
+  qbSyncSelectAllCheckbox();
+  qbUpdateBulkToolbar();
+}
+
+function qbToggleSelectAll(checked) {
+  if (checked) {
+    QB_LIST.forEach(r => QB_BULK_SELECTED.add(r.question_id));
+  } else {
+    QB_LIST.forEach(r => QB_BULK_SELECTED.delete(r.question_id));
+  }
+  qbRenderList();
+  qbUpdateBulkToolbar();
+}
+
+function qbClearBulkSelection() {
+  QB_BULK_SELECTED.clear();
+  qbRenderList();
+  qbUpdateBulkToolbar();
+}
+
+function qbUpdateBulkToolbar() {
+  const toolbarEl = document.getElementById('qb-bulk-toolbar');
+  const countEl = document.getElementById('qb-bulk-count');
+  if (!toolbarEl || !countEl) return;
+  const n = QB_BULK_SELECTED.size;
+  toolbarEl.style.display = n > 0 ? '' : 'none';
+  countEl.textContent = t('qb.bulk.selected_count').replace('{n}', String(n));
+  const isPrivileged = typeof CURRENT_ROLE !== 'undefined' && (CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'engineer');
+  document.querySelectorAll('.qb-bulk-privileged').forEach(el => { el.style.display = isPrivileged ? '' : 'none'; });
+  // Double-submit guard: every toolbar button is disabled while a
+  // bulk request is in flight, re-enabled once it settles (see
+  // qbRunBulkAction).
+  document.querySelectorAll('#qb-bulk-toolbar button').forEach(btn => { btn.disabled = QB_BULK_ACTION_IN_FLIGHT; });
 }
 
 // ---------------------------------------------------------------------
@@ -10889,6 +11012,166 @@ async function qbDelete() {
   if (!ok) return;
   await qbRunLifecycleAction(() => apiRequest(
     '/api/question-bank/' + encodeURIComponent(QB_SELECTED_ID), { method: 'DELETE' },
+  ));
+}
+
+// ---------------------------------------------------------------------
+// Faz 2.9.8: bulk lifecycle actions + bulk tag add/remove. Every
+// action below calls the batch route exactly once
+// (POST .../bulk/transition or POST .../bulk/tags) -- never a
+// frontend loop calling the existing single-item routes -- and goes
+// through qbRunBulkAction(), which provides the double-submit guard
+// (QB_BULK_ACTION_IN_FLIGHT), partial-success-aware result rendering,
+// and the post-action list refresh + selection reconciliation. Reuses
+// the exact same confirmDialog()/prompt() gating convention the
+// single-item actions above already use (qbDeprecate/qbArchive for
+// confirmDialog, qbValidate/qbReject for prompt()).
+// ---------------------------------------------------------------------
+
+function qbBulkTransitionItems() {
+  // Deterministic ID-based selection: content_version for each
+  // selected question_id is resolved from the currently loaded
+  // QB_LIST row -- the same "current" version the detail/edit view
+  // already treats as authoritative for that question.
+  return QB_LIST
+    .filter(r => QB_BULK_SELECTED.has(r.question_id))
+    .map(r => ({ question_id: r.question_id, content_version: r.content_version }));
+}
+
+function qbBulkQuestionIds() {
+  return Array.from(QB_BULK_SELECTED);
+}
+
+async function qbRunBulkAction(fn) {
+  if (QB_BULK_ACTION_IN_FLIGHT) return; // double-submit guard
+  QB_BULK_ACTION_IN_FLIGHT = true;
+  qbUpdateBulkToolbar();
+  const resultEl = document.getElementById('qb-bulk-result');
+  if (resultEl) resultEl.innerHTML = `<div class="fc-muted">${qbEsc(t('qb.bulk.running'))}</div>`;
+  try {
+    const result = await fn();
+    qbRenderBulkResult(result);
+  } catch (e) {
+    if (resultEl) resultEl.innerHTML = `<div class="alert alert-warn">${qbEsc(t('qb.bulk.error_prefix') + e.message)}</div>`;
+  } finally {
+    QB_BULK_ACTION_IN_FLIGHT = false;
+  }
+  // A completed bulk request (whether it fully or partially
+  // succeeded) always reconciles the selection and refreshes the
+  // list/status from the server -- never trusts client-side state
+  // about which items changed.
+  QB_BULK_SELECTED.clear();
+  await qbLoadList();
+}
+
+function qbRenderBulkResult(result) {
+  const el = document.getElementById('qb-bulk-result');
+  if (!el) return;
+  const succeeded = result.succeeded_count || 0;
+  const failed = result.failed_count || 0;
+  const total = result.total || (succeeded + failed);
+  const summary = t('qb.bulk.result_summary')
+    .replace('{succeeded}', String(succeeded))
+    .replace('{failed}', String(failed))
+    .replace('{total}', String(total));
+  let html = `<div class="alert ${failed > 0 ? 'alert-warn' : 'alert-info'}">${qbEsc(summary)}</div>`;
+  if (failed > 0 && Array.isArray(result.failed)) {
+    html += `<table class="source-table"><thead><tr>
+      <th>${qbEsc(t('qb.bulk.result.col.question_id'))}</th>
+      <th>${qbEsc(t('qb.bulk.result.col.error'))}</th>
+    </tr></thead><tbody>${result.failed.map(f => `<tr>
+      <td>${qbEsc(f.question_id)}</td>
+      <td>${qbEsc(f.error || '—')}</td>
+    </tr>`).join('')}</tbody></table>`;
+  }
+  el.innerHTML = html;
+}
+
+async function qbBulkSubmitForReview() {
+  const items = qbBulkTransitionItems();
+  if (!items.length) return;
+  await qbRunBulkAction(() => apiRequest(
+    '/api/question-bank/questions/bulk/transition',
+    { method: 'POST', body: JSON.stringify({ action: 'submit-for-review', items }) },
+  ));
+}
+
+async function qbBulkValidate() {
+  const items = qbBulkTransitionItems();
+  if (!items.length) return;
+  const reviewedBy = prompt(t('qb.action.confirm_reviewed_by'));
+  if (!reviewedBy) return;
+  const reviewDate = prompt(t('qb.action.confirm_review_date'), new Date().toISOString().slice(0, 10));
+  if (!reviewDate) return;
+  await qbRunBulkAction(() => apiRequest(
+    '/api/question-bank/questions/bulk/transition',
+    { method: 'POST', body: JSON.stringify({ action: 'validate', items, reviewed_by: reviewedBy, review_date: reviewDate }) },
+  ));
+}
+
+async function qbBulkReject() {
+  const items = qbBulkTransitionItems();
+  if (!items.length) return;
+  const reason = prompt(t('qb.action.confirm_reason'));
+  if (!reason) return;
+  await qbRunBulkAction(() => apiRequest(
+    '/api/question-bank/questions/bulk/transition',
+    { method: 'POST', body: JSON.stringify({ action: 'reject', items, reason: reason }) },
+  ));
+}
+
+async function qbBulkDeprecate() {
+  const items = qbBulkTransitionItems();
+  if (!items.length) return;
+  const ok = await confirmDialog({
+    title: t('qb.bulk.confirm_deprecate_title'), confirmText: t('qb.action.deprecate'), cancelText: t('qb.cancel_button'),
+  });
+  if (!ok) return;
+  await qbRunBulkAction(() => apiRequest(
+    '/api/question-bank/questions/bulk/transition',
+    { method: 'POST', body: JSON.stringify({ action: 'deprecate', items }) },
+  ));
+}
+
+async function qbBulkArchive() {
+  const questionIds = qbBulkQuestionIds();
+  if (!questionIds.length) return;
+  const ok = await confirmDialog({
+    title: t('qb.bulk.confirm_archive_title'), confirmText: t('qb.action.archive'), cancelText: t('qb.cancel_button'),
+  });
+  if (!ok) return;
+  await qbRunBulkAction(() => apiRequest(
+    '/api/question-bank/questions/bulk/transition',
+    { method: 'POST', body: JSON.stringify({ action: 'archive', items: questionIds.map(qid => ({ question_id: qid })) }) },
+  ));
+}
+
+async function qbBulkAddTags() {
+  const questionIds = qbBulkQuestionIds();
+  if (!questionIds.length) return;
+  const raw = prompt(t('qb.bulk.confirm_add_tags'));
+  if (!raw) return;
+  // Reuses the exact same comma-split/trim/filter tag-parsing
+  // convention qbCollectFormPayload() already uses for the qb_f_tags
+  // field.
+  const tags = raw.split(',').map(s => s.trim()).filter(Boolean);
+  if (!tags.length) return;
+  await qbRunBulkAction(() => apiRequest(
+    '/api/question-bank/questions/bulk/tags',
+    { method: 'POST', body: JSON.stringify({ question_ids: questionIds, add: tags }) },
+  ));
+}
+
+async function qbBulkRemoveTags() {
+  const questionIds = qbBulkQuestionIds();
+  if (!questionIds.length) return;
+  const raw = prompt(t('qb.bulk.confirm_remove_tags'));
+  if (!raw) return;
+  const tags = raw.split(',').map(s => s.trim()).filter(Boolean);
+  if (!tags.length) return;
+  await qbRunBulkAction(() => apiRequest(
+    '/api/question-bank/questions/bulk/tags',
+    { method: 'POST', body: JSON.stringify({ question_ids: questionIds, remove: tags }) },
   ));
 }
 

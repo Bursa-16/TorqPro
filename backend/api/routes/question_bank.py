@@ -81,7 +81,7 @@ from __future__ import annotations
 from typing import List, Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 router = APIRouter(tags=["question_bank"])
 
@@ -94,6 +94,7 @@ router = APIRouter(tags=["question_bank"])
 # propagating it.
 from backend.api.dependencies import user  # noqa: E402
 from backend.app import conn  # noqa: E402
+from backend.question_bank import bulk as qb_bulk  # noqa: E402
 from backend.question_bank import retrieval  # noqa: E402
 from backend.question_bank import service as qb_service  # noqa: E402
 from backend.question_bank.errors import (  # noqa: E402
@@ -554,3 +555,171 @@ def get_question_status_history(question_id: str, u=Depends(user)):
         _require_question_exists(c, question_id)
         rows = qb_service.get_status_history(c, question_id)
     return [dict(row) for row in rows]
+
+
+# ---------------------------------------------------------------------
+# Faz 2.9.8: bulk lifecycle transition + bulk tag add/remove.
+#
+# Same division of responsibility as every write route above: all
+# sequencing, per-item partial-success handling, and the one-time
+# up-front authorization check for gated actions live in
+# ``backend.question_bank.bulk``; this module only parses the request
+# body (with the small amount of cross-field validation these two
+# bodies need -- action-specific required fields, at-least-one-of
+# add/remove), opens the DB connection, calls the bulk service
+# function, and serializes the result. No new persistence, no new
+# transition rule, no new authorization mechanism: both bulk functions
+# are thin sequencing wrappers over the exact same single-item service
+# functions the routes above already call.
+# ---------------------------------------------------------------------
+
+
+class BulkTransitionItem(BaseModel):
+    """One item of a bulk transition request. ``content_version`` is
+    required for every action except ``"archive"`` (which always acts
+    on the whole question_id, every content_version at once, per Faz
+    2.9.4 -- see ``backend.question_bank.bulk.CONTENT_VERSION_ACTIONS``);
+    that per-action requirement is enforced by
+    ``BulkTransitionBody._check_action_specific_fields`` below rather
+    than by this item model itself, since the requirement depends on
+    the sibling ``action`` field."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    question_id: str = Field(min_length=1)
+    content_version: Optional[int] = Field(default=None, ge=1)
+
+
+class BulkTransitionBody(BaseModel):
+    """Request body for ``POST /api/question-bank/questions/bulk/transition``.
+
+    ``reviewed_by``/``review_date``/``reason`` are batch-level (one
+    value applied to every item), not per-item -- matching the
+    realistic bulk-review scenario (one reviewer processing a batch at
+    once) and keeping this body no more complex than it needs to be
+    for a bounded first bulk-operations phase."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    action: Literal["submit-for-review", "validate", "reject", "deprecate", "archive"]
+    items: List[BulkTransitionItem] = Field(min_length=1, max_length=qb_bulk.MAX_BULK_ITEMS)
+    reviewed_by: Optional[str] = None
+    review_date: Optional[str] = None
+    reason: Optional[str] = None
+
+    @model_validator(mode="after")
+    def _check_action_specific_fields(self) -> "BulkTransitionBody":
+        if self.action == "validate" and not (self.reviewed_by and self.review_date):
+            raise ValueError(
+                "'validate' eylemi için istek gövdesinde 'reviewed_by' ve 'review_date' zorunludur"
+            )
+        if self.action == "reject" and not self.reason:
+            raise ValueError("'reject' eylemi için istek gövdesinde 'reason' zorunludur")
+        if self.action in qb_bulk.CONTENT_VERSION_ACTIONS:
+            missing = [item.question_id for item in self.items if item.content_version is None]
+            if missing:
+                raise ValueError(
+                    f"'{self.action}' eylemi her item için content_version zorunlu kılar; "
+                    f"eksik olan question_id(ler): {missing}"
+                )
+        return self
+
+
+class BulkTagsBody(BaseModel):
+    """Request body for ``POST /api/question-bank/questions/bulk/tags``.
+    At least one of ``add``/``remove`` must be non-empty -- an empty
+    body would be a no-op bulk call, rejected the same way
+    ``EmptyPatchError`` rejects an empty single-item PATCH."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    question_ids: List[str] = Field(min_length=1, max_length=qb_bulk.MAX_BULK_ITEMS)
+    add: List[str] = Field(default_factory=list)
+    remove: List[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def _require_add_or_remove(self) -> "BulkTagsBody":
+        if not any(t.strip() for t in self.add) and not any(t.strip() for t in self.remove):
+            raise ValueError(
+                "bulk etiket güncellemesi için 'add' veya 'remove' listelerinden en az biri "
+                "dolu olmalı"
+            )
+        return self
+
+
+def _bulk_outcome_dict(outcome) -> dict:
+    d: dict = {"question_id": outcome.question_id, "content_version": outcome.content_version}
+    if outcome.error is not None:
+        d["error"] = outcome.error
+    if outcome.extra:
+        d.update(outcome.extra)
+    return d
+
+
+def _bulk_result_response(result) -> dict:
+    return {
+        "succeeded": [_bulk_outcome_dict(o) for o in result.succeeded],
+        "failed": [_bulk_outcome_dict(o) for o in result.failed],
+        "total": len(result.succeeded) + len(result.failed),
+        "succeeded_count": len(result.succeeded),
+        "failed_count": len(result.failed),
+    }
+
+
+@router.post("/api/question-bank/questions/bulk/transition")
+def bulk_transition_questions(body: BulkTransitionBody, u=Depends(user)):
+    """Faz 2.9.8. Applies one lifecycle action
+    (submit-for-review/validate/reject/deprecate/archive) to every item
+    in ``body.items`` in one request, reusing the exact same
+    single-item service functions the routes above already call (see
+    ``backend.question_bank.bulk.bulk_transition``'s docstring).
+    Authorization for gated actions (validate/reject/deprecate/archive)
+    is checked once, before any item is touched: an unauthorized actor
+    gets a 403 with zero items processed, never a partial application.
+    Every other per-item failure (404 not found, 409 illegal
+    transition, ...) is captured in the response body's ``failed``
+    list rather than raised as an HTTP error, since a batch request is
+    expected to legitimately have mixed per-item outcomes; only the
+    up-front authorization failure is raised as an HTTP 403 for the
+    whole request."""
+    with conn() as c:
+        result = _handle(
+            qb_bulk.bulk_transition,
+            c,
+            action=body.action,
+            items=[(item.question_id, item.content_version) for item in body.items],
+            actor=u["username"],
+            actor_role=u["role"],
+            authorize=qb_service.default_role_authorization,
+            reviewed_by=body.reviewed_by,
+            review_date=body.review_date,
+            reason=body.reason,
+        )
+    return _bulk_result_response(result)
+
+
+@router.post("/api/question-bank/questions/bulk/tags")
+def bulk_update_question_tags(body: BulkTagsBody, u=Depends(user)):
+    """Faz 2.9.8. Applies the same add/remove tag set to every
+    question_id in ``body.question_ids``, one
+    ``backend.question_bank.service.update_question`` PATCH call per
+    question (see ``backend.question_bank.bulk.bulk_update_tags``'s
+    docstring) -- identical versioning/no-op/validation semantics to a
+    manual single-item PATCH, applied to many questions at once. Any
+    authenticated user may call this route: it reuses the exact same
+    content-update path the single-item PATCH route already exposes
+    with no additional authorization gate of its own (matching that
+    route's own behaviour -- content editing has never been
+    role-gated in this module; only lifecycle *transitions* are).
+    Every per-item failure is captured in the response body's
+    ``failed`` list rather than raised as an HTTP error."""
+    with conn() as c:
+        result = _handle(
+            qb_bulk.bulk_update_tags,
+            c,
+            question_ids=body.question_ids,
+            add=body.add,
+            remove=body.remove,
+            actor=u["username"],
+        )
+    return _bulk_result_response(result)
