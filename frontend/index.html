@@ -449,6 +449,7 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
     <div class="sidebar-item" onclick="showPage('strengthclasses')"><span class="sidebar-icon">🔗</span> <span data-i18n="sidebar.strengthclasses">Bolt/Nut Strength Classes</span></div>
     <div class="sidebar-item" onclick="showPage('washerresolution')"><span class="sidebar-icon">🧾</span> <span data-i18n="sidebar.washerresolution">Washer Resolution Report</span></div>
     <div class="sidebar-item" onclick="showPage('governance')"><span class="sidebar-icon">🗂️</span> <span data-i18n="sidebar.governance">Governance Workspace</span></div>
+    <div class="sidebar-item" onclick="showPage('questionbank')"><span class="sidebar-icon">❓</span> <span data-i18n="sidebar.questionbank">Question Bank</span></div>
     <div class="sidebar-item" onclick="showPage('assemblyintelligence')"><span class="sidebar-icon">🧠</span> <span data-i18n="sidebar.assemblyintelligence">Montaj Zekâsı</span></div>
     <div class="sidebar-item" onclick="showPage('jointanalysis')"><span class="sidebar-icon">⚙️</span> <span data-i18n="sidebar.jointanalysis">Joint Analysis</span></div>
     <div class="sidebar-item" onclick="showPage('materialintelligence')"><span class="sidebar-icon">🧬</span> <span data-i18n="sidebar.materialintelligence">Material Intelligence</span></div>
@@ -1466,6 +1467,123 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
     </div>
     <button class="btn btn-primary" onclick="govSubmitCommand()" data-i18n="gov.submit_button">Submit Decision</button>
     <div id="gov-command-result" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- QUESTION BANK ADMIN UI (Faz 2.9.7) -->
+<div id="page-questionbank" class="page">
+  <div class="section-header"><span class="section-icon">❓</span><div>
+    <div class="section-title" data-i18n="qb.page_title">Question Bank</div>
+    <div class="section-sub" data-i18n="qb.page_subtitle">Content management for engineering quiz questions — list, search, create, edit and manage lifecycle</div>
+  </div></div>
+  <div class="alert alert-info" data-i18n="qb.banner">
+    This workspace manages Question Bank content only. It never runs a quiz, scores an answer, or changes any engineering calculation elsewhere in TorqPro.
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div><div class="card-title" style="margin-bottom:0" data-i18n="qb.list_title">Questions</div>
+        <div class="card-sub" data-i18n="qb.list_sub">Search and filter existing question bank records</div></div>
+      <button class="btn btn-primary btn-sm" onclick="qbShowCreateForm()" data-i18n="qb.new_question_button">+ New Question</button>
+    </div>
+    <div class="fc-toolbar">
+      <input class="form-input" id="qb-search" data-i18n-placeholder="qb.search_placeholder" placeholder="Search by keyword..." oninput="qbDebouncedLoadList()">
+      <select class="form-select" id="qb-filter-category" onchange="qbLoadList()"><option value="" data-i18n="qb.filter_category_all">All categories</option></select>
+      <select class="form-select" id="qb-filter-difficulty" onchange="qbLoadList()"><option value="" data-i18n="qb.filter_difficulty_all">Any difficulty</option></select>
+      <input class="form-input" id="qb-filter-tag" data-i18n-placeholder="qb.filter_tag_placeholder" placeholder="Filter by tag..." oninput="qbDebouncedLoadList()">
+      <select class="form-select" id="qb-filter-status" onchange="qbLoadList()"><option value="" data-i18n="qb.filter_status_all">Any status</option></select>
+      <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)"><input type="checkbox" id="qb-filter-include-archived" style="accent-color:var(--accent)" onchange="qbLoadList()"> <span data-i18n="qb.filter_include_archived">Include archived/deleted</span></label>
+    </div>
+    <div id="qb-list-status" class="fc-muted"></div>
+    <div style="overflow-x:auto">
+    <table class="source-table" id="qb-list-table">
+      <thead><tr>
+        <th data-i18n="qb.col.id">ID</th>
+        <th data-i18n="qb.col.question">Question</th>
+        <th data-i18n="qb.col.category">Category</th>
+        <th data-i18n="qb.col.tags">Tags</th>
+        <th data-i18n="qb.col.difficulty">Difficulty</th>
+        <th data-i18n="qb.col.status">Status</th>
+      </tr></thead>
+      <tbody id="qb-list-body"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <div id="qb-detail-card" class="card" style="display:none">
+    <div class="card-header">
+      <div><div class="card-title" style="margin-bottom:0" id="qb-detail-title" data-i18n="qb.detail_title">Question Detail</div>
+        <div class="card-sub" id="qb-detail-sub"></div></div>
+      <div>
+        <button class="btn btn-secondary btn-sm" onclick="qbShowEditForm()" data-i18n="qb.edit_button">Edit</button>
+        <button class="btn btn-secondary btn-sm" onclick="qbCloseDetail()" data-i18n="qb.close_button">Close</button>
+      </div>
+    </div>
+    <div id="qb-detail-body"></div>
+    <div class="card-title" style="margin-top:14px" data-i18n="qb.lifecycle_title">Lifecycle</div>
+    <div id="qb-lifecycle-body"></div>
+    <div id="qb-lifecycle-actions" style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    <div class="card-title" style="margin-top:14px" data-i18n="qb.status_history_title">Status History</div>
+    <div id="qb-status-history-body"></div>
+    <div class="card-title" style="margin-top:14px" data-i18n="qb.audit_title">Soft-delete / Archive Audit</div>
+    <div id="qb-audit-body"></div>
+  </div>
+
+  <div id="qb-form-card" class="card" style="display:none">
+    <div class="card-title" id="qb-form-title" data-i18n="qb.create_form_title">Create Question</div>
+    <div class="card-sub" data-i18n="qb.form_required_hint">Fields marked * are required</div>
+    <div id="qb-form-error" class="alert alert-warn" style="display:none"></div>
+
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.question_id">Question ID *</label><input class="form-input" id="qb_f_question_id"></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.content_version">Content Version *</label><input class="form-input" id="qb_f_content_version" type="number" min="1" value="1"></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.subcategory">Subcategory</label><input class="form-input" id="qb_f_subcategory"></div>
+    </div>
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.category">Category *</label><select class="form-select" id="qb_f_category"></select></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.difficulty">Difficulty *</label><select class="form-select" id="qb_f_difficulty"></select></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.question_type">Question Type *</label><select class="form-select" id="qb_f_question_type" onchange="qbUpdateCorrectAnswerHint()"></select></div>
+    </div>
+
+    <div class="form-group"><label class="form-label" data-i18n="qb.field.question_tr">Question text (TR) *</label><textarea class="form-input" id="qb_f_question_tr" rows="2"></textarea></div>
+    <div class="form-group"><label class="form-label" data-i18n="qb.field.question_en">Question text (EN) *</label><textarea class="form-input" id="qb_f_question_en" rows="2"></textarea></div>
+
+    <div class="grid2">
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.options_tr">Options (TR, one per line)</label><textarea class="form-input" id="qb_f_options_tr" rows="4"></textarea></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.options_en">Options (EN, one per line)</label><textarea class="form-input" id="qb_f_options_en" rows="4"></textarea></div>
+    </div>
+
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.correct_answer">Correct Answer *</label><input class="form-input" id="qb_f_correct_answer">
+        <div class="fc-muted" id="qb-correct-answer-hint" style="margin-top:4px"></div></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.tolerance">Tolerance</label><input class="form-input" id="qb_f_tolerance" type="number" step="any"></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.engineering_risk_level">Engineering Risk Level *</label><select class="form-select" id="qb_f_engineering_risk_level"></select></div>
+    </div>
+
+    <div class="form-group"><label class="form-label" data-i18n="qb.field.technical_explanation_tr">Technical Explanation (TR) *</label><textarea class="form-input" id="qb_f_technical_explanation_tr" rows="3"></textarea></div>
+    <div class="form-group"><label class="form-label" data-i18n="qb.field.technical_explanation_en">Technical Explanation (EN) *</label><textarea class="form-input" id="qb_f_technical_explanation_en" rows="3"></textarea></div>
+
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.standard_reference_name">Standard Reference — Name</label><input class="form-input" id="qb_f_std_ref_name"></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.standard_reference_edition">Standard Reference — Edition/Year</label><input class="form-input" id="qb_f_std_ref_edition"></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.standard_reference_clause">Standard Reference — Clause/Table</label><input class="form-input" id="qb_f_std_ref_clause"></div>
+    </div>
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.source_reference_type">Source Reference — Type</label><select class="form-select" id="qb_f_src_ref_type"><option value="" data-i18n="qb.none_option">— none —</option></select></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.source_reference_description">Source Reference — Description</label><input class="form-input" id="qb_f_src_ref_description"></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.source_locator">Source Locator</label><input class="form-input" id="qb_f_source_locator"></div>
+    </div>
+
+    <div class="form-row3">
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.traceability_level">Traceability Level *</label><select class="form-select" id="qb_f_traceability_level"></select></div>
+      <div class="form-group"><label class="form-label" data-i18n="qb.field.tags">Tags (comma separated)</label><input class="form-input" id="qb_f_tags"></div>
+      <div class="form-group" style="display:flex;align-items:flex-end;gap:6px"><label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2)"><input type="checkbox" id="qb_f_is_active" style="accent-color:var(--accent)"> <span data-i18n="qb.field.is_active">Active</span></label></div>
+    </div>
+    <div class="form-group"><label class="form-label" data-i18n="qb.field.learning_objective">Learning Objective *</label><textarea class="form-input" id="qb_f_learning_objective" rows="2"></textarea></div>
+
+    <button class="btn btn-primary" onclick="qbSubmitForm()" id="qb-form-submit-btn" data-i18n="qb.create_submit_button">Create Question</button>
+    <button class="btn btn-secondary" onclick="qbCancelForm()" data-i18n="qb.cancel_button">Cancel</button>
+    <div id="qb-form-result" style="margin-top:10px"></div>
   </div>
 </div>
 
@@ -3662,6 +3780,124 @@ const I18N = {
     'gov.jrlist.sortSourceStatus': 'Source status',
     'gov.jrlist.sortCanonicalStatus': 'Canonical status',
     'gov.jrlist.sortOutcome': 'Outcome',
+
+    // ---- Faz 2.9.7: Question Bank Admin UI ----
+    'sidebar.questionbank': 'Question Bank',
+    'qb.page_title': 'Question Bank',
+    'qb.page_subtitle': 'Content management for engineering quiz questions — list, search, create, edit and manage lifecycle',
+    'qb.banner': 'This workspace manages Question Bank content only. It never runs a quiz, scores an answer, or changes any engineering calculation elsewhere in TorqPro.',
+    'qb.list_title': 'Questions',
+    'qb.list_sub': 'Search and filter existing question bank records',
+    'qb.new_question_button': '+ New Question',
+    'qb.search_placeholder': 'Search by keyword...',
+    'qb.filter_category_all': 'All categories',
+    'qb.filter_difficulty_all': 'Any difficulty',
+    'qb.filter_tag_placeholder': 'Filter by tag...',
+    'qb.filter_status_all': 'Any status',
+    'qb.filter_include_archived': 'Include archived/deleted',
+    'qb.list_loading': 'Loading questions...',
+    'qb.list_empty_none': 'No questions are available yet.',
+    'qb.list_empty_filtered': 'No questions match the current filters.',
+    'qb.list_error_prefix': 'Could not load questions: ',
+    'qb.col.id': 'ID',
+    'qb.col.question': 'Question',
+    'qb.col.category': 'Category',
+    'qb.col.tags': 'Tags',
+    'qb.col.difficulty': 'Difficulty',
+    'qb.col.status': 'Status',
+    'qb.detail_title': 'Question Detail',
+    'qb.edit_button': 'Edit',
+    'qb.close_button': 'Close',
+    'qb.lifecycle_title': 'Lifecycle',
+    'qb.status_history_title': 'Status History',
+    'qb.audit_title': 'Soft-delete / Archive Audit',
+    'qb.detail_loading': 'Loading question detail...',
+    'qb.detail_error_prefix': 'Could not load question detail: ',
+    'qb.create_form_title': 'Create Question',
+    'qb.edit_form_title': 'Edit Question',
+    'qb.form_required_hint': 'Fields marked * are required',
+    'qb.field.question_id': 'Question ID *',
+    'qb.field.content_version': 'Content Version *',
+    'qb.field.subcategory': 'Subcategory',
+    'qb.field.category': 'Category *',
+    'qb.field.difficulty': 'Difficulty *',
+    'qb.field.question_type': 'Question Type *',
+    'qb.field.question_tr': 'Question text (TR) *',
+    'qb.field.question_en': 'Question text (EN) *',
+    'qb.field.options_tr': 'Options (TR, one per line)',
+    'qb.field.options_en': 'Options (EN, one per line)',
+    'qb.field.correct_answer': 'Correct Answer *',
+    'qb.field.tolerance': 'Tolerance',
+    'qb.field.engineering_risk_level': 'Engineering Risk Level *',
+    'qb.field.technical_explanation_tr': 'Technical Explanation (TR) *',
+    'qb.field.technical_explanation_en': 'Technical Explanation (EN) *',
+    'qb.field.standard_reference_name': 'Standard Reference — Name',
+    'qb.field.standard_reference_edition': 'Standard Reference — Edition/Year',
+    'qb.field.standard_reference_clause': 'Standard Reference — Clause/Table',
+    'qb.field.source_reference_type': 'Source Reference — Type',
+    'qb.field.source_reference_description': 'Source Reference — Description',
+    'qb.field.source_locator': 'Source Locator',
+    'qb.field.traceability_level': 'Traceability Level *',
+    'qb.field.tags': 'Tags (comma separated)',
+    'qb.field.is_active': 'Active',
+    'qb.field.learning_objective': 'Learning Objective *',
+    'qb.none_option': '— none —',
+    'qb.create_submit_button': 'Create Question',
+    'qb.save_submit_button': 'Save Changes',
+    'qb.cancel_button': 'Cancel',
+    'qb.correct_answer_hint_single_choice': 'Enter the correct option index (0-based integer), e.g. 0',
+    'qb.correct_answer_hint_multiple_choice': 'Enter correct option indices separated by commas, e.g. 0,2',
+    'qb.correct_answer_hint_true_false': 'Enter true or false',
+    'qb.correct_answer_hint_numerical': 'Enter a numeric value, e.g. 12.5',
+    'qb.correct_answer_hint_unit_conversion': 'Enter a numeric value, e.g. 12.5',
+    'qb.correct_answer_hint_formula_selection': 'Enter a numeric value, e.g. 12.5',
+    'qb.validation_error_prefix': 'The server rejected this question: ',
+    'qb.create_success': 'Question created successfully.',
+    'qb.save_success': 'Question updated successfully.',
+    'qb.submit_error_prefix': 'Could not submit: ',
+    'qb.field_required': 'This field is required.',
+    'qb.correct_answer_invalid': 'Could not parse the correct answer for this question type.',
+    'qb.action.submit_for_review': 'Submit for Review',
+    'qb.action.validate': 'Validate',
+    'qb.action.reject': 'Reject',
+    'qb.action.deprecate': 'Deprecate',
+    'qb.action.archive': 'Archive',
+    'qb.action.restore': 'Restore',
+    'qb.action.delete': 'Delete (soft)',
+    'qb.action.confirm_reason': 'Please enter a reason:',
+    'qb.action.confirm_reviewed_by': 'Reviewed by (name):',
+    'qb.action.confirm_review_date': 'Review date (ISO 8601, e.g. 2026-08-08):',
+    'qb.action.confirm_content_version': 'Content version to act on:',
+    'qb.action.success': 'Lifecycle action completed.',
+    'qb.action.error_prefix': 'Lifecycle action failed: ',
+    'qb.action.confirm_archive_title': 'Archive this question?',
+    'qb.action.confirm_delete_title': 'Delete (soft) this question?',
+    'qb.action.confirm_restore_title': 'Restore this question?',
+    'qb.status_history_empty': 'No status history yet.',
+    'qb.audit_empty': 'No archive/restore/delete events yet.',
+    'qb.status_history.col.from': 'From',
+    'qb.status_history.col.to': 'To',
+    'qb.status_history.col.actor': 'Actor',
+    'qb.status_history.col.date': 'Date',
+    'qb.status_history.col.reason': 'Reason',
+    'qb.audit.col.action': 'Action',
+    'qb.audit.col.actor': 'Actor',
+    'qb.audit.col.role': 'Role',
+    'qb.audit.col.date': 'Date',
+    'qb.detail.field.content_version': 'Content version',
+    'qb.detail.field.is_active': 'Active',
+    'qb.detail.field.traceability_level': 'Traceability level',
+    'qb.detail.field.risk_level': 'Engineering risk level',
+    'qb.detail.field.learning_objective': 'Learning objective',
+    'qb.detail.field.options': 'Options',
+    'qb.detail.field.correct_answer': 'Correct answer',
+    'qb.detail.field.standard_reference': 'Standard reference',
+    'qb.detail.field.source_reference': 'Source reference',
+    'qb.detail.field.source_locator': 'Source locator',
+    'qb.detail.field.tags': 'Tags',
+    'qb.yes': 'Yes',
+    'qb.no': 'No',
+    'qb.unknown_status': 'unknown status',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -5346,6 +5582,124 @@ const I18N = {
     'gov.jrlist.sortSourceStatus': 'Kaynak durum',
     'gov.jrlist.sortCanonicalStatus': 'Kanonik durum',
     'gov.jrlist.sortOutcome': 'Sonuç',
+
+    // ---- Faz 2.9.7: Question Bank Admin UI ----
+    'sidebar.questionbank': 'Soru Bankası',
+    'qb.page_title': 'Soru Bankası',
+    'qb.page_subtitle': 'Mühendislik sınav sorularının içerik yönetimi — listele, ara, oluştur, düzenle ve yaşam döngüsünü yönet',
+    'qb.banner': 'Bu çalışma alanı yalnızca Soru Bankası içeriğini yönetir. Hiçbir sınav çalıştırmaz, cevap puanlamaz veya TorqPro içindeki başka bir mühendislik hesaplamasını değiştirmez.',
+    'qb.list_title': 'Sorular',
+    'qb.list_sub': 'Mevcut soru bankası kayıtlarını ara ve filtrele',
+    'qb.new_question_button': '+ Yeni Soru',
+    'qb.search_placeholder': 'Anahtar kelimeyle ara...',
+    'qb.filter_category_all': 'Tüm kategoriler',
+    'qb.filter_difficulty_all': 'Herhangi bir zorluk',
+    'qb.filter_tag_placeholder': 'Etikete göre filtrele...',
+    'qb.filter_status_all': 'Herhangi bir durum',
+    'qb.filter_include_archived': 'Arşivlenmiş/silinmiş olanları dahil et',
+    'qb.list_loading': 'Sorular yükleniyor...',
+    'qb.list_empty_none': 'Henüz mevcut soru yok.',
+    'qb.list_empty_filtered': 'Mevcut filtrelerle eşleşen soru yok.',
+    'qb.list_error_prefix': 'Sorular yüklenemedi: ',
+    'qb.col.id': 'Kod',
+    'qb.col.question': 'Soru',
+    'qb.col.category': 'Kategori',
+    'qb.col.tags': 'Etiketler',
+    'qb.col.difficulty': 'Zorluk',
+    'qb.col.status': 'Durum',
+    'qb.detail_title': 'Soru Detayı',
+    'qb.edit_button': 'Düzenle',
+    'qb.close_button': 'Kapat',
+    'qb.lifecycle_title': 'Yaşam Döngüsü',
+    'qb.status_history_title': 'Durum Geçmişi',
+    'qb.audit_title': 'Arşiv/Silme Denetim Kaydı',
+    'qb.detail_loading': 'Soru detayı yükleniyor...',
+    'qb.detail_error_prefix': 'Soru detayı yüklenemedi: ',
+    'qb.create_form_title': 'Soru Oluştur',
+    'qb.edit_form_title': 'Soruyu Düzenle',
+    'qb.form_required_hint': '* işaretli alanlar zorunludur',
+    'qb.field.question_id': 'Soru ID *',
+    'qb.field.content_version': 'İçerik Sürümü *',
+    'qb.field.subcategory': 'Alt Kategori',
+    'qb.field.category': 'Kategori *',
+    'qb.field.difficulty': 'Zorluk *',
+    'qb.field.question_type': 'Soru Tipi *',
+    'qb.field.question_tr': 'Soru metni (TR) *',
+    'qb.field.question_en': 'Soru metni (EN) *',
+    'qb.field.options_tr': 'Seçenekler (TR, satır başına bir tane)',
+    'qb.field.options_en': 'Seçenekler (EN, satır başına bir tane)',
+    'qb.field.correct_answer': 'Doğru Cevap *',
+    'qb.field.tolerance': 'Tolerans',
+    'qb.field.engineering_risk_level': 'Mühendislik Risk Seviyesi *',
+    'qb.field.technical_explanation_tr': 'Teknik Açıklama (TR) *',
+    'qb.field.technical_explanation_en': 'Teknik Açıklama (EN) *',
+    'qb.field.standard_reference_name': 'Standart Referans — Ad',
+    'qb.field.standard_reference_edition': 'Standart Referans — Baskı/Yıl',
+    'qb.field.standard_reference_clause': 'Standart Referans — Madde/Tablo',
+    'qb.field.source_reference_type': 'Kaynak Referans — Tip',
+    'qb.field.source_reference_description': 'Kaynak Referans — Açıklama',
+    'qb.field.source_locator': 'Kaynak Konumu',
+    'qb.field.traceability_level': 'İzlenebilirlik Seviyesi *',
+    'qb.field.tags': 'Etiketler (virgülle ayırın)',
+    'qb.field.is_active': 'Aktif',
+    'qb.field.learning_objective': 'Öğrenme Hedefi *',
+    'qb.none_option': '— yok —',
+    'qb.create_submit_button': 'Soru Oluştur',
+    'qb.save_submit_button': 'Değişiklikleri Kaydet',
+    'qb.cancel_button': 'İptal',
+    'qb.correct_answer_hint_single_choice': 'Doğru seçenek indeksini girin (0 tabanlı tam sayı), örn. 0',
+    'qb.correct_answer_hint_multiple_choice': 'Doğru seçenek indekslerini virgülle ayırarak girin, örn. 0,2',
+    'qb.correct_answer_hint_true_false': 'true veya false girin',
+    'qb.correct_answer_hint_numerical': 'Sayısal bir değer girin, örn. 12.5',
+    'qb.correct_answer_hint_unit_conversion': 'Sayısal bir değer girin, örn. 12.5',
+    'qb.correct_answer_hint_formula_selection': 'Sayısal bir değer girin, örn. 12.5',
+    'qb.validation_error_prefix': 'Sunucu bu soruyu reddetti: ',
+    'qb.create_success': 'Soru başarıyla oluşturuldu.',
+    'qb.save_success': 'Soru başarıyla güncellendi.',
+    'qb.submit_error_prefix': 'Gönderilemedi: ',
+    'qb.field_required': 'Bu alan zorunludur.',
+    'qb.correct_answer_invalid': 'Bu soru tipi için doğru cevap ayrıştırılamadı.',
+    'qb.action.submit_for_review': 'İncelemeye Gönder',
+    'qb.action.validate': 'Doğrula',
+    'qb.action.reject': 'Reddet',
+    'qb.action.deprecate': 'Kullanımdan Kaldır',
+    'qb.action.archive': 'Arşivle',
+    'qb.action.restore': 'Geri Yükle',
+    'qb.action.delete': 'Sil (yumuşak)',
+    'qb.action.confirm_reason': 'Lütfen bir gerekçe girin:',
+    'qb.action.confirm_reviewed_by': 'İnceleyen (ad):',
+    'qb.action.confirm_review_date': 'İnceleme tarihi (ISO 8601, örn. 2026-08-08):',
+    'qb.action.confirm_content_version': 'İşlem yapılacak içerik sürümü:',
+    'qb.action.success': 'Yaşam döngüsü işlemi tamamlandı.',
+    'qb.action.error_prefix': 'Yaşam döngüsü işlemi başarısız oldu: ',
+    'qb.action.confirm_archive_title': 'Bu soru arşivlensin mi?',
+    'qb.action.confirm_delete_title': 'Bu soru silinsin mi (yumuşak)?',
+    'qb.action.confirm_restore_title': 'Bu soru geri yüklensin mi?',
+    'qb.status_history_empty': 'Henüz durum geçmişi yok.',
+    'qb.audit_empty': 'Henüz arşivleme/geri yükleme/silme olayı yok.',
+    'qb.status_history.col.from': 'Önceki',
+    'qb.status_history.col.to': 'Sonraki',
+    'qb.status_history.col.actor': 'Kullanıcı',
+    'qb.status_history.col.date': 'Tarih',
+    'qb.status_history.col.reason': 'Gerekçe',
+    'qb.audit.col.action': 'İşlem',
+    'qb.audit.col.actor': 'Kullanıcı',
+    'qb.audit.col.role': 'Rol',
+    'qb.audit.col.date': 'Tarih',
+    'qb.detail.field.content_version': 'İçerik sürümü',
+    'qb.detail.field.is_active': 'Aktif',
+    'qb.detail.field.traceability_level': 'İzlenebilirlik seviyesi',
+    'qb.detail.field.risk_level': 'Mühendislik risk seviyesi',
+    'qb.detail.field.learning_objective': 'Öğrenme hedefi',
+    'qb.detail.field.options': 'Seçenekler',
+    'qb.detail.field.correct_answer': 'Doğru cevap',
+    'qb.detail.field.standard_reference': 'Standart referans',
+    'qb.detail.field.source_reference': 'Kaynak referans',
+    'qb.detail.field.source_locator': 'Kaynak konumu',
+    'qb.detail.field.tags': 'Etiketler',
+    'qb.yes': 'Evet',
+    'qb.no': 'Hayır',
+    'qb.unknown_status': 'bilinmeyen durum',
   },
 };
 
@@ -7317,6 +7671,7 @@ function setLanguage(lang) {
   if (typeof miReapplyLanguage === 'function') miReapplyLanguage();
   if (typeof wrrReapplyLanguage === 'function') wrrReapplyLanguage();
   if (typeof govReapplyLanguage === 'function') govReapplyLanguage();
+  if (typeof qbReapplyLanguage === 'function') qbReapplyLanguage();
   if (typeof oemReapplyLanguage === 'function') oemReapplyLanguage();
   if (typeof buildFmea === 'function' && document.getElementById('fmea-list')) buildFmea();
   if (typeof problemReapplyLanguage === 'function') problemReapplyLanguage();
@@ -7637,7 +7992,7 @@ function showPage(id, el) {
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
   document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();loadWasherResolutionQueue();}if(id==='governance'){govInit();}
+  if(id==='arsiv')renderArchive();if(id==='validation'){renderValidationDatasets();refreshValidationPanel();}if(id==='dataadmin'){loadDataPackages();}if(id==='calibration'){loadCalibrationCases();}if(id==='versions'){loadDataVersions();}if(id==='qualitygate'){loadQualityGate();}if(id==='projects'){loadProjects();}if(id==='releasepackage'){populateReleaseProjects();}if(id==='organization'){loadOrganization();}if(id==='deployment'){loadDeploymentProfile();}if(id==='mobileaccess'){loadMobileAccess();document.querySelector('.sidebar')?.classList.remove('mobile-open');}if(id==='clouddeploy'){loadCloudReadiness();}if(id==='golivewizard'){loadGoLiveProfile();}if(id==='runtimehealth'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadRuntimeHealth();}if(id==='migration'){loadMigrationHistory();}if(id==='diagnostics'){runDiagnostics();}if(id==='license'){loadLicense();}if(id==='usage'){loadUsage();}if(id==='traceability'){populateReleaseProjects();}if(id==='revisions'){loadRevisions();}if(id==='approvals'){loadApprovalQueue();}if(id==='goldencases'){loadGoldenCases();}if(id==='admin'){if(CURRENT_ROLE!=='admin'){alert('Bu sayfa için yönetici yetkisi gerekir.');showPage('dashboard');return;}loadAdminUsers();loadAudit();loadSystemHealth();}if(id==='frictioncondition'){loadFrictionConditionWorkspace();}if(id==='strengthclasses'){loadStrengthClassesWorkspace();}if(id==='materialintelligence'){loadMaterialIntelligenceWorkspace();}if(id==='washerresolution'){loadWasherResolutionReport();loadWasherResolutionQueue();}if(id==='governance'){govInit();}if(id==='questionbank'){qbInit();}
 }
 
 // ========== FRICTION CONDITION WORKSPACE (Faz 2.6.6) ==========
@@ -9982,6 +10337,781 @@ async function govJointRevisionQueryExportCsv() {
     if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
   }
 }
+
+// ========== QUESTION BANK ADMIN UI (Faz 2.9.7) ==========
+// Thin admin front-end over the existing read (Faz 2.9.2), search
+// (Faz 2.9.5), update (Faz 2.9.3), soft-delete/restore/archive (Faz
+// 2.9.4) and create/lifecycle-transition (Faz 2.9.6) Question Bank
+// HTTP API. No business rule, validation rule, or persistence
+// decision is duplicated here: every list/filter/search call is a
+// plain GET against the existing backend query parameters (including
+// the Faz 2.9.7 opt-in include_status=true param), and every write
+// goes straight to the existing route with no client-side
+// re-implementation of backend logic. Follows the same structural
+// conventions as the Friction Condition (fc*) and Governance (gov*)
+// workspaces already in this file: its own qbEsc() escaper, its own
+// ENUM_LABELS side table for backend vocabulary values (distinct from
+// the main I18N static-UI dictionary), and a qbReapplyLanguage() hook
+// wired into the shared setLanguage().
+
+function qbEsc(s) {
+  const d = document.createElement('div');
+  d.textContent = (s === null || s === undefined) ? '' : String(s);
+  return d.innerHTML;
+}
+
+function qbFmtLabel(s) {
+  const raw = String(s || '').replace(/_/g, ' ');
+  return raw.replace(/\b\w/g, c => c.toUpperCase());
+}
+
+// Closed vocabularies mirrored from backend.question_bank.schema /
+// .transitions -- values only (never re-derives backend business
+// rules), used purely to populate <select> options and to know which
+// lifecycle-action buttons could ever apply.
+const QB_CATEGORIES = [
+  'fastener_fundamentals', 'bolt_and_nut_identification', 'strength_classes',
+  'preload_and_clamp_force', 'tightening_torque', 'friction_and_lubrication',
+  'torque_tension_relationship', 'vdi_2230_fundamentals', 'iso_16047_testing',
+  'iso_2320_prevailing_torque_nuts', 'thread_geometry', 'thread_stripping_and_shear_area',
+  'joint_stiffness', 'load_distribution', 'embedding_and_settlement', 'self_loosening',
+  'fatigue_and_dynamic_loading', 'washers', 'locking_methods', 'surface_coatings',
+  'tightening_tools', 'torque_control', 'angle_controlled_tightening',
+  'yield_controlled_tightening', 'process_capability', 'pp_ppk_cp_cpk',
+  'measurement_and_calibration', 'failure_analysis', 'practical_assembly_cases',
+  'oem_general_estimation_methods',
+];
+const QB_DIFFICULTIES = ['beginner', 'intermediate', 'advanced', 'expert'];
+const QB_QUESTION_TYPES = [
+  'single_choice', 'multiple_choice', 'true_false', 'numerical', 'unit_conversion', 'formula_selection',
+];
+const QB_VALIDATION_STATUSES = ['draft', 'technical_review', 'validated', 'rejected', 'deprecated'];
+const QB_TRACEABILITY_LEVELS = ['APPROVED', 'PROVISIONAL', 'EXPERIMENTAL', 'DEPRECATED', 'UNVERIFIED'];
+const QB_RISK_LEVELS = ['low', 'medium', 'high'];
+const QB_SOURCE_TYPES = [
+  'standard_requirement', 'engineering_interpretation', 'internal_engine',
+  'oem_estimation', 'educational_simplification',
+];
+
+// Same technique as FC_ENUM_LABELS (Friction Condition, Faz 2.6.8):
+// a small side table for backend-vocabulary *values*, separate from
+// the main I18N static-UI-copy dictionary. Category is intentionally
+// NOT hand-translated here (30 values): qbFmtLabel()'s title-cased
+// derivation from the wire value is used for category everywhere
+// instead, so the category vocabulary can never drift out of sync
+// with backend.question_bank.schema.Category.
+const QB_ENUM_LABELS = {
+  en: {
+    validation_status: {
+      draft: 'Draft', technical_review: 'Technical Review', validated: 'Validated',
+      rejected: 'Rejected', deprecated: 'Deprecated',
+    },
+    difficulty: { beginner: 'Beginner', intermediate: 'Intermediate', advanced: 'Advanced', expert: 'Expert' },
+    question_type: {
+      single_choice: 'Single Choice', multiple_choice: 'Multiple Choice', true_false: 'True / False',
+      numerical: 'Numerical', unit_conversion: 'Unit Conversion', formula_selection: 'Formula Selection',
+    },
+    traceability_level: {
+      APPROVED: 'Approved', PROVISIONAL: 'Provisional', EXPERIMENTAL: 'Experimental',
+      DEPRECATED: 'Deprecated', UNVERIFIED: 'Unverified',
+    },
+    engineering_risk_level: { low: 'Low', medium: 'Medium', high: 'High' },
+    source_type: {
+      standard_requirement: 'Standard Requirement', engineering_interpretation: 'Engineering Interpretation',
+      internal_engine: 'Internal Engine', oem_estimation: 'OEM Estimation',
+      educational_simplification: 'Educational Simplification',
+    },
+  },
+  tr: {
+    validation_status: {
+      draft: 'Taslak', technical_review: 'Teknik İnceleme', validated: 'Doğrulandı',
+      rejected: 'Reddedildi', deprecated: 'Kullanımdan Kaldırıldı',
+    },
+    difficulty: { beginner: 'Başlangıç', intermediate: 'Orta', advanced: 'İleri', expert: 'Uzman' },
+    question_type: {
+      single_choice: 'Tekli Seçim', multiple_choice: 'Çoklu Seçim', true_false: 'Doğru / Yanlış',
+      numerical: 'Sayısal', unit_conversion: 'Birim Dönüşümü', formula_selection: 'Formül Seçimi',
+    },
+    traceability_level: {
+      APPROVED: 'Onaylı', PROVISIONAL: 'Geçici', EXPERIMENTAL: 'Deneysel',
+      DEPRECATED: 'Kullanımdan Kaldırıldı', UNVERIFIED: 'Doğrulanmamış',
+    },
+    engineering_risk_level: { low: 'Düşük', medium: 'Orta', high: 'Yüksek' },
+    source_type: {
+      standard_requirement: 'Standart Gereksinimi', engineering_interpretation: 'Mühendislik Yorumu',
+      internal_engine: 'Dahili Motor', oem_estimation: 'OEM Tahmini',
+      educational_simplification: 'Eğitimsel Basitleştirme',
+    },
+  },
+};
+
+function qbLabel(kind, value) {
+  if (value === null || value === undefined || value === '') return '—';
+  const dict = (QB_ENUM_LABELS[CURRENT_LANG] && QB_ENUM_LABELS[CURRENT_LANG][kind]) || {};
+  if (dict[value]) return dict[value];
+  const enDict = (QB_ENUM_LABELS.en && QB_ENUM_LABELS.en[kind]) || {};
+  if (enDict[value]) return enDict[value];
+  return qbFmtLabel(value);
+}
+
+function qbCategoryLabel(value) {
+  return value ? qbFmtLabel(value) : '—';
+}
+
+let QB_LIST = [];
+let QB_SELECTED_ID = null;
+let QB_SELECTED_RECORD = null;
+let QB_SELECTED_STATUS_HISTORY = [];
+let QB_SELECTED_AUDIT = [];
+let QB_FORM_MODE = null; // 'create' | 'edit'
+let QB_DEBOUNCE_TIMER = null;
+let QB_STATIC_SELECTS_POPULATED = false;
+
+function qbPopulateSelect(id, values, kind, includeBlank, blankKey) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const prevVal = el.value;
+  let html = includeBlank ? `<option value="">${qbEsc(t(blankKey))}</option>` : '';
+  html += values.map(v => {
+    const label = kind === 'category' ? qbCategoryLabel(v) : qbLabel(kind, v);
+    return `<option value="${qbEsc(v)}">${qbEsc(label)}</option>`;
+  }).join('');
+  el.innerHTML = html;
+  if ([...el.options].some(o => o.value === prevVal)) el.value = prevVal;
+}
+
+function qbPopulateFilterSelects() {
+  qbPopulateSelect('qb-filter-category', QB_CATEGORIES, 'category', true, 'qb.filter_category_all');
+  qbPopulateSelect('qb-filter-difficulty', QB_DIFFICULTIES, 'difficulty', true, 'qb.filter_difficulty_all');
+  qbPopulateSelect('qb-filter-status', QB_VALIDATION_STATUSES, 'validation_status', true, 'qb.filter_status_all');
+}
+
+function qbPopulateFormSelects() {
+  qbPopulateSelect('qb_f_category', QB_CATEGORIES, 'category', false);
+  qbPopulateSelect('qb_f_difficulty', QB_DIFFICULTIES, 'difficulty', false);
+  qbPopulateSelect('qb_f_question_type', QB_QUESTION_TYPES, 'question_type', false);
+  qbPopulateSelect('qb_f_engineering_risk_level', QB_RISK_LEVELS, 'engineering_risk_level', false);
+  qbPopulateSelect('qb_f_traceability_level', QB_TRACEABILITY_LEVELS, 'traceability_level', false);
+  qbPopulateSelect('qb_f_src_ref_type', QB_SOURCE_TYPES, 'source_type', true, 'qb.none_option');
+}
+
+function qbInit() {
+  if (!QB_STATIC_SELECTS_POPULATED) {
+    qbPopulateFilterSelects();
+    qbPopulateFormSelects();
+    qbUpdateCorrectAnswerHint();
+    QB_STATIC_SELECTS_POPULATED = true;
+  }
+  qbCloseDetail();
+  qbCancelForm();
+  qbLoadList();
+}
+
+function qbReapplyLanguage() {
+  if (!QB_STATIC_SELECTS_POPULATED) return;
+  qbPopulateFilterSelects();
+  qbPopulateFormSelects();
+  qbRenderList();
+  qbUpdateCorrectAnswerHint();
+  if (QB_SELECTED_RECORD) qbRenderDetail();
+}
+
+function qbDebouncedLoadList() {
+  clearTimeout(QB_DEBOUNCE_TIMER);
+  QB_DEBOUNCE_TIMER = setTimeout(qbLoadList, 300);
+}
+
+function qbBuildListQuery() {
+  const params = new URLSearchParams();
+  const keyword = (document.getElementById('qb-search').value || '').trim();
+  const category = document.getElementById('qb-filter-category').value;
+  const difficulty = document.getElementById('qb-filter-difficulty').value;
+  const tag = (document.getElementById('qb-filter-tag').value || '').trim();
+  const status = document.getElementById('qb-filter-status').value;
+  const includeArchived = document.getElementById('qb-filter-include-archived').checked;
+  if (keyword) params.set('keyword', keyword);
+  if (category) params.set('category', category);
+  if (difficulty) params.set('difficulty', difficulty);
+  if (tag) params.append('tags', tag);
+  if (status) params.set('validation_status', status);
+  // Admin content management is exactly the "review workspace" case
+  // the backend route's own docstring calls out as needing
+  // publishable_only=false -- draft/technical_review/rejected content
+  // must remain visible here even though general retrieval hides it
+  // by default.
+  params.set('publishable_only', 'false');
+  params.set('include_status', 'true');
+  if (includeArchived) { params.set('include_deleted', 'true'); params.set('include_archived', 'true'); }
+  return params.toString();
+}
+
+async function qbLoadList() {
+  const statusEl = document.getElementById('qb-list-status');
+  const bodyEl = document.getElementById('qb-list-body');
+  if (!statusEl || !bodyEl) return;
+  statusEl.textContent = t('qb.list_loading');
+  try {
+    const query = qbBuildListQuery();
+    QB_LIST = await apiRequest('/api/question-bank/questions' + (query ? '?' + query : ''));
+    qbRenderList();
+  } catch (e) {
+    statusEl.textContent = t('qb.list_error_prefix') + e.message;
+    bodyEl.innerHTML = '';
+  }
+}
+
+function qbAnyFilterActive() {
+  return !!(
+    (document.getElementById('qb-search').value || '').trim() ||
+    document.getElementById('qb-filter-category').value ||
+    document.getElementById('qb-filter-difficulty').value ||
+    (document.getElementById('qb-filter-tag').value || '').trim() ||
+    document.getElementById('qb-filter-status').value
+  );
+}
+
+function qbStatusBadgeHtml(status) {
+  if (!status) return `<span class="pill pill-info">${qbEsc(t('qb.unknown_status'))}</span>`;
+  const cls = status === 'validated' ? 'pill-ok'
+    : (status === 'rejected' || status === 'deprecated') ? 'pill-nok'
+      : status === 'technical_review' ? 'pill-warn' : 'pill-info';
+  return `<span class="pill ${cls}">${qbEsc(qbLabel('validation_status', status))}</span>`;
+}
+
+function qbRenderList() {
+  const statusEl = document.getElementById('qb-list-status');
+  const bodyEl = document.getElementById('qb-list-body');
+  if (!statusEl || !bodyEl) return;
+  if (!Array.isArray(QB_LIST) || QB_LIST.length === 0) {
+    statusEl.textContent = qbAnyFilterActive() ? t('qb.list_empty_filtered') : t('qb.list_empty_none');
+    bodyEl.innerHTML = '';
+    return;
+  }
+  statusEl.textContent = '';
+  bodyEl.innerHTML = QB_LIST.map(r => {
+    const qText = (r.question_tr || '');
+    const truncated = qText.length > 90 ? qText.slice(0, 90) + '…' : qText;
+    return `<tr style="cursor:pointer" onclick="qbOpenDetail('${qbEsc(r.question_id)}')">
+      <td>${qbEsc(r.question_id)}</td>
+      <td>${qbEsc(truncated)}</td>
+      <td>${qbEsc(qbCategoryLabel(r.category))}</td>
+      <td>${qbEsc((r.tags || []).join(', '))}</td>
+      <td>${qbEsc(qbLabel('difficulty', r.difficulty))}</td>
+      <td>${qbStatusBadgeHtml(r.validation_status)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ---------------------------------------------------------------------
+// Detail view: content record + status history + soft-delete/archive
+// audit trail. Three plain GETs against existing Faz 2.9.2/2.9.4/2.9.6
+// read routes -- no new persistence, no client-side recomputation of
+// lifecycle state.
+// ---------------------------------------------------------------------
+
+async function qbOpenDetail(questionId) {
+  const card = document.getElementById('qb-detail-card');
+  const bodyEl = document.getElementById('qb-detail-body');
+  qbCancelForm();
+  card.style.display = '';
+  bodyEl.innerHTML = `<div class="fc-muted">${qbEsc(t('qb.detail_loading'))}</div>`;
+  document.getElementById('qb-lifecycle-body').innerHTML = '';
+  document.getElementById('qb-lifecycle-actions').innerHTML = '';
+  document.getElementById('qb-status-history-body').innerHTML = '';
+  document.getElementById('qb-audit-body').innerHTML = '';
+  try {
+    const record = await apiRequest(
+      '/api/question-bank/questions/' + encodeURIComponent(questionId) +
+      '?publishable_only=false&include_deleted=true&include_archived=true&include_status=true',
+    );
+    const [statusHistory, audit] = await Promise.all([
+      apiRequest('/api/question-bank/questions/' + encodeURIComponent(questionId) + '/status-history'),
+      apiRequest('/api/question-bank/questions/' + encodeURIComponent(questionId) + '/audit'),
+    ]);
+    QB_SELECTED_ID = questionId;
+    QB_SELECTED_RECORD = record;
+    QB_SELECTED_STATUS_HISTORY = Array.isArray(statusHistory) ? statusHistory : [];
+    QB_SELECTED_AUDIT = Array.isArray(audit) ? audit : [];
+    qbRenderDetail();
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  } catch (e) {
+    bodyEl.innerHTML = `<div class="alert alert-warn">${qbEsc(t('qb.detail_error_prefix') + e.message)}</div>`;
+  }
+}
+
+function qbCloseDetail() {
+  QB_SELECTED_ID = null;
+  QB_SELECTED_RECORD = null;
+  QB_SELECTED_STATUS_HISTORY = [];
+  QB_SELECTED_AUDIT = [];
+  const card = document.getElementById('qb-detail-card');
+  if (card) card.style.display = 'none';
+}
+
+function qbFieldRow(labelKey, valueHtml) {
+  return `<tr><th>${qbEsc(t(labelKey))}</th><td>${valueHtml}</td></tr>`;
+}
+
+function qbCurrentLifecycleState() {
+  // Derives is_deleted/archived_at from the most recent lifecycle-audit
+  // row (Faz 2.9.4) rather than re-implementing that state machine --
+  // a question with no audit rows at all was simply never
+  // deleted/restored/archived (active, matching the backend's own
+  // "no entry == active" convention documented in retrieval.py).
+  if (!QB_SELECTED_AUDIT.length) return { isDeleted: false, archivedAt: null };
+  const last = QB_SELECTED_AUDIT[QB_SELECTED_AUDIT.length - 1];
+  return { isDeleted: !!last.new_is_deleted, archivedAt: last.new_archived_at || null };
+}
+
+function qbCurrentValidationStatus() {
+  if (QB_SELECTED_RECORD && QB_SELECTED_RECORD.validation_status) return QB_SELECTED_RECORD.validation_status;
+  if (!QB_SELECTED_STATUS_HISTORY.length) return null;
+  return QB_SELECTED_STATUS_HISTORY[QB_SELECTED_STATUS_HISTORY.length - 1].to_status || null;
+}
+
+function qbRenderDetail() {
+  const r = QB_SELECTED_RECORD;
+  if (!r) return;
+  document.getElementById('qb-detail-title').textContent = t('qb.detail_title') + ' — ' + r.question_id;
+  document.getElementById('qb-detail-sub').textContent =
+    qbCategoryLabel(r.category) + ' · ' + qbLabel('difficulty', r.difficulty) + ' · ' + qbLabel('question_type', r.question_type);
+
+  const optionsTr = (r.options_tr || []).map(o => qbEsc(o)).join('<br>');
+  const optionsEn = (r.options_en || []).map(o => qbEsc(o)).join('<br>');
+  const correctAnswer = Array.isArray(r.correct_answer) ? r.correct_answer.join(', ') : String(r.correct_answer);
+  const stdRef = r.standard_reference
+    ? qbEsc([r.standard_reference.name, r.standard_reference.edition_or_year, r.standard_reference.clause_or_table]
+      .filter(Boolean).join(' · '))
+    : '—';
+  const srcRef = r.source_reference
+    ? qbEsc(qbLabel('source_type', r.source_reference.source_type) + ' — ' + r.source_reference.description)
+    : '—';
+
+  document.getElementById('qb-detail-body').innerHTML = `<table class="source-table">
+    ${qbFieldRow('qb.field.question_tr', qbEsc(r.question_tr))}
+    ${qbFieldRow('qb.field.question_en', qbEsc(r.question_en))}
+    ${(r.options_tr && r.options_tr.length) ? qbFieldRow('qb.detail.field.options', optionsTr + (optionsEn ? '<hr style="border-color:var(--border);margin:6px 0">' + optionsEn : '')) : ''}
+    ${qbFieldRow('qb.detail.field.correct_answer', qbEsc(correctAnswer))}
+    ${qbFieldRow('qb.field.technical_explanation_tr', qbEsc(r.technical_explanation_tr))}
+    ${qbFieldRow('qb.field.technical_explanation_en', qbEsc(r.technical_explanation_en))}
+    ${qbFieldRow('qb.detail.field.standard_reference', stdRef)}
+    ${qbFieldRow('qb.detail.field.source_reference', srcRef)}
+    ${qbFieldRow('qb.detail.field.source_locator', qbEsc(r.source_locator || '—'))}
+    ${qbFieldRow('qb.detail.field.traceability_level', qbEsc(qbLabel('traceability_level', r.traceability_level)))}
+    ${qbFieldRow('qb.detail.field.risk_level', qbEsc(qbLabel('engineering_risk_level', r.engineering_risk_level)))}
+    ${qbFieldRow('qb.detail.field.tags', qbEsc((r.tags || []).join(', ')) || '—')}
+    ${qbFieldRow('qb.detail.field.learning_objective', qbEsc(r.learning_objective))}
+    ${qbFieldRow('qb.detail.field.content_version', qbEsc(r.content_version))}
+    ${qbFieldRow('qb.detail.field.is_active', r.is_active ? qbEsc(t('qb.yes')) : qbEsc(t('qb.no')))}
+  </table>`;
+
+  const status = qbCurrentValidationStatus();
+  const lifecycle = qbCurrentLifecycleState();
+  document.getElementById('qb-lifecycle-body').innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    ${qbStatusBadgeHtml(status)}
+    ${lifecycle.isDeleted ? `<span class="pill pill-nok">${qbEsc(t('qb.action.delete'))}</span>` : ''}
+    ${lifecycle.archivedAt ? `<span class="pill pill-warn">${qbEsc(t('qb.action.archive'))}</span>` : ''}
+  </div>`;
+
+  qbRenderLifecycleActions(status, lifecycle);
+  qbRenderStatusHistory();
+  qbRenderAudit();
+}
+
+function qbActionButton(labelKey, onclick, danger) {
+  return `<button class="btn ${danger ? 'btn-secondary' : 'btn-secondary'} btn-sm" onclick="${onclick}">${qbEsc(t(labelKey))}</button>`;
+}
+
+function qbRenderLifecycleActions(status, lifecycle) {
+  const el = document.getElementById('qb-lifecycle-actions');
+  if (!el) return;
+  const isPrivileged = typeof CURRENT_ROLE !== 'undefined' && (CURRENT_ROLE === 'admin' || CURRENT_ROLE === 'engineer');
+  const buttons = [];
+
+  if (!lifecycle.isDeleted) {
+    // Faz 2.9.6 transition routes -- submission itself is
+    // intentionally ungated (see backend/api/routes/question_bank.py's
+    // submit_question_for_review docstring), matched here by not
+    // hiding this one button behind isPrivileged.
+    if (status === 'draft') {
+      buttons.push(qbActionButton('qb.action.submit_for_review', 'qbSubmitForReview()'));
+    }
+    if (isPrivileged) {
+      if (status === 'technical_review') {
+        buttons.push(qbActionButton('qb.action.validate', 'qbValidate()'));
+        buttons.push(qbActionButton('qb.action.reject', 'qbReject()'));
+      }
+      if (status === 'validated') {
+        buttons.push(qbActionButton('qb.action.deprecate', 'qbDeprecate()'));
+      }
+      if (!lifecycle.archivedAt) {
+        buttons.push(qbActionButton('qb.action.archive', 'qbArchive()'));
+      }
+      buttons.push(qbActionButton('qb.action.delete', 'qbDelete()', true));
+    }
+  } else if (isPrivileged) {
+    buttons.push(qbActionButton('qb.action.restore', 'qbRestore()'));
+  }
+
+  el.innerHTML = buttons.join('');
+}
+
+function qbRenderStatusHistory() {
+  const el = document.getElementById('qb-status-history-body');
+  if (!el) return;
+  if (!QB_SELECTED_STATUS_HISTORY.length) {
+    el.innerHTML = `<div class="fc-muted">${qbEsc(t('qb.status_history_empty'))}</div>`;
+    return;
+  }
+  el.innerHTML = `<table class="source-table"><thead><tr>
+    <th>${qbEsc(t('qb.status_history.col.from'))}</th>
+    <th>${qbEsc(t('qb.status_history.col.to'))}</th>
+    <th>${qbEsc(t('qb.status_history.col.actor'))}</th>
+    <th>${qbEsc(t('qb.status_history.col.date'))}</th>
+    <th>${qbEsc(t('qb.status_history.col.reason'))}</th>
+  </tr></thead><tbody>${QB_SELECTED_STATUS_HISTORY.map(row => `<tr>
+    <td>${row.from_status ? qbEsc(qbLabel('validation_status', row.from_status)) : '—'}</td>
+    <td>${qbEsc(qbLabel('validation_status', row.to_status))}</td>
+    <td>${qbEsc(row.actor)}</td>
+    <td>${qbEsc(row.created_at)}</td>
+    <td>${qbEsc(row.revision_reason || '—')}</td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function qbRenderAudit() {
+  const el = document.getElementById('qb-audit-body');
+  if (!el) return;
+  if (!QB_SELECTED_AUDIT.length) {
+    el.innerHTML = `<div class="fc-muted">${qbEsc(t('qb.audit_empty'))}</div>`;
+    return;
+  }
+  el.innerHTML = `<table class="source-table"><thead><tr>
+    <th>${qbEsc(t('qb.audit.col.action'))}</th>
+    <th>${qbEsc(t('qb.audit.col.actor'))}</th>
+    <th>${qbEsc(t('qb.audit.col.role'))}</th>
+    <th>${qbEsc(t('qb.audit.col.date'))}</th>
+  </tr></thead><tbody>${QB_SELECTED_AUDIT.map(row => `<tr>
+    <td>${qbEsc(row.action)}</td>
+    <td>${qbEsc(row.actor)}</td>
+    <td>${qbEsc(row.actor_role || '—')}</td>
+    <td>${qbEsc(row.created_at)}</td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+// ---------------------------------------------------------------------
+// Lifecycle actions -- each a thin wrapper over one existing Faz
+// 2.9.4/2.9.6 write route, with a confirmDialog()/prompt() gate for
+// anything destructive or requiring extra input, exactly like every
+// other admin write action already in this file (approveRevision(),
+// rejectRevision(), govSubmitCommand()).
+// ---------------------------------------------------------------------
+
+async function qbRunLifecycleAction(fn) {
+  try {
+    await fn();
+    await qbOpenDetail(QB_SELECTED_ID);
+    await qbLoadList();
+  } catch (e) {
+    alert(t('qb.action.error_prefix') + e.message);
+  }
+}
+
+function qbLatestContentVersion() {
+  return QB_SELECTED_RECORD ? QB_SELECTED_RECORD.content_version : null;
+}
+
+async function qbSubmitForReview() {
+  const cv = qbLatestContentVersion();
+  await qbRunLifecycleAction(() => apiRequest(
+    '/api/question-bank/questions/' + encodeURIComponent(QB_SELECTED_ID) + '/submit-for-review',
+    { method: 'POST', body: JSON.stringify({ content_version: cv }) },
+  ));
+}
+
+async function qbValidate() {
+  const cv = qbLatestContentVersion();
+  const reviewedBy = prompt(t('qb.action.confirm_reviewed_by'));
+  if (!reviewedBy) return;
+  const reviewDate = prompt(t('qb.action.confirm_review_date'), new Date().toISOString().slice(0, 10));
+  if (!reviewDate) return;
+  await qbRunLifecycleAction(() => apiRequest(
+    '/api/question-bank/questions/' + encodeURIComponent(QB_SELECTED_ID) + '/validate',
+    { method: 'POST', body: JSON.stringify({ content_version: cv, reviewed_by: reviewedBy, review_date: reviewDate }) },
+  ));
+}
+
+async function qbReject() {
+  const cv = qbLatestContentVersion();
+  const reason = prompt(t('qb.action.confirm_reason'));
+  if (!reason) return;
+  await qbRunLifecycleAction(() => apiRequest(
+    '/api/question-bank/questions/' + encodeURIComponent(QB_SELECTED_ID) + '/reject',
+    { method: 'POST', body: JSON.stringify({ content_version: cv, reason: reason }) },
+  ));
+}
+
+async function qbDeprecate() {
+  const cv = qbLatestContentVersion();
+  const ok = await confirmDialog({
+    title: t('qb.action.deprecate'), confirmText: t('qb.action.deprecate'), cancelText: t('qb.cancel_button'),
+  });
+  if (!ok) return;
+  await qbRunLifecycleAction(() => apiRequest(
+    '/api/question-bank/questions/' + encodeURIComponent(QB_SELECTED_ID) + '/deprecate',
+    { method: 'POST', body: JSON.stringify({ content_version: cv }) },
+  ));
+}
+
+async function qbArchive() {
+  const ok = await confirmDialog({
+    title: t('qb.action.confirm_archive_title'), confirmText: t('qb.action.archive'), cancelText: t('qb.cancel_button'),
+  });
+  if (!ok) return;
+  await qbRunLifecycleAction(() => apiRequest(
+    '/api/question-bank/' + encodeURIComponent(QB_SELECTED_ID) + '/archive', { method: 'POST' },
+  ));
+}
+
+async function qbRestore() {
+  const ok = await confirmDialog({
+    title: t('qb.action.confirm_restore_title'), confirmText: t('qb.action.restore'), cancelText: t('qb.cancel_button'),
+  });
+  if (!ok) return;
+  await qbRunLifecycleAction(() => apiRequest(
+    '/api/question-bank/' + encodeURIComponent(QB_SELECTED_ID) + '/restore', { method: 'POST' },
+  ));
+}
+
+async function qbDelete() {
+  const ok = await confirmDialog({
+    title: t('qb.action.confirm_delete_title'), confirmText: t('qb.action.delete'), cancelText: t('qb.cancel_button'), danger: true,
+  });
+  if (!ok) return;
+  await qbRunLifecycleAction(() => apiRequest(
+    '/api/question-bank/' + encodeURIComponent(QB_SELECTED_ID), { method: 'DELETE' },
+  ));
+}
+
+// ---------------------------------------------------------------------
+// Create / Edit form
+// ---------------------------------------------------------------------
+
+function qbUpdateCorrectAnswerHint() {
+  const sel = document.getElementById('qb_f_question_type');
+  const hintEl = document.getElementById('qb-correct-answer-hint');
+  if (!sel || !hintEl) return;
+  const qType = sel.value || 'single_choice';
+  hintEl.textContent = t('qb.correct_answer_hint_' + qType);
+}
+
+function qbClearForm() {
+  ['qb_f_question_id', 'qb_f_subcategory', 'qb_f_question_tr', 'qb_f_question_en', 'qb_f_options_tr',
+    'qb_f_options_en', 'qb_f_correct_answer', 'qb_f_tolerance', 'qb_f_technical_explanation_tr',
+    'qb_f_technical_explanation_en', 'qb_f_std_ref_name', 'qb_f_std_ref_edition', 'qb_f_std_ref_clause',
+    'qb_f_src_ref_description', 'qb_f_source_locator', 'qb_f_tags', 'qb_f_learning_objective',
+  ].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('qb_f_content_version').value = '1';
+  document.getElementById('qb_f_is_active').checked = false;
+  document.getElementById('qb_f_question_id').disabled = false;
+  document.getElementById('qb_f_content_version').disabled = false;
+  document.getElementById('qb-form-error').style.display = 'none';
+  document.getElementById('qb-form-result').innerHTML = '';
+  qbUpdateCorrectAnswerHint();
+}
+
+function qbShowCreateForm() {
+  qbCloseDetail();
+  QB_FORM_MODE = 'create';
+  qbClearForm();
+  document.getElementById('qb-form-title').textContent = t('qb.create_form_title');
+  document.getElementById('qb-form-submit-btn').textContent = t('qb.create_submit_button');
+  document.getElementById('qb-form-card').style.display = '';
+  document.getElementById('qb-form-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function qbCorrectAnswerToInputValue(questionType, value) {
+  if (value === null || value === undefined) return '';
+  if (questionType === 'multiple_choice' && Array.isArray(value)) return value.join(',');
+  if (questionType === 'true_false') return value ? 'true' : 'false';
+  return String(value);
+}
+
+function qbShowEditForm() {
+  const r = QB_SELECTED_RECORD;
+  if (!r) return;
+  QB_FORM_MODE = 'edit';
+  qbClearForm();
+  document.getElementById('qb-form-title').textContent = t('qb.edit_form_title');
+  document.getElementById('qb-form-submit-btn').textContent = t('qb.save_submit_button');
+
+  document.getElementById('qb_f_question_id').value = r.question_id;
+  document.getElementById('qb_f_question_id').disabled = true;
+  document.getElementById('qb_f_content_version').value = r.content_version;
+  document.getElementById('qb_f_content_version').disabled = true;
+  document.getElementById('qb_f_subcategory').value = r.subcategory || '';
+  document.getElementById('qb_f_category').value = r.category;
+  document.getElementById('qb_f_difficulty').value = r.difficulty;
+  document.getElementById('qb_f_question_type').value = r.question_type;
+  document.getElementById('qb_f_question_tr').value = r.question_tr;
+  document.getElementById('qb_f_question_en').value = r.question_en;
+  document.getElementById('qb_f_options_tr').value = (r.options_tr || []).join('\n');
+  document.getElementById('qb_f_options_en').value = (r.options_en || []).join('\n');
+  document.getElementById('qb_f_correct_answer').value = qbCorrectAnswerToInputValue(r.question_type, r.correct_answer);
+  document.getElementById('qb_f_tolerance').value = (r.tolerance === null || r.tolerance === undefined) ? '' : r.tolerance;
+  document.getElementById('qb_f_engineering_risk_level').value = r.engineering_risk_level;
+  document.getElementById('qb_f_technical_explanation_tr').value = r.technical_explanation_tr;
+  document.getElementById('qb_f_technical_explanation_en').value = r.technical_explanation_en;
+  if (r.standard_reference) {
+    document.getElementById('qb_f_std_ref_name').value = r.standard_reference.name || '';
+    document.getElementById('qb_f_std_ref_edition').value = r.standard_reference.edition_or_year || '';
+    document.getElementById('qb_f_std_ref_clause').value = r.standard_reference.clause_or_table || '';
+  }
+  if (r.source_reference) {
+    document.getElementById('qb_f_src_ref_type').value = r.source_reference.source_type || '';
+    document.getElementById('qb_f_src_ref_description').value = r.source_reference.description || '';
+  }
+  document.getElementById('qb_f_source_locator').value = r.source_locator || '';
+  document.getElementById('qb_f_traceability_level').value = r.traceability_level;
+  document.getElementById('qb_f_tags').value = (r.tags || []).join(', ');
+  document.getElementById('qb_f_is_active').checked = !!r.is_active;
+  document.getElementById('qb_f_learning_objective').value = r.learning_objective;
+  qbUpdateCorrectAnswerHint();
+
+  document.getElementById('qb-form-card').style.display = '';
+  document.getElementById('qb-form-card').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function qbCancelForm() {
+  QB_FORM_MODE = null;
+  const card = document.getElementById('qb-form-card');
+  if (card) card.style.display = 'none';
+}
+
+function qbParseCorrectAnswer(raw, questionType) {
+  const trimmed = (raw || '').trim();
+  if (!trimmed) throw new Error(t('qb.correct_answer_invalid'));
+  if (questionType === 'true_false') {
+    const lowered = trimmed.toLowerCase();
+    if (lowered === 'true') return true;
+    if (lowered === 'false') return false;
+    throw new Error(t('qb.correct_answer_invalid'));
+  }
+  if (questionType === 'single_choice') {
+    const n = parseInt(trimmed, 10);
+    if (Number.isNaN(n)) throw new Error(t('qb.correct_answer_invalid'));
+    return n;
+  }
+  if (questionType === 'multiple_choice') {
+    const parts = trimmed.split(',').map(p => parseInt(p.trim(), 10));
+    if (!parts.length || parts.some(Number.isNaN)) throw new Error(t('qb.correct_answer_invalid'));
+    return parts;
+  }
+  // numerical / unit_conversion / formula_selection
+  const f = parseFloat(trimmed);
+  if (Number.isNaN(f)) throw new Error(t('qb.correct_answer_invalid'));
+  return f;
+}
+
+function qbCollectFormPayload() {
+  const questionType = document.getElementById('qb_f_question_type').value;
+  const optionsTrRaw = document.getElementById('qb_f_options_tr').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const optionsEnRaw = document.getElementById('qb_f_options_en').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const tagsRaw = document.getElementById('qb_f_tags').value.split(',').map(s => s.trim()).filter(Boolean);
+  const toleranceRaw = document.getElementById('qb_f_tolerance').value.trim();
+  const stdName = document.getElementById('qb_f_std_ref_name').value.trim();
+  const srcType = document.getElementById('qb_f_src_ref_type').value;
+
+  const payload = {
+    subcategory: document.getElementById('qb_f_subcategory').value.trim() || null,
+    category: document.getElementById('qb_f_category').value,
+    difficulty: document.getElementById('qb_f_difficulty').value,
+    question_type: questionType,
+    question_tr: document.getElementById('qb_f_question_tr').value.trim(),
+    question_en: document.getElementById('qb_f_question_en').value.trim(),
+    options_tr: optionsTrRaw.length ? optionsTrRaw : null,
+    options_en: optionsEnRaw.length ? optionsEnRaw : null,
+    correct_answer: qbParseCorrectAnswer(document.getElementById('qb_f_correct_answer').value, questionType),
+    tolerance: toleranceRaw ? parseFloat(toleranceRaw) : null,
+    technical_explanation_tr: document.getElementById('qb_f_technical_explanation_tr').value.trim(),
+    technical_explanation_en: document.getElementById('qb_f_technical_explanation_en').value.trim(),
+    standard_reference: stdName ? {
+      name: stdName,
+      edition_or_year: document.getElementById('qb_f_std_ref_edition').value.trim() || null,
+      clause_or_table: document.getElementById('qb_f_std_ref_clause').value.trim() || null,
+    } : null,
+    source_reference: srcType ? {
+      source_type: srcType,
+      description: document.getElementById('qb_f_src_ref_description').value.trim(),
+    } : null,
+    source_locator: document.getElementById('qb_f_source_locator').value.trim() || null,
+    traceability_level: document.getElementById('qb_f_traceability_level').value,
+    tags: tagsRaw,
+    learning_objective: document.getElementById('qb_f_learning_objective').value.trim(),
+    engineering_risk_level: document.getElementById('qb_f_engineering_risk_level').value,
+    is_active: document.getElementById('qb_f_is_active').checked,
+  };
+
+  if (QB_FORM_MODE === 'create') {
+    payload.question_id = document.getElementById('qb_f_question_id').value.trim();
+    payload.content_version = parseInt(document.getElementById('qb_f_content_version').value, 10) || 1;
+  }
+  return payload;
+}
+
+function qbValidateRequiredFields() {
+  const requiredIds = QB_FORM_MODE === 'create'
+    ? ['qb_f_question_id', 'qb_f_content_version', 'qb_f_question_tr', 'qb_f_question_en',
+      'qb_f_correct_answer', 'qb_f_technical_explanation_tr', 'qb_f_technical_explanation_en',
+      'qb_f_learning_objective']
+    : ['qb_f_question_tr', 'qb_f_question_en', 'qb_f_correct_answer',
+      'qb_f_technical_explanation_tr', 'qb_f_technical_explanation_en', 'qb_f_learning_objective'];
+  const missing = requiredIds.filter(id => !(document.getElementById(id).value || '').trim());
+  return missing;
+}
+
+async function qbSubmitForm() {
+  const errorEl = document.getElementById('qb-form-error');
+  const resultEl = document.getElementById('qb-form-result');
+  errorEl.style.display = 'none';
+  resultEl.innerHTML = '';
+
+  const missing = qbValidateRequiredFields();
+  if (missing.length) {
+    errorEl.textContent = t('qb.field_required');
+    errorEl.style.display = '';
+    return;
+  }
+
+  let payload;
+  try {
+    payload = qbCollectFormPayload();
+  } catch (e) {
+    errorEl.textContent = e.message;
+    errorEl.style.display = '';
+    return;
+  }
+
+  try {
+    if (QB_FORM_MODE === 'create') {
+      await apiRequest('/api/question-bank/questions', { method: 'POST', body: JSON.stringify(payload) });
+      resultEl.innerHTML = `<div class="alert alert-info">${qbEsc(t('qb.create_success'))}</div>`;
+    } else {
+      const qId = document.getElementById('qb_f_question_id').value;
+      await apiRequest('/api/question-bank/questions/' + encodeURIComponent(qId), {
+        method: 'PATCH', body: JSON.stringify(payload),
+      });
+      resultEl.innerHTML = `<div class="alert alert-info">${qbEsc(t('qb.save_success'))}</div>`;
+    }
+    await qbLoadList();
+    const openedId = QB_FORM_MODE === 'create' ? payload.question_id : document.getElementById('qb_f_question_id').value;
+    qbCancelForm();
+    await qbOpenDetail(openedId);
+  } catch (e) {
+    errorEl.textContent = t('qb.validation_error_prefix') + e.message;
+    errorEl.style.display = '';
+  }
+}
+
 
 // ========== BAŞLAT ==========
 document.getElementById('tarih').textContent=new Date().toLocaleDateString('tr-TR');

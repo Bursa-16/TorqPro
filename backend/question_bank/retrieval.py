@@ -385,4 +385,26 @@ def select_questions(
     return shuffled[:count]
 
 
-__all__ = ["list_questions", "get_question", "select_questions"]
+def get_validation_status_map(c: sqlite3.Connection) -> Dict[Tuple[str, int], str]:
+    """Faz 2.9.7: public wrapper over :func:`_status_map`.
+
+    Read-only, zero new SQL, zero new persistence -- reuses the exact
+    same ``(question_id, content_version) -> validation_status`` lookup
+    ``list_questions``/``get_question`` already build internally for
+    their own filtering. Exposed as its own function because the
+    Question Bank admin UI (Faz 2.9.7) needs to *display*
+    ``validation_status`` per listed record, which neither
+    :func:`list_questions` nor :func:`get_question` can supply on
+    their own: :class:`backend.question_bank.schema.QuestionRecord`
+    deliberately has no ``validation_status`` field (see that class's
+    own docstring -- validation_status is SQLite-only, by design, not
+    a second definition living on the content schema). Calling this
+    once per list/detail request and merging the result at the API
+    layer is the additive alternative to either (a) an N+1 lookup per
+    listed row, or (b) changing what :class:`QuestionRecord` itself
+    contains -- neither of which this phase's instructions permit.
+    """
+    return _status_map(c)
+
+
+__all__ = ["list_questions", "get_question", "select_questions", "get_validation_status_map"]
