@@ -529,10 +529,17 @@ def test_migration_is_idempotent(db):
     # question_bank_status_history). This assertion is updated to
     # reflect that additive change; the idempotency behaviour itself
     # (repeated migrate() calls create nothing new) is unchanged.
+    #
+    # Faz 2.9.12 adds a fifth, purely additive table
+    # (question_bank_stats_snapshots -- point-in-time statistics
+    # snapshots for the Trend/History panel, see
+    # backend.question_bank.stats_history's own docstring). Same
+    # additive update, same unchanged idempotency behaviour.
     assert tables == {
         "question_bank_records",
         "question_bank_status_history",
         "question_bank_lifecycle_audit",
+        "question_bank_stats_snapshots",
     }
 
 

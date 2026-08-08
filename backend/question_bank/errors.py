@@ -110,6 +110,19 @@ class EmptyPatchError(QuestionBankValidationError):
         super().__init__(["PATCH body en az bir alan içermeli (empty patch)"])
 
 
+class SnapshotDataError(QuestionBankError):
+    """Faz 2.9.12: a stored ``question_bank_stats_snapshots`` row could
+    not be decoded back into a statistics payload -- either its
+    ``stats_json`` column is not valid JSON, or it decoded to
+    something other than the ``compute_stats()``-shaped ``dict`` every
+    snapshot is written as (see
+    ``backend.question_bank.stats_history.create_snapshot``). Raised by
+    :func:`backend.question_bank.stats_history.list_snapshots` so a
+    single corrupted row fails loudly rather than being silently
+    skipped or returned as-is to a caller expecting the normal shape.
+    """
+
+
 class PartialUpdateFailureError(QuestionBankError):
     """Faz 2.9.3: the paired SQLite lifecycle registration (draft record
     + status-history entry) for a new content_version failed inside its

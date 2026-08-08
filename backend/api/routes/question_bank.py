@@ -89,6 +89,17 @@ new content schema, no new validation rule: export reuses
 ``backend.question_bank.retrieval.list_questions`` verbatim and import
 reuses the exact same ``register_question_content``/``register_question``
 two-step sequence the Faz 2.9.6 create route already uses.
+
+Faz 2.9.12 adds a statistics Trend / History pair of routes (``POST
+.../stats/snapshot``, ``GET .../stats/history``). Same division of
+responsibility as every route above: all persistence and ordering
+logic lives in ``backend.question_bank.stats_history`` (which itself
+reuses ``backend.question_bank.stats.compute_stats`` verbatim -- no
+new aggregation); this module only opens the DB connection, calls the
+service function, and maps ``SnapshotDataError`` to 500 through the
+shared ``_handle`` helper. ``GET /api/question-bank/stats`` (Faz
+2.9.10) is unchanged -- its route, response shape, and
+``compute_stats`` call are untouched by this phase.
 """
 
 from __future__ import annotations
@@ -122,6 +133,7 @@ from backend.question_bank.errors import (  # noqa: E402
     QuestionAlreadyDeletedError,
     QuestionBankValidationError,
     QuestionNotDeletedError,
+    SnapshotDataError,
     UnauthorizedTransitionError,
 )
 from backend.question_bank.patch import QuestionPatch  # noqa: E402
@@ -134,6 +146,7 @@ from backend.question_bank.schema import (  # noqa: E402
 )
 from backend.question_bank.transitions import ValidationStatus  # noqa: E402
 from backend.question_bank import stats as qb_stats  # noqa: E402
+from backend.question_bank import stats_history as qb_stats_history  # noqa: E402
 
 
 def _handle(fn, *args, **kwargs):
@@ -156,6 +169,8 @@ def _handle(fn, *args, **kwargs):
         InvalidTransitionError,
     ) as exc:
         raise HTTPException(409, str(exc))
+    except SnapshotDataError as exc:
+        raise HTTPException(500, str(exc))
 
 
 @router.get("/api/question-bank/stats")
@@ -181,6 +196,43 @@ def get_question_bank_stats(u=Depends(user)):
     """
     with conn() as c:
         return qb_stats.compute_stats(c)
+
+
+@router.post("/api/question-bank/stats/snapshot", status_code=201)
+def create_question_bank_stats_snapshot(u=Depends(user)):
+    """Faz 2.9.12. Computes the Question Bank's current stats (the
+    exact same ``backend.question_bank.stats.compute_stats`` call
+    ``GET /api/question-bank/stats`` above already uses) and persists
+    it as one point-in-time row for the Trend / History panel. Thin
+    wrapper over ``backend.question_bank.stats_history.create_snapshot``
+    -- see that module's docstring for the full persistence contract.
+    No request body; no query parameters. Returns the created snapshot
+    as ``{"id", "created_at", "stats"}``.
+
+    Route-order note: registered here, immediately after ``GET
+    /api/question-bank/stats`` and before every ``{question_id}``-
+    shaped dynamic route in this module, for the same reason that
+    route documents its own placement -- the literal path segments
+    ``stats``/``snapshot`` can never be captured by a dynamic path
+    parameter.
+    """
+    with conn() as c:
+        return _handle(qb_stats_history.create_snapshot, c)
+
+
+@router.get("/api/question-bank/stats/history")
+def get_question_bank_stats_history(limit: Optional[int] = None, u=Depends(user)):
+    """Faz 2.9.12. Thin wrapper over
+    ``backend.question_bank.stats_history.list_snapshots`` -- returns
+    every stored snapshot (or, with ``?limit=N``, only the most recent
+    ``N``) as a list of ``{"id", "created_at", "stats"}`` objects,
+    oldest-first (deterministic chronological order -- see that
+    module's docstring). No client-side/route-level re-sorting or
+    re-aggregation: the list is returned exactly as
+    ``list_snapshots`` produces it.
+    """
+    with conn() as c:
+        return _handle(qb_stats_history.list_snapshots, c, limit=limit)
 
 
 @router.get("/api/question-bank/questions/select")
