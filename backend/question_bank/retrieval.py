@@ -82,6 +82,17 @@ def _normalize_tag(tag: str) -> str:
     return _search_casefold(tag.strip())
 
 
+def normalize_tag(tag: str) -> str:
+    """Faz 2.9.8: public wrapper over :func:`_normalize_tag`, so other
+    question_bank modules that need this exact same case-insensitive/
+    trimmed tag comparison (e.g. ``backend.question_bank.bulk``'s bulk
+    tag add/remove) call this instead of reaching into retrieval's own
+    private helper -- mirrors the ``get_validation_status_map`` /
+    ``_status_map`` precedent Faz 2.9.7 already established for the
+    same reason (one normalization rule, never a second definition)."""
+    return _normalize_tag(tag)
+
+
 def _record_matches_tags(
     record: QuestionRecord,
     tags: Sequence[str],

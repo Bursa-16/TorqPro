@@ -20,9 +20,30 @@ TorqPro is a professional engineering platform for the design, analysis, validat
 | Item                          | Value                                  |
 | ----------------------------- | -------------------------------------- |
 | Product                       | TorqPro                                |
-| **Current Version**           | **v2.9.3**                             |
-| **Version Date**              | **07 August 2026**                     |
-| **Current Engineering Focus** | **Question Bank Update/Edit Workflow** |
+| **Current Version**           | **v2.9.8**                             |
+| **Version Date**              | **08 August 2026**                     |
+| **Current Engineering Focus** | **Question Bank Bulk Lifecycle + Tag Operations** |
+
+---
+
+# What's New in v2.9.8
+
+## Question Bank Bulk Lifecycle + Tag Operations
+
+Phase **2.9.8** adds bulk operations to the Question Bank module, building directly on the single-item CRUD/lifecycle/admin-UI work of Faz 2.9.1-2.9.7 -- no new persistence, no new transition rule, no new authorization mechanism.
+
+* **Bulk lifecycle transition API.** `POST /api/question-bank/questions/bulk/transition` applies submit-for-review / validate / reject / deprecate / archive to many questions in one request, reusing the existing single-item service functions and role-based authorization as-is.
+* **Bulk tag add/remove API.** `POST /api/question-bank/questions/bulk/tags` applies the same tag add/remove set to many questions at once, through the existing content-update (PATCH) path -- identical versioning/no-op semantics to a manual single-item edit.
+* **Partial success by design.** Each item in a batch succeeds or fails independently and is reported individually; for authorization-gated actions, an unauthorized request is rejected before any item is touched.
+* **Admin UI multi-select.** The Question Bank admin UI (Faz 2.9.7) gained row/select-all checkboxes, a bulk action toolbar, and a partial-success result panel -- no new UI framework introduced.
+* **Extended regression coverage.** 66 new tests (26 backend, 40 frontend).
+
+## Validation
+
+| Item              | Result          |
+| ----------------- | --------------- |
+| Full pytest suite | **2898 passed** |
+| Failed tests      | **0**           |
 
 ---
 
@@ -341,7 +362,8 @@ Continuous integration verifies every change before integration into the main br
 | Phase 2.8.22     | Torque Study UI/UX Messaging and CI Stage-Boundary Reliability | ✅ Completed       |
 | Phase 2.9.1      | Question Bank Foundation                                        | ✅ Completed       |
 | Phase 2.9.2      | Question Bank Retrieval Filtering and Read API                  | ✅ Completed       |
-| **Phase 2.9.3**  | **Question Bank Update/Edit Workflow**                           | ⭐ **Current Version** |
+| Phase 2.9.3      | Question Bank Update/Edit Workflow                               | ✅ Completed       |
+| **Phase 2.9.8**  | **Question Bank Bulk Lifecycle + Tag Operations**                | ⭐ **Current Version** |
 
 ---
 
@@ -349,7 +371,8 @@ Continuous integration verifies every change before integration into the main br
 
 | Version     | Highlights                                                       |
 | ----------- | ---------------------------------------------------------------- |
-| **v2.9.3**  | Question Bank Update/Edit Workflow                               |
+| **v2.9.8**  | Question Bank Bulk Lifecycle + Tag Operations                    |
+| v2.9.3      | Question Bank Update/Edit Workflow                               |
 | v2.9.2      | Question Bank Retrieval Filtering and Read API                   |
 | v2.9.1      | Question Bank Hybrid Persistence Foundation                      |
 | v2.8.22     | Torque Study UI/UX Messaging and CI Stage-Boundary Reliability  |
@@ -374,15 +397,17 @@ Continuous integration verifies every change before integration into the main br
 
 ## Current Version
 
-**v2.9.3**
+**v2.9.8**
 
 Current engineering focus:
 
-* Question Bank retrieval workflow completed.
-* Question Bank update/edit workflow completed.
-* Validation and consistency infrastructure expanded.
-* Full regression result: **2660 passed, 0 failed**.
-* Release version aligned to **v2.9.3**.
+* Question Bank bulk lifecycle transition API (submit-for-review / validate / reject / deprecate / archive) completed.
+* Question Bank bulk tag add/remove API completed.
+* Question Bank admin UI multi-select and bulk action toolbar completed.
+* Full regression result: **2898 passed, 0 failed**.
+* Release version aligned to **v2.9.8**.
+
+Note: this Roadmap section and the phase/version-history tables above were last kept in sync through v2.9.3; the intervening Faz 2.9.4-2.9.7 phases (soft-delete/restore/archive, search/tagging/difficulty, create + lifecycle API, admin UI) are implemented and covered by their own test suites (see `tests/test_faz_2_9_{4,5,6,7}_*`) but are not individually itemized here -- a documentation-hygiene gap tracked separately from this phase's own scope.
 
 The engineering limitations documented for earlier engineering-core governance phases remain unchanged unless a later phase explicitly closes them. No ISO 16224/VDI 2230/FCA C2001/FED-STD calculation engine, torsional-stress model, von Mises equivalent-stress model, or bearing/contact-pressure implementation is claimed by the Question Bank releases.
 
@@ -399,4 +424,4 @@ Potential future work areas:
 * Further governance workspace UX refinements
 * Further Question Bank workflow expansion
 
-The next phase after v2.9.3 has not yet been formally approved in this README.
+The next phase after v2.9.8 has not yet been formally approved in this README.
