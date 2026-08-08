@@ -74,11 +74,26 @@ built Pydantic bodies), the DB connection, the service call, response
 serialization, and the shared ``_handle`` exception mapping (extended
 with one new entry, ``InvalidTransitionError`` -> 409, the one domain
 error no prior route's service call could raise).
+
+Faz 2.9.9 adds a JSON export route (``GET .../export``) and a JSON
+import route (``POST .../import``). Same division of responsibility as
+every route above: all filtering, classification, and
+transaction-safety logic lives in
+``backend.question_bank.import_export`` (see that module's own
+docstring for the full created/skipped/rejected contract); this module
+only parses the request (query parameters for export -- the exact same
+set ``GET .../questions`` already accepts, forwarded unchanged; a
+small request body for import), opens the DB connection, calls the
+service function, and serializes the response. No new persistence, no
+new content schema, no new validation rule: export reuses
+``backend.question_bank.retrieval.list_questions`` verbatim and import
+reuses the exact same ``register_question_content``/``register_question``
+two-step sequence the Faz 2.9.6 create route already uses.
 """
 
 from __future__ import annotations
 
-from typing import List, Literal, Optional
+from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -95,6 +110,7 @@ router = APIRouter(tags=["question_bank"])
 from backend.api.dependencies import user  # noqa: E402
 from backend.app import conn  # noqa: E402
 from backend.question_bank import bulk as qb_bulk  # noqa: E402
+from backend.question_bank import import_export as qb_import_export  # noqa: E402
 from backend.question_bank import retrieval  # noqa: E402
 from backend.question_bank import service as qb_service  # noqa: E402
 from backend.question_bank.errors import (  # noqa: E402
@@ -723,3 +739,118 @@ def bulk_update_question_tags(body: BulkTagsBody, u=Depends(user)):
             actor=u["username"],
         )
     return _bulk_result_response(result)
+
+
+# ---------------------------------------------------------------------
+# Faz 2.9.9: JSON export + JSON import.
+#
+# Same division of responsibility as every route above: all filtering
+# (export) and classification/transaction-safety (import) logic lives
+# in ``backend.question_bank.import_export``; this module only parses
+# the request, opens the DB connection, calls the service function,
+# and serializes the response. See that module's own docstring for
+# the full contract.
+# ---------------------------------------------------------------------
+
+
+@router.get("/api/question-bank/export")
+def export_questions_route(
+    category: Optional[Category] = None,
+    difficulty: Optional[Difficulty] = None,
+    question_type: Optional[QuestionType] = None,
+    traceability_level: Optional[TraceabilityLevel] = None,
+    is_active: Optional[bool] = None,
+    validation_status: Optional[ValidationStatus] = None,
+    publishable_only: bool = True,
+    include_deleted: bool = False,
+    include_archived: bool = False,
+    tags: Optional[List[str]] = Query(None),
+    tags_match: Literal["any", "all"] = "any",
+    keyword: Optional[str] = None,
+    u=Depends(user),
+):
+    """Faz 2.9.9. Read-only JSON export over the exact same
+    filter/search/tag/lifecycle parameter set ``GET .../questions``
+    already accepts (forwarded unchanged to
+    ``backend.question_bank.import_export.export_questions``, itself a
+    thin wrapper over ``backend.question_bank.retrieval.list_questions``).
+    Never writes anything -- no existing record is ever touched.
+
+    The response is deterministic: for an unchanged dataset and
+    unchanged filters, repeated calls return byte-identical JSON. This
+    holds because ``list_questions`` already sorts its result
+    deterministically by ``(question_id, content_version)``, and this
+    route deliberately adds no wall-clock timestamp or other
+    non-deterministic field to the payload."""
+    with conn() as c:
+        records = qb_import_export.export_questions(
+            c,
+            category=category,
+            difficulty=difficulty,
+            question_type=question_type,
+            traceability_level=traceability_level,
+            is_active=is_active,
+            validation_status=validation_status,
+            publishable_only=publishable_only,
+            include_deleted=include_deleted,
+            include_archived=include_archived,
+            tags=tags,
+            tags_match=tags_match,
+            keyword=keyword,
+        )
+    questions = [r.model_dump(mode="json") for r in records]
+    return {"schema_version": 1, "count": len(questions), "questions": questions}
+
+
+class ImportQuestionsBody(BaseModel):
+    """Request body for ``POST /api/question-bank/import``.
+    ``questions`` items are deliberately typed as plain ``dict``, not
+    :class:`backend.question_bank.schema.QuestionRecord` -- unlike
+    every other write route in this module, a structurally invalid
+    *item* here must not fail the whole request with a single 422:
+    each item is instead individually classified (created/skipped/
+    rejected) by ``backend.question_bank.import_export.import_questions``
+    -- see that function's docstring. A structurally invalid *request
+    body itself* (e.g. malformed JSON, or ``questions`` not a list of
+    objects) still fails fast with FastAPI's own standard 422, exactly
+    like every other route here."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    questions: List[Dict[str, Any]] = Field(default_factory=list, max_length=qb_bulk.MAX_BULK_ITEMS)
+
+
+def _import_outcome_dict(outcome) -> dict:
+    d: dict = {"question_id": outcome.question_id, "content_version": outcome.content_version}
+    if outcome.reasons:
+        d["reasons"] = outcome.reasons
+    return d
+
+
+@router.post("/api/question-bank/import")
+def import_questions_route(body: ImportQuestionsBody, u=Depends(user)):
+    """Faz 2.9.9. Classifies and (for valid, non-duplicate items)
+    registers every item of ``body.questions`` -- see
+    ``backend.question_bank.import_export.import_questions``'s
+    docstring for the full created/skipped/rejected contract and the
+    per-item transaction-safety guarantee (JSON append + SQLite
+    registration succeed together or neither remains; a later item's
+    failure never rolls back an earlier item's already-created
+    success; no pre-existing record is ever mutated or removed). An
+    empty ``questions`` list is not an error: it returns
+    ``created_count=skipped_count=rejected_count=total=0``."""
+    with conn() as c:
+        result = qb_import_export.import_questions(
+            c,
+            records=body.questions,
+            actor=u["username"],
+        )
+    return {
+        "created_count": len(result.created),
+        "skipped_count": len(result.skipped),
+        "rejected_count": len(result.rejected),
+        "total": len(result.created) + len(result.skipped) + len(result.rejected),
+        "created": [_import_outcome_dict(o) for o in result.created],
+        "skipped": [_import_outcome_dict(o) for o in result.skipped],
+        "rejected": [_import_outcome_dict(o) for o in result.rejected],
+    }
