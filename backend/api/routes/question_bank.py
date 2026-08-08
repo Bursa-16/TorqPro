@@ -133,6 +133,7 @@ from backend.question_bank.schema import (  # noqa: E402
     TraceabilityLevel,
 )
 from backend.question_bank.transitions import ValidationStatus  # noqa: E402
+from backend.question_bank import stats as qb_stats  # noqa: E402
 
 
 def _handle(fn, *args, **kwargs):
@@ -155,6 +156,31 @@ def _handle(fn, *args, **kwargs):
         InvalidTransitionError,
     ) as exc:
         raise HTTPException(409, str(exc))
+
+
+@router.get("/api/question-bank/stats")
+def get_question_bank_stats(u=Depends(user)):
+    """Faz 2.9.10. Thin wrapper over
+    ``backend.question_bank.stats.compute_stats`` -- see that module's
+    docstring for the full aggregation contract (reuses
+    ``retrieval.list_questions``/``retrieval.get_validation_status_map``
+    verbatim, no ``publishable_only`` filtering, deleted/archived
+    records excluded by the same safe default every other read route
+    here already uses). No query parameters: this endpoint always
+    reports the whole bank's current shape.
+
+    Route-order note: registered here, before every ``{question_id}``-
+    shaped dynamic route in this module (mirroring the existing
+    ``/questions/select`` vs. ``/questions/{question_id}`` ordering
+    documented at the top of this file), so the literal path segment
+    ``stats`` can never be captured by a dynamic path parameter --
+    even though no currently-registered GET route actually has a
+    single-segment ``/api/question-bank/{question_id}`` shape today,
+    this ordering keeps that guarantee true regardless of future
+    additions to this module.
+    """
+    with conn() as c:
+        return qb_stats.compute_stats(c)
 
 
 @router.get("/api/question-bank/questions/select")
