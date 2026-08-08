@@ -131,3 +131,22 @@ Deferred: any frontend/admin-UI surface for these statistics
 (`frontend/index.html` untouched this phase), and any date/time-based
 or trend-over-time statistics (this phase is a single current-state
 snapshot only).
+
+## Faz 2.9.11 — Question Bank Statistics Dashboard / Admin UI
+
+**Complete**, delivered 2026-08-08. Added a read-only Statistics /
+Coverage section to the existing Question Bank Admin UI
+(`frontend/index.html`), rendering `total`, `by_validation_status`,
+`by_category`, `by_difficulty`, and `by_question_type` exactly as
+returned by the Faz 2.9.10 `GET /api/question-bank/stats` endpoint --
+reused verbatim, no new endpoint, no client-side re-aggregation of any
+count. Full TR/EN i18n parity (`qb.stats.*`). No new UI framework: the
+existing `frontend/index.html` card/table conventions are reused.
+Loading, empty, and API-error states follow the same pattern already
+used by the Questions list and Import/Export panels.
+
+Deferred, consistent with the approved scope lock: date/time trend or
+historical analytics, any charting library, and any new statistics
+endpoint. Backend business logic, persistence, schema, and lifecycle
+rules (including the Faz 2.9.10 statistics contract itself) are
+unchanged.
