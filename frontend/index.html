@@ -1484,7 +1484,12 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
     <div class="card-header">
       <div><div class="card-title" style="margin-bottom:0" data-i18n="qb.list_title">Questions</div>
         <div class="card-sub" data-i18n="qb.list_sub">Search and filter existing question bank records</div></div>
-      <button class="btn btn-primary btn-sm" onclick="qbShowCreateForm()" data-i18n="qb.new_question_button">+ New Question</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-secondary btn-sm" onclick="qbExportQuestions()" data-i18n="qb.ie.export_button">Export</button>
+        <input type="file" id="qb-import-file-input" accept="application/json,.json" style="display:none" onchange="qbImportFileSelected(event)">
+        <button class="btn btn-secondary btn-sm" onclick="qbTriggerImportFilePicker()" data-i18n="qb.ie.import_button">Import</button>
+        <button class="btn btn-primary btn-sm" onclick="qbShowCreateForm()" data-i18n="qb.new_question_button">+ New Question</button>
+      </div>
     </div>
     <div class="fc-toolbar">
       <input class="form-input" id="qb-search" data-i18n-placeholder="qb.search_placeholder" placeholder="Search by keyword..." oninput="qbDebouncedLoadList()">
@@ -1494,6 +1499,7 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
       <select class="form-select" id="qb-filter-status" onchange="qbLoadList()"><option value="" data-i18n="qb.filter_status_all">Any status</option></select>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3)"><input type="checkbox" id="qb-filter-include-archived" style="accent-color:var(--accent)" onchange="qbLoadList()"> <span data-i18n="qb.filter_include_archived">Include archived/deleted</span></label>
     </div>
+    <div id="qb-ie-result"></div>
     <div id="qb-bulk-toolbar" class="fc-toolbar" style="display:none;align-items:center;gap:8px">
       <span id="qb-bulk-count" style="font-size:12px;color:var(--text3)"></span>
       <button class="btn btn-secondary btn-sm" onclick="qbBulkSubmitForReview()" data-i18n="qb.action.submit_for_review">Submit for Review</button>
@@ -3926,6 +3932,20 @@ const I18N = {
     'qb.bulk.result_summary': '{succeeded} succeeded, {failed} failed (of {total} total).',
     'qb.bulk.result.col.question_id': 'Question ID',
     'qb.bulk.result.col.error': 'Error',
+
+    // ---- Faz 2.9.9: Question Bank JSON import / export ----
+    'qb.ie.export_button': 'Export',
+    'qb.ie.import_button': 'Import',
+    'qb.ie.exporting': 'Exporting...',
+    'qb.ie.importing': 'Importing...',
+    'qb.ie.export_success': 'Exported {n} question(s) as JSON.',
+    'qb.ie.empty_file': 'The selected file is empty.',
+    'qb.ie.invalid_json': 'The selected file is not valid JSON.',
+    'qb.ie.invalid_shape': 'Expected a JSON array of questions, or an object with a "questions" array.',
+    'qb.ie.error_prefix': 'Import/export failed: ',
+    'qb.ie.result_summary': '{created} created, {skipped} skipped (duplicate), {rejected} rejected (of {total} total).',
+    'qb.ie.result.col.question_id': 'Question ID',
+    'qb.ie.result.col.reason': 'Reason',
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
@@ -5743,6 +5763,20 @@ const I18N = {
     'qb.bulk.result_summary': '{succeeded} başarılı, {failed} başarısız (toplam {total}).',
     'qb.bulk.result.col.question_id': 'Soru ID',
     'qb.bulk.result.col.error': 'Hata',
+
+    // ---- Faz 2.9.9: Soru Bankası JSON içe/dışa aktarma ----
+    'qb.ie.export_button': 'Dışa Aktar',
+    'qb.ie.import_button': 'İçe Aktar',
+    'qb.ie.exporting': 'Dışa aktarılıyor...',
+    'qb.ie.importing': 'İçe aktarılıyor...',
+    'qb.ie.export_success': '{n} soru JSON olarak dışa aktarıldı.',
+    'qb.ie.empty_file': 'Seçilen dosya boş.',
+    'qb.ie.invalid_json': 'Seçilen dosya geçerli bir JSON değil.',
+    'qb.ie.invalid_shape': 'Bir JSON soru dizisi veya "questions" alanı içeren bir nesne bekleniyor.',
+    'qb.ie.error_prefix': 'İçe/dışa aktarma başarısız oldu: ',
+    'qb.ie.result_summary': '{created} oluşturuldu, {skipped} atlandı (duplicate), {rejected} reddedildi (toplam {total}).',
+    'qb.ie.result.col.question_id': 'Soru ID',
+    'qb.ie.result.col.reason': 'Gerekçe',
   },
 };
 
@@ -11173,6 +11207,123 @@ async function qbBulkRemoveTags() {
     '/api/question-bank/questions/bulk/tags',
     { method: 'POST', body: JSON.stringify({ question_ids: questionIds, remove: tags }) },
   ));
+}
+
+// ---------------------------------------------------------------------
+// Faz 2.9.9: JSON export + JSON import.
+//
+// Export calls GET /api/question-bank/export exactly once, reusing
+// qbBuildListQuery() (the same filter/search/tag/status/include-archived
+// query string qbLoadList() already builds from the visible toolbar
+// controls) so the exported set always matches what the admin is
+// currently looking at -- no separate export-only filter UI is
+// introduced. The response is turned into a downloadable file
+// client-side (Blob + a transient <a download>), never a server
+// redirect or a second endpoint.
+//
+// Import reads the selected file as text, JSON.parses it locally
+// (an unparseable or empty file is caught here, before any network
+// call, with its own translated error message), accepts either the
+// export payload shape ({questions:[...]}) or a bare array so a
+// re-exported file and a hand-authored plain array both work, then
+// posts the array once to POST /api/question-bank/import and renders
+// the created/skipped/rejected summary
+// backend.question_bank.import_export.import_questions returns.
+// ---------------------------------------------------------------------
+
+function qbTriggerImportFilePicker() {
+  const el = document.getElementById('qb-import-file-input');
+  if (el) el.click();
+}
+
+async function qbExportQuestions() {
+  const resultEl = document.getElementById('qb-ie-result');
+  if (resultEl) resultEl.innerHTML = `<div class="fc-muted">${qbEsc(t('qb.ie.exporting'))}</div>`;
+  try {
+    const query = qbBuildListQuery();
+    const data = await apiRequest('/api/question-bank/export' + (query ? '?' + query : ''));
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'question_bank_export.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    if (resultEl) {
+      resultEl.innerHTML = `<div class="alert alert-info">${qbEsc(t('qb.ie.export_success').replace('{n}', String(data.count)))}</div>`;
+    }
+  } catch (e) {
+    if (resultEl) resultEl.innerHTML = `<div class="alert alert-warn">${qbEsc(t('qb.ie.error_prefix') + e.message)}</div>`;
+  }
+}
+
+async function qbImportFileSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  event.target.value = ''; // allow re-selecting the exact same file again later
+  if (!file) return;
+  const resultEl = document.getElementById('qb-ie-result');
+
+  let text;
+  try {
+    text = await file.text();
+  } catch (e) {
+    if (resultEl) resultEl.innerHTML = `<div class="alert alert-warn">${qbEsc(t('qb.ie.error_prefix') + e.message)}</div>`;
+    return;
+  }
+  if (!text || !text.trim()) {
+    if (resultEl) resultEl.innerHTML = `<div class="alert alert-warn">${qbEsc(t('qb.ie.empty_file'))}</div>`;
+    return;
+  }
+
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    if (resultEl) resultEl.innerHTML = `<div class="alert alert-warn">${qbEsc(t('qb.ie.invalid_json'))}</div>`;
+    return;
+  }
+
+  const questions = Array.isArray(parsed) ? parsed
+    : (parsed && Array.isArray(parsed.questions) ? parsed.questions : null);
+  if (!questions) {
+    if (resultEl) resultEl.innerHTML = `<div class="alert alert-warn">${qbEsc(t('qb.ie.invalid_shape'))}</div>`;
+    return;
+  }
+
+  if (resultEl) resultEl.innerHTML = `<div class="fc-muted">${qbEsc(t('qb.ie.importing'))}</div>`;
+  try {
+    const result = await apiRequest(
+      '/api/question-bank/import',
+      { method: 'POST', body: JSON.stringify({ questions }) },
+    );
+    qbRenderImportResult(result);
+    await qbLoadList();
+  } catch (e) {
+    if (resultEl) resultEl.innerHTML = `<div class="alert alert-warn">${qbEsc(t('qb.ie.error_prefix') + e.message)}</div>`;
+  }
+}
+
+function qbRenderImportResult(result) {
+  const el = document.getElementById('qb-ie-result');
+  if (!el) return;
+  const summary = t('qb.ie.result_summary')
+    .replace('{created}', String(result.created_count))
+    .replace('{skipped}', String(result.skipped_count))
+    .replace('{rejected}', String(result.rejected_count))
+    .replace('{total}', String(result.total));
+  let html = `<div class="alert ${result.rejected_count > 0 ? 'alert-warn' : 'alert-info'}">${qbEsc(summary)}</div>`;
+  if (result.rejected_count > 0 && Array.isArray(result.rejected)) {
+    html += `<table class="source-table"><thead><tr>
+      <th>${qbEsc(t('qb.ie.result.col.question_id'))}</th>
+      <th>${qbEsc(t('qb.ie.result.col.reason'))}</th>
+    </tr></thead><tbody>${result.rejected.map(r => `<tr>
+      <td>${qbEsc(r.question_id || '—')}</td>
+      <td>${qbEsc((r.reasons || []).join('; ') || '—')}</td>
+    </tr>`).join('')}</tbody></table>`;
+  }
+  el.innerHTML = html;
 }
 
 // ---------------------------------------------------------------------
