@@ -188,6 +188,7 @@ def get_question(
     publishable_only: bool = True,
     include_deleted: bool = False,
     include_archived: bool = False,
+    include_status: bool = False,
     u=Depends(user),
 ):
     with conn() as c:
@@ -200,7 +201,20 @@ def get_question(
             include_deleted=include_deleted,
             include_archived=include_archived,
         )
-    return record.model_dump(mode="json")
+        payload = record.model_dump(mode="json")
+        # Faz 2.9.7, additive/opt-in only (default False -- every existing
+        # caller's response shape is completely unaffected): the Question
+        # Bank admin UI needs validation_status displayed alongside the
+        # content record, which QuestionRecord itself never carries (see
+        # retrieval.get_validation_status_map's docstring). One extra
+        # read-only lookup, no new persistence, no change to any
+        # existing field.
+        if include_status:
+            status_map = retrieval.get_validation_status_map(c)
+            payload["validation_status"] = status_map.get(
+                (record.question_id, record.content_version)
+            )
+    return payload
 
 
 @router.get("/api/question-bank/questions")
@@ -214,6 +228,7 @@ def list_questions(
     publishable_only: bool = True,
     include_deleted: bool = False,
     include_archived: bool = False,
+    include_status: bool = False,
     tags: Optional[List[str]] = Query(None),
     tags_match: Literal["any", "all"] = "any",
     keyword: Optional[str] = None,
@@ -235,7 +250,17 @@ def list_questions(
             tags_match=tags_match,
             keyword=keyword,
         )
-    return [r.model_dump(mode="json") for r in records]
+        payloads = [r.model_dump(mode="json") for r in records]
+        # Faz 2.9.7: same additive/opt-in include_status behavior as
+        # get_question above -- one extra read-only status-map lookup,
+        # never per-row, merged in only when the caller explicitly asks.
+        if include_status:
+            status_map = retrieval.get_validation_status_map(c)
+            for record, payload in zip(records, payloads):
+                payload["validation_status"] = status_map.get(
+                    (record.question_id, record.content_version)
+                )
+    return payloads
 
 
 @router.patch("/api/question-bank/questions/{question_id}")
