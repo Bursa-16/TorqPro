@@ -112,3 +112,22 @@ the approved Stage 1 scope: a governance projection registry, a
 cross-mechanism consistency validator, joint-revision write
 synchronization, and Production Validation/legacy calculation-revision
 governance integration (all previously assessed, not revisited).
+
+## Faz 2.9.10 — Question Bank Statistics / Coverage API
+
+**Complete**, delivered 2026-08-08. Added one read-only aggregation
+endpoint, `GET /api/question-bank/stats`, over the Question Bank
+foundation Faz 2.9.1–2.9.9 already built (`total`,
+`by_validation_status`, `by_category`, `by_difficulty`,
+`by_question_type`). New module `backend/question_bank/stats.py`
+reuses `retrieval.list_questions`/`retrieval.get_validation_status_map`
+verbatim -- no new persistence, schema, or lifecycle rule, and no
+"publishable" count (deliberately out of scope: this view reports the
+bank's whole shape for an admin, not a consumer-facing visibility
+filter). Deleted/archived records excluded by the same safe default
+every other Question Bank read route already uses.
+
+Deferred: any frontend/admin-UI surface for these statistics
+(`frontend/index.html` untouched this phase), and any date/time-based
+or trend-over-time statistics (this phase is a single current-state
+snapshot only).

@@ -521,3 +521,31 @@ including a LEGACY_REGRESSION_ONLY numerical baseline locking
 `evaluate_joint()`'s pre-phase output bit-for-bit. See
 `docs/phases/PHASE_2.8.21_ENGINEERING_CORE_TRACEABILITY.md` for the
 full delivery report.
+
+## Faz 2.9.10 — Question Bank Statistics / Coverage API — 2026-08-08
+
+- Added `GET /api/question-bank/stats`, a read-only aggregate view over
+  the Question Bank: `total`, `by_validation_status`, `by_category`,
+  `by_difficulty`, `by_question_type` (`backend/question_bank/stats.py`).
+- No new persistence, schema, or lifecycle rule: reuses
+  `retrieval.list_questions` (`publishable_only=False`, matching every
+  other read route's existing `include_deleted=False`/
+  `include_archived=False` safe default) and
+  `retrieval.get_validation_status_map` verbatim.
+- Deliberately no "publishable" count in this phase — a statistics view
+  is for an admin to see the whole bank's shape, not a consumer-facing
+  visibility filter; `validate_publishable` is never invoked here.
+- Missing/blank breakdown values (in practice: a JSON content record
+  with no matching SQLite lifecycle row) are grouped under a
+  deterministic `"unknown"` bucket.
+- Route registered before every `{question_id}`-shaped dynamic route in
+  `backend/api/routes/question_bank.py`, so the literal path segment
+  `stats` is never captured by a path parameter.
+- 18 new tests
+  (`tests/test_faz_2_9_10_question_bank_stats.py`): empty bank, total
+  count, each of the four breakdowns individually and combined, the
+  unknown bucket, soft-deleted/archived exclusion and restore
+  reappearance, non-publishable records still counted, no publishable
+  count in the response, HTTP auth enforcement, response shape,
+  route-order (not shadowed by `{question_id}`), and no regression on
+  the pre-existing list/export routes.
