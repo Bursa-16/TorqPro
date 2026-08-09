@@ -1,8 +1,9 @@
 """TorqPro AI Gateway - orchestrator (single entry point).
 
-Faz v3.0.0-alpha.1 (AI Architecture Foundation), per ADR-0017 Karar 1
-("ai_gateway paketinin kesin sorumlulukları") and Karar 11 (module
-tree: "orchestrator.py # tek giriş noktası").
+Faz v3.0.0-alpha.1 (AI Architecture Foundation) + Faz v3.0.0-alpha.2
+(AI Retrieval & Grounding), per ADR-0017 Karar 1 ("ai_gateway
+paketinin kesin sorumlulukları") and Karar 11 (module tree:
+"orchestrator.py # tek giriş noktası"), and ADR-0018 Karar 6/13/15.
 
 ``handle_query`` is the *only* function outside functions in this
 package that a future HTTP route layer (``backend.api.ai.routes``,
@@ -41,7 +42,7 @@ Error handling (ADR-0017 Karar 9):
 from __future__ import annotations
 
 import sqlite3
-from typing import Optional
+from typing import Optional, Sequence
 
 from backend.ai_gateway import composer as composer_module
 from backend.ai_gateway.audit import AIInteractionRecord, AuditSink
@@ -51,12 +52,18 @@ from backend.ai_gateway.exceptions import ModelUnavailableError
 from backend.ai_gateway.llm_client import AIModelClient
 from backend.ai_gateway.permission import UserContext, ensure_active_user
 from backend.ai_gateway.retrieval.question_bank_adapter import (
+    get_filtered_question_evidence,
     get_validated_question_evidence,
 )
 from backend.ai_gateway.tools.calculation_tool import run_calculation
 from backend.calculation_engine.provider import Provider
 from backend.calculation_engine.request import CalculationRequest
 from backend.calculation_engine.response import CalculationResponse
+
+#: Fixed label used in AIInteractionRecord.retrieval_source_types_queried
+#: for the Question Bank adaptor -- mirrors the adaptor's own
+#: EvidenceSource.source_type constant (ADR-0018 Karar 15).
+_QUESTION_BANK_SOURCE_TYPE = "question_bank"
 
 
 def handle_query(
@@ -70,6 +77,9 @@ def handle_query(
     created_at: str,
     calculation_provider: Optional[Provider] = None,
     calculation_request: Optional[CalculationRequest] = None,
+    category_hint: Optional[str] = None,
+    difficulty_hint: Optional[str] = None,
+    tags: Optional[Sequence[str]] = None,
 ) -> composer_module.ComposedAnswer:
     """Run one full AI-gateway interaction and return a
     :class:`~backend.ai_gateway.composer.ComposedAnswer`.
@@ -84,10 +94,28 @@ def handle_query(
     handling case 3); no partial audit record is written for a failed
     calculation. Supplying only one of the two parameters is treated
     as "no calculation requested" (both are required together).
+
+    ``category_hint``/``difficulty_hint``/``tags`` (ADR-0018 Karar 6/7,
+    all optional, default ``None``) narrow Question Bank retrieval via
+    ``backend.ai_gateway.retrieval.question_bank_adapter.
+    get_filtered_question_evidence``. When none of the three are
+    supplied, retrieval behaves exactly as in v3.0.0-alpha.1
+    (``get_validated_question_evidence`` with only a keyword match) --
+    this keeps every existing alpha.1 caller's behaviour byte-for-byte
+    unchanged.
     """
     ensure_active_user(user)
 
-    evidence = get_validated_question_evidence(conn, keyword=query_text)
+    if category_hint is not None or difficulty_hint is not None or tags is not None:
+        evidence = get_filtered_question_evidence(
+            conn,
+            keyword=query_text,
+            category_hint=category_hint,
+            difficulty_hint=difficulty_hint,
+            tags=tags,
+        )
+    else:
+        evidence = get_validated_question_evidence(conn, keyword=query_text)
 
     calculation_result: Optional[CalculationResponse] = None
     if calculation_provider is not None and calculation_request is not None:
@@ -113,7 +141,16 @@ def handle_query(
         ) from exc
 
     evidence_check = check_evidence(evidence, calculation_result)
-    answer = composer_module.compose(model_response, evidence_check, language=user.language)
+    answer = composer_module.compose(
+        model_response,
+        evidence_check,
+        language=user.language,
+        attempted_source_types=(_QUESTION_BANK_SOURCE_TYPE,),
+    )
+
+    evidence_counts: dict[str, int] = {}
+    for source in answer.evidence:
+        evidence_counts[source.source_type] = evidence_counts.get(source.source_type, 0) + 1
 
     audit_sink.record(
         AIInteractionRecord(
@@ -130,6 +167,10 @@ def handle_query(
             model_name=answer.model_name,
             had_sufficient_evidence=not answer.insufficient_evidence,
             created_at=created_at,
+            # ADR-0018 Karar 15: only adaptors actually invoked this call are
+            # listed. This phase only ever queries Question Bank.
+            retrieval_source_types_queried=(_QUESTION_BANK_SOURCE_TYPE,),
+            evidence_count_by_source_type=tuple(sorted(evidence_counts.items())),
         )
     )
 

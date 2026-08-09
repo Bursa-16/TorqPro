@@ -24,8 +24,8 @@ added in later, separately-approved phases (ADR-0017 Karar 12/13).
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Optional
+from dataclasses import dataclass, field
+from typing import Optional, Sequence
 
 
 @dataclass(frozen=True)
@@ -56,6 +56,47 @@ class EvidenceSource:
         body_tr: Turkish body text used for retrieval matching and
             citation. Verbatim origin content.
         body_en: English counterpart of ``body_tr``, same rule.
+        standard_name: (ADR-0018 Karar 5/8, additive, optional)
+            Verbatim copy of the origin domain's own
+            ``StandardReference.name`` when the record has one (e.g.
+            ``backend.question_bank.schema.QuestionRecord.
+            standard_reference.name``). ``None`` when the origin
+            record has no standard reference. Never invented or
+            inferred by the AI layer -- copied only, from the
+            existing domain model.
+        standard_clause: Verbatim copy of the origin domain's
+            ``StandardReference.clause_or_table``, same rule as
+            ``standard_name``.
+        source_kind: Verbatim copy of the origin domain's
+            ``SourceReference.source_type`` value (e.g.
+            ``"standard_requirement"``, ``"internal_engine"`` -- see
+            ``backend.question_bank.schema.SourceType``). ``None``
+            when the origin record has no source reference.
+        category: Verbatim copy of the origin domain's own category
+            classification (e.g. ``QuestionRecord.category.value``),
+            when applicable.
+        difficulty: Verbatim copy of the origin domain's own
+            difficulty classification (e.g.
+            ``QuestionRecord.difficulty.value``), when applicable.
+        tags: Verbatim copy of the origin domain's own tag list.
+            Defaults to an empty tuple, never ``None``, so callers
+            can iterate unconditionally.
+        traceability_level: Verbatim copy of the origin domain's own
+            confidence/traceability classification (e.g.
+            ``QuestionRecord.traceability_level.value`` -- reuses
+            ``backend.engineering_core.trace``'s five-value
+            vocabulary via the Question Bank schema, per ADR-0018
+            Karar 16). ``None`` when the origin record has none.
+
+    The seven fields from ``standard_name`` onward were added in
+    ADR-0018 (v3.0.0-alpha.2) and are strictly additive: each has a
+    default, so any code constructing an ``EvidenceSource`` the way
+    v3.0.0-alpha.1 did (positionally or by keyword, with only the
+    original seven fields) continues to work completely unchanged.
+    This module introduces no new parallel model for standard/source/
+    traceability metadata -- every new field is a verbatim pass-
+    through of an already-existing domain field, per ADR-0018's
+    explicit rule against inventing a second classification scheme.
     """
 
     source_type: str
@@ -65,6 +106,13 @@ class EvidenceSource:
     title_en: str
     body_tr: str
     body_en: str
+    standard_name: Optional[str] = None
+    standard_clause: Optional[str] = None
+    source_kind: Optional[str] = None
+    category: Optional[str] = None
+    difficulty: Optional[str] = None
+    tags: Sequence[str] = field(default_factory=tuple)
+    traceability_level: Optional[str] = None
 
 
 __all__ = ["EvidenceSource"]

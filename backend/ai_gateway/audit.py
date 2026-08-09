@@ -1,7 +1,9 @@
 """TorqPro AI Gateway - audit recording.
 
-Faz v3.0.0-alpha.1 (AI Architecture Foundation), per ADR-0017 Karar 8
-("Audit ve trace kayıtlarının hangi katmanda tutulacağı").
+Faz v3.0.0-alpha.1 (AI Architecture Foundation) + Faz v3.0.0-alpha.2
+(AI Retrieval & Grounding), per ADR-0017 Karar 8 ("Audit ve trace
+kayıtlarının hangi katmanda tutulacağı") and ADR-0018 Karar 15
+("Audit trail'de hangi retrieval bilgilerinin tutulacağı").
 
 Scope of this phase (deliberately limited, per ADR-0017 Karar 12/13):
 this module defines the audit *record shape* and an append-only sink
@@ -32,7 +34,7 @@ that hash is the orchestrator's responsibility, not this module's;
 from __future__ import annotations
 
 import abc
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Sequence, Tuple
 
 
@@ -63,6 +65,22 @@ class AIInteractionRecord:
             trivially testable -- mirrors
             ``backend.question_bank.service``'s own
             caller-supplied-timestamp discipline where relevant).
+        retrieval_source_types_queried: (ADR-0018 Karar 15, additive,
+            optional) Which retrieval adaptors were actually invoked
+            for this interaction (e.g. ``("question_bank",)``) --
+            distinct from ``evidence_source_ids``, which only lists
+            sources that ended up grounding the answer. Lets a later
+            reader distinguish "no adaptor was queried" from "an
+            adaptor was queried but found nothing", which matters for
+            interpreting the insufficient-evidence fallback (ADR-0018
+            Karar 10). Defaults to an empty tuple.
+        evidence_count_by_source_type: (ADR-0018 Karar 15, additive,
+            optional) ``(source_type, count)`` pairs -- how many
+            ``EvidenceSource`` entries of each type ended up in the
+            final answer's evidence. A tuple of pairs, not a
+            ``dict``, so this record stays a plain, comparable,
+            immutable dataclass like every other field here. Defaults
+            to an empty tuple.
     """
 
     user_id: int
@@ -72,6 +90,8 @@ class AIInteractionRecord:
     model_name: str | None
     had_sufficient_evidence: bool
     created_at: str
+    retrieval_source_types_queried: Tuple[str, ...] = field(default_factory=tuple)
+    evidence_count_by_source_type: Tuple[Tuple[str, int], ...] = field(default_factory=tuple)
 
 
 class AuditSink(abc.ABC):

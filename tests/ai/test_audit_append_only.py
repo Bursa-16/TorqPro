@@ -2,6 +2,11 @@
 construction: AuditSink declares exactly one mutating method
 (``record``), and InMemoryAuditSink never exposes a way to alter or
 remove a previously recorded entry.
+
+Also covers ADR-0018 Karar 15's additive fields
+(``retrieval_source_types_queried``/``evidence_count_by_source_type``):
+they must remain backward-compatible (optional, defaulting to empty)
+and must not weaken the append-only guarantee above.
 """
 
 from __future__ import annotations
@@ -83,3 +88,61 @@ def test_all_entries_returns_a_defensive_copy():
     # calling all_entries() repeatedly.
     assert len(sink.all_entries()) == 1
     assert len(sink.all_entries()) == 1
+
+
+# ---------------------------------------------------------------------
+# ADR-0018 Karar 15 -- additive retrieval fields, backward-compatible
+# and still append-only.
+# ---------------------------------------------------------------------
+
+
+def test_record_constructed_without_new_retrieval_fields_still_works():
+    """Backward-compatibility proof: the original seven-field
+    construction style from v3.0.0-alpha.1 (as used by
+    _make_record() above) must continue to work unchanged, with the
+    two new ADR-0018 fields defaulting to empty tuples."""
+    record = _make_record()
+
+    assert record.retrieval_source_types_queried == ()
+    assert record.evidence_count_by_source_type == ()
+
+
+def test_record_can_carry_retrieval_metadata():
+    record = AIInteractionRecord(
+        user_id=1,
+        query_text_hash="deadbeef",
+        evidence_source_ids=(("question_bank", "QB-0001"), ("question_bank", "QB-0002")),
+        calculation_formula_ids=(),
+        model_name="fake-test-client",
+        had_sufficient_evidence=True,
+        created_at="2026-08-09T00:00:00+00:00",
+        retrieval_source_types_queried=("question_bank",),
+        evidence_count_by_source_type=(("question_bank", 2),),
+    )
+
+    assert record.retrieval_source_types_queried == ("question_bank",)
+    assert record.evidence_count_by_source_type == (("question_bank", 2),)
+
+
+def test_records_with_retrieval_metadata_still_accumulate_append_only():
+    sink = InMemoryAuditSink()
+    first = AIInteractionRecord(
+        user_id=1,
+        query_text_hash="hash-a",
+        evidence_source_ids=(("question_bank", "QB-0001"),),
+        calculation_formula_ids=(),
+        model_name="fake-test-client",
+        had_sufficient_evidence=True,
+        created_at="2026-08-09T00:00:00+00:00",
+        retrieval_source_types_queried=("question_bank",),
+        evidence_count_by_source_type=(("question_bank", 1),),
+    )
+
+    sink.record(first)
+    snapshot_before = sink.all_entries()
+    sink.record(_make_record(user_id=2))
+    snapshot_after = sink.all_entries()
+
+    assert snapshot_before[0] is snapshot_after[0]
+    assert snapshot_after[0].retrieval_source_types_queried == ("question_bank",)
+    assert len(snapshot_after) == 2

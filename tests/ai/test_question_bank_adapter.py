@@ -1,13 +1,18 @@
-"""ADR-0017 Karar 3 -- backend.ai_gateway.retrieval.question_bank_adapter
-must (a) return only currently-publishable (``validated`` status,
-active content) Question Bank records, (b) never import
-backend.question_bank.store, and (c) call no Question Bank *write*
-function.
+"""ADR-0017 Karar 3 / ADR-0018 Karar 2/3/6/7/12 --
+backend.ai_gateway.retrieval.question_bank_adapter must (a) return
+only currently-publishable (``validated`` status, active content)
+Question Bank records, (b) never import backend.question_bank.store,
+(c) call no Question Bank *write* function, (d) never pass
+``publishable_only=False``/``validation_status=`` to
+``list_questions``, and (e) support category/difficulty/tag/keyword
+narrowing entirely through the existing
+``backend.question_bank.retrieval.list_questions`` filters.
 
 Reuses the same lifecycle-building pattern as
 tests/test_faz_2_9_1_question_bank_foundation.py (register -> submit
-for technical review -> validate / reject), since this adapter's only
-job is to sit correctly on top of that already-tested lifecycle.
+for technical review -> validate / reject / deprecate), since this
+adapter's only job is to sit correctly on top of that already-tested
+lifecycle.
 """
 
 from __future__ import annotations
@@ -18,6 +23,7 @@ from pathlib import Path
 import pytest
 
 from backend.ai_gateway.retrieval.question_bank_adapter import (
+    get_filtered_question_evidence,
     get_validated_question_evidence,
 )
 from backend.app import conn
@@ -30,10 +36,12 @@ from backend.question_bank.schema import (
     QuestionType,
     SourceReference,
     SourceType,
+    StandardReference,
     TraceabilityLevel,
 )
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+ADAPTER_PATH = REPO_ROOT / "backend" / "ai_gateway" / "retrieval" / "question_bank_adapter.py"
 
 
 def _allow_all(role: str, action: str) -> bool:
@@ -104,6 +112,23 @@ def _promote_to_rejected(c, record, actor="ai-gateway-tester"):
         actor=actor,
         actor_role="admin",
         reason="ai-gateway-test-rejection",
+        authorize=_allow_all,
+    )
+
+
+def _promote_to_deprecated(c, record, actor="ai-gateway-tester"):
+    """validated -> deprecated (a legal transition per
+    backend.question_bank.transitions). Used to prove ADR-0018 Karar
+    12: a deprecated record is never AI evidence, even though it was
+    validated at some point and even if its JSON is_active is still
+    True (validate_publishable's own docstring)."""
+    _promote_to_validated(c, record, actor=actor)
+    service.deprecate_question(
+        c,
+        question_id=record.question_id,
+        content_version=record.content_version,
+        actor=actor,
+        actor_role="admin",
         authorize=_allow_all,
     )
 
@@ -253,3 +278,277 @@ def test_adapter_module_calls_no_question_bank_write_function():
     }
     offenders = referenced_identifiers & forbidden_names
     assert not offenders, f"Adapter references write-side function(s) as code: {offenders}"
+
+
+# ---------------------------------------------------------------------
+# ADR-0018 Karar 2 -- static usage-boundary tests for list_questions().
+# ---------------------------------------------------------------------
+
+
+def test_adapter_never_passes_publishable_only_false_or_validation_status():
+    """Static proof of ADR-0018 Karar 2's exact usage boundary: no
+    call in this module may pass ``publishable_only=False`` or
+    ``validation_status=`` to ``list_questions`` (the latter is only
+    meaningful when the former is False, which never happens here).
+
+    AST-based (keyword names on Call nodes), not a substring search --
+    same rationale as
+    test_adapter_module_calls_no_question_bank_write_function above:
+    this module's own docstring discusses both parameters in prose to
+    document what must never happen, so a substring search would
+    false-positive on that documentation.
+    """
+    tree = ast.parse(ADAPTER_PATH.read_text(encoding="utf-8"), filename=str(ADAPTER_PATH))
+
+    violations = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        for kw in node.keywords:
+            if kw.arg == "validation_status":
+                violations.append("validation_status= passed to a call")
+            if kw.arg == "publishable_only" and isinstance(kw.value, ast.Constant):
+                if kw.value.value is False:
+                    violations.append("publishable_only=False passed to a call")
+
+    assert not violations, f"ADR-0018 Karar 2 usage-boundary violation(s): {violations}"
+
+
+def test_adapter_never_sets_include_deleted_or_include_archived_true():
+    """Static proof that this module never passes
+    ``include_deleted=True`` or ``include_archived=True`` to
+    ``list_questions`` (ADR-0018 Karar 2)."""
+    tree = ast.parse(ADAPTER_PATH.read_text(encoding="utf-8"), filename=str(ADAPTER_PATH))
+
+    violations = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        for kw in node.keywords:
+            if kw.arg in ("include_deleted", "include_archived") and isinstance(
+                kw.value, ast.Constant
+            ):
+                if kw.value.value is True:
+                    violations.append(f"{kw.arg}=True passed to a call")
+
+    assert not violations, f"ADR-0018 Karar 2 usage-boundary violation(s): {violations}"
+
+
+# ---------------------------------------------------------------------
+# ADR-0018 Karar 3/12 -- deprecated/rejected/technical_review content
+# is never AI evidence.
+# ---------------------------------------------------------------------
+
+
+def test_deprecated_content_is_never_evidence(db, qb_store_path):
+    """A record that was once validated, then deprecated, must never
+    appear as evidence -- even though it passed through 'validated'
+    and even if its JSON is_active is still True (ADR-0018 Karar 12 /
+    validate_publishable's own authoritative-SQLite-status rule)."""
+    deprecated = _make_record(
+        question_id="QB-AI-DEPRECATED-001",
+        question_tr="Kullanımdan kaldırılan soru, en az on karakter.",
+        question_en="A deprecated-status question, at least ten characters.",
+    )
+    _register(db, qb_store_path, deprecated)
+    _promote_to_deprecated(db, deprecated)
+
+    evidence = get_validated_question_evidence(db)
+    filtered_evidence = get_filtered_question_evidence(db)
+
+    assert not any(s.source_id == "QB-AI-DEPRECATED-001" for s in evidence)
+    assert not any(s.source_id == "QB-AI-DEPRECATED-001" for s in filtered_evidence)
+
+
+def test_technical_review_content_is_never_evidence(db, qb_store_path):
+    """A record sitting in technical_review (never yet validated) must
+    never appear as evidence (ADR-0018 Karar 3)."""
+    in_review = _make_record(
+        question_id="QB-AI-TECHREVIEW-001",
+        question_tr="İnceleme aşamasındaki soru, en az on karakter.",
+        question_en="A technical-review-status question, at least ten characters.",
+    )
+    _register(db, qb_store_path, in_review)
+    service.submit_for_technical_review(
+        db,
+        question_id=in_review.question_id,
+        content_version=in_review.content_version,
+        actor="ai-gateway-tester",
+    )
+
+    evidence = get_validated_question_evidence(db)
+    filtered_evidence = get_filtered_question_evidence(db)
+
+    assert not any(s.source_id == "QB-AI-TECHREVIEW-001" for s in evidence)
+    assert not any(s.source_id == "QB-AI-TECHREVIEW-001" for s in filtered_evidence)
+
+
+# ---------------------------------------------------------------------
+# ADR-0018 Karar 6/7 -- category/difficulty/tag/keyword narrowing via
+# the existing list_questions() filters.
+# ---------------------------------------------------------------------
+
+
+def test_filtered_evidence_narrows_by_category(db, qb_store_path):
+    torque_question = _make_record(
+        question_id="QB-AI-CAT-TORQUE-001",
+        category=Category.TIGHTENING_TORQUE,
+    )
+    preload_question = _make_record(
+        question_id="QB-AI-CAT-PRELOAD-001",
+        category=Category.PRELOAD_CLAMP_FORCE,
+        question_tr="Ön yük hakkında farklı bir soru metni.",
+        question_en="A different question text about preload.",
+    )
+    for record in (torque_question, preload_question):
+        _register(db, qb_store_path, record)
+        _promote_to_validated(db, record)
+
+    torque_only = get_filtered_question_evidence(
+        db, category_hint=Category.TIGHTENING_TORQUE.value
+    )
+    returned_ids = {s.source_id for s in torque_only}
+
+    assert "QB-AI-CAT-TORQUE-001" in returned_ids
+    assert "QB-AI-CAT-PRELOAD-001" not in returned_ids
+
+
+def test_filtered_evidence_narrows_by_difficulty(db, qb_store_path):
+    beginner = _make_record(
+        question_id="QB-AI-DIFF-BEGINNER-001", difficulty=Difficulty.BEGINNER
+    )
+    advanced = _make_record(
+        question_id="QB-AI-DIFF-ADVANCED-001",
+        difficulty=Difficulty.ADVANCED,
+        question_tr="İleri seviye için farklı bir soru metni.",
+        question_en="A different advanced-level question text.",
+    )
+    for record in (beginner, advanced):
+        _register(db, qb_store_path, record)
+        _promote_to_validated(db, record)
+
+    beginner_only = get_filtered_question_evidence(
+        db, difficulty_hint=Difficulty.BEGINNER.value
+    )
+    returned_ids = {s.source_id for s in beginner_only}
+
+    assert "QB-AI-DIFF-BEGINNER-001" in returned_ids
+    assert "QB-AI-DIFF-ADVANCED-001" not in returned_ids
+
+
+def test_filtered_evidence_narrows_by_tags(db, qb_store_path):
+    tagged = _make_record(question_id="QB-AI-TAG-001", tags=["torque-wrench-calibration"])
+    untagged = _make_record(
+        question_id="QB-AI-TAG-002",
+        tags=["unrelated-tag"],
+        question_tr="Etiketsiz farklı bir soru metni burada.",
+        question_en="A differently-tagged question text here.",
+    )
+    for record in (tagged, untagged):
+        _register(db, qb_store_path, record)
+        _promote_to_validated(db, record)
+
+    tag_match = get_filtered_question_evidence(db, tags=["torque-wrench-calibration"])
+    returned_ids = {s.source_id for s in tag_match}
+
+    assert "QB-AI-TAG-001" in returned_ids
+    assert "QB-AI-TAG-002" not in returned_ids
+
+
+def test_filtered_evidence_unknown_category_hint_degrades_gracefully(db, qb_store_path):
+    """An unrecognised category hint must not raise and must not
+    exclude every result -- it degrades to 'no category filter'
+    (ADR-0018 Karar 6)."""
+    validated = _make_record(question_id="QB-AI-UNKNOWN-HINT-001")
+    _register(db, qb_store_path, validated)
+    _promote_to_validated(db, validated)
+
+    evidence = get_filtered_question_evidence(
+        db, category_hint="not-a-real-category-xyz"
+    )
+
+    assert any(s.source_id == "QB-AI-UNKNOWN-HINT-001" for s in evidence)
+
+
+def test_filtered_evidence_still_excludes_non_publishable_content(db, qb_store_path):
+    """The filtered entry point must apply the exact same
+    publishable-only guarantee as the unfiltered one (ADR-0018 Karar
+    2's single-source-of-truth rule)."""
+    draft = _make_record(
+        question_id="QB-AI-FILTERED-DRAFT-001",
+        category=Category.TIGHTENING_TORQUE,
+    )
+    _register(db, qb_store_path, draft)
+    # left in draft -- no transition applied.
+
+    evidence = get_filtered_question_evidence(
+        db, category_hint=Category.TIGHTENING_TORQUE.value
+    )
+
+    assert not any(s.source_id == "QB-AI-FILTERED-DRAFT-001" for s in evidence)
+
+
+# ---------------------------------------------------------------------
+# ADR-0018 Karar 5/8/16 -- EvidenceSource metadata fields and backward
+# compatibility.
+# ---------------------------------------------------------------------
+
+
+def test_evidence_source_metadata_populated_from_domain_model(db, qb_store_path):
+    record = _make_record(
+        question_id="QB-AI-METADATA-001",
+        standard_reference=StandardReference(
+            name="VDI 2230", edition_or_year="2015", clause_or_table="Table 5.4/1"
+        ),
+    )
+    _register(db, qb_store_path, record)
+    _promote_to_validated(db, record)
+
+    evidence = get_validated_question_evidence(db)
+    match = [s for s in evidence if s.source_id == "QB-AI-METADATA-001"][0]
+
+    assert match.standard_name == "VDI 2230"
+    assert match.standard_clause == "Table 5.4/1"
+    assert match.source_kind == SourceType.INTERNAL_ENGINE.value
+    assert match.category == Category.TIGHTENING_TORQUE.value
+    assert match.difficulty == Difficulty.BEGINNER.value
+    assert "ai-gateway-test" in match.tags
+    assert match.traceability_level == TraceabilityLevel.PROVISIONAL.value
+
+
+def test_evidence_source_metadata_defaults_to_none_when_no_standard_reference(db, qb_store_path):
+    record = _make_record(question_id="QB-AI-NO-STANDARD-001", standard_reference=None)
+    _register(db, qb_store_path, record)
+    _promote_to_validated(db, record)
+
+    evidence = get_validated_question_evidence(db)
+    match = [s for s in evidence if s.source_id == "QB-AI-NO-STANDARD-001"][0]
+
+    assert match.standard_name is None
+    assert match.standard_clause is None
+
+
+def test_evidence_source_original_seven_field_construction_still_works():
+    """Backward-compatibility proof (ADR-0018 Karar 5/9 in the GO
+    criteria): constructing an EvidenceSource the way
+    v3.0.0-alpha.1 code did -- with only the original seven fields --
+    must still work unchanged, with every new field defaulting."""
+    from backend.ai_gateway.retrieval import EvidenceSource
+
+    source = EvidenceSource(
+        source_type="question_bank",
+        source_id="QB-LEGACY-001",
+        content_version=1,
+        title_tr="Eski stil çağrı",
+        title_en="Legacy-style call",
+        body_tr="Açıklama metni burada, en az yirmi karakter uzunlukta.",
+        body_en="Explanation text here, at least twenty characters long.",
+    )
+
+    assert source.standard_name is None
+    assert source.standard_clause is None
+    assert source.source_kind is None
+    assert source.category is None
+    assert source.difficulty is None
+    assert source.tags == ()
+    assert source.traceability_level is None

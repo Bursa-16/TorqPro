@@ -17,6 +17,18 @@ Covers:
       is never called in that case (ADR-0017 Karar 9, case 3).
     - A model-client failure is normalized into ModelUnavailableError
       (ADR-0017 Karar 9, case 1).
+
+Also covers ADR-0018:
+    - Karar 6/7: a category hint passed to handle_query narrows
+      retrieval via the filtered Question Bank entry point.
+    - Karar 9/17: a calculation result never appears inside
+      answer.evidence (it always stays a separate field) -- proves
+      the evidence_checker's "calculation_engine" contributing-type
+      label is a summary marker only, never a fabricated
+      EvidenceSource.
+    - Karar 10: the insufficient-evidence fallback text includes a
+      note naming which source types were queried, appended after
+      (never replacing) the fixed notice.
 """
 
 from __future__ import annotations
@@ -284,3 +296,139 @@ def test_model_failure_is_normalized_to_model_unavailable_error(db):
 
     assert exc_info.value.__cause__ is original_error
     assert sink.all_entries() == ()
+
+
+# ---------------------------------------------------------------------
+# ADR-0018 Karar 6/7 -- category/difficulty/tag hints narrow
+# orchestrator-level retrieval via the filtered adaptor entry point.
+# ---------------------------------------------------------------------
+
+
+def test_category_hint_narrows_orchestrator_retrieval(db, qb_store_path):
+    torque_record = _make_record(question_id="QB-AI-ORCH-CAT-TORQUE")
+    preload_record = _make_record(
+        question_id="QB-AI-ORCH-CAT-PRELOAD",
+        category=Category.PRELOAD_CLAMP_FORCE,
+        question_tr="Ön yük ile ilgili farklı bir orkestrasyon sorusu.",
+        question_en="A different orchestration question about preload.",
+    )
+    for record in (torque_record, preload_record):
+        store.save_question_content(record, path=qb_store_path)
+        service.register_question(
+            db,
+            question_id=record.question_id,
+            content_version=record.content_version,
+            actor="t",
+        )
+        service.submit_for_technical_review(
+            db, question_id=record.question_id, content_version=record.content_version, actor="t"
+        )
+        service.validate_question(
+            db,
+            question_id=record.question_id,
+            content_version=record.content_version,
+            actor="t",
+            actor_role="admin",
+            reviewed_by="t",
+            review_date="2026-08-09",
+            authorize=_allow_all,
+        )
+
+    model = FakeModelClient(fixed_text="Category-narrowed answer.")
+    sink = InMemoryAuditSink()
+
+    answer = handle_query(
+        user=_active_user(),
+        query_text="orkestrasyon",
+        conn=db,
+        model_client=model,
+        audit_sink=sink,
+        query_text_hash="hash-7",
+        created_at="2026-08-09T00:00:00+00:00",
+        category_hint=Category.TIGHTENING_TORQUE.value,
+    )
+
+    returned_ids = {source.source_id for source in answer.evidence}
+    assert "QB-AI-ORCH-CAT-TORQUE" in returned_ids
+    assert "QB-AI-ORCH-CAT-PRELOAD" not in returned_ids
+
+
+# ---------------------------------------------------------------------
+# ADR-0018 Karar 9/17 -- a calculation result never appears inside
+# answer.evidence; it always stays a separate field.
+# ---------------------------------------------------------------------
+
+
+def test_calculation_result_never_mixed_into_evidence_list(db, qb_store_path):
+    record = _make_record(question_id="QB-AI-ORCH-MIX-001")
+    store.save_question_content(record, path=qb_store_path)
+    service.register_question(
+        db, question_id=record.question_id, content_version=record.content_version, actor="t"
+    )
+    service.submit_for_technical_review(
+        db, question_id=record.question_id, content_version=record.content_version, actor="t"
+    )
+    service.validate_question(
+        db,
+        question_id=record.question_id,
+        content_version=record.content_version,
+        actor="t",
+        actor_role="admin",
+        reviewed_by="t",
+        review_date="2026-08-09",
+        authorize=_allow_all,
+    )
+
+    model = FakeModelClient(fixed_text="Answer with both evidence and calculation.")
+    sink = InMemoryAuditSink()
+    provider = _FixedResultProvider()
+    request = CalculationRequest(standard="TEST-STANDARD", inputs={"thread": "M10"})
+
+    answer = handle_query(
+        user=_active_user(),
+        query_text="orkestrasyon",
+        conn=db,
+        model_client=model,
+        audit_sink=sink,
+        query_text_hash="hash-8",
+        created_at="2026-08-09T00:00:00+00:00",
+        calculation_provider=provider,
+        calculation_request=request,
+    )
+
+    # The calculation result is present, and Question Bank evidence is
+    # present, but the two are never merged into one list: no element of
+    # answer.evidence is (or was derived from) the calculation result.
+    assert answer.calculation_result is not None
+    assert answer.calculation_result.results[0].value == 987.65
+    assert all(source.source_type != "calculation_engine" for source in answer.evidence)
+    assert any(source.source_id == "QB-AI-ORCH-MIX-001" for source in answer.evidence)
+
+
+# ---------------------------------------------------------------------
+# ADR-0018 Karar 10 -- insufficient-evidence fallback includes an
+# attempted-sources note, appended after the fixed notice.
+# ---------------------------------------------------------------------
+
+
+def test_insufficient_evidence_answer_names_attempted_source_types(db):
+    model = FakeModelClient(fixed_text="This text must never reach the user.")
+    sink = InMemoryAuditSink()
+
+    answer = handle_query(
+        user=_active_user(),
+        query_text="tamamen ilgisiz bir sorgu metni xyz123",
+        conn=db,
+        model_client=model,
+        audit_sink=sink,
+        query_text_hash="hash-9",
+        created_at="2026-08-09T00:00:00+00:00",
+    )
+
+    assert answer.insufficient_evidence is True
+    # The fixed notice's own wording is still present verbatim...
+    from backend.ai_gateway.composer import INSUFFICIENT_EVIDENCE_TEXT_TR
+
+    assert INSUFFICIENT_EVIDENCE_TEXT_TR in answer.text
+    # ...with an additional note naming which source type was searched.
+    assert "question_bank" in answer.text
