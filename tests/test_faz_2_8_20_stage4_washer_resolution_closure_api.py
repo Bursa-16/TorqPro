@@ -523,8 +523,8 @@ class TestBackwardCompatibility:
             if type(r).__name__ == "_IncludedRouter"
         )
         # production_validation, governance, joints, washer_resolution_closure,
-        # question_bank (Faz 2.9.2)
-        assert count == 5
+        # question_bank (Faz 2.9.2), ai_gateway (Faz v3.0.0-alpha.4)
+        assert count == 6
 
     def test_five_new_routes_registered_exactly_once(self):
         expected_new_paths = {
