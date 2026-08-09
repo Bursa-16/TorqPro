@@ -1,9 +1,10 @@
 """TorqPro AI Gateway - orchestrator (single entry point).
 
 Faz v3.0.0-alpha.1 (AI Architecture Foundation) + Faz v3.0.0-alpha.2
-(AI Retrieval & Grounding), per ADR-0017 Karar 1 ("ai_gateway
-paketinin kesin sorumlulukları") and Karar 11 (module tree:
-"orchestrator.py # tek giriş noktası"), and ADR-0018 Karar 6/13/15.
+(AI Retrieval & Grounding) + Faz v3.0.0-alpha.3 (AI Safety, Validation
+& Explainability), per ADR-0017 Karar 1 ("ai_gateway paketinin kesin
+sorumlulukları") and Karar 11 (module tree: "orchestrator.py # tek
+giriş noktası"), ADR-0018 Karar 6/13/15, and ADR-0019 Karar 18.
 
 ``handle_query`` is the *only* function outside functions in this
 package that a future HTTP route layer (``backend.api.ai.routes``,
@@ -171,6 +172,9 @@ def handle_query(
             # listed. This phase only ever queries Question Bank.
             retrieval_source_types_queried=(_QUESTION_BANK_SOURCE_TYPE,),
             evidence_count_by_source_type=tuple(sorted(evidence_counts.items())),
+            # ADR-0019 Karar 18: mirror the safety/validation outcome verbatim.
+            evidence_status=evidence_check.status,
+            result_label=answer.result_label,
         )
     )
 

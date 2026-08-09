@@ -1,9 +1,11 @@
 """TorqPro AI Gateway - audit recording.
 
 Faz v3.0.0-alpha.1 (AI Architecture Foundation) + Faz v3.0.0-alpha.2
-(AI Retrieval & Grounding), per ADR-0017 Karar 8 ("Audit ve trace
-kayıtlarının hangi katmanda tutulacağı") and ADR-0018 Karar 15
-("Audit trail'de hangi retrieval bilgilerinin tutulacağı").
+(AI Retrieval & Grounding) + Faz v3.0.0-alpha.3 (AI Safety, Validation
+& Explainability), per ADR-0017 Karar 8 ("Audit ve trace kayıtlarının
+hangi katmanda tutulacağı"), ADR-0018 Karar 15 ("Audit trail'de hangi
+retrieval bilgilerinin tutulacağı"), and ADR-0019 Karar 18 ("Audit
+trail'de safety/validation bilgilerinin tutulması").
 
 Scope of this phase (deliberately limited, per ADR-0017 Karar 12/13):
 this module defines the audit *record shape* and an append-only sink
@@ -81,6 +83,17 @@ class AIInteractionRecord:
             ``dict``, so this record stays a plain, comparable,
             immutable dataclass like every other field here. Defaults
             to an empty tuple.
+        evidence_status: (ADR-0019 Karar 18, additive, optional) Mirrors
+            ``backend.ai_gateway.evidence_checker.EvidenceCheckResult.
+            status`` (one of ``"PASS"``/``"WARN"``/``"FAIL"``) verbatim.
+            Defaults to ``"FAIL"`` (the safe, fail-closed default --
+            an audit record with no explicit status should never be
+            misread as a passing one).
+        result_label: (ADR-0019 Karar 18, additive, optional) Mirrors
+            ``backend.ai_gateway.composer.ComposedAnswer.result_label``
+            verbatim (one of ``"CALCULATED"``/``"VALIDATED"``/
+            ``"ESTIMATED"``/``"RECOMMENDED"``, or ``None`` for an
+            insufficient-evidence outcome). Defaults to ``None``.
     """
 
     user_id: int
@@ -92,6 +105,8 @@ class AIInteractionRecord:
     created_at: str
     retrieval_source_types_queried: Tuple[str, ...] = field(default_factory=tuple)
     evidence_count_by_source_type: Tuple[Tuple[str, int], ...] = field(default_factory=tuple)
+    evidence_status: str = "FAIL"
+    result_label: str | None = None
 
 
 class AuditSink(abc.ABC):
