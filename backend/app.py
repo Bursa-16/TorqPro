@@ -1927,4 +1927,20 @@ app.include_router(washer_resolution_closure_router)
 from backend.api.routes.question_bank import router as question_bank_router
 app.include_router(question_bank_router)
 
+# Faz v3.0.0-alpha.4: AI Gateway HTTP exposure module
+# (backend/api/routes/ai_gateway.py). Additive only -- exactly one new
+# read-only route, POST /api/ai/query, nothing existing renamed or
+# removed. Thin HTTP adapter over the pre-existing, unmodified
+# backend.ai_gateway.orchestrator.handle_query pipeline (Faz
+# v3.0.0-alpha.1/alpha.2/alpha.3); reuses the same `user` auth
+# dependency as every other endpoint, imported here for the same
+# circular-import-avoidance reason as production_validation,
+# governance, joints, washer_resolution_closure, and question_bank
+# above. No SQLite schema/SCHEMA_VERSION change and no new external
+# dependency: the route's default model provider always reports
+# unavailable (503) until a real AIModelClient is introduced in a
+# later, separately-approved phase.
+from backend.api.routes.ai_gateway import router as ai_gateway_router
+app.include_router(ai_gateway_router)
+
 app.mount("/",StaticFiles(directory=FRONT,html=True),name="frontend")
