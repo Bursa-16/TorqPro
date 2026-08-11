@@ -30,6 +30,23 @@ now checks an exact dotted-prefix match instead
 ``backend/app.py``'s import of ``backend.api.routes.ai_gateway`` (a
 different, unrelated module) is correctly never flagged.
 
+v3.0.0-alpha.5 note: also fixes a latent cross-platform bug in
+``_collect_offenders``'s ``SANCTIONED_ENTRY_POINTS`` membership check.
+``str(Path.relative_to(...))`` renders with the host OS's native path
+separator -- backslashes on Windows, forward slashes on POSIX --
+while ``SANCTIONED_ENTRY_POINTS``/``GUARDED_DIRS``/``GUARDED_FILES``
+are (and must stay) fixed, forward-slash string literals so they read
+identically in source on every platform. Comparing the two directly
+meant the legitimately-sanctioned
+``backend/api/routes/ai_gateway.py`` matched on POSIX but silently
+failed to match on Windows, making the guard *stricter* than intended
+there (rejecting the one file this test's own docstring says must be
+exempt) rather than looser. ``Path.as_posix()`` is used instead of
+``str()`` for this one comparison so the same, single rule applies
+identically regardless of host OS -- the set of forbidden imports,
+the set of guarded directories, and the one sanctioned exception are
+completely unchanged.
+
 Pure ``ast`` source inspection -- no package is actually imported here
 beyond what pytest collection already does, so this test cannot be
 fooled by import-time side effects and cannot itself introduce a
@@ -102,7 +119,12 @@ def _collect_offenders() -> List[str]:
         if not base.exists():
             continue
         for py_file in sorted(base.rglob("*.py")):
-            rel = str(py_file.relative_to(REPO_ROOT))
+            # .as_posix(), not str(): keeps this comparison identical
+            # on Windows and POSIX (see module docstring, v3.0.0-alpha.5
+            # note). SANCTIONED_ENTRY_POINTS/GUARDED_DIRS/GUARDED_FILES
+            # are forward-slash literals on every platform; only the
+            # left-hand side of this comparison needs normalizing.
+            rel = py_file.relative_to(REPO_ROOT).as_posix()
             if rel in sanctioned:
                 continue
             if _module_imports_ai_gateway(py_file):
