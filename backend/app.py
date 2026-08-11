@@ -293,6 +293,17 @@ def migrate():
         from backend.question_bank.store import migrate as migrate_question_bank
         migrate_question_bank(c)
 
+        # Faz v3.0.0-alpha.5 (Persistent Audit, ADR-0020): backend.app
+        # is structurally forbidden from importing backend.ai_gateway
+        # directly (tests/ai/test_dependency_direction.py's one-way
+        # guard -- backend/api/routes/ai_gateway.py is the sole
+        # sanctioned entry point), so this hook goes through that
+        # already-sanctioned route module instead, exactly like every
+        # other call in this block goes through its own domain's
+        # store/repository module.
+        from backend.api.routes.ai_gateway import migrate_persistent_audit
+        migrate_persistent_audit(c)
+
         c.commit()
 
 @app.middleware("http")

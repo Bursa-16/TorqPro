@@ -568,3 +568,74 @@ full delivery report.
   four breakdowns rendered without re-implementing aggregation,
   `qbInit()`/`qbReapplyLanguage()` lifecycle wiring, `qb.stats.*`
   TR/EN key parity, and JS syntax validity.
+
+## v3.0.0-alpha.5 — Persistent Audit, Explainability, Provider Abstraction — 2026-08-09
+
+- **Provider abstraction** (`backend/ai_gateway/providers/`): an
+  explicit, deterministic name -> `AIModelClient` registry
+  (`registry.ProviderRegistry`/`build_default_registry`). Adds two
+  small, additive capability hooks directly onto the existing
+  `AIModelClient` base class (`model_identifier`, `is_available()`)
+  rather than a second, competing abstraction -- deliberately never
+  named/aliased to `backend.calculation_engine.provider.Provider`.
+  Only one concrete provider is registered in this phase:
+  `providers.deterministic.DeterministicModelClient`, offline-safe,
+  no network call. An unknown provider name raises the new
+  `exceptions.ProviderNotFoundError`. No real OpenAI/Claude/Ollama
+  integration is added -- explicitly deferred.
+- **Persistent audit** (`backend/ai_gateway/store.py`): additive,
+  idempotent SQLite migration (`ai_audit_records`), wired into
+  `backend/app.py`'s existing `migrate()` through the one file
+  already sanctioned to import `backend.ai_gateway`
+  (`backend/api/routes/ai_gateway.py`), never directly -- preserves
+  the pre-existing one-way dependency-direction guard
+  (`tests/ai/test_dependency_direction.py`). `POST /api/ai/query` now
+  persists every interaction (success and provider-failure) via
+  `SQLiteAuditSink`, alongside `latency_ms`, the requesting user's
+  role, an optional `X-Request-ID` correlation id, and a hash of the
+  response text -- never raw prompt/response text, never a
+  secret/token. Two new admin-only read endpoints:
+  `GET /api/ai/audit`, `GET /api/ai/audit/{audit_id}` (404 for an
+  unknown id).
+- **Explainability**: no new surface introduced. The existing
+  `ComposedAnswer` (citations, `result_label`, `evidence_status`,
+  `validation_required`) already carries every explainability element
+  this phase's audit trail exposes; internal reasoning/chain-of-thought
+  is never persisted or returned.
+- **New HTTP surface**: `GET /api/ai/providers` (any authenticated
+  user, read-only listing of registered providers).
+- `POST /api/ai/query`'s pre-existing alpha.4 behavior (default
+  always-unavailable provider, response shape, permission/read-only
+  enforcement) is unchanged.
+- Numeric-literal safety guard
+  (`tests/ai/test_safety_and_validation.py::
+  test_no_engineering_numeric_literal_anywhere_in_ai_gateway`) was not
+  weakened: the audit-listing `limit` bound (`ge=1, le=500`) lives in
+  `backend/api/routes/ai_gateway.py` (outside the guarded
+  `backend/ai_gateway/` package), not inside it;
+  `backend.ai_gateway.store.list_audit_records` applies whatever
+  already-validated `limit` it is given, with no literal of its own.
+- 48 new tests across `tests/ai/test_providers.py`,
+  `tests/ai/test_persistent_audit.py`,
+  `tests/ai/test_http_route_alpha5.py`,
+  `tests/ai/test_explainability.py`: provider registry/interface
+  contract, deterministic provider, unknown-provider handling,
+  migration idempotency and pre-existing-database safety, write/read
+  round-trips, reopen-persistence, successful- and failed-query audit
+  writes, no-raw-content/no-secret persistence guarantees,
+  explainability metadata shape, no-private-reasoning-exposure,
+  providers/audit endpoint authorization, audit 404, and alpha.4/
+  AI-disabled-noop non-regression.
+- **Note (pre-existing documentation gap, not introduced by this
+  phase):** ADR-0017/ADR-0018/ADR-0019 are referenced extensively in
+  `backend/ai_gateway`'s own module docstrings but were never
+  committed as files under `docs/adr/`; this phase does not backfill
+  them (out of scope) and does not add a new ADR file either, since no
+  new architectural decision in this phase was significant/contested
+  enough to warrant one beyond what is already documented in the
+  module docstrings and this changelog entry.
+- **Deferred / explicitly out of scope for this phase:** real
+  network-calling AI providers (OpenAI/Claude/Ollama); rewiring
+  `POST /api/ai/query`'s default runtime provider away from
+  `_UnavailableModelClient`; the Torque Recommendation Engine
+  (v3.0.0-beta.1) and Engineering Reasoning Engine (v3.0.0-beta.2).

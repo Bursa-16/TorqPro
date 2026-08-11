@@ -120,6 +120,35 @@ class AIModelClient(abc.ABC):
         """
         raise NotImplementedError
 
+    @property
+    def model_identifier(self) -> str:
+        """Faz v3.0.0-alpha.5 (Provider Abstraction, ADR-0020): the
+        concrete model/build identifier this client reports, distinct
+        in principle from ``name`` (a networked provider may expose
+        several models under one provider ``name``, e.g.
+        ``name="openai"`` with several selectable ``model_identifier``
+        values). Defaults to ``name`` verbatim -- every client defined
+        in this phase (``DeterministicModelClient``, ``FakeModelClient``,
+        ``RaisingModelClient``) has exactly one model, so the default
+        is correct as-is and none of them need to override it. A
+        future networked provider (out of scope here) would override
+        this property, not ``name``.
+        """
+        return self.name
+
+    def is_available(self) -> bool:
+        """Faz v3.0.0-alpha.5 (Provider Abstraction, ADR-0020): cheap,
+        side-effect-free configuration/availability check -- never
+        calls ``complete`` and never performs network I/O. Defaults to
+        ``True`` (every client already defined in
+        ``backend.ai_gateway`` is unconditionally usable). A future
+        networked provider would override this to report, for
+        example, "no API key configured" without attempting a real
+        request -- this is a static readiness signal, not a liveness
+        probe.
+        """
+        return True
+
 
 class FakeModelClient(AIModelClient):
     """Deterministic, in-process test double.

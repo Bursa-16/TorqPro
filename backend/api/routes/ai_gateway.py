@@ -1,4 +1,6 @@
-"""TorqPro AI Gateway HTTP API (Faz v3.0.0-alpha.4 -- HTTP Exposure).
+"""TorqPro AI Gateway HTTP API (Faz v3.0.0-alpha.4 -- HTTP Exposure;
+Faz v3.0.0-alpha.5 -- Persistent Audit, Explainability, Provider
+Abstraction, ADR-0020).
 
 Thin FastAPI route over the existing, already-tested
 ``backend.ai_gateway.orchestrator.handle_query`` pipeline (Faz
@@ -18,36 +20,49 @@ Nothing inside ``backend/ai_gateway/`` is imported for modification or
 reimplementation here -- only its public, already-frozen contracts
 (``orchestrator.handle_query``, ``permission.UserContext``/
 ``ensure_read_only_action``, ``llm_client.AIModelClient``,
-``audit.InMemoryAuditSink``, ``exceptions.*``) are used, exactly as
-``tests/ai/test_orchestrator_boundary.py`` already exercises them.
+``audit.InMemoryAuditSink``, ``store.SQLiteAuditSink``,
+``providers.registry``, ``exceptions.*``) are used, exactly as
+``tests/ai/test_orchestrator_boundary.py`` already exercises the
+orchestrator itself. This file remains the *only* file in the
+repository permitted to import ``backend.ai_gateway`` (see
+``tests/ai/test_dependency_direction.py``'s ``SANCTIONED_ENTRY_POINTS``)
+-- this phase adds new imports from that package, but does not add a
+second consumer.
 
-**Default model provider (deliberate safety decision):** no concrete,
-network-calling ``AIModelClient`` exists anywhere in TorqPro yet (see
-``backend.ai_gateway.llm_client`` module docstring -- a real provider
-under ``backend/ai_gateway/providers/*`` is explicitly deferred to a
-later, separately-approved phase). This route's default runtime
-dependency, :func:`get_model_client`, therefore returns
-:class:`_UnavailableModelClient`, a route-local placeholder whose
-``complete()`` always raises. It is never special-cased: the existing
-orchestrator already normalizes *any* ``AIModelClient.complete()``
-failure into ``ModelUnavailableError`` (ADR-0017 Karar 9, case 1), so
-the "no provider configured" state is surfaced through the exact same,
-already-tested path a genuine network failure would use, mapped below
-to ``503``. This route never substitutes a fake/generated answer for a
-missing real provider. Tests override :func:`get_model_client` (FastAPI
+**Default model provider for POST /api/ai/query (unchanged from
+alpha.4, deliberate safety decision):** no concrete, network-calling
+``AIModelClient`` is wired as this route's default in this phase
+either. :func:`get_model_client` still returns
+:class:`_UnavailableModelClient`, whose ``complete()`` always raises,
+normalized by the orchestrator into ``ModelUnavailableError`` (ADR-0017
+Karar 9, case 1) and mapped below to ``503``. This is a deliberate
+scope boundary for this phase: ADR-0020 adds a *listable* provider
+registry (``GET /api/ai/providers``, see below) containing the new
+offline-safe ``DeterministicModelClient``, but does **not** change
+which client ``POST /api/ai/query`` actually uses by default --
+rewiring that default is a separate, out-of-scope decision left to a
+later phase, so the already-tested alpha.4 "unavailable by default"
+behavior (``tests/ai/test_http_route.py``) is left completely
+unchanged. Tests override :func:`get_model_client` (FastAPI
 ``dependency_overrides``) with ``backend.ai_gateway.llm_client.
-FakeModelClient`` to exercise the complete HTTP pipeline -- production
-traffic never reaches ``FakeModelClient``.
+FakeModelClient`` (or, from this phase on, with a registry-selected
+``DeterministicModelClient``) to exercise the complete HTTP pipeline.
 
-**Audit sink:** ``handle_query`` requires an ``AuditSink`` argument by
-contract. SQLite persistence for the audit trail
-(``ai_interactions``/``ai_evidence_links`` tables) is explicitly out of
-scope for this phase (see ``backend.ai_gateway.audit`` module
-docstring: deferred "once this in-process pipeline is proven"). This
-route satisfies the interface with a fresh, request-scoped
-``InMemoryAuditSink()`` -- recorded for the duration of the call only,
-discarded after the response is returned, and never written to any
-table. No new persistence, no new schema, no ``SCHEMA_VERSION`` bump.
+**Audit sink (ADR-0020, superseding the alpha.4 in-memory-only note
+below):** ``handle_query`` still requires an ``AuditSink`` argument by
+contract -- this route still satisfies that interface with a
+request-scoped ``InMemoryAuditSink()``, so ``handle_query``'s own,
+already-tested contract is completely unchanged. What is new in this
+phase: *after* ``handle_query`` returns (or raises
+``ModelUnavailableError``), this route additionally persists the
+interaction into ``ai_audit_records`` (``backend.ai_gateway.store``)
+via :class:`~backend.ai_gateway.store.SQLiteAuditSink`, using the same
+already-open connection -- adding ``latency_ms``, the requesting
+user's ``role``, an optional ``X-Request-ID`` correlation id, and a
+hash of the response text, none of which ``AIInteractionRecord``
+itself carries. Raw prompt/response text and any secret/API key are
+never written to this table (see ``backend.ai_gateway.store`` module
+docstring, Privacy).
 
 **Read-only enforcement:** this route accepts no client-supplied
 ``action`` parameter (that would be new RBAC-policy surface, out of
@@ -70,14 +85,27 @@ in this phase's response: this route never passes
 (wiring deterministic-calculation requests through HTTP is out of
 scope for this narrow phase), and ``handle_query`` itself only
 populates ``calculation_result`` when both are supplied.
+
+**New in this phase (ADR-0020):**
+
+- ``GET /api/ai/providers`` (``Depends(user)``, read-only): lists every
+  registered provider (``backend.ai_gateway.providers.registry.
+  build_default_registry()``) -- name, model identifier, availability.
+  No secret/credential value is ever included.
+- ``GET /api/ai/audit`` / ``GET /api/ai/audit/{audit_id}``
+  (``Depends(admin)``, matching ``backend.api.dependencies.admin``'s
+  existing role-gate pattern already used throughout ``backend/app.py``):
+  read the persisted, hash-only audit trail. 404 for an unknown
+  ``audit_id`` (never a 500 or a silently-empty 200).
 """
 
 from __future__ import annotations
 
 import hashlib
-from typing import Any, Dict
+import time
+from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field
 
 router = APIRouter(tags=["ai_gateway"])
@@ -99,7 +127,15 @@ from backend.ai_gateway.exceptions import (  # noqa: E402
 from backend.ai_gateway.llm_client import AIModelClient, ModelResponse, PromptContext  # noqa: E402
 from backend.ai_gateway.orchestrator import handle_query  # noqa: E402
 from backend.ai_gateway.permission import UserContext, ensure_read_only_action  # noqa: E402
-from backend.api.dependencies import user  # noqa: E402
+from backend.ai_gateway.providers.registry import build_default_registry  # noqa: E402
+from backend.ai_gateway.store import (  # noqa: E402
+    PersistedAuditRecord,
+    SQLiteAuditSink,
+    get_audit_record,
+    list_audit_records,
+    migrate as migrate_persistent_audit,
+)
+from backend.api.dependencies import admin, user  # noqa: E402
 from backend.app import conn, now_iso  # noqa: E402
 
 #: Fixed, always-read action name passed to ``ensure_read_only_action``
@@ -111,6 +147,13 @@ _QUERY_ACTION = "query"
 #: a sane upper bound so this route never forwards an unbounded string
 #: into the pipeline. Chosen generously above any realistic question.
 _MAX_QUERY_TEXT_LENGTH = 4000
+
+#: ADR-0020: the one, fixed provider registry this route lists via
+#: ``GET /api/ai/providers``. Built once at import time -- every
+#: registered ``AIModelClient`` (only ``DeterministicModelClient`` in
+#: this phase) is itself stateless/side-effect-free to construct, so a
+#: module-level singleton is safe and avoids rebuilding it per request.
+_PROVIDER_REGISTRY = build_default_registry()
 
 
 class _UnavailableModelClient(AIModelClient):
@@ -227,22 +270,99 @@ def _serialize_answer(answer: ComposedAnswer) -> Dict[str, Any]:
     }
 
 
+def _serialize_persisted_record(record: PersistedAuditRecord) -> Dict[str, Any]:
+    """Render a :class:`~backend.ai_gateway.store.PersistedAuditRecord`
+    field-for-field into a plain JSON body. Only hashes/identifiers/
+    structured metadata ever appear here -- no raw prompt/response text,
+    no secret, no credential (see ``backend.ai_gateway.store`` module
+    docstring, Privacy)."""
+    return {
+        "audit_id": record.id,
+        "user_id": record.user_id,
+        "user_role": record.user_role,
+        "correlation_id": record.correlation_id,
+        "created_at": record.created_at,
+        "query_text_hash": record.query_text_hash,
+        "response_text_hash": record.response_text_hash,
+        "model_name": record.model_name,
+        "had_sufficient_evidence": record.had_sufficient_evidence,
+        "evidence_status": record.evidence_status,
+        "result_label": record.result_label,
+        "evidence_source_ids": [list(pair) for pair in record.evidence_source_ids],
+        "calculation_formula_ids": list(record.calculation_formula_ids),
+        "retrieval_source_types_queried": list(record.retrieval_source_types_queried),
+        "evidence_count_by_source_type": [
+            list(pair) for pair in record.evidence_count_by_source_type
+        ],
+        "latency_ms": record.latency_ms,
+        "success": record.success,
+        "error_category": record.error_category,
+    }
+
+
 def _run_query(
-    user_context: UserContext, query_text: str, model_client: AIModelClient
+    user_context: UserContext,
+    query_text: str,
+    model_client: AIModelClient,
+    correlation_id: Optional[str],
 ) -> Dict[str, Any]:
     ensure_read_only_action(_QUERY_ACTION)
-    audit_sink = InMemoryAuditSink()
+    # `capture_sink` is what `handle_query` itself writes to -- passing
+    # it through unchanged (instead of `SQLiteAuditSink` directly) keeps
+    # the orchestrator's own, already-tested `AuditSink` contract
+    # (`tests/ai/test_orchestrator_boundary.py`) completely untouched.
+    # This route reads the one entry it captured back out afterwards and
+    # persists it itself, alongside the extra fields (latency/role/
+    # correlation id/response hash) that `AIInteractionRecord` does not
+    # carry (see module docstring, "Audit sink").
+    capture_sink = InMemoryAuditSink()
     query_text_hash = hashlib.sha256(query_text.encode("utf-8")).hexdigest()
+    started_at = time.perf_counter()
     with conn() as c:
-        answer = handle_query(
-            user=user_context,
-            query_text=query_text,
-            conn=c,
-            model_client=model_client,
-            audit_sink=audit_sink,
-            query_text_hash=query_text_hash,
-            created_at=now_iso(),
-        )
+        persistent_sink = SQLiteAuditSink(c)
+        try:
+            answer = handle_query(
+                user=user_context,
+                query_text=query_text,
+                conn=c,
+                model_client=model_client,
+                audit_sink=capture_sink,
+                query_text_hash=query_text_hash,
+                created_at=now_iso(),
+            )
+        except ModelUnavailableError as exc:
+            # ADR-0020, "provider failure audit": handle_query raises
+            # before ever calling capture_sink.record(), so without this
+            # branch a provider failure would leave zero trace anywhere
+            # -- neither in-memory nor persisted. This is the one,
+            # deliberately narrow failure path this phase audits (a
+            # genuine AI-interaction attempt that failed); permission
+            # denials are not audited here (see final report).
+            latency_ms = int((time.perf_counter() - started_at) * 1000)
+            persistent_sink.record_failure(
+                user_id=user_context.user_id,
+                query_text_hash=query_text_hash,
+                model_name=getattr(model_client, "name", None),
+                created_at=now_iso(),
+                error_category=type(exc).__name__,
+                latency_ms=latency_ms,
+                user_role=user_context.role,
+                correlation_id=correlation_id,
+            )
+            raise
+
+        latency_ms = int((time.perf_counter() - started_at) * 1000)
+        response_text_hash = hashlib.sha256(answer.text.encode("utf-8")).hexdigest()
+        captured_entries = capture_sink.all_entries()
+        if captured_entries:
+            persistent_sink.record_with_latency(
+                captured_entries[-1],
+                latency_ms=latency_ms,
+                user_role=user_context.role,
+                correlation_id=correlation_id,
+                response_text_hash=response_text_hash,
+            )
+
     return _serialize_answer(answer)
 
 
@@ -251,6 +371,7 @@ def ai_query(
     body: AIQueryRequest,
     u: dict = Depends(user),
     model_client: AIModelClient = Depends(get_model_client),
+    x_request_id: Optional[str] = Header(default=None, alias="X-Request-ID"),
 ):
     query_text = body.query_text.strip()
     if not query_text:
@@ -264,7 +385,76 @@ def ai_query(
         user_id=u["id"], role=u["role"], is_active=bool(u["is_active"])
     )
 
-    return _handle(_run_query, user_context, query_text, model_client)
+    return _handle(_run_query, user_context, query_text, model_client, x_request_id)
 
 
-__all__ = ["router", "get_model_client", "AIQueryRequest"]
+@router.get("/api/ai/providers")
+def ai_providers(u: dict = Depends(user)):
+    """ADR-0020: list every registered ``AIModelClient`` provider.
+
+    Read-only, ``Depends(user)`` (matching every other read-only AI
+    gateway surface) -- listing available providers is not itself a
+    privileged operation. Never includes a secret/credential value:
+    ``ProviderInfo`` (``backend.ai_gateway.providers.registry``)
+    structurally carries only ``name``/``model_identifier``/
+    ``available``.
+    """
+    return {
+        "providers": [
+            {
+                "name": info.name,
+                "model_identifier": info.model_identifier,
+                "available": info.available,
+            }
+            for info in _PROVIDER_REGISTRY.list_providers()
+        ]
+    }
+
+
+@router.get("/api/ai/audit")
+def ai_audit_list(
+    limit: int = Query(default=50, ge=1, le=500),
+    u: dict = Depends(admin),
+):
+    """ADR-0020: most-recent-first page of the persisted AI audit
+    trail. ``Depends(admin)`` -- matches ``backend.api.dependencies.
+    admin``'s existing role-gate pattern already used throughout
+    ``backend/app.py`` for every other admin-only listing endpoint.
+
+    ``limit`` bounds/default live here, not in
+    ``backend.ai_gateway.store`` (see that module's
+    ``list_audit_records`` docstring): this route module is outside
+    ``backend/ai_gateway/`` and therefore outside the scope of
+    ``tests/ai/test_safety_and_validation.py``'s numeric-literal guard,
+    so the ordinary FastAPI ``Query(ge=..., le=...)`` validation
+    convention (already used for other query parameters throughout
+    ``backend/api/routes/*``) is the natural place for this bound to
+    live -- ``backend.ai_gateway.store.list_audit_records`` itself
+    applies whatever already-validated ``limit`` it is given, with no
+    clamping of its own.
+    """
+    with conn() as c:
+        records = list_audit_records(c, limit=limit)
+    return {"records": [_serialize_persisted_record(r) for r in records]}
+
+
+@router.get("/api/ai/audit/{audit_id}")
+def ai_audit_detail(audit_id: int, u: dict = Depends(admin)):
+    """ADR-0020: single persisted audit record by id. 404 (never a
+    500 or a silently-empty 200) when ``audit_id`` does not exist --
+    matches ``backend/api/routes/question_bank.py``'s own
+    ``_require_question_exists``-style 404 convention for an unknown
+    id."""
+    with conn() as c:
+        record = get_audit_record(c, audit_id)
+    if record is None:
+        raise HTTPException(404, f"audit_id {audit_id} bulunamadı")
+    return _serialize_persisted_record(record)
+
+
+__all__ = [
+    "router",
+    "get_model_client",
+    "AIQueryRequest",
+    "migrate_persistent_audit",
+]

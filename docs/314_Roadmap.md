@@ -150,3 +150,34 @@ historical analytics, any charting library, and any new statistics
 endpoint. Backend business logic, persistence, schema, and lifecycle
 rules (including the Faz 2.9.10 statistics contract itself) are
 unchanged.
+
+## v3.0.0-alpha.5 — Persistent Audit, Explainability, Provider Abstraction
+
+**Complete**, delivered 2026-08-09. Three scoped additions to the
+existing `backend/ai_gateway` AI layer (v3.0.0-alpha.1 through
+alpha.4), all additive:
+
+- Provider abstraction (`backend/ai_gateway/providers/`): an explicit
+  name -> `AIModelClient` registry, one offline-safe concrete provider
+  (`DeterministicModelClient`), no new competing abstraction, no real
+  network-calling provider added.
+- Persistent audit (`backend/ai_gateway/store.py`): every
+  `POST /api/ai/query` interaction (success and provider-failure) is
+  now written to a new, additive/idempotent SQLite table
+  (`ai_audit_records`) instead of only living in a request-scoped
+  in-memory sink. Hash/metadata only -- never raw prompt/response
+  text, never a secret or token. Two new admin-only endpoints to read
+  it back (`GET /api/ai/audit`, `GET /api/ai/audit/{audit_id}`).
+- Explainability: no new surface. The existing `ComposedAnswer`
+  structure (citations/result_label/evidence_status/
+  validation_required) already covers this phase's explainability
+  requirement and is reused verbatim.
+
+`POST /api/ai/query`'s pre-existing alpha.4 behavior is unchanged
+(still defaults to an always-unavailable provider at runtime). 48 new
+tests. See `docs/CHANGELOG.md`'s v3.0.0-alpha.5 entry for full detail.
+
+Deferred: real network-calling AI providers (OpenAI/Claude/Ollama);
+rewiring `POST /api/ai/query`'s default provider; the Torque
+Recommendation Engine (v3.0.0-beta.1) and Engineering Reasoning Engine
+(v3.0.0-beta.2).

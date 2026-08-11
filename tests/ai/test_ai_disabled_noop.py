@@ -79,11 +79,20 @@ def test_existing_login_and_engineering_endpoints_still_work(client, auth_header
 def test_ai_gateway_package_import_registers_no_extra_routes():
     """Importing backend.ai_gateway (as this test suite does) must not,
     by itself, register anything into backend.app's FastAPI app
-    instance beyond the one route this phase deliberately wires --
+    instance beyond the routes this phase deliberately wires --
     proves deletion-safety (ADR-0017 Karar 10) at the object level, not
     just the source-text level. Supersedes the pre-alpha.4 "zero
     /api/ai paths" assertion, which is now intentionally obsolete now
-    that v3.0.0-alpha.4 wires exactly one such path in."""
+    that v3.0.0-alpha.4 wired in the first such path.
+
+    v3.0.0-alpha.5 (ADR-0020) note: updated in place, following this
+    same file's own alpha.4-era precedent (see module docstring) --
+    three new, deliberately-scoped read-only paths were added
+    (``GET /api/ai/providers``, ``GET /api/ai/audit``,
+    ``GET /api/ai/audit/{audit_id}``); no other route was added or
+    removed, and the full guarded-path count (4) is asserted
+    explicitly so a future, unreviewed fifth route would fail this
+    test rather than silently pass."""
     import backend.ai_gateway.orchestrator  # noqa: F401 - import side-effect check only
 
     # openapi() flattens every mounted/included router into a single
@@ -92,4 +101,9 @@ def test_ai_gateway_package_import_registers_no_extra_routes():
     # internal detail (unlike walking app.routes directly).
     openapi_paths = set(app_module.app.openapi()["paths"].keys())
     ai_paths = {path for path in openapi_paths if path.startswith("/api/ai")}
-    assert ai_paths == {"/api/ai/query"}
+    assert ai_paths == {
+        "/api/ai/query",
+        "/api/ai/providers",
+        "/api/ai/audit",
+        "/api/ai/audit/{audit_id}",
+    }

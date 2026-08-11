@@ -55,9 +55,26 @@ class AIGatewayConfigurationError(AIGatewayError):
     client."""
 
 
+class ProviderNotFoundError(AIGatewayConfigurationError):
+    """Faz v3.0.0-alpha.5 (Provider Abstraction, ADR-0020): a caller
+    named an AI provider that is not registered in the active
+    ``backend.ai_gateway.providers.registry.ProviderRegistry``.
+
+    Deliberately a subclass of ``AIGatewayConfigurationError`` rather
+    than a new, unrelated exception type: an unknown provider name is
+    the same *kind* of failure as any other AI-gateway wiring mistake
+    (caller/config error, not a runtime provider failure), so it
+    reuses that branch of the existing hierarchy instead of growing a
+    parallel one. Never raised for a provider that exists but failed
+    at runtime -- that remains ``ModelUnavailableError``'s job,
+    unchanged.
+    """
+
+
 __all__ = [
     "AIGatewayError",
     "PermissionDeniedError",
     "ModelUnavailableError",
     "AIGatewayConfigurationError",
+    "ProviderNotFoundError",
 ]
