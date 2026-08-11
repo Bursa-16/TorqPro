@@ -77,7 +77,7 @@ function extractFunctionDecl(script, name) {
 const CONST_NAMES = [
   'I18N', 'FC_ENUM_LABELS', 'CURRENT_LANG',
   'FC_LIST', 'FC_SELECTED_ID', 'FC_COMPARE_ID', 'FC_REQUEST_SEQ', 'FC_LAST_REPORT',
-  'N01391', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
+  'SAMPLE_TORQUE_STUDY_TABLE', 'CL', 'TORQPRO_LIBRARY', 'APP_EDITION', 'DEMO_THREAD_LIMIT',
   'LAST_CALCULATION', 'ACTIVE_STANDARD_LIBRARY', 'OEM_NORM_DB', '_oF', 'FMEA', 'FMEA_SEVERITY_CLASS', 'ISH', 'CURRENT_ROLE',
   'CURRENT_USER', 'CURRENT_RELEASE_PACKAGE', 'ORG_SETTINGS', 'deferredPrompt',
   'DEPLOY_TYPE_LABEL_KEY', 'DEPLOY_BACKUP_LABEL_KEY', 'DEPLOY_CHANNEL_LABEL_KEY', 'LAST_DIAGNOSTICS',
@@ -104,7 +104,7 @@ const FUNCTION_NAMES = [
   'fcPopulateFilters', 'fcGroupOf', 'fcRenderList', 'fcRenderCompareOptions',
   'fcRenderOverview', 'fcRenderRangeViz', 'fcRenderReadiness',
   'fcWarningSeverity', 'fcRenderWarnings', 'fcRenderComparison', 'fcRenderReport',
-  'n01391Hesapla', 'buildCL', 'confLabel', 'vdiHesapla',
+  'sampleTorqueStudyHesapla', 'buildCL', 'confLabel', 'vdiHesapla',
   'saveCalibrationCase', 'loadCalibrationCases',
   'libById', 'optionHtml', 'limitThreadsForEdition', 'libraryInit', 'libraryFamilyChanged',
   'libraryStandardChanged', 'libraryThreadChanged', 'libraryCoatingChanged', 'getLibrarySelection',
@@ -820,7 +820,7 @@ async function main() {
 
   // ================================================================
   // Faz 2.7.1 -- Calculations & Production Validation pages
-  // (n01391 / hizli / vdi / checklist / yetenek / calibration /
+  // (sampleTorqueStudy / hizli / vdi / checklist / yetenek / calibration /
   // validation). Same harness pattern as Faz 2.7.0.
   // ================================================================
 
@@ -828,7 +828,7 @@ async function main() {
   {
     const ctx = newContext(extractedSource, rawHtml, {});
     const titles = {
-      'n01391.title': ['Örnek Tork Çalışması', 'Sample Torque Study'], // startsWith check below
+      'sampleTorqueStudy.title': ['Örnek Tork Çalışması', 'Sample Torque Study'], // startsWith check below
       'hizli.title': ['Teorik Tork Hesaplama', 'Theoretical Torque Calculation'],
       'vdi.title': ['Gelişmiş Bağlantı Analizi', 'Advanced Joint Analysis'],
       'checklist.title': ['Torklama Proses Check-List', 'Torque Process Check-List'],
@@ -853,7 +853,7 @@ async function main() {
   {
     const ctx = newContext(extractedSource, rawHtml, {});
     const fields = {
-      'n01391.thread_size': ['Diş Ölçüsü', 'Thread Size'],
+      'sampleTorqueStudy.thread_size': ['Diş Ölçüsü', 'Thread Size'],
       'hizli.bolt_diameter': ['Cıvata Çapı', 'Bolt Diameter'],
       'hizli.calculate_btn': ['🔧 Hesapla', '🔧 Calculate'],
       'vdi.run_button': ['VDI 2230 Çalıştır', 'Run VDI 2230'],
@@ -926,7 +926,7 @@ async function main() {
   {
     const ctx = newContext(extractedSource, rawHtml, {});
     const emptyStates = {
-      'n01391.select_parameters': ['Parametreleri seçin', 'Select parameters'],
+      'sampleTorqueStudy.select_parameters': ['Parametreleri seçin', 'Select parameters'],
       'hizli.enter_parameters': ['Parametreleri girin', 'Enter parameters'],
       'vdi.enter_parameters': ['Parametreleri girin', 'Enter parameters'],
       'yetenek.enter_measurements': ['Ölçümleri girin', 'Enter measurements'],
@@ -968,11 +968,11 @@ async function main() {
 
   // ---- 27. No stray English text visible in TR mode / Turkish text in EN mode
   //          for every scraped data-i18n[-placeholder] key in the Faz 2.7.1
-  //          namespaces (n01391/hizli/vdi/checklist/yetenek/calibration/validation).
+  //          namespaces (sampleTorqueStudy/hizli/vdi/checklist/yetenek/calibration/validation).
   //          A key "leaking" means t() returned the raw key itself (unresolved). ----
   {
     const ctx = newContext(extractedSource, rawHtml, {});
-    const prefixes = ['n01391.', 'hizli.', 'vdi.', 'checklist.', 'yetenek.', 'calibration.', 'validation.'];
+    const prefixes = ['sampleTorqueStudy.', 'hizli.', 'vdi.', 'checklist.', 'yetenek.', 'calibration.', 'validation.'];
     const allI18nKeys = scrapeDataI18nKeys(rawHtml, 'data-i18n')
       .concat(scrapeDataI18nKeys(rawHtml, 'data-i18n-placeholder'));
     const scoped = [...new Set(allI18nKeys)].filter((k) => prefixes.some((p) => k.startsWith(p)));
@@ -1577,11 +1577,11 @@ async function main() {
     checkEqual('7.1 nominal_nm unchanged', p71.nominal_nm, 105);
     checkEqual('7.1 t_min unchanged', p71.t_min, 100);
     checkEqual('7.1 t_max unchanged', p71.t_max, 110);
-    checkEqual('7.1 sourceReference (norm article) unchanged', p71.sourceReference, '2.00176/86 Madde 7.1');
+    checkEqual('7.1 sourceReference (norm article) unchanged', p71.sourceReference, 'X.XXXXX/XX Madde 7.1');
     const p1015 = db.sections.find((s) => s.id === '10').noktalar.find((p) => p.id === '10.15');
     checkEqual('10.15 aci_deg unchanged', p1015.aci_deg, 45);
     checkEqual('10.15 ilk_tork unchanged', p1015.ilk_tork, 90);
-    checkEqual('meta.norm_no unchanged', db.meta.norm_no, '2.00176/86');
+    checkEqual('meta.norm_no unchanged', db.meta.norm_no, 'X.XXXXX/XX');
   }
 
   // ---- 50. OEM static UI TR/EN ----
@@ -2168,7 +2168,7 @@ async function main() {
   {
     check('VDI 2230 appears verbatim (norm page)', /VDI 2230/.test(rawHtml));
     check('ISO 16047 appears verbatim (norm + coatings test_standard)', /ISO 16047/.test(rawHtml));
-    check('FIAT norm number 2.00176/86 appears verbatim', /2\.00176\/86/.test(rawHtml));
+    check('anonymized norm number placeholder appears verbatim (public/demo hardening)', /X\.XXXXX\/XX/.test(rawHtml));
     const ctx = newContext(extractedSource, rawHtml, {});
     const p71 = ctx.context.__getOemNormDb().sections.find((s) => s.id === '7').noktalar.find((p) => p.id === '7.1');
     ctx.context.setLanguage('en');

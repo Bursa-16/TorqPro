@@ -103,9 +103,9 @@ def test_compatibility_record_field_names_match_validator():
 
 def test_oem_record_requires_standard_reference_and_carries_no_data():
     record = OEMRecord.model_validate(
-        {"oem_name": "Example OEM", "standard_reference": "FIAT-01391"}
+        {"oem_name": "Example OEM", "standard_reference": "REF-EXAMPLE-01"}
     )
-    assert record.standard_reference == "FIAT-01391"
+    assert record.standard_reference == "REF-EXAMPLE-01"
     # No engineering value/unit fields exist on OEMRecord -- it only
     # references a backend.standards entry by name.
     assert not hasattr(record, "value")

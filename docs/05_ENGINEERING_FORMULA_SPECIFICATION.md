@@ -212,7 +212,7 @@ Each result stores:
 - ISO 16047: torque/clamp-force testing, not the sole design-equation source.
 - ISO 2320: prevailing-torque steel nuts and performance/testing.
 - ISO 898 series: mechanical/physical properties for bolts, nuts and washers as applicable.
-- FIAT 01391 and 01393/01: customer/OEM rule packs and forecast/validation workflows according to licensed documents.
+- OEM REF-XXXXX and X.XXXXX/XX: customer/OEM rule packs and forecast/validation workflows according to licensed documents.
 
 ## 20. Validation requirement
 

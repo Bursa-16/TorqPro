@@ -207,7 +207,7 @@ def test_blocked_checks_never_counted_in_score_denominator():
 # ---------------------------------------------------------------------
 
 def test_oem_reference_present_resolves_to_compatible_or_incompatible():
-    r = client.post(ENDPOINT, json={"oem_reference": "FIAT-01391"}, headers=_auth())
+    r = client.post(ENDPOINT, json={"oem_reference": "REF-EXAMPLE-01"}, headers=_auth())
     assert r.status_code == 200, r.text
     check = next(c for c in r.json()["checks"] if c["check_id"] == "oem_recommendation")
     assert check["status"] in (ai.STATUS_COMPATIBLE, ai.STATUS_INCOMPATIBLE)

@@ -293,7 +293,7 @@ def migrate():
         from backend.question_bank.store import migrate as migrate_question_bank
         migrate_question_bank(c)
 
-        # Faz v3.0.0-alpha.5 (Persistent Audit, ADR-0020): backend.app
+        # Faz v3.0.0-alpha.6 (Persistent Audit, ADR-0020): backend.app
         # is structurally forbidden from importing backend.ai_gateway
         # directly (tests/ai/test_dependency_direction.py's one-way
         # guard -- backend/api/routes/ai_gateway.py is the sole
@@ -1139,6 +1139,11 @@ class RevisionIn(BaseModel):
 class ReviewIn(BaseModel):
     note:Optional[str]=None
 
+def _get_owned_project(project_id:int,u:dict,c):
+    project=c.execute("SELECT * FROM projects WHERE id=? AND created_by=?",(project_id,u["id"])).fetchone()
+    if not project:raise HTTPException(404,"Proje bulunamadı")
+    return project
+
 @app.post("/api/projects")
 def create_project(x:ProjectIn,u=Depends(user)):
     if u["role"]=="viewer":raise HTTPException(403,"Viewer rolü proje oluşturamaz")
@@ -1149,7 +1154,7 @@ def create_project(x:ProjectIn,u=Depends(user)):
 
 @app.get("/api/projects")
 def list_projects(u=Depends(user)):
-    with conn() as c:r=c.execute("SELECT p.*,COUNT(cal.id) calculation_count FROM projects p LEFT JOIN calculations cal ON cal.project_id=p.id GROUP BY p.id ORDER BY p.id DESC").fetchall()
+    with conn() as c:r=c.execute("SELECT p.*,COUNT(cal.id) calculation_count FROM projects p LEFT JOIN calculations cal ON cal.project_id=p.id WHERE p.created_by=? GROUP BY p.id ORDER BY p.id DESC",(u["id"],)).fetchall()
     return [dict(x) for x in r]
 
 @app.post("/api/revisions")
@@ -1207,8 +1212,7 @@ def reject_revision(rid:int,x:ReviewIn,u=Depends(user)):
 @app.get("/api/projects/{project_id}/traceability")
 def project_traceability(project_id:int,u=Depends(user)):
     with conn() as c:
-        project=c.execute("SELECT * FROM projects WHERE id=?",(project_id,)).fetchone()
-        if not project:raise HTTPException(404,"Proje bulunamadı")
+        project=_get_owned_project(project_id,u,c)
         calcs=c.execute("SELECT * FROM calculations WHERE project_id=? ORDER BY id",(project_id,)).fetchall()
         out=[]
         for calc in calcs:
@@ -1233,8 +1237,7 @@ def project_traceability(project_id:int,u=Depends(user)):
 @app.get("/api/projects/{project_id}/release-package")
 def project_release_package(project_id:int,title:str="Bağlantı Elemanları Tork Doğrulama Raporu",u=Depends(user)):
     with conn() as c:
-        project=c.execute("SELECT * FROM projects WHERE id=?",(project_id,)).fetchone()
-        if not project:raise HTTPException(404,"Proje bulunamadı")
+        project=_get_owned_project(project_id,u,c)
     trace=project_traceability(project_id,u)
     items=[]
     approved=0
@@ -1269,7 +1272,9 @@ def project_release_package(project_id:int,title:str="Bağlantı Elemanları Tor
 
 @app.get("/api/projects/{project_id}/release-packages")
 def list_release_packages(project_id:int,u=Depends(user)):
-    with conn() as c:rows=c.execute("SELECT id,package_no,title,release_ready,decision,created_at FROM project_release_packages WHERE project_id=? ORDER BY id DESC",(project_id,)).fetchall()
+    with conn() as c:
+        _get_owned_project(project_id,u,c)
+        rows=c.execute("SELECT id,package_no,title,release_ready,decision,created_at FROM project_release_packages WHERE project_id=? ORDER BY id DESC",(project_id,)).fetchall()
     return [dict(r) for r in rows]
 
 class OrganizationIn(BaseModel):

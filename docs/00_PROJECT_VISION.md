@@ -45,7 +45,7 @@ The central object is the **Joint Revision**, not a bolt row. The joint contains
 
 ### 3.3 Two calculation experiences
 
-**Quick estimation** provides rapid preliminary values such as FIAT 01391-style forecast torque where licensed and configured. It is clearly labelled as an estimate with assumptions and limitations.
+**Quick estimation** provides rapid preliminary values such as an OEM REF-XXXXX-style forecast torque where licensed and configured. It is clearly labelled as an estimate with assumptions and limitations.
 
 **Detailed engineering** uses explicit geometry, separate thread/bearing friction, stiffness, load sharing, preload losses, service checks, uncertainty and standards rules. It cannot silently fall back to quick equations.
 

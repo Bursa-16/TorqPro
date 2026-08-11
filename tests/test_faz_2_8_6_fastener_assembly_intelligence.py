@@ -302,7 +302,9 @@ def test_boundary_washer_diameter_requires_both_bolt_size_and_standard():
 
 
 def test_boundary_oem_and_automotive_share_mechanism_but_are_separate_checks():
-    result = ai.assess_assembly(oem_reference="FIAT-01391", automotive_reference="FIAT-01391")
+    result = ai.assess_assembly(
+        oem_reference="REF-EXAMPLE-01", automotive_reference="REF-EXAMPLE-01"
+    )
     oem = next(c for c in result.checks if c.check_id == "oem_recommendation")
     auto = next(c for c in result.checks if c.check_id == "automotive_recommendation")
     assert oem.status in ai._ALL_STATUSES

@@ -36,7 +36,7 @@ Statuses: draft, reviewed, approved, retired. Validation: provisional, validated
 
 ## 5. Standard packs
 
-Initial packs include ISO 898 material compatibility/properties, ISO 2320 prevailing-torque data requirements, ISO 16047 test-data metadata, FIAT 01391 quick forecast and FIAT 01393 validation rules where licensed. VDI 2230 packs are phased and cannot be called complete until validated.
+Initial packs include ISO 898 material compatibility/properties, ISO 2320 prevailing-torque data requirements, ISO 16047 test-data metadata, OEM REF-XXXXX quick forecast and OEM X.XXXXX validation rules where licensed. VDI 2230 packs are phased and cannot be called complete until validated.
 
 ## 6. Customer rules
 

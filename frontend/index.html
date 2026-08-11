@@ -174,10 +174,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:14
 .oem-sec-tab{padding:5px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);color:var(--text2);cursor:pointer;font-size:12px;transition:all .15s}
 .oem-sec-tab.active{background:var(--accent2);color:#000;border-color:var(--accent2);font-weight:600}
 .oem-sec-tab:hover:not(.active){background:var(--border);color:var(--text)}
-/* 01391 */
-.n01391-result{background:var(--surface2);border:2px solid var(--accent);border-radius:10px;padding:16px;margin-top:12px}
-.n01391-val{font-size:28px;font-weight:700;color:var(--accent2)}
-.n01391-warn{background:rgba(245,158,11,.1);border-left:3px solid var(--warning);padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;color:var(--warning);margin-top:10px;line-height:1.6}
+/* sampleTorqueStudy */
+.sampleTorqueStudy-result{background:var(--surface2);border:2px solid var(--accent);border-radius:10px;padding:16px;margin-top:12px}
+.sampleTorqueStudy-val{font-size:28px;font-weight:700;color:var(--accent2)}
+.sampleTorqueStudy-warn{background:rgba(245,158,11,.1);border-left:3px solid var(--warning);padding:10px 14px;border-radius:0 8px 8px 0;font-size:12px;color:var(--warning);margin-top:10px;line-height:1.6}
 
 .library-panel{background:linear-gradient(135deg,rgba(79,126,248,.10),rgba(34,197,94,.04));border:1px solid rgba(79,126,248,.35);border-radius:10px;padding:16px;margin-bottom:14px}
 .library-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
@@ -431,7 +431,7 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
   <div class="sidebar-section">
     <div class="sidebar-label" data-i18n="sidebar.section_quick_access">Hızlı Erişim</div>
     <div class="sidebar-item active" onclick="showPage('dashboard',this)"><span class="sidebar-icon">📊</span> <span data-i18n="sidebar.dashboard">Dashboard</span></div>
-    <div class="sidebar-item" onclick="showPage('n01391',this)"><span class="sidebar-icon">⚡</span> <span data-i18n="sidebar.sample_torque_study">Örnek Tork Çalışması</span></div>
+    <div class="sidebar-item" onclick="showPage('sampleTorqueStudy',this)"><span class="sidebar-icon">⚡</span> <span data-i18n="sidebar.sample_torque_study">Örnek Tork Çalışması</span></div>
     <div class="sidebar-item" onclick="showPage('hizli',this)"><span class="sidebar-icon">🔧</span> <span data-i18n="sidebar.torque_calc">Tork Hesap</span></div>
     <div class="sidebar-item" onclick="showPage('vdi',this)"><span class="sidebar-icon">🔬</span> <span data-i18n="sidebar.advanced_analysis">Gelişmiş Analiz</span></div>
   </div>
@@ -557,28 +557,28 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
   </div>
 </div>
 
-<!-- 01391 HIZLI ÖNGÖRÜ -->
-<div id="page-n01391" class="page">
+<!-- SAMPLE TORQUE STUDY (anonymized) HIZLI ÖNGÖRÜ -->
+<div id="page-sampleTorqueStudy" class="page">
   <div class="section-header"><span class="section-icon">⚡</span><div>
-    <div class="section-title" data-i18n="n01391.title">Örnek Tork Çalışması</div>
-    <div class="section-sub" data-i18n="n01391.subtitle">Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları</div>
+    <div class="section-title" data-i18n="sampleTorqueStudy.title">Örnek Tork Çalışması</div>
+    <div class="section-sub" data-i18n="sampleTorqueStudy.subtitle">Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları</div>
   </div></div>
   <div class="alert alert-warn" style="display:flex;align-items:center;gap:8px">
-    <strong data-i18n="n01391.scope_priority_label">⚠️ Kapsam ve Öncelik</strong>
-    <span id="n01391-scope-info"></span>
+    <strong data-i18n="sampleTorqueStudy.scope_priority_label">⚠️ Kapsam ve Öncelik</strong>
+    <span id="sampleTorqueStudy-scope-info"></span>
   </div>
   <div class="alert alert-info" style="font-size:12px;display:flex;align-items:center;gap:8px">
-    <strong data-i18n="n01391.ref_source_label">Referans Kaynak</strong>
-    <span id="n01391-ref-info"></span>
+    <strong data-i18n="sampleTorqueStudy.ref_source_label">Referans Kaynak</strong>
+    <span id="sampleTorqueStudy-ref-info"></span>
   </div>
   <div class="grid2">
     <div class="card">
-      <div class="card-title" data-i18n="n01391.param_selection_title">Parametre Seçimi</div>
-      <div class="card-sub" data-i18n="n01391.param_selection_sub">Seçili veri setinde tanımlı ölçüler listelenmiştir</div>
+      <div class="card-title" data-i18n="sampleTorqueStudy.param_selection_title">Parametre Seçimi</div>
+      <div class="card-sub" data-i18n="sampleTorqueStudy.param_selection_sub">Seçili veri setinde tanımlı ölçüler listelenmiştir</div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label" data-i18n="n01391.thread_size">Diş Ölçüsü</label>
-          <select class="form-select" id="n_dis" onchange="n01391Hesapla()">
+          <label class="form-label" data-i18n="sampleTorqueStudy.thread_size">Diş Ölçüsü</label>
+          <select class="form-select" id="n_dis" onchange="sampleTorqueStudyHesapla()">
             <option value="M5">M5</option>
             <option value="M6">M6</option>
             <option value="M8">M8</option>
@@ -591,37 +591,37 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label" data-i18n="n01391.connection_type">Bağlantı Tipi</label>
-          <select class="form-select" id="n_flans" onchange="n01391Hesapla()">
-            <option value="no" data-i18n="n01391.no_flange">Flanşsız</option>
-            <option value="yes" selected data-i18n="n01391.with_flange">Flanşlı</option>
+          <label class="form-label" data-i18n="sampleTorqueStudy.connection_type">Bağlantı Tipi</label>
+          <select class="form-select" id="n_flans" onchange="sampleTorqueStudyHesapla()">
+            <option value="no" data-i18n="sampleTorqueStudy.no_flange">Flanşsız</option>
+            <option value="yes" selected data-i18n="sampleTorqueStudy.with_flange">Flanşlı</option>
           </select>
         </div>
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label" data-i18n="n01391.bolt_strength_class">Cıvata Dayanım Sınıfı</label>
-          <select class="form-select" id="n_civata" onchange="n01391Hesapla()">
+          <label class="form-label" data-i18n="sampleTorqueStudy.bolt_strength_class">Cıvata Dayanım Sınıfı</label>
+          <select class="form-select" id="n_civata" onchange="sampleTorqueStudyHesapla()">
             <option value="8.8">8.8</option>
             <option value="10.9" selected>10.9</option>
           </select>
         </div>
         <div class="form-group">
-          <label class="form-label" data-i18n="n01391.nut_strength_class">Somun Dayanım Sınıfı</label>
-          <select class="form-select" id="n_somun" onchange="n01391Hesapla()">
+          <label class="form-label" data-i18n="sampleTorqueStudy.nut_strength_class">Somun Dayanım Sınıfı</label>
+          <select class="form-select" id="n_somun" onchange="sampleTorqueStudyHesapla()">
             <option value="8">8</option>
             <option value="10" selected>10</option>
           </select>
         </div>
       </div>
       <div class="alert alert-info" style="margin-top:8px;font-size:12px;display:flex;align-items:center;gap:8px">
-        <span data-i18n="n01391.matching_rule_label">Sınıf Eşleştirme Kuralı</span>
-        <span id="n01391-matching-info"></span>
+        <span data-i18n="sampleTorqueStudy.matching_rule_label">Sınıf Eşleştirme Kuralı</span>
+        <span id="sampleTorqueStudy-matching-info"></span>
       </div>
     </div>
-    <div class="card" id="n01391-sonuc">
-      <div class="card-title" data-i18n="n01391.forecast_result_title">Öngörü Sonucu</div>
-      <div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">⚡</div><div data-i18n="n01391.select_parameters">Parametreleri seçin</div></div>
+    <div class="card" id="sampleTorqueStudy-sonuc">
+      <div class="card-title" data-i18n="sampleTorqueStudy.forecast_result_title">Öngörü Sonucu</div>
+      <div style="text-align:center;padding:30px;color:var(--text3)"><div style="font-size:36px;margin-bottom:8px">⚡</div><div data-i18n="sampleTorqueStudy.select_parameters">Parametreleri seçin</div></div>
     </div>
   </div>
 </div>
@@ -839,7 +839,7 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
 <div id="page-oem" class="page">
   <div class="section-header"><span class="section-icon">🔍</span><div>
     <div class="section-title" data-i18n="oem.title">OEM Norm Sorgulama</div>
-    <div class="section-sub" data-i18n="oem.subtitle">Araç Tipi 263 · Issue A · 19.11.2008 · Kontrol Metodu: NP 0.00010/01 Metod A</div>
+    <div class="section-sub" data-i18n="oem.subtitle">Model A · Issue A · 19.11.2008 · Kontrol Metodu: Kontrol Metodu Ref-01</div>
   </div></div>
   <div class="alert alert-info"><strong>⚠️</strong> <span data-i18n="oem.scope_note">Bu modüldeki T' min / T' max değerleri normdan birebir okunmaktadır — teorik hesap uygulanmaz. Teknik resim değeri norm değerinden farklıysa teknik resim önceliklidir. Normda bulunmayan bağlantılar için örnek OEM genel öngörü tablosuna yalnız ön değerlendirme amacıyla başvurunuz.</span></div>
   <div class="grid2" style="margin-bottom:16px">
@@ -1140,7 +1140,7 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
 <div id="page-washerresolution" class="page">
   <div class="section-header"><span class="section-icon">🧾</span><div>
     <div class="section-title" data-i18n="wrr.page_title">Washer Resolution Report</div>
-    <div class="section-sub" data-i18n="wrr.page_subtitle">Read-only status overview of the Faz 2.8.5 washer correction/resolution ledger and the Faz 2.8.9 decision history</div>
+    <div class="section-sub" data-i18n="wrr.page_subtitle">Read-only status overview of the washer correction/resolution ledger and decision history</div>
   </div></div>
   <div class="alert alert-info" data-i18n="wrr.source_notice">
     Effective statuses are derived from the decision history. The source ledger is not modified.
@@ -1363,21 +1363,21 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
 <div id="page-governance" class="page">
   <div class="section-header"><span class="section-icon">🗂️</span><div>
     <div class="section-title" data-i18n="gov.page_title">Engineering Governance Workspace</div>
-    <div class="section-sub" data-i18n="gov.page_subtitle">Generic, domain-agnostic review / publication / resolution event workspace (Faz 2.8.11 Stage 4)</div>
+    <div class="section-sub" data-i18n="gov.page_subtitle">Generic, domain-agnostic review / publication / resolution event workspace</div>
   </div></div>
 
   <div class="alert alert-info">
     <div data-i18n="gov.notice_append_only">Governance events are append-only: nothing is ever edited or deleted, only added.</div>
     <div data-i18n="gov.notice_effective_status">Effective status is always derived from the full event history, never stored separately.</div>
     <div data-i18n="gov.notice_lifecycle_independent">Review, publication and resolution are three independent lifecycle groups -- they never share one status.</div>
-    <div data-i18n="gov.notice_stage4_generic">This Stage 4 workspace is intentionally generic: it does not yet know about any specific TorqPro record type. Connecting it to real washer resolutions, calculation revisions or joint revisions is Stage 5 work.</div>
+    <div data-i18n="gov.notice_stage4_generic">This workspace is intentionally generic: it does not yet know about any specific TorqPro record type. Connecting it to real washer resolutions, calculation revisions or joint revisions is planned future work.</div>
   </div>
 
   <div class="card">
     <div class="card-title" data-i18n="gov.lookup_title">Aggregate Lookup</div>
     <div class="form-row3">
-      <div class="form-group"><label class="form-label" data-i18n="gov.aggregate_id_label">Aggregate ID</label><input class="form-input" id="gov_aggregate_id"></div>
-      <div class="form-group"><label class="form-label" data-i18n="gov.aggregate_type_label">Aggregate Type</label><input class="form-input" id="gov_aggregate_type"></div>
+      <div class="form-group"><label class="form-label" data-i18n="gov.aggregate_id_label">Record ID</label><input class="form-input" id="gov_aggregate_id"></div>
+      <div class="form-group"><label class="form-label" data-i18n="gov.aggregate_type_label">Record Type</label><input class="form-input" id="gov_aggregate_type"></div>
       <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="govLoad()" data-i18n="gov.load_button">Load</button></div>
     </div>
   </div>
@@ -1397,8 +1397,8 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
   </div>
 
   <div class="card">
-    <div class="card-title" data-i18n="gov.jr.section_title">Joint Revision Projection (read-only)</div>
-    <div class="card-sub" data-i18n="gov.jr.section_sub">Read-only compatibility view of an existing joint revision's review status (Faz 2.8.13 Stage 3). Never edits, approves, rejects or resolves anything.</div>
+    <div class="card-title" data-i18n="gov.jr.section_title">Joint Revision Compatibility View (read-only)</div>
+    <div class="card-sub" data-i18n="gov.jr.section_sub">Read-only compatibility view of an existing joint revision's review status. Never edits, approves, rejects or resolves anything.</div>
     <div class="form-row3">
       <div class="form-group"><label class="form-label" data-i18n="gov.jr.revision_id_label">Joint Revision ID</label><input class="form-input" id="gov_jr_revision_id"></div>
       <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="govLoadJointRevision()" data-i18n="gov.jr.lookup_button">Look Up</button></div>
@@ -1408,14 +1408,14 @@ html{scrollbar-width:thin;scrollbar-color:var(--neutral) var(--surface)}
 
   <div class="card">
     <div class="card-title" data-i18n="gov.jrlist.section_title">Joint Revision List (read-only)</div>
-    <div class="card-sub" data-i18n="gov.jrlist.section_sub">Read-only bulk view of joint revision compatibility projections, optionally filtered by joint ID (Faz 2.8.14 Stage 4). Never edits, approves, rejects or resolves anything.</div>
+    <div class="card-sub" data-i18n="gov.jrlist.section_sub">Read-only bulk view of joint revision compatibility records, optionally filtered by joint ID. Never edits, approves, rejects or resolves anything.</div>
     <div class="form-row">
       <div class="form-group"><label class="form-label" data-i18n="gov.jrlist.joint_id_label">Joint ID (optional)</label><input class="form-input" id="gov_jrlist_joint_id" data-i18n-placeholder="gov.jrlist.joint_id_placeholder" placeholder="Leave empty to list all revisions"></div>
       <div class="form-group" style="display:flex;align-items:flex-end"><button class="btn btn-primary" onclick="govLoadJointRevisions()" data-i18n="gov.jrlist.load_button">List</button></div>
     </div>
     <div id="gov-jrlist-result"></div>
 
-    <div class="card-sub" style="margin-top:16px" data-i18n="gov.jrlist.query_section_sub">Search, sort, page, and export the same read-only data (Faz 2.8.16). Uses the same Joint ID filter above.</div>
+    <div class="card-sub" style="margin-top:16px" data-i18n="gov.jrlist.query_section_sub">Search, sort, page, and export the same read-only data. Uses the same Joint ID filter above.</div>
     <div class="form-row3">
       <div class="form-group"><label class="form-label" data-i18n="gov.jrlist.searchLabel">Search</label><input class="form-input" id="gov_jrlist_query_search" data-i18n-placeholder="gov.jrlist.searchPlaceholder" placeholder="Search results" onkeydown="if(event.key==='Enter'){event.preventDefault();govJointRevisionQuerySearch();}"></div>
       <div class="form-group"><label class="form-label" data-i18n="gov.jrlist.sortBy">Sort by</label>
@@ -2337,28 +2337,28 @@ const I18N = {
     'dashboard.status_resolved': 'Resolved',
 
     // ---- Faz 2.7.1: Calculations & Production Validation ----
-    // n01391 (Sample Torque Study)
-    'n01391.title': 'Sample Torque Study',
-    'n01391.subtitle': 'Size and class combinations defined in the selected demo dataset',
-    'n01391.scope_priority_label': '⚠️ Scope & Priority',
-    'n01391.scope_priority_text': 'If a technical drawing or project specification exists, that value takes priority; this screen is for sample reference only.',
-    'n01391.scope_priority_icon_label': 'View scope and priority details',
-    'n01391.ref_source_label': 'Reference Source',
-    'n01391.ref_source_text': 'TorqPro Demo Engineering Dataset v1.0 — not an actual OEM standard.',
-    'n01391.ref_source_icon_label': 'View reference source',
-    'n01391.param_selection_title': 'Parameter Selection',
-    'n01391.param_selection_sub': 'Sizes defined in the selected dataset are listed',
-    'n01391.thread_size': 'Thread Size',
-    'n01391.connection_type': 'Connection Type',
-    'n01391.no_flange': 'No Flange',
-    'n01391.with_flange': 'Flanged',
-    'n01391.bolt_strength_class': 'Bolt Strength Class',
-    'n01391.nut_strength_class': 'Nut Strength Class',
-    'n01391.matching_rule': 'Nut class 8 → matched with bolt class 8.8, nut class 10 → matched with bolt class 10.9. The lower class governs in incompatible combinations.',
-    'n01391.matching_rule_label': 'Class Matching Rule',
-    'n01391.matching_rule_icon_label': 'View class matching rule details',
-    'n01391.forecast_result_title': 'Forecast Result',
-    'n01391.select_parameters': 'Select parameters',
+    // sampleTorqueStudy (Sample Torque Study)
+    'sampleTorqueStudy.title': 'Sample Torque Study',
+    'sampleTorqueStudy.subtitle': 'Size and class combinations defined in the selected demo dataset',
+    'sampleTorqueStudy.scope_priority_label': '⚠️ Scope & Priority',
+    'sampleTorqueStudy.scope_priority_text': 'If a technical drawing or project specification exists, that value takes priority; this screen is for sample reference only.',
+    'sampleTorqueStudy.scope_priority_icon_label': 'View scope and priority details',
+    'sampleTorqueStudy.ref_source_label': 'Reference Source',
+    'sampleTorqueStudy.ref_source_text': 'TorqPro Demo Engineering Dataset v1.0 — not an actual OEM standard.',
+    'sampleTorqueStudy.ref_source_icon_label': 'View reference source',
+    'sampleTorqueStudy.param_selection_title': 'Parameter Selection',
+    'sampleTorqueStudy.param_selection_sub': 'Sizes defined in the selected dataset are listed',
+    'sampleTorqueStudy.thread_size': 'Thread Size',
+    'sampleTorqueStudy.connection_type': 'Connection Type',
+    'sampleTorqueStudy.no_flange': 'No Flange',
+    'sampleTorqueStudy.with_flange': 'Flanged',
+    'sampleTorqueStudy.bolt_strength_class': 'Bolt Strength Class',
+    'sampleTorqueStudy.nut_strength_class': 'Nut Strength Class',
+    'sampleTorqueStudy.matching_rule': 'Nut class 8 → matched with bolt class 8.8, nut class 10 → matched with bolt class 10.9. The lower class governs in incompatible combinations.',
+    'sampleTorqueStudy.matching_rule_label': 'Class Matching Rule',
+    'sampleTorqueStudy.matching_rule_icon_label': 'View class matching rule details',
+    'sampleTorqueStudy.forecast_result_title': 'Forecast Result',
+    'sampleTorqueStudy.select_parameters': 'Select parameters',
 
     // hizli (Theoretical Torque Calculation)
     'hizli.title': 'Theoretical Torque Calculation',
@@ -2538,23 +2538,23 @@ const I18N = {
     'validation.footer_warning': 'Draft data must not be used as a production torque value without a verified standard or test report.',
 
     // ---- Faz 2.7.1b: dynamic calculation/validation result text ----
-    'n01391.thread_not_in_norm': 'This thread size is not defined in the norm.',
-    'n01391.result_title': 'Sample Torque Study Result',
-    'n01391.demo_dataset': 'Demo dataset',
-    'n01391.selection_label': 'Selection',
-    'n01391.bolt_label': 'Bolt',
-    'n01391.nut_label': 'Nut',
-    'n01391.mismatch_warning': 'Bolt and nut class are mismatched — the lower class values are being used.',
-    'n01391.mismatch_icon_label': 'View class mismatch details',
-    'n01391.forecast_nominal_torque': 'Forecast Nominal Torque',
-    'n01391.forecast_tensile_force': 'Forecast Tensile Force',
-    'n01391.disclaimer_line1': 'This value is a sample estimate — it is not a definitive or approved production torque.',
-    'n01391.disclaimer_line2': 'If a technical drawing or model-based OEM norm specifies a particular value, that value takes priority.',
-    'n01391.disclaimer_line3': 'The production value must be finalized with joint testing, friction verification, tool capability, and product verification.',
-    'n01391.disclaimer_line4': 'The values apply to fasteners as they leave production, with no additional lubricant applied.',
-    'n01391.disclaimer_icon_label': 'View full disclaimer details',
-    'n01391.goto_theoretical': '→ Go to Theoretical Calculation',
-    'n01391.goto_oem_search': '→ Search OEM Norm',
+    'sampleTorqueStudy.thread_not_in_norm': 'This thread size is not defined in the norm.',
+    'sampleTorqueStudy.result_title': 'Sample Torque Study Result',
+    'sampleTorqueStudy.demo_dataset': 'Demo dataset',
+    'sampleTorqueStudy.selection_label': 'Selection',
+    'sampleTorqueStudy.bolt_label': 'Bolt',
+    'sampleTorqueStudy.nut_label': 'Nut',
+    'sampleTorqueStudy.mismatch_warning': 'Bolt and nut class are mismatched — the lower class values are being used.',
+    'sampleTorqueStudy.mismatch_icon_label': 'View class mismatch details',
+    'sampleTorqueStudy.forecast_nominal_torque': 'Forecast Nominal Torque',
+    'sampleTorqueStudy.forecast_tensile_force': 'Forecast Tensile Force',
+    'sampleTorqueStudy.disclaimer_line1': 'This value is a sample estimate — it is not a definitive or approved production torque.',
+    'sampleTorqueStudy.disclaimer_line2': 'If a technical drawing or model-based OEM norm specifies a particular value, that value takes priority.',
+    'sampleTorqueStudy.disclaimer_line3': 'The production value must be finalized with joint testing, friction verification, tool capability, and product verification.',
+    'sampleTorqueStudy.disclaimer_line4': 'The values apply to fasteners as they leave production, with no additional lubricant applied.',
+    'sampleTorqueStudy.disclaimer_icon_label': 'View full disclaimer details',
+    'sampleTorqueStudy.goto_theoretical': '→ Go to Theoretical Calculation',
+    'sampleTorqueStudy.goto_oem_search': '→ Search OEM Norm',
     'hizli.missing_data': 'Data required for the calculation is missing.',
     'hizli.fallback': 'Fallback',
     'hizli.result_standard_thread_class': 'Standard / Thread / Class',
@@ -2576,7 +2576,7 @@ const I18N = {
     'hizli.decision_borderline': 'Borderline',
     'hizli.decision_risky': 'Risky',
     'hizli.result_confidence_level': 'Confidence Level',
-    'hizli.result_01393_ref_range': '01393/01 Reference Range',
+    'hizli.result_ref_range': 'X.XXXXX/XX Reference Range',
     'hizli.eng_thread_torque': 'Thread Torque',
     'hizli.eng_bearing_torque': 'Bearing Torque',
     'hizli.eng_internal_thread_capacity': 'Internal Thread Capacity',
@@ -2645,7 +2645,8 @@ const I18N = {
     'validation.friction_confidence': 'Friction Confidence',
     'validation.no_verified_table': 'No verified table',
     'validation.production_decision': 'Production Decision',
-    'validation.not_usable': 'Not usable',
+    'validation.not_yet_validated_for_production': 'Not yet validated for series production',
+    'validation.not_yet_validated_reason': 'Reason: no verified nut proof-load table is linked for this selection.',
     'validation.thread_label': 'Thread',
     'validation.yes': 'Yes',
     'validation.no': 'No',
@@ -2865,8 +2866,10 @@ const I18N = {
 
     // ---- Faz 2.7.2b: OEM Norm Query + Norm Guide ----
     'oem.title': 'OEM Norm Query',
-    'oem.subtitle': 'Vehicle Type 263 · Issue A · 19.11.2008 · Control Method: NP 0.00010/01 Method A',
+    'oem.subtitle': 'Model A · Issue A · 19.11.2008 · Control Method: Control Method Ref-01',
     'oem.scope_note': "The T' min / T' max values in this module are read directly from the norm -- no theoretical calculation is applied. If the technical drawing value differs from the norm value, the technical drawing takes priority. For joints not covered by the norm, refer to the sample OEM general-estimate table for preliminary assessment only.",
+    'source.calc_engine_badge': 'VDI 2230 Calculation Engine Result',
+    'source.external_ref_badge': 'External Reference Value',
     'oem.norm_info_title': 'Norm Information',
     'oem.search_title': 'Search',
     'oem.search_placeholder': 'Item no., system, thread size, class...',
@@ -3572,7 +3575,7 @@ const I18N = {
     // ---- Faz 2.8.9 Stage 5: Washer Resolution Report ----
     'sidebar.washerresolution': 'Washer Resolution Report',
     'wrr.page_title': 'Washer Resolution Report',
-    'wrr.page_subtitle': 'Read-only status overview of the Faz 2.8.5 washer correction/resolution ledger and the Faz 2.8.9 decision history',
+    'wrr.page_subtitle': 'Read-only status overview of the washer correction/resolution ledger and decision history',
     'wrr.source_notice': 'Effective statuses are derived from the decision history. The source ledger is not modified.',
     'wrr.summary_title': 'Summary',
     'wrr.source_distribution_title': 'Source Status Distribution',
@@ -3728,23 +3731,23 @@ const I18N = {
 
     'sidebar.governance': 'Governance Workspace',
     'gov.page_title': 'Engineering Governance Workspace',
-    'gov.page_subtitle': 'Generic, domain-agnostic review / publication / resolution event workspace (Faz 2.8.11 Stage 4)',
+    'gov.page_subtitle': 'Generic, domain-agnostic review / publication / resolution event workspace',
     'gov.notice_append_only': 'Governance events are append-only: nothing is ever edited or deleted, only added.',
     'gov.notice_effective_status': 'Effective status is always derived from the full event history, never stored separately.',
     'gov.notice_lifecycle_independent': 'Review, publication and resolution are three independent lifecycle groups -- they never share one status.',
-    'gov.notice_stage4_generic': 'This Stage 4 workspace is intentionally generic: it does not yet know about any specific TorqPro record type. Connecting it to real washer resolutions, calculation revisions or joint revisions is Stage 5 work.',
+    'gov.notice_stage4_generic': 'This workspace is intentionally generic: it does not yet know about any specific TorqPro record type. Connecting it to real washer resolutions, calculation revisions or joint revisions is planned future work.',
     'gov.lookup_title': 'Aggregate Lookup',
-    'gov.aggregate_id_label': 'Aggregate ID',
-    'gov.aggregate_type_label': 'Aggregate Type',
+    'gov.aggregate_id_label': 'Record ID',
+    'gov.aggregate_type_label': 'Record Type',
     'gov.load_button': 'Load',
     'gov.loading': 'Loading...',
-    'gov.empty_state': 'No governance record exists yet for this aggregate_id / aggregate_type.',
+    'gov.empty_state': 'No governance record exists yet for this record ID / record type.',
     'gov.malformed_response': 'The response was incomplete; showing nothing rather than a guessed value.',
     'gov.api_error_prefix': 'Request failed: ',
     'gov.auth_error': 'Session expired or invalid; please sign in again.',
     'gov.validation_error_prefix': 'Invalid request: ',
     'gov.conflict_error_prefix': 'Conflict: ',
-    'gov.not_found_error': 'No governance record exists yet for this aggregate_id / aggregate_type.',
+    'gov.not_found_error': 'No governance record exists yet for this record ID / record type.',
     'gov.unavailable_error': 'The governance event store is currently unavailable.',
     'gov.status_title': 'Lifecycle Status',
     'gov.history_title': 'Event History (append-only)',
@@ -3779,8 +3782,8 @@ const I18N = {
     'gov.col.new_status': 'New Status',
     'gov.col.actor': 'Actor',
     'gov.col.occurred_at': 'Occurred At (UTC)',
-    'gov.jr.section_title': 'Joint Revision Projection (read-only)',
-    'gov.jr.section_sub': 'Read-only compatibility view of an existing joint revision\'s review status (Faz 2.8.13 Stage 3). Never edits, approves, rejects or resolves anything.',
+    'gov.jr.section_title': 'Joint Revision Compatibility View (read-only)',
+    'gov.jr.section_sub': 'Read-only compatibility view of an existing joint revision\'s review status. Never edits, approves, rejects or resolves anything.',
     'gov.jr.revision_id_label': 'Joint Revision ID',
     'gov.jr.lookup_button': 'Look Up',
     'gov.jr.validation_error': 'Enter a joint revision ID.',
@@ -3796,7 +3799,7 @@ const I18N = {
     'gov.jr.outcome.source_unavailable': 'Source data unavailable',
     'gov.jr.outcome.not_found': 'Not found',
     'gov.jrlist.section_title': 'Joint Revision List (read-only)',
-    'gov.jrlist.section_sub': 'Read-only bulk view of joint revision compatibility projections, optionally filtered by joint ID (Faz 2.8.14 Stage 4). Never edits, approves, rejects or resolves anything.',
+    'gov.jrlist.section_sub': 'Read-only bulk view of joint revision compatibility records, optionally filtered by joint ID. Never edits, approves, rejects or resolves anything.',
     'gov.jrlist.joint_id_label': 'Joint ID (optional)',
     'gov.jrlist.joint_id_placeholder': 'Leave empty to list all revisions',
     'gov.jrlist.load_button': 'List',
@@ -3806,7 +3809,7 @@ const I18N = {
     'gov.jrlist.result_count_prefix': 'Results: ',
     'gov.jrlist.col_revision_id': 'Revision ID',
     'gov.jrlist.col_reason': 'Reason',
-    'gov.jrlist.query_section_sub': 'Search, sort, page, and export the same read-only data (Faz 2.8.16). Uses the same Joint ID filter above.',
+    'gov.jrlist.query_section_sub': 'Search, sort, page, and export the same read-only data. Uses the same Joint ID filter above.',
     'gov.jrlist.searchLabel': 'Search',
     'gov.jrlist.searchPlaceholder': 'Search results',
     'gov.jrlist.searchButton': 'Search',
@@ -4005,27 +4008,27 @@ const I18N = {
   },
   tr: {
     // ---- Faz 2.7.1: Calculations & Production Validation ----
-    'n01391.title': 'Örnek Tork Çalışması',
-    'n01391.subtitle': 'Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları',
-    'n01391.scope_priority_label': '⚠️ Kapsam ve Öncelik',
-    'n01391.scope_priority_text': 'Teknik resim veya proje şartnamesi varsa o değer önceliklidir; bu ekran örnek referans amaçlıdır.',
-    'n01391.scope_priority_icon_label': 'Kapsam ve öncelik ayrıntılarını görüntüle',
-    'n01391.ref_source_label': 'Referans Kaynak',
-    'n01391.ref_source_text': 'TorqPro Demo Engineering Dataset v1.0 — gerçek bir OEM standardı değildir.',
-    'n01391.ref_source_icon_label': 'Referans kaynağını görüntüle',
-    'n01391.param_selection_title': 'Parametre Seçimi',
-    'n01391.param_selection_sub': 'Seçili veri setinde tanımlı ölçüler listelenmiştir',
-    'n01391.thread_size': 'Diş Ölçüsü',
-    'n01391.connection_type': 'Bağlantı Tipi',
-    'n01391.no_flange': 'Flanşsız',
-    'n01391.with_flange': 'Flanşlı',
-    'n01391.bolt_strength_class': 'Cıvata Dayanım Sınıfı',
-    'n01391.nut_strength_class': 'Somun Dayanım Sınıfı',
-    'n01391.matching_rule': 'Somun sınıfı 8 → cıvata sınıfı 8.8 ile, somun sınıfı 10 → cıvata sınıfı 10.9 ile eşleştirilir. Uyumsuz kombinasyonlarda düşük sınıf geçerlidir.',
-    'n01391.matching_rule_label': 'Sınıf Eşleştirme Kuralı',
-    'n01391.matching_rule_icon_label': 'Sınıf eşleştirme kuralı ayrıntılarını görüntüle',
-    'n01391.forecast_result_title': 'Öngörü Sonucu',
-    'n01391.select_parameters': 'Parametreleri seçin',
+    'sampleTorqueStudy.title': 'Örnek Tork Çalışması',
+    'sampleTorqueStudy.subtitle': 'Seçili demo veri setine göre tanımlı ölçü ve sınıf kombinasyonları',
+    'sampleTorqueStudy.scope_priority_label': '⚠️ Kapsam ve Öncelik',
+    'sampleTorqueStudy.scope_priority_text': 'Teknik resim veya proje şartnamesi varsa o değer önceliklidir; bu ekran örnek referans amaçlıdır.',
+    'sampleTorqueStudy.scope_priority_icon_label': 'Kapsam ve öncelik ayrıntılarını görüntüle',
+    'sampleTorqueStudy.ref_source_label': 'Referans Kaynak',
+    'sampleTorqueStudy.ref_source_text': 'TorqPro Demo Engineering Dataset v1.0 — gerçek bir OEM standardı değildir.',
+    'sampleTorqueStudy.ref_source_icon_label': 'Referans kaynağını görüntüle',
+    'sampleTorqueStudy.param_selection_title': 'Parametre Seçimi',
+    'sampleTorqueStudy.param_selection_sub': 'Seçili veri setinde tanımlı ölçüler listelenmiştir',
+    'sampleTorqueStudy.thread_size': 'Diş Ölçüsü',
+    'sampleTorqueStudy.connection_type': 'Bağlantı Tipi',
+    'sampleTorqueStudy.no_flange': 'Flanşsız',
+    'sampleTorqueStudy.with_flange': 'Flanşlı',
+    'sampleTorqueStudy.bolt_strength_class': 'Cıvata Dayanım Sınıfı',
+    'sampleTorqueStudy.nut_strength_class': 'Somun Dayanım Sınıfı',
+    'sampleTorqueStudy.matching_rule': 'Somun sınıfı 8 → cıvata sınıfı 8.8 ile, somun sınıfı 10 → cıvata sınıfı 10.9 ile eşleştirilir. Uyumsuz kombinasyonlarda düşük sınıf geçerlidir.',
+    'sampleTorqueStudy.matching_rule_label': 'Sınıf Eşleştirme Kuralı',
+    'sampleTorqueStudy.matching_rule_icon_label': 'Sınıf eşleştirme kuralı ayrıntılarını görüntüle',
+    'sampleTorqueStudy.forecast_result_title': 'Öngörü Sonucu',
+    'sampleTorqueStudy.select_parameters': 'Parametreleri seçin',
 
     'hizli.title': 'Teorik Tork Hesaplama',
     'hizli.subtitle': 'ISO 16047 prensipli bileşen tork hesabı · yüzey basıncı · diş kavrama',
@@ -4199,23 +4202,23 @@ const I18N = {
     'validation.footer_warning': 'Doğrulanmış standart veya test raporu olmadan taslak veri seri üretim torku olarak kullanılmamalıdır.',
 
     // ---- Faz 2.7.1b: dynamic calculation/validation result text ----
-    'n01391.thread_not_in_norm': 'Bu diş ölçüsü normda tanımlı değil.',
-    'n01391.result_title': 'Örnek Tork Çalışması Sonucu',
-    'n01391.demo_dataset': 'Demo veri seti',
-    'n01391.selection_label': 'Seçim',
-    'n01391.bolt_label': 'Cıvata',
-    'n01391.nut_label': 'Somun',
-    'n01391.mismatch_warning': 'Cıvata ve somun sınıfı uyumsuz — düşük sınıf değerleri kullanılmaktadır.',
-    'n01391.mismatch_icon_label': 'Sınıf uyumsuzluğu ayrıntılarını görüntüle',
-    'n01391.forecast_nominal_torque': 'Öngörü Nominal Torku',
-    'n01391.forecast_tensile_force': 'Öngörü Çekme Kuvveti',
-    'n01391.disclaimer_line1': 'Bu değer örnek öngörüdür — kesin veya onaylı üretim torku değildir.',
-    'n01391.disclaimer_line2': 'Teknik resim veya model bazlı OEM normunda özel bir değer varsa o değer önceliklidir.',
-    'n01391.disclaimer_line3': 'Seri üretim değeri; bağlantı testi, sürtünme doğrulaması, sıkıcı yeteneği ve ürün doğrulaması ile kesinleştirilmelidir.',
-    'n01391.disclaimer_line4': 'Değerler ek yağlayıcı uygulanmamış, üretimden çıktığı durumdaki bağlantı elemanları için geçerlidir.',
-    'n01391.disclaimer_icon_label': 'Ayrıntılı açıklamayı görüntüle',
-    'n01391.goto_theoretical': '→ Teorik Hesaba Geç',
-    'n01391.goto_oem_search': '→ OEM Normunda Ara',
+    'sampleTorqueStudy.thread_not_in_norm': 'Bu diş ölçüsü normda tanımlı değil.',
+    'sampleTorqueStudy.result_title': 'Örnek Tork Çalışması Sonucu',
+    'sampleTorqueStudy.demo_dataset': 'Demo veri seti',
+    'sampleTorqueStudy.selection_label': 'Seçim',
+    'sampleTorqueStudy.bolt_label': 'Cıvata',
+    'sampleTorqueStudy.nut_label': 'Somun',
+    'sampleTorqueStudy.mismatch_warning': 'Cıvata ve somun sınıfı uyumsuz — düşük sınıf değerleri kullanılmaktadır.',
+    'sampleTorqueStudy.mismatch_icon_label': 'Sınıf uyumsuzluğu ayrıntılarını görüntüle',
+    'sampleTorqueStudy.forecast_nominal_torque': 'Öngörü Nominal Torku',
+    'sampleTorqueStudy.forecast_tensile_force': 'Öngörü Çekme Kuvveti',
+    'sampleTorqueStudy.disclaimer_line1': 'Bu değer örnek öngörüdür — kesin veya onaylı üretim torku değildir.',
+    'sampleTorqueStudy.disclaimer_line2': 'Teknik resim veya model bazlı OEM normunda özel bir değer varsa o değer önceliklidir.',
+    'sampleTorqueStudy.disclaimer_line3': 'Seri üretim değeri; bağlantı testi, sürtünme doğrulaması, sıkıcı yeteneği ve ürün doğrulaması ile kesinleştirilmelidir.',
+    'sampleTorqueStudy.disclaimer_line4': 'Değerler ek yağlayıcı uygulanmamış, üretimden çıktığı durumdaki bağlantı elemanları için geçerlidir.',
+    'sampleTorqueStudy.disclaimer_icon_label': 'Ayrıntılı açıklamayı görüntüle',
+    'sampleTorqueStudy.goto_theoretical': '→ Teorik Hesaba Geç',
+    'sampleTorqueStudy.goto_oem_search': '→ OEM Normunda Ara',
     'hizli.missing_data': 'Hesap için gerekli veri eksik.',
     'hizli.fallback': 'Fallback',
     'hizli.result_standard_thread_class': 'Standart / Diş / Sınıf',
@@ -4237,7 +4240,7 @@ const I18N = {
     'hizli.decision_borderline': 'Sınırda',
     'hizli.decision_risky': 'Riskli',
     'hizli.result_confidence_level': 'Güven Seviyesi',
-    'hizli.result_01393_ref_range': '01393/01 Referans Aralığı',
+    'hizli.result_ref_range': 'X.XXXXX/XX Referans Aralığı',
     'hizli.eng_thread_torque': 'Diş Torku',
     'hizli.eng_bearing_torque': 'Yatak Torku',
     'hizli.eng_internal_thread_capacity': 'İç Diş Kapasitesi',
@@ -4306,7 +4309,8 @@ const I18N = {
     'validation.friction_confidence': 'Sürtünme Güveni',
     'validation.no_verified_table': 'Doğrulanmış tablo yok',
     'validation.production_decision': 'Seri Üretim Kararı',
-    'validation.not_usable': 'Kullanılamaz',
+    'validation.not_yet_validated_for_production': 'Seri üretim için henüz doğrulanmadı',
+    'validation.not_yet_validated_reason': 'Neden: bu seçim için doğrulanmış bir somun proof-load tablosu bağlı değil.',
     'validation.thread_label': 'Diş',
     'validation.yes': 'Evet',
     'validation.no': 'Hayır',
@@ -4526,8 +4530,10 @@ const I18N = {
 
     // ---- Faz 2.7.2b: OEM Norm Sorgu + Norm Rehberi ----
     'oem.title': 'OEM Norm Sorgulama',
-    'oem.subtitle': 'Araç Tipi 263 · Issue A · 19.11.2008 · Kontrol Metodu: NP 0.00010/01 Metod A',
+    'oem.subtitle': 'Model A · Issue A · 19.11.2008 · Kontrol Metodu: Kontrol Metodu Ref-01',
     'oem.scope_note': "Bu modüldeki T' min / T' max değerleri normdan birebir okunmaktadır — teorik hesap uygulanmaz. Teknik resim değeri norm değerinden farklıysa teknik resim önceliklidir. Normda bulunmayan bağlantılar için örnek OEM genel öngörü tablosuna yalnız ön değerlendirme amacıyla başvurunuz.",
+    'source.calc_engine_badge': 'VDI 2230 Hesap Motoru Sonucu',
+    'source.external_ref_badge': 'Harici Referans Değeri',
     'oem.norm_info_title': 'Norm Bilgisi',
     'oem.search_title': 'Ara',
     'oem.search_placeholder': 'Madde no, sistem, diş ölçüsü, sınıf...',
@@ -5428,7 +5434,7 @@ const I18N = {
     // ---- Faz 2.8.9 Stage 5: Pul Çözümleme Raporu ----
     'sidebar.washerresolution': 'Pul Çözümleme Raporu',
     'wrr.page_title': 'Pul Çözümleme Raporu',
-    'wrr.page_subtitle': 'Faz 2.8.5 pul düzeltme/çözümleme kayıt defteri ve Faz 2.8.9 karar geçmişinin salt-okunur durum özeti',
+    'wrr.page_subtitle': 'Pul düzeltme/çözümleme kayıt defteri ve karar geçmişinin salt-okunur durum özeti',
     'wrr.source_notice': 'Efektif durumlar karar geçmişinden türetilir. Kaynak kayıt defteri değiştirilmez.',
     'wrr.summary_title': 'Özet',
     'wrr.source_distribution_title': 'Kaynak Durum Dağılımı',
@@ -5584,23 +5590,23 @@ const I18N = {
 
     'sidebar.governance': 'Yönetişim Çalışma Alanı',
     'gov.page_title': 'Mühendislik Yönetişim Çalışma Alanı',
-    'gov.page_subtitle': 'Genel, alan-bağımsız inceleme / yayınlama / çözümleme olay çalışma alanı (Faz 2.8.11 Aşama 4)',
+    'gov.page_subtitle': 'Genel, alan-bağımsız inceleme / yayınlama / çözümleme olay çalışma alanı',
     'gov.notice_append_only': 'Yönetişim olayları yalnızca eklenir: hiçbir kayıt asla düzenlenmez veya silinmez.',
     'gov.notice_effective_status': 'Efektif durum her zaman tüm olay geçmişinden türetilir; ayrıca saklanmaz.',
     'gov.notice_lifecycle_independent': 'İnceleme, yayınlama ve çözümleme birbirinden bağımsız üç yaşam döngüsü grubudur -- asla tek bir durumu paylaşmazlar.',
-    'gov.notice_stage4_generic': 'Bu Aşama 4 çalışma alanı bilinçli olarak geneldir: henüz belirli bir TorqPro kayıt türünü tanımaz. Gerçek pul çözümlemeleri, hesap revizyonları veya birleşim revizyonlarıyla bağlantı Aşama 5 kapsamındadır.',
+    'gov.notice_stage4_generic': 'Bu çalışma alanı bilinçli olarak geneldir: henüz belirli bir TorqPro kayıt türünü tanımaz. Gerçek pul çözümlemeleri, hesap revizyonları veya birleşim revizyonlarıyla bağlantı ileriki bir geliştirme kapsamındadır.',
     'gov.lookup_title': 'Varlık Sorgulama',
-    'gov.aggregate_id_label': 'Varlık Kimliği (aggregate_id)',
-    'gov.aggregate_type_label': 'Varlık Türü (aggregate_type)',
+    'gov.aggregate_id_label': 'Kayıt Kimliği',
+    'gov.aggregate_type_label': 'Kayıt Türü',
     'gov.load_button': 'Yükle',
     'gov.loading': 'Yükleniyor...',
-    'gov.empty_state': 'Bu aggregate_id / aggregate_type için henüz bir yönetişim kaydı yok.',
+    'gov.empty_state': 'Bu kayıt kimliği / kayıt türü için henüz bir yönetişim kaydı yok.',
     'gov.malformed_response': 'Yanıt eksikti; tahmini bir değer göstermek yerine hiçbir şey gösterilmiyor.',
     'gov.api_error_prefix': 'İstek başarısız: ',
     'gov.auth_error': 'Oturum süresi doldu veya geçersiz; lütfen yeniden giriş yapın.',
     'gov.validation_error_prefix': 'Geçersiz istek: ',
     'gov.conflict_error_prefix': 'Çakışma: ',
-    'gov.not_found_error': 'Bu aggregate_id / aggregate_type için henüz bir yönetişim kaydı yok.',
+    'gov.not_found_error': 'Bu kayıt kimliği / kayıt türü için henüz bir yönetişim kaydı yok.',
     'gov.unavailable_error': 'Yönetişim olay deposu şu anda kullanılamıyor.',
     'gov.status_title': 'Yaşam Döngüsü Durumu',
     'gov.history_title': 'Olay Geçmişi (yalnızca ekleme)',
@@ -5635,8 +5641,8 @@ const I18N = {
     'gov.col.new_status': 'Yeni Durum',
     'gov.col.actor': 'Aktör',
     'gov.col.occurred_at': 'Gerçekleşme Zamanı (UTC)',
-    'gov.jr.section_title': 'Joint Revision Projeksiyonu (salt-okunur)',
-    'gov.jr.section_sub': 'Mevcut bir joint revision kaydının inceleme durumunun salt-okunur uyumluluk görünümü (Faz 2.8.13 Stage 3). Hiçbir şeyi düzenlemez, onaylamaz, reddetmez veya çözümlemez.',
+    'gov.jr.section_title': 'Bağlantı Revizyon Uyumluluk Görünümü (salt-okunur)',
+    'gov.jr.section_sub': 'Mevcut bir bağlantı revizyonu kaydının inceleme durumunun salt-okunur uyumluluk görünümü. Hiçbir şeyi düzenlemez, onaylamaz, reddetmez veya çözümlemez.',
     'gov.jr.revision_id_label': 'Joint Revision Kimliği',
     'gov.jr.lookup_button': 'Sorgula',
     'gov.jr.validation_error': 'Bir joint revision kimliği girin.',
@@ -5652,7 +5658,7 @@ const I18N = {
     'gov.jr.outcome.source_unavailable': 'Kaynak verisi kullanılamıyor',
     'gov.jr.outcome.not_found': 'Bulunamadı',
     'gov.jrlist.section_title': 'Joint Revision Listesi (salt-okunur)',
-    'gov.jrlist.section_sub': 'Joint revision uyumluluk projeksiyonlarının, opsiyonel olarak joint ID ile filtrelenebilen, salt-okunur toplu görünümü (Faz 2.8.14 Stage 4). Hiçbir şeyi düzenlemez, onaylamaz, reddetmez veya çözümlemez.',
+    'gov.jrlist.section_sub': 'Bağlantı revizyonu uyumluluk kayıtlarının, opsiyonel olarak joint ID ile filtrelenebilen, salt-okunur toplu görünümü. Hiçbir şeyi düzenlemez, onaylamaz, reddetmez veya çözümlemez.',
     'gov.jrlist.joint_id_label': 'Joint ID (opsiyonel)',
     'gov.jrlist.joint_id_placeholder': 'Tüm revizyonları listelemek için boş bırakın',
     'gov.jrlist.load_button': 'Listele',
@@ -5662,7 +5668,7 @@ const I18N = {
     'gov.jrlist.result_count_prefix': 'Sonuç: ',
     'gov.jrlist.col_revision_id': 'Revizyon ID',
     'gov.jrlist.col_reason': 'Neden',
-    'gov.jrlist.query_section_sub': 'Aynı salt-okunur veriyi arayın, sıralayın, sayfalayın ve dışa aktarın (Faz 2.8.16). Yukarıdaki aynı Joint ID filtresini kullanır.',
+    'gov.jrlist.query_section_sub': 'Aynı salt-okunur veriyi arayın, sıralayın, sayfalayın ve dışa aktarın. Yukarıdaki aynı Joint ID filtresini kullanır.',
     'gov.jrlist.searchLabel': 'Ara',
     'gov.jrlist.searchPlaceholder': 'Sonuçlarda ara',
     'gov.jrlist.searchButton': 'Ara',
@@ -6754,7 +6760,7 @@ function jaRenderResult(result) {
   resultEl.innerHTML = `
     ${criticalBanner}
     <div class="card">
-      <div class="card-title">${jaEsc(t('ja.results_title'))}</div>
+      <div class="card-title">${jaEsc(t('ja.results_title'))} <span class="norm-badge" style="font-weight:400">${jaEsc(t('source.calc_engine_badge'))}</span></div>
       <div class="ai-summary-grid">${summaryCards}</div>
     </div>
     ${safetyBox}
@@ -7958,31 +7964,31 @@ function infoIconHtml(opts){
   </span>`;
 }
 function initInfoIcons(){
-  const scopeInfo = document.getElementById('n01391-scope-info');
+  const scopeInfo = document.getElementById('sampleTorqueStudy-scope-info');
   if (scopeInfo) {
     scopeInfo.innerHTML = infoIconHtml({
       type: 'warn',
-      title: t('n01391.scope_priority_label'),
-      label: t('n01391.scope_priority_icon_label'),
-      body: t('n01391.scope_priority_text')
+      title: t('sampleTorqueStudy.scope_priority_label'),
+      label: t('sampleTorqueStudy.scope_priority_icon_label'),
+      body: t('sampleTorqueStudy.scope_priority_text')
     });
   }
-  const refInfo = document.getElementById('n01391-ref-info');
+  const refInfo = document.getElementById('sampleTorqueStudy-ref-info');
   if (refInfo) {
     refInfo.innerHTML = infoIconHtml({
       type: 'ref',
-      title: t('n01391.ref_source_label'),
-      label: t('n01391.ref_source_icon_label'),
-      body: t('n01391.ref_source_text')
+      title: t('sampleTorqueStudy.ref_source_label'),
+      label: t('sampleTorqueStudy.ref_source_icon_label'),
+      body: t('sampleTorqueStudy.ref_source_text')
     });
   }
-  const matchInfo = document.getElementById('n01391-matching-info');
+  const matchInfo = document.getElementById('sampleTorqueStudy-matching-info');
   if (matchInfo) {
     matchInfo.innerHTML = infoIconHtml({
       type: 'info',
-      title: t('n01391.matching_rule_label'),
-      label: t('n01391.matching_rule_icon_label'),
-      body: t('n01391.matching_rule')
+      title: t('sampleTorqueStudy.matching_rule_label'),
+      label: t('sampleTorqueStudy.matching_rule_icon_label'),
+      body: t('sampleTorqueStudy.matching_rule')
     });
   }
   const lubeInfo = document.getElementById('surtunme-uyari-info');
@@ -8482,9 +8488,9 @@ function downloadFrictionConditionReportJSON() {
 }
 
 // ========== OEM GENEL ÖNGÖRÜ VERİ TABANI ==========
-// İç teknik kaynak kaydı: FIAT 01391 Edition 10, 05/28/2003
+// İç teknik kaynak kaydı: bkz. dahili lisanslı doküman kaydı (anonimleştirilmiş, public/demo dağıtımda gerçek OEM doküman kimliği taşınmaz)
 // Yapı: [cnom_no_88, cnom_no_109, cnom_fl_88, cnom_fl_109, trac_no_88, trac_no_109, trac_fl_88, trac_fl_109]
-const N01391 = {
+const SAMPLE_TORQUE_STUDY_TABLE = {
   'M5':       [4,6,5,7,4700,7000,5100,7100],
   'M6':       [8,11,9,13,7900,10800,7700,11100],
   'M8':       [20,30,24,34,15300,23000,16000,22700],
@@ -8496,13 +8502,13 @@ const N01391 = {
   'M14x2':    [100,140,120,180,43100,60300,45000,67600]
 };
 
-function n01391Hesapla() {
+function sampleTorqueStudyHesapla() {
   const dis = document.getElementById('n_dis').value;
   const flans = document.getElementById('n_flans').value === 'yes';
   const civata = document.getElementById('n_civata').value;
   const somun = document.getElementById('n_somun').value;
-  const row = N01391[dis];
-  if (!row) { document.getElementById('n01391-sonuc').innerHTML = '<div class="alert alert-danger">' + t('n01391.thread_not_in_norm') + '</div>'; return; }
+  const row = SAMPLE_TORQUE_STUDY_TABLE[dis];
+  if (!row) { document.getElementById('sampleTorqueStudy-sonuc').innerHTML = '<div class="alert alert-danger">' + t('sampleTorqueStudy.thread_not_in_norm') + '</div>'; return; }
 
   // Uyumlu sınıf: uyumsuzsa düşük sınıf geçerli
   const is109 = (civata === '10.9' && somun === '10');
@@ -8512,29 +8518,29 @@ function n01391Hesapla() {
   const trac = row[trIdx];
   const uyumsuz = (civata === '10.9' && somun === '8') || (civata === '8.8' && somun === '10');
 
-  document.getElementById('n01391-sonuc').innerHTML = `
-    <div class="card-title">${t('n01391.result_title')} <span class="norm-badge">${t('n01391.demo_dataset')}</span></div>
-    <div style="font-size:11px;color:var(--text3);margin:8px 0 4px">${t('n01391.selection_label')}: ${dis} · ${flans ? t('n01391.with_flange') : t('n01391.no_flange')} · ${t('n01391.bolt_label')} ${civata} · ${t('n01391.nut_label')} ${somun}</div>
-    ${uyumsuz ? '<div class="alert alert-danger" style="margin-bottom:8px;display:flex;align-items:center;gap:8px"><span>⚠️ ' + t('n01391.mismatch_warning') + '</span>' + infoIconHtml({type:'error', title:t('n01391.mismatch_warning'), label:t('n01391.mismatch_icon_label'), body:t('n01391.matching_rule')}) + '</div>' : ''}
-    <div class="n01391-result">
+  document.getElementById('sampleTorqueStudy-sonuc').innerHTML = `
+    <div class="card-title">${t('sampleTorqueStudy.result_title')} <span class="norm-badge">${t('sampleTorqueStudy.demo_dataset')}</span></div>
+    <div style="font-size:11px;color:var(--text3);margin:8px 0 4px">${t('sampleTorqueStudy.selection_label')}: ${dis} · ${flans ? t('sampleTorqueStudy.with_flange') : t('sampleTorqueStudy.no_flange')} · ${t('sampleTorqueStudy.bolt_label')} ${civata} · ${t('sampleTorqueStudy.nut_label')} ${somun}</div>
+    ${uyumsuz ? '<div class="alert alert-danger" style="margin-bottom:8px;display:flex;align-items:center;gap:8px"><span>⚠️ ' + t('sampleTorqueStudy.mismatch_warning') + '</span>' + infoIconHtml({type:'error', title:t('sampleTorqueStudy.mismatch_warning'), label:t('sampleTorqueStudy.mismatch_icon_label'), body:t('sampleTorqueStudy.matching_rule')}) + '</div>' : ''}
+    <div class="sampleTorqueStudy-result">
       <div style="display:flex;gap:24px;flex-wrap:wrap">
         <div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">${t('n01391.forecast_nominal_torque')}</div>
-          <div class="n01391-val">${cnom} <span style="font-size:16px;font-weight:400">Nm</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">${t('sampleTorqueStudy.forecast_nominal_torque')}</div>
+          <div class="sampleTorqueStudy-val">${cnom} <span style="font-size:16px;font-weight:400">Nm</span></div>
         </div>
         <div>
-          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">${t('n01391.forecast_tensile_force')}</div>
-          <div class="n01391-val">${trac.toLocaleString('tr')} <span style="font-size:16px;font-weight:400">N</span></div>
+          <div style="font-size:11px;color:var(--text3);margin-bottom:4px">${t('sampleTorqueStudy.forecast_tensile_force')}</div>
+          <div class="sampleTorqueStudy-val">${trac.toLocaleString('tr')} <span style="font-size:16px;font-weight:400">N</span></div>
         </div>
       </div>
     </div>
-    <div class="n01391-warn" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-      <strong>${t('n01391.disclaimer_line1')}</strong>
-      ${infoIconHtml({type:'info', title:t('n01391.disclaimer_line1'), label:t('n01391.disclaimer_icon_label'), body: t('n01391.disclaimer_line2') + '<br>' + t('n01391.disclaimer_line3') + '<br>' + t('n01391.disclaimer_line4')})}
+    <div class="sampleTorqueStudy-warn" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      <strong>${t('sampleTorqueStudy.disclaimer_line1')}</strong>
+      ${infoIconHtml({type:'info', title:t('sampleTorqueStudy.disclaimer_line1'), label:t('sampleTorqueStudy.disclaimer_icon_label'), body: t('sampleTorqueStudy.disclaimer_line2') + '<br>' + t('sampleTorqueStudy.disclaimer_line3') + '<br>' + t('sampleTorqueStudy.disclaimer_line4')})}
     </div>
     <div class="btn-group" style="margin-top:12px">
-      <button class="btn btn-secondary btn-sm" onclick="showPage('hizli',this)">${t('n01391.goto_theoretical')}</button>
-      <button class="btn btn-secondary btn-sm" onclick="showPage('oem',this)">${t('n01391.goto_oem_search')}</button>
+      <button class="btn btn-secondary btn-sm" onclick="showPage('hizli',this)">${t('sampleTorqueStudy.goto_theoretical')}</button>
+      <button class="btn btn-secondary btn-sm" onclick="showPage('oem',this)">${t('sampleTorqueStudy.goto_oem_search')}</button>
     </div>`;
 }
 
@@ -8880,7 +8886,7 @@ function hesapla(){
       <div class="result-row"><span class="result-key">${t('hizli.result_bearing_pressure_safety')}</span><span class="result-val ${bearingSF>=1?'ok':bearingSF>=0.9?'warn':'nok'}">${bearingPressure.toFixed(1)} MPa / SF ${bearingSF.toFixed(2)}</span></div>
       <div class="result-row"><span class="result-key">${t('hizli.result_nut_class_compat')}</span><span class="result-val ${compatibilityOk?'ok':'nok'}">${compatibilityOk?t('hizli.compat_ok'):t('hizli.compat_not_ok')}${requiredNutClass?` · ${t('hizli.compat_min_prefix')} ${requiredNutClass}`:''}</span></div><div class="result-row"><span class="result-key">${t('hizli.result_overall_decision')}</span><span class="result-val ${overallOk?'ok':overallWarn?'warn':'nok'}">${overallOk?'✅ '+t('hizli.decision_ok'):overallWarn?'⚠️ '+t('hizli.decision_borderline'):'❌ '+t('hizli.decision_risky')}</span></div>
       <div class="result-row"><span class="result-key">${t('hizli.result_confidence_level')}</span><span class="result-val"><span class="confidence ${confClass(minConf)}">${confLabel(minConf)}</span></span></div>
-      <div class="result-row"><span class="result-key">${t('hizli.result_01393_ref_range')}</span><span class="result-val">${nl.vmin} – ${nl.vmax} Nm</span></div>
+      <div class="result-row"><span class="result-key">${t('hizli.result_ref_range')} <span class="norm-badge" style="font-weight:400;font-size:10px">${t('source.external_ref_badge')}</span></span><span class="result-val">${nl.vmin} – ${nl.vmax} Nm</span></div>
     </div>
 
     <div class="eng-grid">
@@ -9102,7 +9108,7 @@ const FMEA_SEVERITY_CLASS={critical:'danger',high:'warn',medium:'info'};
 function buildFmea(){document.getElementById('fmea-list').innerHTML=FMEA.map(f=>`<div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="pill pill-${FMEA_SEVERITY_CLASS[f.severityCode]||'info'}">${t(f.severityKey)}</span><span style="font-size:14px;font-weight:600">${t(f.errorKey)}</span></div><div style="font-size:12px;color:var(--text3);margin-bottom:4px">⚡ ${t('fmea.cause_label')}: ${t(f.causeKey)}</div><div style="font-size:12px;color:var(--text3);margin-bottom:8px">💥 ${t('fmea.effect_label')}: ${t(f.effectKey)}</div><div style="font-size:12px;background:rgba(79,126,248,.1);padding:8px;border-radius:6px;color:var(--accent2)">✅ ${t('fmea.recommendation_label')}: ${t(f.recommendationKey)}</div></div>`).join('');}
 
 // ========== OEM NORM ==========
-const OEM_NORM_DB={meta:{norm_no:'2.00176/86',arac:'Araç Tipi 263 (Yeni Doblò)',revizyon:'Issue A',tarih:'19.11.2008',kontrol_metodu:'NP 0.00010/01 Metod A'},sections:[{id:'7',baslikKey:'oem.section.7',noktalar:[{id:'7.1',tanimKey:'oem.tanim.7_1',thread:'M12x1.25',malzeme:'10R RIV/DAC',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:105,t_min:100,t_max:110,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 7.1',sourceNoteKey:null},{id:'7.4',tanimKey:'oem.tanim.7_4',thread:'M12x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:105,t_min:95,t_max:115,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 7.4',sourceNoteKey:null},{id:'7.5',tanimKey:'oem.tanim.7_5',thread:'M10x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:70,t_min:63,t_max:77,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 7.5',sourceNoteKey:null}]},{id:'10',baslikKey:'oem.section.10',noktalar:[{id:'10.1',tanimKey:'oem.tanim.10_1',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:60,t_min:57,t_max:63,aci_deg:null,ilk_tork:null,status:'active',variantKey:'oem.variant.only_13jtd',sourceReference:'2.00176/86 Madde 10.1',sourceNoteKey:null},{id:'10.7',tanimKey:'oem.tanim.10_7',thread:'M12x1.25x45',malzeme:'8.8 RIV/EC 5',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:80,t_min:77,t_max:104,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 10.7',sourceNoteKey:null},{id:'10.14',tanimKey:'oem.tanim.10_14_deleted',thread:'-',malzeme:'-',sinif:'-',experimental:false,tip:'deleted',nominal_nm:null,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'deleted',variantKey:null,sourceReference:null,sourceNoteKey:'oem.source_note.deleted_issue_a'},{id:'10.15',tanimKey:'oem.tanim.10_15',thread:'M10x1.25x75',malzeme:'8.8 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:90,t_min:null,t_max:null,aci_deg:45,ilk_tork:90,status:'active',variantKey:'oem.variant.jtd_16_20_c635',sourceReference:'2.00176/86 Madde 10.15',sourceNoteKey:null},{id:'10.19',tanimKey:'oem.tanim.10_19',thread:'M12x1.25x105',malzeme:'R10 RIV/DAC',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:80,t_min:null,t_max:null,aci_deg:45,ilk_tork:80,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 10.19',sourceNoteKey:null}]},{id:'11',baslikKey:'oem.section.11',noktalar:[{id:'11.1',tanimKey:'oem.tanim.11_1',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:40,t_min:66,t_max:74,aci_deg:45,ilk_tork:40,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.1',sourceNoteKey:null},{id:'11.2',tanimKey:'oem.tanim.11_2',thread:'M12x1.25x105',malzeme:'8.8 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:45,t_min:76,t_max:97,aci_deg:90,ilk_tork:45,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.2',sourceNoteKey:null},{id:'11.4',tanimKey:'oem.tanim.11_4',thread:'M12x1.25',malzeme:'8 Fe/Zn 7 IV',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:70,t_min:64,t_max:93,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.4',sourceNoteKey:null},{id:'11.7',tanimKey:'oem.tanim.11_7',thread:'M12x1.25x65',malzeme:'R10 RIV/DAC 5 PL',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:125,t_min:121,t_max:162,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.7',sourceNoteKey:null},{id:'11.12',tanimKey:'oem.tanim.11_12',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:106,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.12',sourceNoteKey:null},{id:'11.13',tanimKey:'oem.tanim.11_13',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:false,tip:'no_control',nominal_nm:120,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 11.13',sourceNoteKey:'oem.source_note.no_control_limit'}]},{id:'12',baslikKey:'oem.section.12',noktalar:[{id:'12.10',tanimKey:'oem.tanim.12_10',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:109,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 12.10',sourceNoteKey:null},{id:'12.12',tanimKey:'oem.tanim.12_12',thread:'M22x1.5',malzeme:'R10',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:280,t_min:271,t_max:364,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 12.12',sourceNoteKey:null}]},{id:'6',baslikKey:'oem.section.6',noktalar:[{id:'6.4',tanimKey:'oem.tanim.6_4',thread:'M12x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_only',nominal_nm:88,t_min:81,t_max:117,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 6.4',sourceNoteKey:null},{id:'6.1',tanimKey:'oem.tanim.6_1',thread:'M16',malzeme:'C70',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:50,t_min:40,t_max:66,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'2.00176/86 Madde 6.1',sourceNoteKey:null}]},{id:'19',baslikKey:'oem.section.19',noktalar:[{id:'19.1',tanimKey:'oem.tanim.19_1',thread:'7/16',malzeme:'-',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:40,t_min:30,t_max:60,aci_deg:null,ilk_tork:null,status:'active',variantKey:'oem.variant.cargo_version',sourceReference:'2.00176/86 Madde 19.1',sourceNoteKey:null}]}]};
+const OEM_NORM_DB={meta:{norm_no:'X.XXXXX/XX',arac:'Model A',revizyon:'Issue A',tarih:'19.11.2008',kontrol_metodu:'Kontrol Metodu Ref-01'},sections:[{id:'7',baslikKey:'oem.section.7',noktalar:[{id:'7.1',tanimKey:'oem.tanim.7_1',thread:'M12x1.25',malzeme:'10R RIV/DAC',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:105,t_min:100,t_max:110,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 7.1',sourceNoteKey:null},{id:'7.4',tanimKey:'oem.tanim.7_4',thread:'M12x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:105,t_min:95,t_max:115,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 7.4',sourceNoteKey:null},{id:'7.5',tanimKey:'oem.tanim.7_5',thread:'M10x1.25',malzeme:'10.9 RIV/EC 8 PL',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:70,t_min:63,t_max:77,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 7.5',sourceNoteKey:null}]},{id:'10',baslikKey:'oem.section.10',noktalar:[{id:'10.1',tanimKey:'oem.tanim.10_1',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:60,t_min:57,t_max:63,aci_deg:null,ilk_tork:null,status:'active',variantKey:'oem.variant.only_13jtd',sourceReference:'X.XXXXX/XX Madde 10.1',sourceNoteKey:null},{id:'10.7',tanimKey:'oem.tanim.10_7',thread:'M12x1.25x45',malzeme:'8.8 RIV/EC 5',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:80,t_min:77,t_max:104,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 10.7',sourceNoteKey:null},{id:'10.14',tanimKey:'oem.tanim.10_14_deleted',thread:'-',malzeme:'-',sinif:'-',experimental:false,tip:'deleted',nominal_nm:null,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'deleted',variantKey:null,sourceReference:null,sourceNoteKey:'oem.source_note.deleted_issue_a'},{id:'10.15',tanimKey:'oem.tanim.10_15',thread:'M10x1.25x75',malzeme:'8.8 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:90,t_min:null,t_max:null,aci_deg:45,ilk_tork:90,status:'active',variantKey:'oem.variant.jtd_16_20_c635',sourceReference:'X.XXXXX/XX Madde 10.15',sourceNoteKey:null},{id:'10.19',tanimKey:'oem.tanim.10_19',thread:'M12x1.25x105',malzeme:'R10 RIV/DAC',sinif:'B',experimental:false,tip:'torque_angle',nominal_nm:80,t_min:null,t_max:null,aci_deg:45,ilk_tork:80,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 10.19',sourceNoteKey:null}]},{id:'11',baslikKey:'oem.section.11',noktalar:[{id:'11.1',tanimKey:'oem.tanim.11_1',thread:'M10x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:40,t_min:66,t_max:74,aci_deg:45,ilk_tork:40,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 11.1',sourceNoteKey:null},{id:'11.2',tanimKey:'oem.tanim.11_2',thread:'M12x1.25x105',malzeme:'8.8 Fe/Zn 7 IV',sinif:'A',experimental:false,tip:'torque_angle',nominal_nm:45,t_min:76,t_max:97,aci_deg:90,ilk_tork:45,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 11.2',sourceNoteKey:null},{id:'11.4',tanimKey:'oem.tanim.11_4',thread:'M12x1.25',malzeme:'8 Fe/Zn 7 IV',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:70,t_min:64,t_max:93,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 11.4',sourceNoteKey:null},{id:'11.7',tanimKey:'oem.tanim.11_7',thread:'M12x1.25x65',malzeme:'R10 RIV/DAC 5 PL',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:125,t_min:121,t_max:162,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 11.7',sourceNoteKey:null},{id:'11.12',tanimKey:'oem.tanim.11_12',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:106,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 11.12',sourceNoteKey:null},{id:'11.13',tanimKey:'oem.tanim.11_13',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:false,tip:'no_control',nominal_nm:120,t_min:null,t_max:null,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 11.13',sourceNoteKey:'oem.source_note.no_control_limit'}]},{id:'12',baslikKey:'oem.section.12',noktalar:[{id:'12.10',tanimKey:'oem.tanim.12_10',thread:'M12x1.25x25.5',malzeme:'8.8 RIV/EC 8 PLUS',sinif:'A',experimental:true,tip:'torque_only',nominal_nm:86,t_min:70,t_max:109,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 12.10',sourceNoteKey:null},{id:'12.12',tanimKey:'oem.tanim.12_12',thread:'M22x1.5',malzeme:'R10',sinif:'A',experimental:false,tip:'torque_only',nominal_nm:280,t_min:271,t_max:364,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 12.12',sourceNoteKey:null}]},{id:'6',baslikKey:'oem.section.6',noktalar:[{id:'6.4',tanimKey:'oem.tanim.6_4',thread:'M12x1.25',malzeme:'10 Fe/Zn 7 IV',sinif:'B',experimental:false,tip:'torque_only',nominal_nm:88,t_min:81,t_max:117,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 6.4',sourceNoteKey:null},{id:'6.1',tanimKey:'oem.tanim.6_1',thread:'M16',malzeme:'C70',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:50,t_min:40,t_max:66,aci_deg:null,ilk_tork:null,status:'active',variantKey:null,sourceReference:'X.XXXXX/XX Madde 6.1',sourceNoteKey:null}]},{id:'19',baslikKey:'oem.section.19',noktalar:[{id:'19.1',tanimKey:'oem.tanim.19_1',thread:'7/16',malzeme:'-',sinif:'B',experimental:true,tip:'torque_only',nominal_nm:40,t_min:30,t_max:60,aci_deg:null,ilk_tork:null,status:'active',variantKey:'oem.variant.cargo_version',sourceReference:'X.XXXXX/XX Madde 19.1',sourceNoteKey:null}]}]};
 
 function oemGetAll(){const pts=[];OEM_NORM_DB.sections.forEach(s=>{s.noktalar.forEach(n=>{pts.push({...n,section_id:s.id,section_baslikKey:s.baslikKey});});});return pts;}
 function oemSearch(q){
@@ -9355,7 +9361,7 @@ const VALIDATION_DATASETS=[
 {nameKey:'validation.ds_friction_db',statusKey:'validation.ds_draft',count:1,production:false,actionKey:'validation.ds_action_add_iso16047_report'},
 {nameKey:'validation.ds_technical_source_records',statusKey:'validation.ds_active',count:1,production:false,actionKey:'validation.ds_action_add_primary_source'}];
 function renderValidationDatasets(){const e=document.getElementById('validationDatasets');if(!e)return;e.innerHTML=VALIDATION_DATASETS.map(d=>`<tr><td>${t(d.nameKey)}</td><td>${t(d.statusKey)}</td><td>${d.count}</td><td><span class="badge-prod ${d.production?'ok':'nok'}">${d.production?t('validation.yes'):t('validation.no')}</span></td><td>${t(d.actionKey)}</td></tr>`).join('');}
-function refreshValidationPanel(){const s=getLibrarySelection();const c=[s.thread?.confidence,s.bolt?.confidence,s.strength?.confidence,s.nut?.confidence,s.washer?.confidence].filter(Number.isFinite);const m=c.length?Math.min(...c):1;const fc=s.coating?.confidence||1;document.getElementById('validationCurrent').innerHTML=`<table class="source-table"><tr><th>${t('hizli.standard')}</th><td>${s.standard||'—'}</td></tr><tr><th>${t('validation.thread_label')}</th><td>${s.thread?.thread_code||'—'}</td></tr><tr><th>${t('validation.connection_data_confidence')}</th><td><span class="confidence ${confClass(m)}">${confLabel(m)}</span></td></tr><tr><th>${t('validation.friction_confidence')}</th><td><span class="confidence ${confClass(fc)}">${confLabel(fc)}</span></td></tr><tr><th>${t('validation.nut_proof_load')}</th><td><span class="badge-prod nok">${t('validation.no_verified_table')}</span></td></tr><tr><th>${t('validation.production_decision')}</th><td><span class="badge-prod nok">${t('validation.not_usable')}</span></td></tr></table>`;}
+function refreshValidationPanel(){const s=getLibrarySelection();const c=[s.thread?.confidence,s.bolt?.confidence,s.strength?.confidence,s.nut?.confidence,s.washer?.confidence].filter(Number.isFinite);const m=c.length?Math.min(...c):1;const fc=s.coating?.confidence||1;document.getElementById('validationCurrent').innerHTML=`<table class="source-table"><tr><th>${t('hizli.standard')}</th><td>${s.standard||'—'}</td></tr><tr><th>${t('validation.thread_label')}</th><td>${s.thread?.thread_code||'—'}</td></tr><tr><th>${t('validation.connection_data_confidence')}</th><td><span class="confidence ${confClass(m)}">${confLabel(m)}</span></td></tr><tr><th>${t('validation.friction_confidence')}</th><td><span class="confidence ${confClass(fc)}">${confLabel(fc)}</span></td></tr><tr><th>${t('validation.nut_proof_load')}</th><td><span class="badge-prod nok">${t('validation.no_verified_table')}</span></td></tr><tr><th>${t('validation.production_decision')}</th><td><span class="badge-prod nok">${t('validation.not_yet_validated_for_production')}</span><div class="fc-muted" style="font-size:11px;margin-top:4px">${t('validation.not_yet_validated_reason')}</div></td></tr></table>`;}
 
 
 async function uploadStandardData(){
@@ -11771,7 +11777,7 @@ async function qbSubmitForm() {
 
 // ========== BAŞLAT ==========
 document.getElementById('tarih').textContent=new Date().toLocaleDateString('tr-TR');
-buildCL();buildISH();buildFmea();oemInit();libraryInit();hesapla();n01391Hesapla();renderValidationDatasets();loadActiveEngineData();initInfoIcons();
+buildCL();buildISH();buildFmea();oemInit();libraryInit();hesapla();sampleTorqueStudyHesapla();renderValidationDatasets();loadActiveEngineData();initInfoIcons();
 </script>
 </body>
 </html>

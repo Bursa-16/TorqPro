@@ -9,7 +9,7 @@ test conventions:
    tests/js/run_i18n_tests.js) is run as a subprocess against the
    *actual* declarations extracted live from frontend/index.html.
 2. Structural (this module, no browser required): translation key
-   parity/no-duplicates for the touched n01391.* keys, JS syntax via
+   parity/no-duplicates for the touched sampleTorqueStudy.* keys, JS syntax via
    `node --check`, and that the previously leaked raw HTML markup in
    the title string does not reappear.
 
@@ -117,15 +117,15 @@ def test_title_key_has_no_embedded_html_markup(frontend_html):
     script = _extract_script(frontend_html)
     for lang in ("en", "tr"):
         literal = _extract_lang_dict_literal(script, lang)
-        m = re.search(r"'n01391\.title':\s*'([^']*)'", literal)
-        assert m, f"n01391.title missing from {lang} dict"
+        m = re.search(r"'sampleTorqueStudy\.title':\s*'([^']*)'", literal)
+        assert m, f"sampleTorqueStudy.title missing from {lang} dict"
         assert "<" not in m.group(1) and ">" not in m.group(1), (
-            f"n01391.title ({lang}) still contains raw markup: {m.group(1)!r}"
+            f"sampleTorqueStudy.title ({lang}) still contains raw markup: {m.group(1)!r}"
         )
 
 
 def test_title_static_markup_has_no_embedded_span(frontend_html):
-    idx = frontend_html.index('data-i18n="n01391.title"')
+    idx = frontend_html.index('data-i18n="sampleTorqueStudy.title"')
     line_end = frontend_html.index("</div>", idx)
     fragment = frontend_html[idx:line_end]
     assert "<span" not in fragment, "leaked <span> markup reintroduced in static title markup"
@@ -180,12 +180,12 @@ def test_new_icon_label_keys_present_and_paired(frontend_html):
     en_keys = set(_keys_in_literal(_extract_lang_dict_literal(script, "en")))
     tr_keys = set(_keys_in_literal(_extract_lang_dict_literal(script, "tr")))
     required_min = {
-        "n01391.scope_priority_icon_label",
-        "n01391.ref_source_icon_label",
-        "n01391.matching_rule_label",
-        "n01391.matching_rule_icon_label",
-        "n01391.mismatch_icon_label",
-        "n01391.disclaimer_icon_label",
+        "sampleTorqueStudy.scope_priority_icon_label",
+        "sampleTorqueStudy.ref_source_icon_label",
+        "sampleTorqueStudy.matching_rule_label",
+        "sampleTorqueStudy.matching_rule_icon_label",
+        "sampleTorqueStudy.mismatch_icon_label",
+        "sampleTorqueStudy.disclaimer_icon_label",
     }
     missing_en = required_min - en_keys
     missing_tr = required_min - tr_keys
@@ -199,7 +199,7 @@ def test_tr_and_en_text_differ_for_new_icon_label_keys(frontend_html):
     tr_literal = _extract_lang_dict_literal(script, "tr")
 
     def _values(literal):
-        return dict(re.findall(r"'(n01391\.[a-zA-Z0-9_.]+)':\s*'([^']*)'", literal))
+        return dict(re.findall(r"'(sampleTorqueStudy\.[a-zA-Z0-9_.]+)':\s*'([^']*)'", literal))
 
     en_values = _values(en_literal)
     tr_values = _values(tr_literal)

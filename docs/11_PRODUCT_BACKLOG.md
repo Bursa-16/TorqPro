@@ -73,9 +73,9 @@ Acceptance: dimensional tests, golden cases and no unsupported production claim.
 
 ## 8. Epic P1-A: quick forecast packs
 
-- FIAT 01391 forecast selector where licensed.
+- OEM REF-XXXXX forecast selector where licensed.
 - Clear estimate warnings and assumptions.
-- FIAT 01393/01 validation pack.
+- OEM X.XXXXX/XX validation pack.
 - Golden-case dataset.
 
 ## 9. Epic P1-B: detailed core

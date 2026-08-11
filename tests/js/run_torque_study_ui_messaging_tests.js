@@ -46,11 +46,11 @@ const {
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const FRONTEND_PATH = path.join(REPO_ROOT, 'frontend', 'index.html');
 
-const CONST_NAMES = ['I18N', 'CURRENT_LANG', 'N01391', 'INFO_ICON_SEQ', 'INFO_ICON_VARIANTS'];
+const CONST_NAMES = ['I18N', 'CURRENT_LANG', 'SAMPLE_TORQUE_STUDY_TABLE', 'INFO_ICON_SEQ', 'INFO_ICON_VARIANTS'];
 const MUTABLE_STATE_NAMES = ['CURRENT_LANG', 'INFO_ICON_SEQ'];
 const FUNCTION_NAMES = [
   't', 'applyStaticTranslations', 'setLanguage',
-  'infoIconHtml', 'initInfoIcons', 'n01391Hesapla',
+  'infoIconHtml', 'initInfoIcons', 'sampleTorqueStudyHesapla',
 ];
 
 function buildExtractedSource() {
@@ -89,7 +89,7 @@ function newContext(extractedSource, rawHtml) {
   return { context, byId, documentStub };
 }
 
-function setN01391Selection(documentStub, { dis, flans, civata, somun }) {
+function setSAMPLE_TORQUE_STUDY_TABLESelection(documentStub, { dis, flans, civata, somun }) {
   documentStub.getElementById('n_dis').value = dis;
   documentStub.getElementById('n_flans').value = flans ? 'yes' : 'no';
   documentStub.getElementById('n_civata').value = civata;
@@ -104,24 +104,24 @@ async function main() {
   // ---------------------------------------------------------------
   {
     const { context } = newContext(source, rawHtml);
-    const trTitle = context.t('n01391.title');
+    const trTitle = context.t('sampleTorqueStudy.title');
     const enContext = context; // same context, just call t after switching lang
-    check('n01391.title (tr) contains no HTML tag characters', !/[<>]/.test(trTitle));
-    check('n01391.title (tr) is the clean Turkish label', trTitle === 'Örnek Tork Çalışması');
+    check('sampleTorqueStudy.title (tr) contains no HTML tag characters', !/[<>]/.test(trTitle));
+    check('sampleTorqueStudy.title (tr) is the clean Turkish label', trTitle === 'Örnek Tork Çalışması');
     context.setLanguage('en');
-    const enTitle = enContext.t('n01391.title');
-    check('n01391.title (en) contains no HTML tag characters', !/[<>]/.test(enTitle));
-    check('n01391.title (en) is the clean English label', enTitle === 'Sample Torque Study');
+    const enTitle = enContext.t('sampleTorqueStudy.title');
+    check('sampleTorqueStudy.title (en) contains no HTML tag characters', !/[<>]/.test(enTitle));
+    check('sampleTorqueStudy.title (en) is the clean English label', enTitle === 'Sample Torque Study');
   }
 
   // The static markup itself (the fallback text before JS runs, and
   // the div's data-i18n host) must also be free of the leaked <span>
   // -- guards against the bug being reintroduced directly in the HTML.
   {
-    const titleMarkupMatch = /data-i18n="n01391\.title">([^<]*(?:<(?!\/div)[^>]*>[^<]*)*)<\/div>/.exec(rawHtml);
-    check('static n01391.title markup exists', !!titleMarkupMatch);
+    const titleMarkupMatch = /data-i18n="sampleTorqueStudy\.title">([^<]*(?:<(?!\/div)[^>]*>[^<]*)*)<\/div>/.exec(rawHtml);
+    check('static sampleTorqueStudy.title markup exists', !!titleMarkupMatch);
     if (titleMarkupMatch) {
-      check('static n01391.title markup has no embedded <span> style leak', !/<span/.test(titleMarkupMatch[1]));
+      check('static sampleTorqueStudy.title markup has no embedded <span> style leak', !/<span/.test(titleMarkupMatch[1]));
     }
   }
 
@@ -133,31 +133,31 @@ async function main() {
     const { context, documentStub } = newContext(source, rawHtml);
     context.initInfoIcons();
 
-    const scopeHtml = documentStub.getElementById('n01391-scope-info').innerHTML;
-    checkIncludes('scope-info popover (tr) keeps full scope/priority text', scopeHtml, context.t('n01391.scope_priority_text'));
+    const scopeHtml = documentStub.getElementById('sampleTorqueStudy-scope-info').innerHTML;
+    checkIncludes('scope-info popover (tr) keeps full scope/priority text', scopeHtml, context.t('sampleTorqueStudy.scope_priority_text'));
     checkIncludes('scope-info icon (tr) is a warn-styled button', scopeHtml, 'info-icon-btn warn');
     checkIncludes('scope-info icon has aria-haspopup=dialog', scopeHtml, 'aria-haspopup="dialog"');
     checkIncludes('scope-info icon has aria-expanded=false initially', scopeHtml, 'aria-expanded="false"');
     check('scope-info icon aria-label is non-empty and TR-localized', scopeHtml.includes('aria-label="Kapsam ve öncelik ayrıntılarını görüntüle"'));
 
-    const refHtml = documentStub.getElementById('n01391-ref-info').innerHTML;
-    checkIncludes('ref-info popover (tr) keeps full reference-source text', refHtml, context.t('n01391.ref_source_text'));
+    const refHtml = documentStub.getElementById('sampleTorqueStudy-ref-info').innerHTML;
+    checkIncludes('ref-info popover (tr) keeps full reference-source text', refHtml, context.t('sampleTorqueStudy.ref_source_text'));
     checkIncludes('ref-info icon uses the dedicated open-book "ref" variant', refHtml, 'info-icon-btn ref');
     check('ref-info icon aria-label is clear (not emoji-only), TR', refHtml.includes('aria-label="Referans kaynağını görüntüle"'));
 
-    const matchHtml = documentStub.getElementById('n01391-matching-info').innerHTML;
-    checkIncludes('matching-info popover (tr) keeps full class-matching-rule text', matchHtml, context.t('n01391.matching_rule'));
+    const matchHtml = documentStub.getElementById('sampleTorqueStudy-matching-info').innerHTML;
+    checkIncludes('matching-info popover (tr) keeps full class-matching-rule text', matchHtml, context.t('sampleTorqueStudy.matching_rule'));
     checkIncludes('matching-info icon is an info-styled button', matchHtml, 'info-icon-btn"');
 
     // Switch to English and re-render: same three icons must now
     // carry the English text, not stay frozen in Turkish (this used
     // to be hardcoded TR-only before Faz 2.8.22).
     context.setLanguage('en');
-    const scopeHtmlEn = documentStub.getElementById('n01391-scope-info').innerHTML;
-    checkIncludes('scope-info popover (en) shows English scope/priority text', scopeHtmlEn, context.t('n01391.scope_priority_text'));
+    const scopeHtmlEn = documentStub.getElementById('sampleTorqueStudy-scope-info').innerHTML;
+    checkIncludes('scope-info popover (en) shows English scope/priority text', scopeHtmlEn, context.t('sampleTorqueStudy.scope_priority_text'));
     check('scope-info popover (en) no longer contains the Turkish text', !scopeHtmlEn.includes('Teknik resim veya proje şartnamesi'));
 
-    const refHtmlEn = documentStub.getElementById('n01391-ref-info').innerHTML;
+    const refHtmlEn = documentStub.getElementById('sampleTorqueStudy-ref-info').innerHTML;
     check('ref-info icon aria-label is clear, EN', refHtmlEn.includes('aria-label="View reference source"'));
   }
 
@@ -169,11 +169,11 @@ async function main() {
   // ---------------------------------------------------------------
   {
     const { context } = newContext(source, rawHtml);
-    const trDisclaimer = context.t('n01391.disclaimer_line1');
+    const trDisclaimer = context.t('sampleTorqueStudy.disclaimer_line1');
     check('TR disclaimer uses the shortened "örnek öngörü" wording', trDisclaimer.includes('örnek öngörüdür'));
     check('TR disclaimer no longer says "genel öngörüsü"', !trDisclaimer.includes('genel öngörüsü'));
     context.setLanguage('en');
-    const enDisclaimer = context.t('n01391.disclaimer_line1');
+    const enDisclaimer = context.t('sampleTorqueStudy.disclaimer_line1');
     check('EN disclaimer uses the shortened "sample estimate" wording', enDisclaimer.includes('sample estimate'));
     check('EN disclaimer no longer says "sample general OEM forecast"', !enDisclaimer.includes('sample general OEM forecast'));
   }
@@ -191,24 +191,24 @@ async function main() {
     const { context, documentStub } = newContext(source, rawHtml);
 
     // Mismatched: M5, Flanged, Bolt 10.9 / Nut 8 (uses the lower class).
-    setN01391Selection(documentStub, { dis: 'M5', flans: true, civata: '10.9', somun: '8' });
-    context.n01391Hesapla();
-    const mismatchedHtml = documentStub.getElementById('n01391-sonuc').innerHTML;
-    checkIncludes('mismatch case: short visible summary text is present', mismatchedHtml, context.t('n01391.mismatch_warning'));
+    setSAMPLE_TORQUE_STUDY_TABLESelection(documentStub, { dis: 'M5', flans: true, civata: '10.9', somun: '8' });
+    context.sampleTorqueStudyHesapla();
+    const mismatchedHtml = documentStub.getElementById('sampleTorqueStudy-sonuc').innerHTML;
+    checkIncludes('mismatch case: short visible summary text is present', mismatchedHtml, context.t('sampleTorqueStudy.mismatch_warning'));
     checkIncludes('mismatch case: uses alert-danger (red), not alert-warn', mismatchedHtml, 'alert-danger');
-    checkNotIncludes('mismatch case: does not additionally render a redundant alert-warn banner for the mismatch', mismatchedHtml.split('n01391-warn')[0], 'alert-warn');
+    checkNotIncludes('mismatch case: does not additionally render a redundant alert-warn banner for the mismatch', mismatchedHtml.split('sampleTorqueStudy-warn')[0], 'alert-warn');
     checkIncludes('mismatch case: red error icon variant is present', mismatchedHtml, 'info-icon-btn err');
-    checkIncludes('mismatch case: error icon popover carries the full class-matching-rule explanation', mismatchedHtml, context.t('n01391.matching_rule'));
+    checkIncludes('mismatch case: error icon popover carries the full class-matching-rule explanation', mismatchedHtml, context.t('sampleTorqueStudy.matching_rule'));
     check('mismatch case: nominal torque unchanged at 5 Nm (matches reviewed PDF)', /5\s*<span[^>]*>\s*Nm/.test(mismatchedHtml) || mismatchedHtml.includes('>5 <span'));
     checkIncludes('mismatch case: tensile force unchanged at 5.100 N (matches reviewed PDF)', mismatchedHtml, '5.100');
-    checkIncludes('mismatch case: short disclaimer summary still visible outside the popover', mismatchedHtml, context.t('n01391.disclaimer_line1'));
-    checkIncludes('mismatch case: full disclaimer detail lines preserved inside the info icon popover', mismatchedHtml, context.t('n01391.disclaimer_line4'));
+    checkIncludes('mismatch case: short disclaimer summary still visible outside the popover', mismatchedHtml, context.t('sampleTorqueStudy.disclaimer_line1'));
+    checkIncludes('mismatch case: full disclaimer detail lines preserved inside the info icon popover', mismatchedHtml, context.t('sampleTorqueStudy.disclaimer_line4'));
 
     // Matched: M12x1.25, Flanged, Bolt 10.9 / Nut 10 -- no mismatch banner.
-    setN01391Selection(documentStub, { dis: 'M12x1.25', flans: true, civata: '10.9', somun: '10' });
-    context.n01391Hesapla();
-    const matchedHtml = documentStub.getElementById('n01391-sonuc').innerHTML;
-    checkNotIncludes('matched case: no mismatch banner rendered', matchedHtml, context.t('n01391.mismatch_warning'));
+    setSAMPLE_TORQUE_STUDY_TABLESelection(documentStub, { dis: 'M12x1.25', flans: true, civata: '10.9', somun: '10' });
+    context.sampleTorqueStudyHesapla();
+    const matchedHtml = documentStub.getElementById('sampleTorqueStudy-sonuc').innerHTML;
+    checkNotIncludes('matched case: no mismatch banner rendered', matchedHtml, context.t('sampleTorqueStudy.mismatch_warning'));
     checkNotIncludes('matched case: no red error icon rendered', matchedHtml, 'info-icon-btn err');
     check('matched case: nominal torque unchanged at 120 Nm (matches reviewed PDF)', matchedHtml.includes('>120 <span'));
     checkIncludes('matched case: tensile force unchanged at 53.700 N (matches reviewed PDF)', matchedHtml, '53.700');
