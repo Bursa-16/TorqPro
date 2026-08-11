@@ -1959,4 +1959,16 @@ app.include_router(question_bank_router)
 from backend.api.routes.ai_gateway import router as ai_gateway_router
 app.include_router(ai_gateway_router)
 
+# Faz v3.0.0-beta.1: Torque Recommendation Engine HTTP exposure
+# (backend/api/routes/torque_recommendation.py). Additive only -- one
+# new route, POST /api/ai/torque-recommendation, nothing existing
+# renamed or removed. Thin HTTP adapter over the pre-existing
+# backend.torque_recommendation.engine.recommend_torque pipeline,
+# which itself only orchestrates the already-tested
+# backend.calculation_engine.joint_analysis.analyze_joint deterministic
+# calculation -- no new engineering formula, coefficient or standard.
+# Reuses the same `user` auth dependency as every other endpoint.
+from backend.api.routes.torque_recommendation import router as torque_recommendation_router
+app.include_router(torque_recommendation_router)
+
 app.mount("/",StaticFiles(directory=FRONT,html=True),name="frontend")

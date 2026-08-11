@@ -69,6 +69,7 @@ The core engineering philosophy is simple:
 - Secure prompt / response hash traceability
 - Fail-closed safety behaviour
 - Controlled AI-to-engineering boundary
+- Torque Recommendation Engine (deterministic-first, explainable, auditable)
 
 ---
 
@@ -77,6 +78,6 @@ The core engineering philosophy is simple:
 | Item | Value |
 |---|---|
 | Product | **TorqPro AI** |
-| Current Version | **v3.0.0-alpha.6** |
-| Release Status | **Released — Alpha** |
-| Final Commit | `1db70b41b871be
+| Current Version | **v3.0.0-beta.1** |
+| Release Status | **Released — Beta** |
+| Final Commit | `1db70b41b871be`

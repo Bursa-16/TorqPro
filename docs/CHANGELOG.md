@@ -639,3 +639,104 @@ full delivery report.
   `POST /api/ai/query`'s default runtime provider away from
   `_UnavailableModelClient`; the Torque Recommendation Engine
   (v3.0.0-beta.1) and Engineering Reasoning Engine (v3.0.0-beta.2).
+
+## v3.0.0-beta.1 — Torque Recommendation Engine — 2026-08-11
+
+- Added `backend/torque_recommendation/` (`models.py`, `engine.py`,
+  `validation.py`, `explainability.py`, `audit.py`): the first
+  production-oriented torque recommendation surface. The recommended
+  value always originates from the existing, unmodified
+  `backend.calculation_engine.joint_analysis.analyze_joint`
+  deterministic calculation stack -- no formula, coefficient, or
+  standard is invented, and no AI/LLM provider can compute, adjust, or
+  override a torque value in this phase.
+- **Deterministic-first pipeline**: engineering inputs -> `analyze_joint`
+  -> fail-closed engineering validation -> confidence/applicability
+  classification -> deterministic explanation -> traceability record.
+  A recommendation is withheld (`recommended_torque = null`) whenever
+  `analyze_joint` reports a critical finding (e.g. a negative residual
+  clamp load, an inverted torque window, a yield-utilization failure)
+  even if a preliminary value was numerically computable; that raw
+  value stays visible as `calculated_torque` for transparency.
+- **Confidence classification** (`backend.torque_recommendation.
+  validation.classify`): a closed, non-percentage vocabulary
+  (`HIGH`/`MEDIUM`/`LOW`/`NOT_APPLICABLE`) derived only from
+  `analyze_joint`'s own readiness, safety status, warnings, and
+  formula validation status -- never an AI-assigned score.
+- **Explainability** (`backend.torque_recommendation.explainability`):
+  every successful recommendation carries `input_drivers`,
+  `calculation_source` (formula trace), `assumptions`, `limitations`,
+  and `warning_reasons`, built entirely from `analyze_joint`'s own
+  output with plain string formatting -- no LLM call anywhere in this
+  module.
+- **Architecture boundary**: `backend/torque_recommendation` and
+  `backend/api/routes/torque_recommendation.py` do not import
+  `backend.ai_gateway` (verified by a static AST check in
+  `tests/torque_recommendation/test_beta1_engine.py`, mirroring
+  `tests/ai/test_dependency_direction.py`'s own technique). The
+  existing one-way `backend.ai_gateway` dependency guard permits
+  exactly one consumer (`backend/api/routes/ai_gateway.py`);
+  expanding that allowlist to wire an LLM-based explanation
+  enhancement into this engine is explicitly deferred to a later,
+  separately-approved phase. Offline/deterministic operation therefore
+  holds unconditionally in this phase, not as a runtime fallback
+  behind a provider-availability check.
+- **New HTTP surface**: `POST /api/ai/torque-recommendation`
+  (`Depends(user)`, same authentication as every other endpoint).
+  Malformed/out-of-domain inputs (e.g. an unsupported thread/pitch
+  combination) map to `422`, mirroring
+  `/api/engineering/joint-analysis`'s existing, already-tested error
+  convention; a request with only missing optional inputs returns
+  `200` with `status="not_applicable"` (not an error).
+- **Traceability via the existing `audit_log` table** (no new
+  table): `backend/torque_recommendation/audit.py` writes each
+  recommendation as an ordinary `audit_log` row
+  (`action="torque_recommendation"`), the same table/discriminator
+  convention every other module already uses. A dedicated table was
+  deliberately not created -- `audit_log.detail` is an unconstrained
+  `TEXT` column with no existing precedent restricting it to
+  single-line text, so the full minimum-reproducibility bundle
+  (normalized request inputs, the deterministic result, validation
+  outcome, confidence, warnings/critical findings, the recommended-
+  or-withheld torque, and `provider_involved`, always `false` in this
+  phase) fits cleanly as one canonical JSON payload in that column.
+  The optional `X-Request-ID` header is stored in `audit_log.
+  request_id`, matching every other authenticated write endpoint's
+  convention. The caller-supplied free-text `engineering_context`
+  request field is never persisted verbatim -- only its length is
+  recorded. `backend.app.migrate()` was **not** touched by this
+  phase -- `audit_log` already exists unconditionally.
+- No proprietary/OEM-specific standard or name is exposed anywhere in
+  this engine's request, response, or audit record (tested).
+- `backend/app.py` touched minimally and additively: one new
+  `include_router()` call, the same shape every other route module
+  in this repository already uses.
+- 37 new tests across `tests/torque_recommendation/
+  test_beta1_engine.py` (engine-level: normal/missing/invalid inputs,
+  unsupported domain, deterministic-failure propagation, confidence
+  classification, warnings/assumptions, AI-independence explicitly
+  proven across four provider states (not configured / enabled and
+  succeeding / unavailable / actively failing), no-OEM-leak)
+  and `tests/torque_recommendation/test_beta1_http_route.py`
+  (HTTP-level: auth, response schema, 422 mapping, audit creation via
+  the existing `audit_log` table, `X-Request-ID` correlation,
+  non-regression of pre-existing `/api/ai/*` and
+  `/api/engineering/joint-analysis` routes). Two pre-existing
+  regression-guard tests were updated in place to reflect the new,
+  legitimate route
+  (`tests/ai/test_ai_disabled_noop.py::
+  test_ai_gateway_package_import_registers_no_extra_routes`,
+  `tests/test_faz_2_8_20_stage4_washer_resolution_closure_api.py::
+  TestBackwardCompatibility::test_router_included_exactly_once`) --
+  neither assertion was broadened or weakened, only its expected
+  count/set extended by exactly the one new item. Full suite:
+  3243/3243 passing (3206 baseline + 37 net new).
+- **Note (pre-existing documentation gap, not introduced by this
+  phase):** `docs/CHANGELOG.md` had no v3.0.0-alpha.6 entry before
+  this phase (alpha.6 was frontend/docs/validation only); this phase
+  does not backfill it, consistent with staying in its own scope.
+- **Deferred / explicitly out of scope for this phase:** the
+  Engineering Reasoning Engine (v3.0.0-beta.2); any LLM-based
+  explanation enhancement for recommendations; automatic fastener
+  selection; multi-joint optimization; OEM-specific rule exposure;
+  performance/security hardening reserved for rc.1.

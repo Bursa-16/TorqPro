@@ -181,3 +181,26 @@ Deferred: real network-calling AI providers (OpenAI/Claude/Ollama);
 rewiring `POST /api/ai/query`'s default provider; the Torque
 Recommendation Engine (v3.0.0-beta.1) and Engineering Reasoning Engine
 (v3.0.0-beta.2).
+
+## v3.0.0-beta.1 — Torque Recommendation Engine
+
+**Complete**, delivered 2026-08-11. First production-oriented torque
+recommendation surface (`backend/torque_recommendation/`), additive
+and deterministic-first: engineering inputs flow through the existing
+`backend.calculation_engine.joint_analysis.analyze_joint` calculation
+stack, then through a fixed, closed-vocabulary confidence/
+applicability classification (`HIGH`/`MEDIUM`/`LOW`/`NOT_APPLICABLE`)
+and a deterministic, non-LLM explanation layer, before an audit record
+is written. No formula, coefficient, or standard is invented; no AI/
+LLM provider can compute or override a torque value in this phase --
+`backend/torque_recommendation` never imports `backend.ai_gateway` at
+all, so offline/deterministic operation holds unconditionally rather
+than as a runtime fallback. New endpoint: `POST
+/api/ai/torque-recommendation`. Traceability reuses the existing
+`audit_log` table (`action="torque_recommendation"`) rather than a
+new dedicated table -- no schema change. 37 new tests. See
+`docs/CHANGELOG.md`'s v3.0.0-beta.1 entry for full detail.
+
+Deferred: the Engineering Reasoning Engine (v3.0.0-beta.2), any
+LLM-based explanation enhancement for recommendations, automatic
+fastener selection, and multi-joint optimization.

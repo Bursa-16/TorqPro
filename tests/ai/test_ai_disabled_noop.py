@@ -92,7 +92,19 @@ def test_ai_gateway_package_import_registers_no_extra_routes():
     ``GET /api/ai/audit/{audit_id}``); no other route was added or
     removed, and the full guarded-path count (4) is asserted
     explicitly so a future, unreviewed fifth route would fail this
-    test rather than silently pass."""
+    test rather than silently pass.
+
+    v3.0.0-beta.1 note: updated in place again. ``POST
+    /api/ai/torque-recommendation`` (``backend/api/routes/
+    torque_recommendation.py``) is included in the expected set below
+    because it shares the ``/api/ai`` URL prefix this test filters
+    on -- not because it comes from ``backend.ai_gateway``. That
+    route's own module never imports ``backend.ai_gateway`` (see
+    ``tests/torque_recommendation/test_beta1_engine.py::
+    test_engine_module_never_imports_ai_gateway``), so its presence
+    here does not weaken what this test actually proves: importing
+    ``backend.ai_gateway`` registers nothing beyond its own four
+    routes. The guarded-path count is now explicitly 5."""
     import backend.ai_gateway.orchestrator  # noqa: F401 - import side-effect check only
 
     # openapi() flattens every mounted/included router into a single
@@ -106,4 +118,5 @@ def test_ai_gateway_package_import_registers_no_extra_routes():
         "/api/ai/providers",
         "/api/ai/audit",
         "/api/ai/audit/{audit_id}",
+        "/api/ai/torque-recommendation",
     }
