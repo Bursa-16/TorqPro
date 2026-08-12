@@ -4,7 +4,7 @@ os.environ.setdefault("TORQPRO_SECRET_KEY", "x" * 64)
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.app import app, conn, now_iso
+from backend.app import app
 from backend.joints import service as joints_svc
 
 client = TestClient(app)
@@ -34,13 +34,14 @@ def make_second_reviewer(username="pv_reviewer"):
 
 
 def make_project(name="PV Project", code=None):
-    with conn() as c:
-        c.execute(
-            "INSERT INTO projects(name,project_code,status,created_at) VALUES(?,?,?,?)",
-            (name, code, "open", now_iso()),
-        )
-        c.commit()
-        return c.execute("SELECT id FROM projects WHERE id=last_insert_rowid()").fetchone()["id"]
+    ah = admin_headers()
+    r = client.post(
+        "/api/projects",
+        headers=ah,
+        json={"name": name, "project_code": code},
+    )
+    assert r.status_code == 200, r.text
+    return r.json()["id"]
 
 
 def make_calculation(project_id=None, torque_nm=45.0):

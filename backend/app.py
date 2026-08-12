@@ -92,7 +92,36 @@ from contextlib import asynccontextmanager
 async def lifespan(_app):
     migrate();log.info("TorqPro API started")
     yield
-app=FastAPI(title="TorqPro API",version=APP_VERSION,lifespan=lifespan)
+
+# rc.1 Security Hardening Phase 1 -- B2: production API documentation
+# exposure. TORQPRO_ENV already existed in .env.example (unused until
+# now). Unset/any non-"production" value keeps today's behavior
+# (docs/redoc/openapi all served) so local dev and the test suite are
+# unaffected; only an explicit TORQPRO_ENV=production disables them.
+_TORQPRO_ENV=(os.getenv("TORQPRO_ENV") or "").strip().lower()
+_IS_PRODUCTION=_TORQPRO_ENV=="production"
+app=FastAPI(
+    title="TorqPro API",version=APP_VERSION,lifespan=lifespan,
+    docs_url=None if _IS_PRODUCTION else "/docs",
+    redoc_url=None if _IS_PRODUCTION else "/redoc",
+    openapi_url=None if _IS_PRODUCTION else "/openapi.json",
+)
+
+# rc.1 Security Hardening Phase 1 -- B1: TORQPRO_ALLOWED_HOSTS enforcement.
+# .env.example already documented this variable; it was never read.
+# Comma-separated, matching the existing single-value example
+# (TORQPRO_ALLOWED_HOSTS=torqpro.example.com) while supporting multiple
+# hosts. Unset/empty -> no TrustedHostMiddleware added, so dev/test
+# (and any deployment that hasn't opted in) keep today's behavior of
+# accepting any Host header. No hostname is hard-coded here.
+def _parse_allowed_hosts(raw:Optional[str])->Optional[List[str]]:
+    if not raw:return None
+    hosts=[h.strip() for h in raw.split(",") if h.strip()]
+    return hosts or None
+_ALLOWED_HOSTS=_parse_allowed_hosts(os.getenv("TORQPRO_ALLOWED_HOSTS"))
+if _ALLOWED_HOSTS:
+    from starlette.middleware.trustedhost import TrustedHostMiddleware
+    app.add_middleware(TrustedHostMiddleware,allowed_hosts=_ALLOWED_HOSTS)
 
 def utcnow(): return datetime.now(timezone.utc)
 def now_iso(): return utcnow().isoformat()
@@ -371,6 +400,8 @@ def chg(x:PasswordChange,u=Depends(user)):
 @app.post("/api/calculations")
 def add(x:Calc,u=Depends(user)):
     if u["role"]=="viewer":raise HTTPException(403,"Viewer rolü kayıt oluşturamaz")
+    if x.project_id is not None:
+        with conn() as c:_get_owned_project(x.project_id,u,c)
     n=utcnow();no="TP-"+n.strftime("%Y%m%d-%H%M%S-%f");d=x.model_dump()
     cols=["project_id","family","standard","thread","property_class","nut","washer","coating","mu_thread","mu_bearing","preload_ratio","torque_nm","preload_n","confidence","engagement_mm","internal_material","bearing_limit_mpa","source_mode"]
     with conn() as c:
