@@ -171,7 +171,11 @@ class SQLiteAuditSink(AuditSink):
         this call site never measures latency or carries that extra,
         route-layer-only metadata itself; a caller that wants those
         captured should use :meth:`record_with_latency` instead, which
-        wraps this same ``INSERT`` with the additional column values)."""
+        wraps this same ``INSERT`` with the additional column values).
+        Returns ``None`` -- unchanged -- to keep this method's
+        signature an exact match for the ``AuditSink`` ABC's
+        ``record(self, entry) -> None`` contract that
+        ``backend.ai_gateway.orchestrator.handle_query`` relies on."""
         self._insert(
             entry,
             latency_ms=None,
@@ -190,7 +194,7 @@ class SQLiteAuditSink(AuditSink):
         user_role: Optional[str] = None,
         correlation_id: Optional[str] = None,
         response_text_hash: Optional[str] = None,
-    ) -> None:
+    ) -> int:
         """Same as :meth:`record`, additionally recording
         ``latency_ms`` and the optional, route-layer-only
         ``user_role``/``correlation_id``/``response_text_hash`` fields
@@ -200,8 +204,13 @@ class SQLiteAuditSink(AuditSink):
         for callers (the HTTP route layer) that already measure
         wall-clock time around ``orchestrator.handle_query`` and have
         access to the requesting user's role / ``X-Request-ID`` /
-        response text."""
-        self._insert(
+        response text.
+
+        Returns the new ``ai_audit_records.id`` (Faz v3.0.0-beta.2
+        addition -- see :meth:`_insert`'s own docstring). Existing
+        callers (``POST /api/ai/query``) that ignore this return value
+        are completely unaffected."""
+        return self._insert(
             entry,
             latency_ms=latency_ms,
             success=True,
@@ -288,9 +297,17 @@ class SQLiteAuditSink(AuditSink):
         user_role: Optional[str],
         correlation_id: Optional[str],
         response_text_hash: Optional[str],
-    ) -> None:
+    ) -> int:
+        """Same append-only ``INSERT`` as before this phase, now
+        additionally returning the new row's ``id`` (Faz v3.0.0-beta.2,
+        Engineering Reasoning Engine: the reasoning HTTP route needs
+        its own audit row's id to expose as
+        ``ReasoningResult.reasoning_trace_id``). Purely a return-value
+        addition -- no column, no schema change, no behaviour change
+        for any existing caller that already ignores this method's
+        return value (every ``tests/ai/*`` call site does)."""
         with self._conn:
-            self._conn.execute(
+            cur = self._conn.execute(
                 "INSERT INTO ai_audit_records("
                 "user_id, user_role, correlation_id, query_text_hash, "
                 "response_text_hash, evidence_source_ids_json, "
@@ -319,6 +336,7 @@ class SQLiteAuditSink(AuditSink):
                     error_category,
                 ),
             )
+            return int(cur.lastrowid)
 
 
 def list_audit_records(c: sqlite3.Connection, *, limit: int) -> Sequence[PersistedAuditRecord]:

@@ -97,12 +97,47 @@ populates ``calculation_result`` when both are supplied.
   existing role-gate pattern already used throughout ``backend/app.py``):
   read the persisted, hash-only audit trail. 404 for an unknown
   ``audit_id`` (never a 500 or a silently-empty 200).
+
+**New in this phase (Faz v3.0.0-beta.2, Engineering Reasoning Engine):**
+
+- ``POST /api/ai/engineering-reasoning`` (``Depends(user)``): the
+  Stage 0-approved reasoning endpoint. Thin orchestration only, same
+  discipline as every other route in this file -- no reasoning rule
+  lives here; every one of those lives in
+  ``backend.ai_gateway.reasoning`` and is covered by
+  ``tests/ai/reasoning/*``. This route only does trace lookup +
+  ownership authorization (raw SQL, deliberately not going through
+  ``backend.torque_recommendation.audit.get_recommendation_audit``
+  for *this* step -- see ``_fetch_trace_owner``'s own docstring for
+  why), the ``run_reasoning``/``attempt_ai_explanation`` calls
+  themselves, persistent-audit-trail recording (reusing
+  ``ai_audit_records`` -- no new table, no new column), and
+  domain-exception -> ``HTTPException`` mapping. This is still the
+  *only* file in the repository permitted to import
+  ``backend.ai_gateway`` -- adding
+  ``backend.ai_gateway.reasoning.*`` imports here does not add a
+  second consumer (see ``backend.ai_gateway.reasoning``'s own
+  ``__init__.py`` docstring for the architecture rationale).
+
+  This route never re-runs
+  ``backend.torque_recommendation.engine.recommend_torque`` -- it only
+  reads an already-persisted Beta.1 result by ``trace_id``. A request
+  naming an unknown ``trace_id`` -> ``404``; a ``trace_id`` that exists
+  but belongs to a different, non-admin user -> ``403`` (ownership
+  check happens *before* any reasoning is attempted, and before the
+  potentially-corrupt ``detail`` JSON is even parsed). AI wording
+  (``include_ai_wording=True``) failing/being unavailable/naming an
+  unregistered provider never affects the HTTP status or the
+  deterministic fields of the response -- it only leaves
+  ``ai_explanation``/``ai_explanation_provider`` as ``None`` (see
+  ``backend.ai_gateway.reasoning.wording`` module docstring).
 """
 
 from __future__ import annotations
 
 import hashlib
 import time
+from dataclasses import replace as _replace
 from typing import Any, Dict, Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query
@@ -117,17 +152,23 @@ router = APIRouter(tags=["ai_gateway"])
 # partially-initialized module already exposes a usable `router`
 # attribute, which breaks a circular-import failure instead of
 # propagating it.
-from backend.ai_gateway.audit import InMemoryAuditSink  # noqa: E402
+from backend.ai_gateway.audit import AIInteractionRecord, InMemoryAuditSink  # noqa: E402
 from backend.ai_gateway.composer import ComposedAnswer  # noqa: E402
+from backend.ai_gateway.evidence_checker import EvidenceStatus  # noqa: E402
 from backend.ai_gateway.exceptions import (  # noqa: E402
     AIGatewayConfigurationError,
     ModelUnavailableError,
     PermissionDeniedError,
+    ProviderNotFoundError,
 )
 from backend.ai_gateway.llm_client import AIModelClient, ModelResponse, PromptContext  # noqa: E402
 from backend.ai_gateway.orchestrator import handle_query  # noqa: E402
 from backend.ai_gateway.permission import UserContext, ensure_read_only_action  # noqa: E402
 from backend.ai_gateway.providers.registry import build_default_registry  # noqa: E402
+from backend.ai_gateway.reasoning import engine as reasoning_engine  # noqa: E402
+from backend.ai_gateway.reasoning import evidence_adapter as reasoning_evidence_adapter  # noqa
+from backend.ai_gateway.reasoning import wording as reasoning_wording  # noqa: E402
+from backend.ai_gateway.reasoning.models import ReasoningResult  # noqa: E402
 from backend.ai_gateway.store import (  # noqa: E402
     PersistedAuditRecord,
     SQLiteAuditSink,
@@ -137,6 +178,7 @@ from backend.ai_gateway.store import (  # noqa: E402
 )
 from backend.api.dependencies import admin, user  # noqa: E402
 from backend.app import conn, now_iso  # noqa: E402
+from backend.torque_recommendation import audit as trq_audit  # noqa: E402
 
 #: Fixed, always-read action name passed to ``ensure_read_only_action``
 #: (see module docstring, "Read-only enforcement"). Never derived from
@@ -209,6 +251,17 @@ class AIQueryRequest(BaseModel):
 def _handle(fn, *args, **kwargs):
     try:
         return fn(*args, **kwargs)
+    except HTTPException:
+        # Faz v3.0.0-beta.2 addition: a wrapped function (specifically
+        # ``_run_engineering_reasoning``) may itself raise a deliberate,
+        # already-correctly-coded ``HTTPException`` (404 unknown
+        # trace_id, 403 cross-user access) -- this must pass through
+        # unchanged rather than falling into the generic 500 branch
+        # below. No existing caller of ``_handle`` ever raised
+        # ``HTTPException`` from within its wrapped function before
+        # this phase, so this branch is purely additive and changes no
+        # existing route's behaviour.
+        raise
     except PermissionDeniedError as exc:
         raise HTTPException(403, str(exc))
     except ModelUnavailableError as exc:
@@ -452,9 +505,204 @@ def ai_audit_detail(audit_id: int, u: dict = Depends(admin)):
     return _serialize_persisted_record(record)
 
 
+# ---------------------------------------------------------------------
+# Faz v3.0.0-beta.2: POST /api/ai/engineering-reasoning
+# ---------------------------------------------------------------------
+
+
+class EngineeringReasoningRequest(BaseModel):
+    """Request body for ``POST /api/ai/engineering-reasoning``.
+
+    ``trace_id`` (an existing ``audit_log.id`` created by
+    ``POST /api/ai/torque-recommendation``) is the *only* required
+    field -- the Stage 0-approved design deliberately exposes no raw
+    engineering-parameter input path here, so this endpoint can never
+    be used to re-run or duplicate
+    ``backend.torque_recommendation.engine.recommend_torque``.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    trace_id: int = Field(..., gt=0)
+    include_ai_wording: bool = False
+    provider_name: Optional[str] = None
+
+
+def _fetch_trace_owner(c, trace_id: int) -> Optional[int]:
+    """Raw, JSON-parsing-free existence + ownership lookup for Beta.1
+    audit row ``trace_id``. Returns ``None`` if the row does not exist
+    or is not a ``torque_recommendation`` row.
+
+    Deliberately reads only the ``user_id`` column -- never
+    ``detail`` -- so a corrupt/unparseable stored JSON payload can
+    never block this authorization check from completing correctly.
+    This is why authorization always runs *before*
+    ``_fetch_reasoning_record`` (below) is even attempted: a caller
+    must never learn anything about another user's trace (not even
+    "this row's JSON happens to be corrupt") before their own
+    ownership has been confirmed.
+    """
+    row = c.execute(
+        "SELECT user_id FROM audit_log WHERE id=? AND action=?",
+        (trace_id, trq_audit.ACTION),
+    ).fetchone()
+    return int(row["user_id"]) if row is not None else None
+
+
+def _fetch_reasoning_record(c, trace_id: int) -> Optional[Dict[str, Any]]:
+    """Best-effort structured fetch of the Beta.1 result via
+    ``backend.torque_recommendation.audit.get_recommendation_audit``
+    (reused unchanged -- see that function's own docstring).
+
+    Returns ``None`` -- never raises -- when the stored ``detail`` JSON
+    is missing an expected key or is not valid JSON at all
+    (``json.JSONDecodeError`` is a ``ValueError`` subclass).
+    ``backend.ai_gateway.reasoning.engine.run_reasoning`` treats a
+    ``None`` record as ``ReasoningState.INSUFFICIENT_EVIDENCE``
+    (fail-closed), never as a ``500`` -- this is the "incomplete/
+    corrupt stored evidence" scenario named in the approved Stage 0
+    API contract.
+    """
+    try:
+        return trq_audit.get_recommendation_audit(c, trace_id)
+    except (ValueError, KeyError, TypeError):
+        return None
+
+
+def _resolve_wording_provider(provider_name: Optional[str]):
+    """Resolve an ``AIModelClient`` from the *same* module-level
+    ``_PROVIDER_REGISTRY`` this file already builds for
+    ``GET /api/ai/providers`` -- no second registry is constructed
+    anywhere in this phase (Stage 0 constraint: "avoid duplicate
+    registries").
+
+    Returns ``None`` -- never raises -- for an unknown ``provider_name``
+    or when no registry lookup was requested at all;
+    ``backend.ai_gateway.reasoning.wording.attempt_ai_explanation``
+    already treats a ``None`` client as "skip AI wording", so an
+    unknown provider name degrades to the same safe, deterministic-
+    result-unaffected outcome as a provider that raised at call time.
+    """
+    name = provider_name if provider_name is not None else "deterministic"
+    try:
+        return _PROVIDER_REGISTRY.get(name)
+    except ProviderNotFoundError:
+        return None
+
+
+def _serialize_reasoning_result(result: ReasoningResult) -> Dict[str, Any]:
+    """Field-for-field render of ``ReasoningResult`` -- no field is
+    renamed, dropped, or reinterpreted (mirrors
+    ``_serialize_answer``'s own discipline above)."""
+    return result.to_dict()
+
+
+def _run_engineering_reasoning(
+    body: EngineeringReasoningRequest,
+    u: Dict[str, Any],
+    x_request_id: Optional[str],
+) -> Dict[str, Any]:
+    trace_id = body.trace_id
+    started_at = time.perf_counter()
+
+    with conn() as c:
+        owner_id = _fetch_trace_owner(c, trace_id)
+        if owner_id is None:
+            raise HTTPException(404, f"trace_id {trace_id} bulunamadı")
+        if owner_id != u["id"] and u["role"] != "admin":
+            raise HTTPException(403, "Bu trace_id başka bir kullanıcıya ait")
+
+        record = _fetch_reasoning_record(c, trace_id)
+        user_context = UserContext(
+            user_id=u["id"], role=u["role"], is_active=bool(u["is_active"])
+        )
+
+        # Deterministic reasoning first, always -- see
+        # backend.ai_gateway.reasoning.engine module docstring:
+        # run_reasoning never imports/calls an AIModelClient, so this
+        # call's outcome is unaffected by anything below it.
+        reasoning_result = reasoning_engine.run_reasoning(trace_id, record, user=user_context)
+
+        calculation_response = (
+            reasoning_evidence_adapter.to_calculation_response(record)
+            if record is not None
+            else None
+        )
+
+        if body.include_ai_wording:
+            model_client = _resolve_wording_provider(body.provider_name)
+            ai_text, ai_provider = reasoning_wording.attempt_ai_explanation(
+                reasoning_result,
+                calculation_response=calculation_response,
+                model_client=model_client,
+                user=user_context,
+            )
+            reasoning_result = reasoning_engine.with_ai_explanation(
+                reasoning_result, ai_explanation=ai_text, ai_explanation_provider=ai_provider
+            )
+
+        # Audit persistence -- reuses the existing ai_audit_records
+        # table unchanged (Stage 0 constraint: no new table, no new
+        # column). The Beta.1 source relationship is represented via
+        # the existing (source_type, source_id) evidence-id pairing
+        # already used for Question Bank sources, per the approved
+        # Stage 0 decision: ("torque_recommendation", str(trace_id)).
+        calculation_formula_ids = (
+            tuple(result.formula_id for result in calculation_response.results)
+            if calculation_response is not None
+            else ()
+        )
+        query_text_hash = hashlib.sha256(
+            f"engineering_reasoning:trace_id={trace_id}".encode("utf-8")
+        ).hexdigest()
+        response_text_hash = (
+            hashlib.sha256(reasoning_result.ai_explanation.encode("utf-8")).hexdigest()
+            if reasoning_result.ai_explanation
+            else None
+        )
+        latency_ms = int((time.perf_counter() - started_at) * 1000)
+
+        interaction_record = AIInteractionRecord(
+            user_id=u["id"],
+            query_text_hash=query_text_hash,
+            evidence_source_ids=(("torque_recommendation", str(trace_id)),),
+            calculation_formula_ids=calculation_formula_ids,
+            model_name=reasoning_result.ai_explanation_provider,
+            had_sufficient_evidence=reasoning_result.evidence_status != EvidenceStatus.FAIL,
+            created_at=now_iso(),
+            retrieval_source_types_queried=("torque_recommendation",),
+            evidence_count_by_source_type=(
+                ("torque_recommendation", len(calculation_formula_ids)),
+            ),
+            evidence_status=reasoning_result.evidence_status,
+            result_label=reasoning_result.result_label,
+        )
+        persistent_sink = SQLiteAuditSink(c)
+        reasoning_trace_id = persistent_sink.record_with_latency(
+            interaction_record,
+            latency_ms=latency_ms,
+            user_role=u["role"],
+            correlation_id=x_request_id,
+            response_text_hash=response_text_hash,
+        )
+
+    reasoning_result = _replace(reasoning_result, reasoning_trace_id=reasoning_trace_id)
+    return _serialize_reasoning_result(reasoning_result)
+
+
+@router.post("/api/ai/engineering-reasoning")
+def engineering_reasoning_endpoint(
+    body: EngineeringReasoningRequest,
+    u: dict = Depends(user),
+    x_request_id: Optional[str] = Header(default=None, alias="X-Request-ID"),
+):
+    return _handle(_run_engineering_reasoning, body, u, x_request_id)
+
+
 __all__ = [
     "router",
     "get_model_client",
     "AIQueryRequest",
+    "EngineeringReasoningRequest",
     "migrate_persistent_audit",
 ]

@@ -740,3 +740,106 @@ full delivery report.
   explanation enhancement for recommendations; automatic fastener
   selection; multi-joint optimization; OEM-specific rule exposure;
   performance/security hardening reserved for rc.1.
+
+## v3.0.0-beta.2 — Engineering Reasoning Engine — 2026-08-12
+
+- Added a deterministic **Engineering Reasoning Engine**
+  (`backend/ai_gateway/reasoning/`) that explains an already-computed
+  Faz v3.0.0-beta.1 Torque Recommendation result by `trace_id` --
+  it never re-runs `backend.torque_recommendation.engine.
+  recommend_torque` and never invokes any deterministic calculation
+  core (`backend.calculation_engine`/`backend.vdi2230_core`/
+  `backend.engineering_core`) itself. Every numeric field in
+  `engineering_conclusion` is copied verbatim from the stored Beta.1
+  audit payload; two AST-based tests (`test_evidence_adapter.py`,
+  `test_engine.py`) statically prove the reasoning modules never
+  import a recomputation path.
+- Lives inside `backend.ai_gateway` (not a new top-level package, not
+  inside `backend.torque_recommendation`) so it can consume Beta.1's
+  output without any change to `tests/ai/
+  test_dependency_direction.py`'s guarded-package list, and so
+  `backend/api/routes/ai_gateway.py` -- already the sole sanctioned
+  HTTP entry point for `backend.ai_gateway` -- remains the only
+  consumer after this phase too.
+- **Three closed reasoning states** (`backend.ai_gateway.reasoning.
+  models.ReasoningState`, no numeric confidence score invented):
+  `SUPPORTED` (Beta.1 produced a recommendation), `UNSUPPORTED`
+  (Beta.1 withheld one, e.g. via a critical finding -- explainable,
+  not an error), `INSUFFICIENT_EVIDENCE` (fail-closed: an unknown,
+  corrupt, structurally incomplete, or evidence-empty stored payload
+  never yields a guessed conclusion).
+- **Reuses existing `backend.ai_gateway` infrastructure maximally,
+  introduces no parallel architecture**: `evidence_checker.
+  check_evidence` (via a new, pure data-shape
+  `evidence_adapter.to_calculation_response` -- no calculation is
+  performed by that adapter, only a formula-trace-to-
+  `CalculationResponse` field mapping, with every per-formula
+  `value` deliberately `None` since Beta.1's persisted payload does
+  not retain one), `composer.compose`/`ResultLabel` (reused, not
+  reimplemented, for CALCULATED/VALIDATED/ESTIMATED resolution),
+  `context_builder.build_context`, the existing
+  `providers.registry` singleton (no second registry), and
+  `permission.ensure_active_user`/`ensure_read_only_action`.
+- **Optional, structurally separate AI-generated wording layer**
+  (`backend.ai_gateway.reasoning.wording`) -- the only module in the
+  subpackage that ever imports an `AIModelClient`. Always fail-soft:
+  an unavailable, unknown, or failing provider never affects HTTP
+  status or any deterministic field, only leaves
+  `ai_explanation`/`ai_explanation_provider` as `null`.
+- **New HTTP surface**: `POST /api/ai/engineering-reasoning`
+  (`Depends(user)`). Request body: `{trace_id, include_ai_wording,
+  provider_name}` -- `trace_id` is the only required field; no raw
+  engineering-parameter input path is exposed, so this endpoint
+  cannot be used to duplicate Beta.1's own recommendation endpoint.
+  Unknown `trace_id` -> `404`; a `trace_id` owned by a different,
+  non-admin user -> `403` (ownership checked via a raw, JSON-parsing-
+  free SQL lookup, so a corrupt stored payload can never block or
+  leak past authorization); corrupt/incomplete stored evidence ->
+  `200` with `reasoning_state="INSUFFICIENT_EVIDENCE"` (fail-closed,
+  never `500`).
+- **Traceability via the existing `ai_audit_records` table** (Faz
+  v3.0.0-alpha.5) -- no new table, no new column. The Beta.1 source
+  relationship is represented through the table's existing
+  `evidence_source_ids` field:
+  `[["torque_recommendation", "<beta1_trace_id>"]]`.
+  `SQLiteAuditSink.record_with_latency` now additionally returns the
+  new row's id (a pure return-value addition -- not part of the
+  `AuditSink` ABC, no schema change, every existing caller ignores
+  the return value and is unaffected) so the response can expose its
+  own `reasoning_trace_id`. `X-Request-ID` is propagated into
+  `ai_audit_records.correlation_id`, matching every other
+  authenticated endpoint's convention.
+- No proprietary/OEM-specific standard or name is exposed anywhere in
+  this engine's request, response, or audit record (tested).
+- 56 new tests: `tests/ai/reasoning/test_evidence_adapter.py` (9),
+  `test_engine.py` (21, incl. deterministic-authority preservation,
+  no-mutation, all three reasoning states, permission enforcement),
+  `test_wording.py` (6, incl. provider independence and provider
+  failure never raising), `test_http_route_reasoning.py` (26,
+  incl. valid/unknown/cross-user/admin trace access, corrupt/
+  incomplete stored evidence, no-recomputation idempotency, request-
+  ID propagation, audit linkage, OEM-leak regression, Beta.1
+  backward compatibility). One pre-existing regression-guard test
+  was updated in place
+  (`tests/ai/test_ai_disabled_noop.py::
+  test_ai_gateway_package_import_registers_no_extra_routes`) to
+  reflect the one new, legitimate route -- the assertion was not
+  weakened, only its expected set extended by exactly this one item.
+  Full suite: 3299/3299 passing (3243 baseline + 56 net new).
+  flake8/`git diff --check` clean on every changed file.
+- **Deviation from the Stage 0-approved design (bug found during
+  implementation, not a redesign):** `backend/api/routes/
+  ai_gateway.py`'s existing `_handle()` exception-mapping helper
+  caught `HTTPException` in its own bare `except Exception` branch,
+  which would have turned this phase's deliberate `404`/`403`
+  responses into `500`. Fixed by adding an
+  `except HTTPException: raise` pass-through as `_handle()`'s first
+  clause -- purely additive; no other route's behaviour changes
+  (verified against the full suite).
+- **Deferred / explicitly out of scope for this phase:** a real,
+  network-calling AI provider (only the existing offline-safe
+  `deterministic` provider is exercised); reasoning support for any
+  deterministic result other than Torque Recommendation (joint-
+  analysis, friction, material intelligence, ...); a generic rule-
+  engine implementation (`docs/08_RULE_ENGINE.md` remains a design
+  spec only); a new RBAC role.

@@ -103,8 +103,17 @@ def test_ai_gateway_package_import_registers_no_extra_routes():
     ``tests/torque_recommendation/test_beta1_engine.py::
     test_engine_module_never_imports_ai_gateway``), so its presence
     here does not weaken what this test actually proves: importing
-    ``backend.ai_gateway`` registers nothing beyond its own four
-    routes. The guarded-path count is now explicitly 5."""
+    ``backend.ai_gateway`` registers nothing beyond its own routes.
+
+    v3.0.0-beta.2 note: updated in place again, following this same
+    file's own established precedent (see module docstring). One new
+    route was added, ``POST /api/ai/engineering-reasoning``
+    (``backend/api/routes/ai_gateway.py``, the Engineering Reasoning
+    Engine's sole HTTP entry point) -- it *does* come from
+    ``backend.ai_gateway`` (specifically
+    ``backend.ai_gateway.reasoning``), unlike
+    ``/api/ai/torque-recommendation`` above. The guarded-path count is
+    now explicitly 6."""
     import backend.ai_gateway.orchestrator  # noqa: F401 - import side-effect check only
 
     # openapi() flattens every mounted/included router into a single
@@ -119,4 +128,5 @@ def test_ai_gateway_package_import_registers_no_extra_routes():
         "/api/ai/audit",
         "/api/ai/audit/{audit_id}",
         "/api/ai/torque-recommendation",
+        "/api/ai/engineering-reasoning",
     }
