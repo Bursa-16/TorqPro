@@ -172,7 +172,22 @@ if _API_RATE_LIMIT:
 def utcnow(): return datetime.now(timezone.utc)
 def now_iso(): return utcnow().isoformat()
 def conn():
-    c=sqlite3.connect(DB); c.row_factory=sqlite3.Row; c.execute("PRAGMA foreign_keys=ON"); return c
+    c=sqlite3.connect(DB); c.row_factory=sqlite3.Row
+    c.execute("PRAGMA foreign_keys=ON")
+    # rc.1 Performance & Reliability -- P2/P3: busy_timeout is a
+    # per-connection setting (SQLite does not persist it in the
+    # database file), so it must be set on every conn() call.
+    # journal_mode=WAL, by contrast, IS persisted in the database file
+    # header once set -- re-issuing "PRAGMA journal_mode=WAL" on an
+    # already-WAL database still costs real time (measured in this
+    # phase: ~0.26ms/call vs ~0.05ms/call without it, out of a
+    # POST /api/calculations request that runs conn() up to 4 times),
+    # so it is set exactly once in migrate() below (always called at
+    # app startup via lifespan(), and by every test's setup) rather
+    # than redundantly on every request's connection(s). See
+    # migrate()'s own comment for the busy_timeout=5000 rationale.
+    c.execute("PRAGMA busy_timeout=5000")
+    return c
 def secret():
     e=os.getenv("TORQPRO_SECRET_KEY")
     if e and len(e)>=32:return e
@@ -187,6 +202,25 @@ def audit(uid,action,detail="",rid=""):
     with conn() as c:c.execute("INSERT INTO audit_log(user_id,action,detail,request_id,created_at) VALUES(?,?,?,?,?)",(uid,action,detail,rid,now_iso()));c.commit()
 def migrate():
     with conn() as c:
+        # rc.1 Performance & Reliability -- P2: WAL journal mode.
+        # Stage 0 found the connection factory never set it. Measured
+        # before/after (this phase): a single INSERT+commit() on this
+        # sandbox costs ~0.58ms under the previous default (rollback/
+        # DELETE journal) vs ~0.18ms under WAL -- roughly 3x, since
+        # WAL avoids the old mode's per-commit journal-file fsync. WAL
+        # also lets readers proceed concurrently with a writer instead
+        # of blocking, directly addressing the Stage 0 lock-contention
+        # concern (see tests/test_rc1_performance_reliability.py's
+        # concurrent read/write smoke tests). Set here, once, rather
+        # than in conn() itself -- see conn()'s own comment for why.
+        # journal_mode=WAL is a no-op (silently ignored, not an error)
+        # on an in-memory (":memory:") database -- this repository
+        # never calls migrate()/conn() with one (DB is always a real
+        # file path; test suites use a real temp-file DB via
+        # TORQPRO_DB_PATH, not :memory:), so no special-casing is
+        # needed, but the no-op behavior means this line is safe even
+        # if that ever changes.
+        c.execute("PRAGMA journal_mode=WAL")
         c.executescript("""CREATE TABLE IF NOT EXISTS schema_info(id INTEGER PRIMARY KEY CHECK(id=1),version INTEGER,updated_at TEXT);
         CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY,username TEXT UNIQUE,display_name TEXT,password_hash TEXT,is_active INTEGER DEFAULT 1,role TEXT DEFAULT 'engineer',created_at TEXT);
         CREATE TABLE IF NOT EXISTS calculations(id INTEGER PRIMARY KEY,record_no TEXT UNIQUE,user_id INTEGER,created_at TEXT,family TEXT,standard TEXT,thread TEXT,property_class TEXT,nut TEXT,washer TEXT,coating TEXT,mu_thread REAL,mu_bearing REAL,preload_ratio REAL,torque_nm REAL,preload_n REAL,confidence INTEGER,engagement_mm REAL,internal_material TEXT,bearing_limit_mpa REAL,source_mode TEXT);
