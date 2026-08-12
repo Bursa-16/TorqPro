@@ -4,14 +4,14 @@
 > **Document set:** TorqPro Software Design Specification (SDS) v1.0  
 > **Status:** Approved baseline for implementation planning; engineering equations marked PROVISIONAL are not approved for production calculations.  
 > **Product owner:** İlhan Çekiç  
-> **Last updated:** 2026-07-16  
+> **Last updated:** 2026-08-12 (§1, §10 corrected and §12 added to reflect the actual implemented `/api/...` surface; the original §3–§9 `/api/v1` target design is unchanged and explicitly marked unimplemented)
 > **Source of truth:** This repository. When code and documentation conflict, stop implementation and open an ADR/change request.
 
 ## 1. General conventions
 
-Base path for new endpoints: `/api/v1`. JSON, UTF-8, JWT bearer authentication. Resource names are plural. IDs are opaque. Timestamps are ISO 8601 UTC. Every write response includes audit/request identifiers where applicable.
+`/api/v1` below describes this document's original (2026-07-16) target design for new endpoints. As of this update, no `/api/v1` route has ever been implemented: every endpoint added since the SDS baseline -- including all of §11 (Faz 2.5A), the Question Bank, Governance, AI Gateway, Torque Recommendation, and Engineering Reasoning surfaces -- has used the `/api/...` convention documented in §11 and §12. JSON, UTF-8, JWT bearer authentication. Resource names are plural. IDs are opaque. Timestamps are ISO 8601 UTC. Every write response includes audit/request identifiers where applicable.
 
-Existing `/api/...` endpoints remain as compatibility API during migration.
+`/api/...` is the actual, current API surface, not a temporary compatibility layer during a migration -- no such migration has started since this document's baseline.
 
 ## 2. Error format
 
@@ -26,6 +26,8 @@ Existing `/api/...` endpoints remain as compatibility API during migration.
 ```
 
 HTTP 422 is for structurally/physically unprocessable input, not an engineering FAIL result. A completed calculation with failed safety checks returns 200 with `engineering_status: fail`.
+
+> Sections 3–9 describe the original `/api/v1` target design as proposed in the 2026-07-16 baseline. None of the `/api/v1/...` paths below have been implemented; they are not verified against the running code. For the actual, currently implemented API surface, see §11 (Faz 2.5A) and §12 below, both of which use the real `/api/...` convention.
 
 ## 3. Core endpoints
 
@@ -140,7 +142,7 @@ Every calculation exposes engine version, formula pack, rule packs, active data 
 
 ## 10. OpenAPI and compatibility
 
-FastAPI OpenAPI is generated and checked in CI. Existing endpoints such as `/api/engineering/check`, `/api/projects`, `/api/admin/data-versions` and deployment endpoints remain documented as legacy v0 until frontend migration.
+FastAPI's built-in OpenAPI generation is available at runtime (`/openapi.json`, `/docs`, `/redoc`). It is not checked as a standalone CI step, but `app.openapi()`'s registered-paths output is inspected by regression tests that do run in CI via `pytest -q` (e.g. `tests/ai/test_ai_disabled_noop.py`'s route-set assertions). Endpoints such as `/api/engineering/check`, `/api/projects`, `/api/admin/data-versions` and the deployment endpoints are the actual, current API -- as of this update there is no `/api/v1` implementation and no evidence of an active or planned migration to one.
 
 ## 11. Faz 2.5A — Production Validation endpoints (2026-07-22)
 
@@ -176,3 +178,87 @@ found, 409 conflict (duplicate code / duplicate CSV import), 400 locked or
 invalid state transition, 422 data-integrity or CSV row-validation
 failure. See `docs/phases/PHASE_2.5A_PRODUCTION_VALIDATION_FOUNDATION.md`
 for the full state machine and validation rules.
+
+## 12. Dedicated route modules added since §11 (verified against `backend/api/routes/`)
+
+All under the same legacy-v0 `/api/...` convention as §11 -- still no
+`/api/v1` namespace anywhere in the running code. Listed by module,
+not by phase narrative (see `docs/CHANGELOG.md` for phase-level detail
+and request/response schemas):
+
+```text
+backend/api/routes/joints.py
+  POST   /api/joints
+  GET    /api/joints
+  GET    /api/joints/{joint_id}
+  POST   /api/joints/{joint_id}/revisions
+  GET    /api/joints/revisions/{revision_id}
+  POST   /api/joints/revisions/{revision_id}/submit
+  POST   /api/joints/revisions/{revision_id}/approve
+  POST   /api/joints/revisions/{revision_id}/reject
+
+backend/api/routes/question_bank.py
+  GET    /api/question-bank/stats
+  POST   /api/question-bank/stats/snapshot
+  GET    /api/question-bank/stats/history
+  POST   /api/question-bank/questions/select
+  GET    /api/question-bank/questions
+  POST   /api/question-bank/questions
+  GET    /api/question-bank/questions/{question_id}
+  PATCH  /api/question-bank/questions/{question_id}
+  POST   /api/question-bank/{question_id}/archive
+  POST   /api/question-bank/{question_id}/restore
+  DELETE /api/question-bank/{question_id}
+  POST   /api/question-bank/questions/{question_id}/submit-for-review
+  POST   /api/question-bank/questions/{question_id}/validate
+  POST   /api/question-bank/questions/{question_id}/reject
+  POST   /api/question-bank/questions/{question_id}/deprecate
+  GET    /api/question-bank/questions/{question_id}/audit
+  GET    /api/question-bank/questions/{question_id}/status-history
+  POST   /api/question-bank/questions/bulk/transition
+  POST   /api/question-bank/questions/bulk/tags
+  GET    /api/question-bank/export
+  POST   /api/question-bank/import
+
+backend/api/routes/washer_resolution_closure.py
+  POST   /api/library/washers/resolutions/{resolution_id}/evidence
+  GET    /api/library/washers/resolutions/{resolution_id}/evidence
+  GET    /api/library/washers/resolutions/{resolution_id}/closure-readiness
+  POST   /api/library/washers/resolutions/{resolution_id}/close
+  GET    /api/library/washers/resolutions/{resolution_id}/closure
+
+backend/api/routes/ai_gateway.py  (v3.0.0-alpha.1 through beta.2)
+  POST   /api/ai/query
+  GET    /api/ai/providers
+  GET    /api/ai/audit
+  GET    /api/ai/audit/{audit_id}
+  POST   /api/ai/engineering-reasoning
+
+backend/api/routes/torque_recommendation.py  (v3.0.0-beta.1)
+  POST   /api/ai/torque-recommendation
+```
+
+Governance workspace routes (Faz 2.8.11–2.8.13) live in their own
+router module, `backend/governance/api.py` (prefix `/api/governance`,
+`app.include_router(governance_router)` in `backend/app.py`):
+
+```text
+backend/governance/api.py
+  GET    /api/governance/{aggregate_id}/history
+  GET    /api/governance/{aggregate_id}/status
+  GET    /api/governance/joint-revision/{revision_id}
+  GET    /api/governance/joint-revisions
+  GET    /api/governance/joint-revisions/query
+  POST   /api/governance/review/{aggregate_id}/submit
+  POST   /api/governance/review/{aggregate_id}/approve
+  POST   /api/governance/review/{aggregate_id}/reject
+  POST   /api/governance/publication/{aggregate_id}/activate
+  POST   /api/governance/publication/{aggregate_id}/supersede
+  POST   /api/governance/publication/{aggregate_id}/archive
+  POST   /api/governance/resolution/{aggregate_id}/resolve
+  POST   /api/governance/resolution/{aggregate_id}/reject
+  POST   /api/governance/resolution/{aggregate_id}/waive
+```
+
+See the corresponding `docs/314_Roadmap.md` entries for phase-level
+scope detail.

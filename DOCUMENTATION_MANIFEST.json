@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-17T00:00:00Z",
+  "generated_at": "2026-08-12T00:00:00Z",
   "documents": [
     {
       "path": ".github/copilot-instructions.md",
@@ -13,13 +13,13 @@
     },
     {
       "path": "README.md",
-      "size": 1403,
-      "sha256": "ab470a881c5c3e9578933e0d752cccec3f605c972d61ba403cfb6c4285e20b62"
+      "size": 15819,
+      "sha256": "d386ffa79ff7bcac8c312705456e77d276e023c049273980d1c5afe71c284e9e"
     },
     {
       "path": "docs/00_PROJECT_VISION.md",
-      "size": 10100,
-      "sha256": "cace5149611fccfa6a7273b643755872f17ed4eba22fe38cbdbb03d415144daf"
+      "size": 10106,
+      "sha256": "554b9c958fbd7fb924d2614d5d5a1609ba5fcf5bca3d45d3f0c803ce83a91434"
     },
     {
       "path": "docs/01_DOMAIN_MODEL.md",
@@ -43,28 +43,28 @@
     },
     {
       "path": "docs/05_ENGINEERING_FORMULA_SPECIFICATION.md",
-      "size": 8418,
-      "sha256": "59b46654e2827da5dd3f6514ac09d98ad07f6baa88d7479f499077bf0a01a4c1"
+      "size": 20405,
+      "sha256": "bc521d70bde29db32254a63b0f749098f3e7f941e2ebec66bfcb441ada49c52e"
     },
     {
       "path": "docs/06_DATABASE_SPECIFICATION.md",
-      "size": 4688,
-      "sha256": "e9965dcf6051f8ccd025837467dc38acf20e48dc96ca8d3e6d636c50eaca8cef"
+      "size": 6442,
+      "sha256": "366498cb0075c3eba5c7c6177eeb97a6c1cc9be74f3bea5b93dfccb2bcbab291"
     },
     {
       "path": "docs/07_API_SPECIFICATION.md",
-      "size": 4516,
-      "sha256": "bdf61db92419390f0630cd256a8f2ab9de7268c9f369e0256dfeb0a834e0794b"
+      "size": 11048,
+      "sha256": "f2f094872188654b9bfb8ce43dc1137abaf26b48d62a5754e5834072410d61c2"
     },
     {
       "path": "docs/08_RULE_ENGINE.md",
-      "size": 2566,
-      "sha256": "832146320fd506ee8fcde56a407e9d5731cf6a4357f39cdc7c0a2493e7527970"
+      "size": 2570,
+      "sha256": "cbef601aa0ccc76250d1aa835034897de16005aeea6aaeb892a9ff2d74535ff4"
     },
     {
       "path": "docs/09_LIBRARY_SPECIFICATION.md",
-      "size": 2868,
-      "sha256": "42ffc5f08a6508e3a14d6037343cc9fca02a010de770731a283d5a98a9f19e42"
+      "size": 14797,
+      "sha256": "9776c116cc54fc2eccd3c22e2284e6898dd2586d3a90769a784f2c98d0fdfe12"
     },
     {
       "path": "docs/10_AI_ENGINE.md",
@@ -73,8 +73,8 @@
     },
     {
       "path": "docs/11_PRODUCT_BACKLOG.md",
-      "size": 3701,
-      "sha256": "91f1a8374a0e57cd13909233e8f3fbde857354932bf8391d693c5efebe78f036"
+      "size": 41932,
+      "sha256": "fc0737dbe7cd94051a65cf296e2dfa9873e0190b8094ec05fb820e63fb555861"
     },
     {
       "path": "docs/12_CLAUDE_CONTEXT.md",
@@ -83,13 +83,13 @@
     },
     {
       "path": "docs/13_DEVELOPER_GUIDE.md",
-      "size": 2058,
-      "sha256": "4cee8260d50929747f798e27ce3c8bda03f22622fb59fca9eb6cd828bdb390d7"
+      "size": 2767,
+      "sha256": "3224e945245fc714580ec79ab44bb259734f16f62ffdfbc0ffed2899e29c493c"
     },
     {
       "path": "docs/14_TESTING_STRATEGY.md",
-      "size": 2622,
-      "sha256": "a000747069c3129036997490c24af330c7d8b85d59838c9e15ac36d9161d7ed3"
+      "size": 4053,
+      "sha256": "8fe8fac31ae1258747d3ed3717c61eb5d9fbc3c02af703ef401b70fe9687d802"
     },
     {
       "path": "docs/15_DEPLOYMENT.md",
@@ -98,13 +98,13 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "size": 895,
-      "sha256": "a741165dde95e4b28dbe38a5d2321fe8878e1bce84d154dd83777383aeb061d8"
+      "size": 48535,
+      "sha256": "d030cab88b6e4f6c709db6d679791d1db59d3c90addf1febb8ffbc6a4583aa14"
     },
     {
       "path": "docs/README.md",
-      "size": 3570,
-      "sha256": "7de32daf3a44ea444a239731f8cec4ecb225eddf6ba1226d7dcc7467614c4f48"
+      "size": 4191,
+      "sha256": "f8d0bc08ea5e7ee02bd315a2cc16ebc9a0e58af3526ea2a947135b0563079cf1"
     },
     {
       "path": "docs/adr/ADR-0001-modular-monolith.md",

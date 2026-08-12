@@ -204,3 +204,68 @@ new dedicated table -- no schema change. 37 new tests. See
 Deferred: the Engineering Reasoning Engine (v3.0.0-beta.2), any
 LLM-based explanation enhancement for recommendations, automatic
 fastener selection, and multi-joint optimization.
+
+## v3.0.0-beta.2 — Engineering Reasoning Engine
+
+**Complete**, delivered 2026-08-12. Added a deterministic
+**Engineering Reasoning Engine** (`backend/ai_gateway/reasoning/`)
+that explains an already-computed v3.0.0-beta.1 Torque Recommendation
+result by `trace_id` -- it never re-runs
+`backend.torque_recommendation.engine.recommend_torque` and never
+invokes any deterministic calculation core
+(`backend.calculation_engine`/`backend.vdi2230_core`/
+`backend.engineering_core`) itself. Lives inside `backend.ai_gateway`
+(not a new top-level package, not inside
+`backend.torque_recommendation`), reusing existing infrastructure
+(`evidence_checker`, `composer`, `context_builder`, the `providers`
+registry, `permission`) rather than introducing a parallel
+architecture. Three closed reasoning states, no invented confidence
+score: `SUPPORTED`, `UNSUPPORTED`, `INSUFFICIENT_EVIDENCE`
+(fail-closed for unknown/corrupt/incomplete stored evidence). An
+optional, structurally separate AI-generated wording layer
+(`backend.ai_gateway.reasoning.wording`) is always fail-soft --
+provider unavailability never affects HTTP status or any
+deterministic field. New endpoint: `POST
+/api/ai/engineering-reasoning`. Traceability reuses the existing
+`ai_audit_records` table (v3.0.0-alpha.5) -- no new table, no new
+column. 56 new tests. See `docs/CHANGELOG.md`'s v3.0.0-beta.2 entry
+for full detail.
+
+Deferred: a real, network-calling AI provider; reasoning support for
+any deterministic result other than Torque Recommendation
+(joint-analysis, friction, material intelligence, ...); a generic
+rule-engine implementation (`docs/08_RULE_ENGINE.md` remains a design
+spec only); a new RBAC role.
+
+## v3.0.0-rc.1 — Performance, Security & Documentation
+
+**Current / In Progress.** Release-candidate hardening phase for the
+TorqPro AI platform -- no new AI capability or engineering engine is
+in scope. Stage 0 (repository-wide discovery/audit, no code changes)
+concluded **GO** for implementation. Confirmed focus areas:
+
+- Performance validation and optimization (benchmark baseline for
+  critical endpoints before any regression threshold is proposed).
+- Security hardening (host/origin policy enforcement, production API
+  documentation exposure, rate limiting, response headers).
+- Authorization regression validation (cross-user ownership coverage
+  for existing resources).
+- API and engineering documentation consistency with the current
+  implementation.
+- Dependency and configuration review.
+- Production-readiness validation.
+- Release documentation and regression/compatibility verification.
+
+The deterministic engineering layer remains the source of truth
+throughout this phase; no new AI capability may compromise the
+validated engineering boundaries established through the Alpha and
+Beta phases. Deferred out of this phase, consistent with the Stage 0
+scope decision: real network-calling AI providers, new engineering
+engines, database migration, a broad async rewrite, and a frontend
+redesign.
+
+## v3.0.0 — Stable Release
+
+**Planned.** Follows the completion of v3.0.0-rc.1. No implementation
+work has started on this milestone; scope will be finalized once
+v3.0.0-rc.1's release-hardening validation is complete.
