@@ -123,6 +123,52 @@ if _ALLOWED_HOSTS:
     from starlette.middleware.trustedhost import TrustedHostMiddleware
     app.add_middleware(TrustedHostMiddleware,allowed_hosts=_ALLOWED_HOSTS)
 
+# rc.1 Security Hardening Phase 2 -- B4: general API rate limiting.
+# Default OFF (TORQPRO_API_RATE_LIMIT unset) so dev/test/CI behavior
+# is unchanged -- opt-in via TORQPRO_API_RATE_LIMIT="<max>/<window_s>"
+# (e.g. "300/60" = 300 requests per 60 seconds). Deliberately keyed by
+# the raw Authorization header (per authenticated session/token), not
+# by client IP: this repository has no established trusted-proxy
+# header model (deploy/nginx.conf sets X-Forwarded-For, but
+# backend/app.py has never read it anywhere), so trusting a
+# client-suppliable header for rate-limit bucketing would itself be a
+# spoofable bypass. Per-token keying sidesteps that problem entirely
+# for the authenticated API surface (every /api/... route except
+# login already requires Depends(user)/Depends(admin)). /api/login is
+# explicitly exempt -- it already has its own, stricter, per-username
+# limiter (limit(), above) and must not be double-throttled by an
+# unrelated mechanism; /api/health is exempt as the one legitimate
+# unauthenticated, side-effect-free /api/... route (used for basic
+# liveness checks). Same deque/sliding-window technique as limit().
+def _parse_rate_limit(raw:Optional[str]):
+    if not raw:return None
+    raw=raw.strip()
+    if not raw:return None
+    try:
+        max_s,window_s=raw.split("/",1)
+        max_requests=int(max_s.strip());window_seconds=float(window_s.strip())
+    except (ValueError,TypeError):
+        return None
+    if max_requests<=0 or window_seconds<=0:return None
+    return (max_requests,window_seconds)
+_API_RATE_LIMIT=_parse_rate_limit(os.getenv("TORQPRO_API_RATE_LIMIT"))
+_API_RATE_BUCKETS: dict[str, deque] = defaultdict(deque)
+_RATE_LIMIT_EXEMPT_PATHS={"/api/login","/api/health"}
+if _API_RATE_LIMIT:
+    _RATE_MAX,_RATE_WINDOW=_API_RATE_LIMIT
+    @app.middleware("http")
+    async def api_rate_limit_mw(request:Request,call_next):
+        path=request.url.path
+        if path.startswith("/api/") and path not in _RATE_LIMIT_EXEMPT_PATHS:
+            auth=request.headers.get("authorization","")
+            key=auth if auth else "anon"
+            q=_API_RATE_BUCKETS[key];n=time.time()
+            while q and n-q[0]>_RATE_WINDOW:q.popleft()
+            if len(q)>=_RATE_MAX:
+                return JSONResponse(status_code=429,content={"detail":"Çok fazla istek. Lütfen bir süre sonra tekrar deneyin."})
+            q.append(n)
+        return await call_next(request)
+
 def utcnow(): return datetime.now(timezone.utc)
 def now_iso(): return utcnow().isoformat()
 def conn():
@@ -342,7 +388,31 @@ async def mw(request:Request,call_next):
     except Exception:
         log.exception("Unhandled request_id=%s",rid);return JSONResponse(status_code=500,content={"detail":"Sunucu hatası","request_id":rid})
     r.headers["X-Request-ID"]=rid;r.headers["X-Process-Time-Ms"]=f"{(time.perf_counter()-st)*1000:.1f}"
-    r.headers["X-Content-Type-Options"]="nosniff";r.headers["X-Frame-Options"]="DENY";r.headers["Referrer-Policy"]="no-referrer";return r
+    r.headers["X-Content-Type-Options"]="nosniff";r.headers["X-Frame-Options"]="DENY";r.headers["Referrer-Policy"]="no-referrer"
+    # rc.1 Security Hardening Phase 2 -- B5: CSP + (production-only) HSTS.
+    # frontend/index.html is a single-file SPA with one inline <script>
+    # block and ~220 inline style="..." attributes plus one inline
+    # <style> block -- no nonce/hash infrastructure exists, and adding
+    # one is a frontend restructuring out of this phase's scope
+    # (DEFERRED to post-v3.0, see docs). A CSP without 'unsafe-inline'
+    # for script-src/style-src would break every page load, so both
+    # are explicitly allowed here; everything else (external script,
+    # style, connect, font, image, object, base, frame-ancestors)
+    # defaults to same-origin-or-none -- still real protection against
+    # loading external malicious resources and clickjacking, on top of
+    # (not instead of) the existing X-Frame-Options: DENY above.
+    r.headers["Content-Security-Policy"]=(
+        "default-src 'self'; script-src 'self' 'unsafe-inline'; "
+        "style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; "
+        "connect-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+    )
+    if _IS_PRODUCTION:
+        # Only meaningful once TLS is actually terminated in front of
+        # the app (deploy/nginx.conf already redirects HTTP->HTTPS in
+        # production) -- sending it in dev/test, where requests are
+        # plain HTTP on localhost, would be misleading at best.
+        r.headers["Strict-Transport-Security"]="max-age=31536000; includeSubDomains"
+    return r
 
 class Login(BaseModel):username:str;password:str
 class Calc(BaseModel):
@@ -1573,7 +1643,8 @@ def health_ready():
     except HTTPException:
         raise
     except Exception as exc:
-        raise HTTPException(503,f"Database not ready: {exc}")
+        log.warning("health_ready check failed: %s",exc)
+        raise HTTPException(503,"Database not ready")
 
 @app.get("/api/admin/cloud-readiness")
 def cloud_readiness(u=Depends(admin)):
@@ -1662,7 +1733,8 @@ def list_bolt_strength_classes_endpoint(
             verification_status=verification_status,
         )
     except Exception as e:
-        raise HTTPException(400, f"Geçersiz filtre: {e}")
+        log.warning("bolt_strength_classes filter failed: %s", e)
+        raise HTTPException(400, "Geçersiz filtre parametreleri")
     return [r.model_dump(mode="json") for r in records]
 
 
@@ -1692,7 +1764,8 @@ def list_nut_property_classes_endpoint(
             verification_status=verification_status,
         )
     except Exception as e:
-        raise HTTPException(400, f"Geçersiz filtre: {e}")
+        log.warning("nut_property_classes filter failed: %s", e)
+        raise HTTPException(400, "Geçersiz filtre parametreleri")
     return [r.model_dump(mode="json") for r in records]
 
 
@@ -1727,7 +1800,8 @@ def bolt_nut_compatibility_endpoint(x: BoltNutCompatibilityCheck, u=Depends(user
             material_family=x.material_family,
         )
     except Exception as e:
-        raise HTTPException(400, f"Uyumluluk kontrolü yapılamadı: {e}")
+        log.warning("bolt_nut_compatibility check failed: %s", e)
+        raise HTTPException(400, "Uyumluluk kontrolü yapılamadı")
     return result.model_dump(mode="json")
 
 

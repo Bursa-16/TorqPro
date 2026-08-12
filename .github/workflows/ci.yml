@@ -21,5 +21,7 @@ jobs:
           pip install -r requirements-dev.txt
       - name: Import check (app must start from requirements alone)
         run: python -c "import sys; sys.path.insert(0,'backend'); import app"
+      - name: Security scan (pip-audit)
+        run: pip-audit -r requirements.txt -r requirements-dev.txt
       - name: Run tests
         run: pytest -q
