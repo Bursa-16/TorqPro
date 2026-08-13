@@ -286,6 +286,21 @@ and any hard, cross-machine performance regression threshold.
 
 ## v3.0.0 — Stable Release
 
-**Next.** Follows the completion of v3.0.0-rc.1. Scope will be
-finalized based on rc.1's validation results and any remaining
-deferred items called out in its own CHANGELOG entry.
+**Complete**, delivered 2026-08-13 — see `docs/CHANGELOG.md`'s
+`v3.0.0` entry and `docs/releases/v3.0.0.md` for full detail.
+
+A release-metadata/version transition only, built on the validated
+`v3.0.0-rc.1` baseline (`3c9efedf58b4f07cbd65bca7b50f2ac039209cf3`):
+no engineering logic, AI/reasoning behavior, API contract, or
+security/performance control changed. `VERSION`,
+`tests/test_version_centralization.py`, `README.md`, this document,
+and the CHANGELOG entry are the only substantive changes, plus a
+narrow `.gitignore` addition for the opt-in benchmark suite's
+generated artifact.
+
+Full suite at release: 3371 passed, 13 skipped (unchanged from rc.1).
+Opt-in benchmark suite: 13/13 passed. `pip-audit` clean. `git diff
+--check` clean.
+
+No new major roadmap phase is defined as of this release; future work
+will be scoped separately.

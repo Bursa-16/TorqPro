@@ -961,3 +961,80 @@ connection-count or query-shape refactor beyond the specific,
 measured `journal_mode` fix above; and any hard, cross-machine
 performance regression threshold (this phase's benchmark baseline is
 explicitly local/informational, not a checked-in target).
+
+## v3.0.0 — Stable Release — 2026-08-13
+
+The stable release of TorqPro AI v3, closing the development cycle
+that began at `v3.0.0-alpha.1`. This is a **release-metadata/version
+transition only**: no engineering logic, no AI/reasoning behavior, no
+API contract, and no security/performance control introduced in
+Beta.1/Beta.2/rc.1 changed in this phase. `VERSION`,
+`tests/test_version_centralization.py`, `README.md`,
+`docs/314_Roadmap.md`, and this entry are the only substantive
+changes, plus a narrow `.gitignore` addition for the opt-in benchmark
+suite's generated `tests/performance/baseline_results.json` (hygiene,
+not a feature).
+
+**What v3.0.0 delivers, cumulatively across the full v3 cycle:**
+
+- **Deterministic engineering core** (VDI 2230 threaded/bolted-joint
+  analysis, `backend/vdi2230_core`/`backend/calculation_engine`/
+  `backend/engineering_core`/`backend/standards`) remains the sole
+  source of truth for every numeric engineering result -- unchanged
+  and unmodifiable by any AI/reasoning layer, enforced structurally
+  (AST-based dependency guards) and by test, not by convention alone.
+- **Torque Recommendation Engine** (`v3.0.0-beta.1`,
+  `backend/torque_recommendation/`) -- a deterministic,
+  offline-capable recommendation layer over the engineering core,
+  with fail-closed status/confidence classification and its own
+  persisted audit trail.
+- **Engineering Reasoning Engine** (`v3.0.0-beta.2`,
+  `backend/ai_gateway/reasoning/`) -- explains an already-computed
+  Torque Recommendation result by `trace_id`, never re-running the
+  deterministic engine, with a closed three-state outcome vocabulary
+  (`SUPPORTED`/`UNSUPPORTED`/`INSUFFICIENT_EVIDENCE`, no invented
+  confidence score) and a structurally separate, optional,
+  fail-soft AI-wording layer.
+- **AI grounding, safety, explainability, and provider abstraction**
+  (`v3.0.0-alpha.1`–`alpha.5`, `backend/ai_gateway/`) -- Question
+  Bank-grounded retrieval, an evidence-sufficiency checker
+  (PASS/WARN/FAIL), a result-label vocabulary
+  (CALCULATED/VALIDATED/ESTIMATED/RECOMMENDED), a provider-abstraction
+  registry with an always-available deterministic/offline provider,
+  and a persistent, hash-only (never raw-text) audit trail
+  (`ai_audit_records`).
+- **Security hardening** (`v3.0.0-rc.1`) -- `TrustedHostMiddleware`
+  via `TORQPRO_ALLOWED_HOSTS`, production-only disabling of
+  `/docs`/`/redoc`/`/openapi.json`, a fixed cross-user project-
+  ownership authorization gap, opt-in per-session API rate limiting,
+  Content-Security-Policy on every response and
+  Strict-Transport-Security in production, generic-message exception
+  handling on four previously-leaking endpoints, and `pip-audit`
+  wired into CI.
+- **Performance validation** (`v3.0.0-rc.1`) -- an opt-in benchmark
+  suite (`tests/performance/`, `TORQPRO_RUN_PERFORMANCE_TESTS=1`)
+  covering every critical request path, SQLite WAL-mode tuning, and
+  concurrent read/write smoke testing with zero errors/lost writes.
+- **OEM/public-demo sanitization** -- no proprietary/OEM-specific
+  standard name or identifier is exposed in any recommendation,
+  reasoning, or audit output; verified by dedicated regression tests
+  across Beta.1, Beta.2, and rc.1.
+- **Documentation/release-readiness** -- `docs/314_Roadmap.md`,
+  `docs/07_API_SPECIFICATION.md`, and `DOCUMENTATION_MANIFEST.json`
+  synchronized with the actual repository state as of rc.1; this
+  entry and `docs/releases/v3.0.0.md` close out the stable release
+  record.
+
+**Validation at stable:** full suite 3371 passed, 13 skipped (the
+opt-in benchmark suite, unchanged from rc.1 since no engineering
+logic changed) + 9/9 version-centralization tests passing against the
+new `3.0.0` value. Opt-in benchmark suite 13/13 passed when run
+explicitly. `pip-audit` clean. `git diff --check` clean.
+
+**Deferred / explicitly out of scope (post-v3.0, unchanged from
+rc.1's own deferral list):** a strict, nonce/hash-based
+Content-Security-Policy; a broad `sync`→`async` route rewrite; a
+JSON-to-SQLite persistence redesign for the Question Bank/washer-
+resolution stores; a large connection-count or query-shape refactor;
+any hard, cross-machine performance regression threshold. No new
+major roadmap phase is defined as of this release.

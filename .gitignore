@@ -7,3 +7,4 @@ torqpro.log
 .torqpro_secret
 runtime/
 .coverage
+tests/performance/baseline_results.json

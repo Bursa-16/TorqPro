@@ -3,14 +3,13 @@
 | Item                      | Value                                                                 |
 | ------------------------- | --------------------------------------------------------------------- |
 | Product                   | **TorqPro AI**                                                        |
-| Current Version           | **v3.0.0-rc.1**                                                       |
-| Release Stage             | **Release Candidate**                                                 |
-| Release Status            | **Pre-release**                                                       |
-| Current Engineering Focus | **Release Validation / Stable Readiness**                             |
-| Final Commit              | `3c9efedf58b4f07cbd65bca7b50f2ac039209cf3`                            |
-| rc.1 New Tests            | **72 passed** (+13 opt-in performance benchmarks, skipped by default) |
-| Full Test Suite           | **3371 passed, 13 skipped**                                           |
-| Next Phase                | **v3.0.0 — Stable Release**                                           |
+| Current Version           | **v3.0.0**                                                            |
+| Release Stage             | **Stable**                                                            |
+| Release Status            | **Stable Release**                                                    |
+| Current Engineering Focus | **Deterministic Engineering + AI Reasoning, production-ready**        |
+| rc.1 Baseline              | `3c9efedf58b4f07cbd65bca7b50f2ac039209cf3` (`v3.0.0-rc.1`)            |
+| Full Test Suite           | **3371 passed, 13 skipped** (+13 opt-in performance benchmarks)       |
+| Next Phase                | **Post-stable maintenance / future roadmap TBD**                      |
 
 ---
 
@@ -26,36 +25,20 @@
 | v3.0.0-alpha.6  | Frontend AI Integration                   | ✅ Completed     |
 | v3.0.0-beta.1   | Torque Recommendation Engine              | ✅ Completed     |
 | v3.0.0-beta.2   | Engineering Reasoning Engine              | ✅ Completed     |
-| **v3.0.0-rc.1** | **Performance, Security & Documentation** | **✅ Completed** |
-| v3.0.0          | Stable Release                            | ⏭️ Next         |
-
----
-
-# Next Phase
-
-## v3.0.0 — Stable Release
-
-The next phase will finalize TorqPro AI v3.0.0 as a stable release, building on the release-candidate hardening completed in rc.1.
-
-The deterministic engineering layer will continue to remain the source of truth.
-
-No new AI capability should compromise the validated engineering boundaries established through the Alpha, Beta, and rc.1 phases.
+| v3.0.0-rc.1     | Performance, Security & Documentation     | ✅ Completed     |
+| **v3.0.0**      | **Stable Release**                        | **✅ Completed** |
 
 ---
 
 # Release
 
-**Current Release:** `v3.0.0-rc.1`
+**Current Release:** `v3.0.0`
 
-**Release Commit:**
+**Status:** Stable
 
-`3c9efedf58b4f07cbd65bca7b50f2ac039209cf3`
+**Main Capability:** Deterministic Torque/Joint Engineering + Torque Recommendation Engine + Engineering Reasoning Engine, hardened for production (security controls, performance validation, OEM/public-demo sanitization).
 
-**Status:** Release Candidate / Pre-release
-
-**Main Capability:** Release Validation / Stable Readiness
-
-**Next Milestone:** `v3.0.0 — Stable Release`
+**Built on:** `v3.0.0-rc.1` (`3c9efedf58b4f07cbd65bca7b50f2ac039209cf3`) — see `docs/CHANGELOG.md`'s `v3.0.0` entry and `docs/releases/v3.0.0.md` for full release detail.
 
 ---
 
