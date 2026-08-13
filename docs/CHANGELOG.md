@@ -843,3 +843,121 @@ full delivery report.
   analysis, friction, material intelligence, ...); a generic rule-
   engine implementation (`docs/08_RULE_ENGINE.md` remains a design
   spec only); a new RBAC role.
+
+## v3.0.0-rc.1 — Performance, Security & Documentation — 2026-08-12
+
+Release-candidate hardening phase. No new AI capability, no new
+engineering engine, no product feature -- validation, security, and
+documentation work only, built on the deterministic engineering core
+and the Torque Recommendation / Engineering Reasoning Engines
+delivered in Beta.1/Beta.2. Four commits, in order:
+
+- **Documentation & Release Consistency**
+  (`f435569db978fe338ee0b48c4ae2989b23ded43b`): `docs/314_Roadmap.md`
+  synchronized with the actual repository state (Beta.1/Beta.2
+  entries added, rc.1 marked in progress). `docs/07_API_SPECIFICATION.md`
+  corrected: the document's original `/api/v1` target design was
+  never implemented and no migration toward it is in progress or
+  planned -- every real endpoint, including every one added since the
+  document's baseline, uses the existing `/api/...` convention; a new
+  section lists the actual current route surface, verified directly
+  against `backend/api/routes/*.py` and `backend/governance/api.py`.
+  `DOCUMENTATION_MANIFEST.json` checksum/metadata regenerated for the
+  12 entries whose stored checksum no longer matched current file
+  content.
+
+- **Security Hardening Phase 1**
+  (`5aa6f55dad0800e6c7b751901665342d72a8d1a0`): `TORQPRO_ALLOWED_HOSTS`
+  (documented in `.env.example` since alpha but never read anywhere)
+  is now enforced via Starlette's `TrustedHostMiddleware`, parsed as a
+  comma-separated list; unset/empty keeps prior (unrestricted)
+  behavior. `TORQPRO_ENV=production` now disables `/docs`, `/redoc`,
+  and `/openapi.json` (FastAPI's native `docs_url`/`redoc_url`/
+  `openapi_url`); every other environment, including the test suite's
+  own (which never sets `TORQPRO_ENV`), is unaffected. Cross-user
+  ownership regression coverage added for `calculations`/`projects`,
+  which surfaced a real authorization gap: `POST /api/calculations`
+  accepted any `project_id` without verifying the caller owned that
+  project -- a foreign calculation could be silently attached to
+  another user's project, inflating that project's
+  `calculation_count` and leaking into that user's own
+  `GET /api/projects/{id}/traceability` and release-package reports.
+  Fixed by reusing the existing `_get_owned_project()` ownership
+  check (already used by traceability/release-package) at creation
+  time; no authorization semantics changed elsewhere. 34 new targeted
+  tests.
+
+- **Security Hardening Phase 2**
+  (`5ce429dc3cc655af30843a548563b498fdb9e192`): a centralized,
+  opt-in (`TORQPRO_API_RATE_LIMIT`, default off), per-authenticated-
+  session sliding-window rate limiter for `/api/...` traffic,
+  excluding `/api/login` (which keeps its own separate, stricter,
+  per-username limiter, unchanged) and `/api/health`. A
+  Content-Security-Policy header on every response --
+  `'unsafe-inline'` for `script-src`/`style-src`, confirmed necessary
+  by inspecting `frontend/index.html` (a single-file SPA: one inline
+  `<script>` block, ~220 inline `style="..."` attributes) rather than
+  assumed; everything else restricted to same-origin/none. A
+  Strict-Transport-Security header added only when
+  `TORQPRO_ENV=production`. Pre-existing `X-Content-Type-Options`/
+  `X-Frame-Options`/`Referrer-Policy` unchanged. Four endpoints that
+  echoed raw exception text into their client response
+  (`GET /health/ready`, `GET /api/engineering/bolt-strength-classes`,
+  `GET /api/engineering/nut-property-classes`,
+  `POST /api/engineering/bolt-nut-compatibility`) now return a fixed,
+  generic message while still logging the real exception
+  server-side; every other `HTTPException(status, str(exc))` site in
+  the repository was reviewed and found to already catch a specific,
+  hand-authored-message domain exception type, not raw internal
+  detail -- left unchanged. `pip-audit` added to
+  `requirements-dev.txt` and to CI as a dedicated security-scan step;
+  it reported zero known vulnerabilities against this repository's
+  actual dependency set at the time of this release. 28 new targeted
+  tests.
+
+- **Performance & Reliability**
+  (`245e2937863271af220308e1783302f4730f57b8`): a reusable, opt-in
+  benchmark suite (`tests/performance/`, `TORQPRO_RUN_PERFORMANCE_TESTS=1`)
+  measuring p50/p95/p99 latency and throughput across every critical
+  path in this phase's scope -- calculation creation, project list/
+  traceability/release-package, joint-analysis, the Torque
+  Recommendation and Engineering Reasoning Engines, the AI gateway
+  path, Question Bank retrieval, audit-log read, and health/
+  readiness -- skipped by default (13 tests, ~0.06s) so the normal
+  suite is unaffected. SQLite `journal_mode=WAL` and
+  `busy_timeout=5000` enabled on the database connection
+  (`backend/app.py`'s `conn()`/`migrate()`); WAL is set once at
+  startup rather than re-checked on every connection, after measuring
+  that re-issuing the pragma on an already-WAL database has a real,
+  avoidable per-connection cost. Isolated (non-HTTP) micro-benchmarks
+  measured a lower per-`INSERT+commit()` cost under WAL than under the
+  prior default rollback-journal mode; end-to-end HTTP-level latency
+  differences were within this sandbox's own run-to-run noise, which
+  this changelog entry states plainly rather than extrapolating into
+  a product-level performance claim. Concurrent read/write smoke
+  tests (20 concurrent writers; a mixed 10-writer/10-reader scenario)
+  against the real HTTP layer produced zero errors and zero lost or
+  duplicated writes. Question Bank and washer-resolution JSON store
+  full-file-rewrite behavior was measured at current (single-digit to
+  low-hundreds of records) and synthetic larger scale; deferred as a
+  redesign candidate, not a current-scale problem. No evidence of
+  sync-route/threadpool saturation was found at the concurrency
+  levels exercised; no `sync`→`async` rewrite was attempted. 10 new
+  targeted tests (part of the normal suite, all deterministic -- no
+  timing-based pass/fail assertions).
+
+**Validation:** full suite 3371 passed, 13 skipped (the opt-in
+benchmark suite) at the end of this phase, up from 3299 at the start
+of rc.1 (72 new passing tests + 13 new opt-in benchmark tests).
+`pip-audit` clean. `git diff --check` clean on every commit.
+
+**Deferred / explicitly out of scope for this phase (post-v3.0):** a
+strict, nonce/hash-based Content-Security-Policy (would require
+restructuring `frontend/index.html`'s single inline `<script>` block
+and ~220 inline `style="..."` attributes into external files); a
+broad `sync`→`async` route rewrite; a JSON-to-SQLite persistence
+redesign for the Question Bank/washer-resolution stores; a large
+connection-count or query-shape refactor beyond the specific,
+measured `journal_mode` fix above; and any hard, cross-machine
+performance regression threshold (this phase's benchmark baseline is
+explicitly local/informational, not a checked-in target).

@@ -13,8 +13,8 @@
     },
     {
       "path": "README.md",
-      "size": 15819,
-      "sha256": "d386ffa79ff7bcac8c312705456e77d276e023c049273980d1c5afe71c284e9e"
+      "size": 18275,
+      "sha256": "d6d4622e7733b115b24f0d03bad4ce509bcf96270112fa14fcc4d27c98291d99"
     },
     {
       "path": "docs/00_PROJECT_VISION.md",
@@ -98,8 +98,8 @@
     },
     {
       "path": "docs/CHANGELOG.md",
-      "size": 48535,
-      "sha256": "d030cab88b6e4f6c709db6d679791d1db59d3c90addf1febb8ffbc6a4583aa14"
+      "size": 55441,
+      "sha256": "83fdb4ee5ea07a4e9b6d583437f130ecb06cfb9d301e66401dd29fe9d2fc6a59"
     },
     {
       "path": "docs/README.md",

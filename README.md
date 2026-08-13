@@ -108,15 +108,44 @@ The core engineering philosophy is simple:
 | Item                       | Value                                                   |
 | -------------------------- | ------------------------------------------------------- |
 | Product                    | **TorqPro AI**                                          |
-| Current Version            | **v3.0.0-beta.2**                                       |
-| Release Stage              | **Beta**                                                |
+| Current Version            | **v3.0.0-rc.1**                                         |
+| Release Stage              | **Release Candidate**                                   |
 | Release Status             | **Pre-release**                                         |
-| Main Capability            | **Engineering Reasoning Engine**                        |
-| Final Commit               | `f033539e44835ee6c42085567eaecf39edb4bdd5`              |
-| Beta.2 New Tests           | **56 passed**                                           |
-| AI + Torque Targeted Tests | **242 passed**                                          |
-| Full Test Suite            | **3299 passed**                                         |
-| Next Phase                 | **v3.0.0-rc.1 — Performance, Security & Documentation** |
+| Current Engineering Focus  | **Release Validation / Stable Readiness**                |
+| Final Commit               | `245e2937863271af220308e1783302f4730f57b8`              |
+| rc.1 New Tests             | **72 passed** (+13 opt-in performance benchmarks, skipped by default) |
+| Full Test Suite            | **3371 passed, 13 skipped**                             |
+| Next Phase                 | **v3.0.0 — Stable Release**                             |
+
+---
+
+# What's New in v3.0.0-rc.1
+
+TorqPro AI v3.0.0-rc.1 is a **release-hardening** phase — no new AI capability, no new engineering engine, and no product feature was added. Its purpose was to validate, secure, and document the platform ahead of a stable v3.0.0 release, building directly on the deterministic engineering core and the Torque Recommendation / Engineering Reasoning Engines delivered in Beta.1/Beta.2.
+
+## Documentation & Release Consistency
+
+* `docs/314_Roadmap.md` synchronized with the actual repository state (Beta.1/Beta.2 completion, rc.1 scope)
+* `docs/07_API_SPECIFICATION.md` corrected to reflect the API surface actually implemented (the documented `/api/v1` namespace was never built; every real endpoint uses the existing `/api/...` convention)
+* `DOCUMENTATION_MANIFEST.json` checksum/metadata brought back in sync with current file contents
+
+## Security Hardening
+
+* Allowed-host enforcement (`TORQPRO_ALLOWED_HOSTS`, via Starlette's `TrustedHostMiddleware`) — previously documented but never enforced
+* Production API documentation restriction — `/docs`, `/redoc`, `/openapi.json` are disabled when `TORQPRO_ENV=production`
+* A real cross-user authorization gap found and fixed during hardening: calculation creation now verifies project ownership before association, closing a path that could attach a calculation to another user's project
+* General API rate limiting — centralized, opt-in, per-session sliding-window limiter for authenticated API traffic (default off; does not change behavior unless explicitly configured)
+* Security response headers — Content-Security-Policy (with `'unsafe-inline'` for script/style, matching the current single-file frontend) and Strict-Transport-Security (production-only)
+* Exception-detail leakage fixes — a small number of endpoints that echoed raw internal error text back to the client now return a fixed, safe message while still logging full detail server-side
+* `pip-audit` dependency security scanning added to CI
+
+## Performance & Reliability
+
+* A reusable, opt-in performance benchmark suite (`tests/performance/`) covering every critical request path, producing p50/p95/p99 latency and throughput — skipped by default so the normal test suite is unaffected
+* SQLite WAL journal mode and a `busy_timeout` enabled on the database connection, reducing commit overhead and lock-contention risk under concurrent access
+* Concurrency validation — concurrent read/write smoke tests confirming no errors, no lost writes, and no data corruption under simultaneous requests
+* Critical-path profiling across calculation creation, project traceability/release-package, the Torque Recommendation and Engineering Reasoning Engines, the AI gateway path, and Question Bank retrieval
+* A reproducible local performance baseline for future comparison
 
 ---
 
@@ -451,48 +480,37 @@ TorqPro AI v3.0.0-beta.2 completed the following validation:
 | v3.0.0-alpha.5    | Persistent Audit & Provider Abstraction | ✅ Completed     |
 | v3.0.0-alpha.6    | Frontend AI Integration                 | ✅ Completed     |
 | v3.0.0-beta.1     | Torque Recommendation Engine            | ✅ Completed     |
-| **v3.0.0-beta.2** | **Engineering Reasoning Engine**        | **✅ Completed** |
-| v3.0.0-rc.1       | Performance, Security & Documentation   | ⏭️ Next         |
-| v3.0.0            | Stable Release                          | Planned         |
+| v3.0.0-beta.2     | Engineering Reasoning Engine             | ✅ Completed     |
+| **v3.0.0-rc.1**   | **Performance, Security & Documentation** | **✅ Completed** |
+| v3.0.0            | Stable Release                          | ⏭️ Next         |
 
 ---
 
 # Next Phase
 
-## v3.0.0-rc.1 — Performance, Security & Documentation
+## v3.0.0 — Stable Release
 
-The next phase will focus on release-candidate hardening of the TorqPro AI platform.
-
-The RC.1 phase is expected to concentrate on:
-
-* performance validation and optimization
-* security hardening
-* authorization regression validation
-* API and engineering documentation
-* dependency and configuration review
-* production-readiness validation
-* release documentation
-* regression and compatibility verification
+The next phase will finalize TorqPro AI v3.0.0 as a stable release, building on the release-candidate hardening completed in rc.1.
 
 The deterministic engineering layer will continue to remain the source of truth.
 
-No new AI capability should compromise the validated engineering boundaries established through the Alpha and Beta phases.
+No new AI capability should compromise the validated engineering boundaries established through the Alpha, Beta, and rc.1 phases.
 
 ---
 
 # Release
 
-**Current Release:** `v3.0.0-beta.2`
+**Current Release:** `v3.0.0-rc.1`
 
 **Release Commit:**
 
-`f033539e44835ee6c42085567eaecf39edb4bdd5`
+`245e2937863271af220308e1783302f4730f57b8`
 
-**Status:** Beta / Pre-release
+**Status:** Release Candidate / Pre-release
 
-**Main Capability:** Engineering Reasoning Engine
+**Main Capability:** Release Validation / Stable Readiness
 
-**Next Milestone:** `v3.0.0-rc.1 — Performance, Security & Documentation`
+**Next Milestone:** `v3.0.0 — Stable Release`
 
 ---
 

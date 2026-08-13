@@ -239,33 +239,53 @@ spec only); a new RBAC role.
 
 ## v3.0.0-rc.1 — Performance, Security & Documentation
 
-**Current / In Progress.** Release-candidate hardening phase for the
-TorqPro AI platform -- no new AI capability or engineering engine is
-in scope. Stage 0 (repository-wide discovery/audit, no code changes)
-concluded **GO** for implementation. Confirmed focus areas:
+**Completed**, delivered 2026-08-12. Release-candidate hardening
+phase for the TorqPro AI platform -- no new AI capability or
+engineering engine was in scope. Stage 0 (repository-wide discovery/
+audit, no code changes) concluded **GO** for implementation. Four
+commits, in order:
 
-- Performance validation and optimization (benchmark baseline for
-  critical endpoints before any regression threshold is proposed).
-- Security hardening (host/origin policy enforcement, production API
-  documentation exposure, rate limiting, response headers).
-- Authorization regression validation (cross-user ownership coverage
-  for existing resources).
-- API and engineering documentation consistency with the current
-  implementation.
-- Dependency and configuration review.
-- Production-readiness validation.
-- Release documentation and regression/compatibility verification.
+- **Documentation & Release Consistency**
+  (`f435569db978fe338ee0b48c4ae2989b23ded43b`): this roadmap
+  synchronized with the actual repository state; `docs/07_API_SPECIFICATION.md`
+  corrected to reflect the real, implemented `/api/...` route surface
+  (the document's original `/api/v1` target design was never built
+  and no migration toward it is in progress); `DOCUMENTATION_MANIFEST.json`
+  checksums regenerated.
+- **Security Hardening Phase 1**
+  (`5aa6f55dad0800e6c7b751901665342d72a8d1a0`): `TORQPRO_ALLOWED_HOSTS`
+  enforcement via `TrustedHostMiddleware`; production-only `/docs`/
+  `/redoc`/`/openapi.json` restriction; a real cross-user project-
+  ownership gap in calculation creation found and fixed.
+- **Security Hardening Phase 2**
+  (`5ce429dc3cc655af30843a548563b498fdb9e192`): opt-in general API
+  rate limiting; Content-Security-Policy and (production-only)
+  Strict-Transport-Security headers; four exception-detail-leakage
+  fixes; `pip-audit` added to CI.
+- **Performance & Reliability**
+  (`245e2937863271af220308e1783302f4730f57b8`): a reusable, opt-in
+  performance benchmark suite; SQLite WAL journal mode and
+  `busy_timeout`; concurrency validation; critical-path profiling.
 
-The deterministic engineering layer remains the source of truth
-throughout this phase; no new AI capability may compromise the
+See `docs/CHANGELOG.md`'s v3.0.0-rc.1 entry for full detail, including
+what was measured and deferred at each step.
+
+The deterministic engineering layer remained the source of truth
+throughout this phase; no AI capability was added or changed, and the
 validated engineering boundaries established through the Alpha and
-Beta phases. Deferred out of this phase, consistent with the Stage 0
-scope decision: real network-calling AI providers, new engineering
-engines, database migration, a broad async rewrite, and a frontend
-redesign.
+Beta phases were not modified.
+
+Deferred, consistent with the Stage 0 scope decision and confirmed
+during this phase with measured evidence rather than assumption: a
+real network-calling AI provider; a new engineering engine; database
+migration; a strict nonce/hash-based CSP (would require restructuring
+`frontend/index.html`'s single inline `<script>` block into external
+files); a broad sync→async route rewrite; a JSON-to-SQLite
+persistence redesign for the Question Bank/washer-resolution stores;
+and any hard, cross-machine performance regression threshold.
 
 ## v3.0.0 — Stable Release
 
-**Planned.** Follows the completion of v3.0.0-rc.1. No implementation
-work has started on this milestone; scope will be finalized once
-v3.0.0-rc.1's release-hardening validation is complete.
+**Next.** Follows the completion of v3.0.0-rc.1. Scope will be
+finalized based on rc.1's validation results and any remaining
+deferred items called out in its own CHANGELOG entry.
